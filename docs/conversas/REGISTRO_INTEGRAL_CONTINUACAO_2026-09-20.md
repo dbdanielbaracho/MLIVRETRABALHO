@@ -1197,3 +1197,22 @@ Quando for realmente necessário encerrar o turno, informe exatamente:
 Não diga que continuará trabalhando depois da resposta final, pois não existe execução de ferramentas em segundo plano.
 
 COMECE A EXECUÇÃO AGORA. NÃO RESPONDA APENAS COM STATUS. EXECUTE O PROJETO.
+
+
+### ASSISTENTE
+No Chat comum, **não existe uma configuração, frase ou prompt que você possa usar para impedir tecnicamente o encerramento do turno**. Você já está usando praticamente a instrução máxima possível.
+
+O ponto que precisa mudar é principalmente **meu comportamento dentro do turno**: eu ainda estou devolvendo a resposta cedo demais. No último turno, por exemplo, os CIs #11 e #12 estavam rodando; eu poderia ter aproveitado melhor o turno executando outras tarefas independentes em vez de encerrar naquele ponto.
+
+Para chegar mais perto do que você quer, há duas opções:
+
+**Aqui no Chat:** continue usando **“EXECUÇÃO CONTÍNUA MÁXIMA”**. Eu devo executar o maior número possível de etapas antes de responder. Ainda assim, quando eu finalmente responder, o turno acaba.
+
+**Sem depender desses turnos curtos:** use **ChatGPT Work** para entregar o projeto como uma tarefa longa. O Work é a modalidade apropriada para execução substancial e multietapas, inclusive trabalhando com arquivos, GitHub, navegador e outras ferramentas durante uma execução mais longa.
+
+Como você anteriormente teve o problema de o Work pedir créditos, **não há um truque no Chat que transforme o Chat em Work**. Enquanto ficarmos aqui, a melhor solução é eu fazer turnos muito maiores.
+
+E há uma correção importante da minha parte: **não preciso encerrar só porque um CI está rodando**. Se houver outras tarefas independentes no MLIVRETRABALHO, devo executá-las no mesmo turno. Essa regra já está incorporada à sua instrução de **EXECUÇÃO CONTÍNUA MÁXIMA**.
+
+### USUÁRIO
+ok então faça o que tem que ser feito para ter execução continua maxima
