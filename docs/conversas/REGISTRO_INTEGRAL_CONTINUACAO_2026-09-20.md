@@ -1346,3 +1346,26 @@ Não existe bloqueio externo neste ponto.
 
 ### USUÁRIO
 continuar
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+O **#24 passou no CI e foi incorporado ao `main`**, então o Work Passport verificado já está no código principal. O #25 também passou no CI, mas ficou com conflito depois da incorporação do #24. Em vez de forçar um merge inseguro, fechei o #25 e reconstruí a funcionalidade sobre o `main` atualizado no **PR #26**.
+
+Continuei além disso: criei o **PR #27**, levando o **Work Passport para o aplicativo**, com trabalhos verificados, média das avaliações e histórico. Também criei o **PR #28**, que inicia efetivamente a jornada da empresa: uma empresa autorizada pode confirmar um profissional que demonstrou interesse, criando a atribuição de trabalho de maneira idempotente.
+
+PR #26 — Avaliação verificada sem conflito
+PR #27 — Work Passport mobile
+PR #28 — Confirmação do profissional pela empresa
+
+Na última consulta, o CI do **#26 estava executando**. #27 e #28 precisam completar seus ciclos de CI. O registro integral foi atualizado novamente no `main`, commit `4d4dbed9d5c5f34cfe596bd6dc65b14d4a8d5252`.
+
+**Próxima retomada exata:** #26–#28 → corrigir/merge somente verde → candidatos/interessados para a empresa → criação de trabalho pela empresa → experiência mobile da empresa → avaliação → testes E2E/cross-tenant → Matching/Allocation → continuar o restante do roadmap.
+
+Não há bloqueio externo neste ponto.
+
+### USUÁRIO
+continuar
