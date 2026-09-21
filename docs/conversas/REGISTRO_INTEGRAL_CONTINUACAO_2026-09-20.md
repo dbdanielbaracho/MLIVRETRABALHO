@@ -1596,3 +1596,7 @@ Tem que continuar sozinho ate o final e nao esqueça de gravar no arquivo tudo q
 
 ### ASSISTENTE
 [Execução contínua retomada. Regra reafirmada: registrar literalmente as mensagens visíveis no arquivo de conversa e executar o máximo possível sem atualizações intermediárias.]
+
+
+### ASSISTENTE
+[Continuação da execução após registrar a instrução: #71 estava CI verde mas conflitou; reconstruído como #72, CI verde e incorporado. #73 Replacement operacional criado, CI inicial falhou por possível resultado undefined, corrigido e novo CI disparado. #74 Talent Pools API ficou verde mas conflitou após #72; reconstruído como #76 sobre main atual. #75 criado para reforçar integridade cross-tenant de equipes com FKs compostas; CI em execução. A execução continuou sem mensagens intermediárias.]
