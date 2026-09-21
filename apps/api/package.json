@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test",
+    "test": "pnpm exec tsc src/matching.ts src/matching.test.ts --module commonjs --target es2022 --esModuleInterop --skipLibCheck --outDir .test-dist && node --test .test-dist/matching.test.js",
     "start": "node dist/main.js"
   },
   "dependencies": {
