@@ -874,3 +874,24 @@ Também gravei novamente a conversa no nosso documento permanente de memória. *
 
 ### USUÁRIO
 continuar até o final do projeto e nao parar mais
+
+
+### ASSISTENTE
+Sim. O problema é que minhas mensagens anteriores misturavam **“terminei esta execução”** com **“o projeto continua”**, e isso realmente não deixa claro se há alguma coisa rodando naquele momento.
+
+A partir de agora vou usar um padrão fixo no início de **toda mensagem sobre o MLIVRETRABALHO**:
+
+**🟢 EXECUTANDO AGORA** — quando eu estiver efetivamente usando as ferramentas e realizando uma etapa naquele turno.
+
+**🟡 AGUARDANDO CI/SERVIÇO EXTERNO** — quando existir uma execução externa real em andamento, como GitHub Actions.
+
+**🔴 EXECUÇÃO PARADA** — quando eu tiver terminado o que consigo executar naquele turno e **nada estiver rodando em segundo plano**. Vou dizer também exatamente onde paramos e qual é a próxima ação.
+
+E no final colocarei uma linha curta, por exemplo: **Estado ao enviar esta mensagem: 🟡 CI do PR #6 em execução.** Assim você nunca precisará adivinhar.
+
+Também vou evitar frases como **“continuarei trabalhando”** quando nada estiver efetivamente executando. Se eu mandar uma resposta e a execução tiver parado por uma limitação do chat, vou escrever claramente **🔴 EXECUÇÃO PARADA**, em vez de dar a impressão de que estou trabalhando sozinho depois da mensagem.
+
+Essa nova regra de comunicação também passa a fazer parte das regras permanentes do projeto e deve ser registrada no nosso documento integral de conversa.
+
+### USUÁRIO
+nao esqueça de gravar toda a conversa no arquivo que já combinamos
