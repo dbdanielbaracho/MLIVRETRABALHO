@@ -5,6 +5,6 @@
   "scripts": {
     "build": "node -e \"console.log('SQL package: no build step')\"",
     "typecheck": "node -e \"console.log('SQL package: no typecheck step')\"",
-    "test": "bash tests/rls-isolation.sh && bash tests/professional-interests.sh"
+    "test": "bash tests/rls-isolation.sh && bash tests/professional-interests.sh && psql \\\"${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/mlivretrabalho}\\\" -v ON_ERROR_STOP=1 -q -f migrations/0003_identity.sql"
   }
 }
