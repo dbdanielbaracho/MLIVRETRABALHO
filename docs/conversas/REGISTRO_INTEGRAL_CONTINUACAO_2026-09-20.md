@@ -1227,3 +1227,26 @@ Você **não precisa mais copiar aquele prompt enorme**. Sempre que o turno term
 
 ### USUÁRIO
 EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO. Retome exatamente do último ponto confirmado no GitHub e execute o máximo possível neste turno, sem atualizações intermediárias, sem pedir confirmação e sem parar voluntariamente enquanto houver trabalho executável.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Executei o máximo possível neste turno:
+
+Os PRs **#13 e #14 falharam no TypeScript CI**. Investiguei os logs e identifiquei a causa concreta: os helpers de autenticação retornavam um tipo incompatível com `HeadersInit`. Corrigi o problema nos dois branches, tipando os headers autenticados como `Record<string,string>`. Novos commits foram enviados para os PRs.
+
+Enquanto os novos CIs ainda não tinham aparecido, continuei em uma frente independente e implementei o **PR #15**, conectando a tela **Trabalhos** do aplicativo à API PostgreSQL real, com autenticação, tenant obtido de `/v1/me` e ação **“Quero trabalhar” em um toque**.
+
+PR #13 — Perfil mobile persistente
+PR #14 — Tenant autenticado no mobile
+PR #15 — Trabalhos reais + interesse em um toque
+
+O registro integral da conversa também foi atualizado no GitHub: commit `786de6fb53ee6c388cebaef719298890b09231a3`.
+
+**Ponto exato de retomada:** verificar os novos CIs #13/#14/#15 → corrigir qualquer nova falha → merge somente verde → avançar imediatamente para confirmação/seleção → agenda → check-in → trabalho → check-out → conclusão → ganhos → avaliação → Work Passport.
+
+Não há bloqueio funcional do projeto. Depois desta resposta, não existe execução minha em segundo plano.
+
+### USUÁRIO
+EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO. Retome exatamente do último ponto confirmado no GitHub e execute o máximo possível neste turno, sem atualizações intermediárias, sem pedir confirmação e sem parar voluntariamente enquanto houver trabalho executável.
