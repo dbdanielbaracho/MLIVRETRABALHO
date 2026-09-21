@@ -10,7 +10,10 @@ export default function Home() {
         <Text style={styles.body}>Encontre oportunidades compatíveis com seu perfil e acompanhe tudo pelo celular.</Text>
         <Link href="/trabalhos" style={styles.primary}>Ver trabalhos</Link>
         <View style={styles.nav}>
-          <Text style={styles.active}>Início</Text><Text>Trabalhos</Text><Text>Ganhos</Text><Text>Perfil</Text>
+          <Text style={styles.active}>Início</Text>
+          <Link href="/trabalhos">Trabalhos</Link>
+          <Link href="/ganhos">Ganhos</Link>
+          <Link href="/perfil">Perfil</Link>
         </View>
       </View>
     </SafeAreaView>
