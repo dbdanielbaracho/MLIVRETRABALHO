@@ -1369,3 +1369,35 @@ Não há bloqueio externo neste ponto.
 
 ### USUÁRIO
 continuar
+
+
+### USUÁRIO
+porque voce executa uma coisa e eu já tenho que pedir para continuar porque voce não executa mais tarefas
+
+### ASSISTENTE
+Porque existe uma limitação do funcionamento do **Chat normal**: eu só consigo executar ferramentas enquanto o meu turno está aberto. Quando envio a resposta final, aquele turno termina e **não existe execução em segundo plano**.
+
+Mas você tem razão sobre um ponto importante: **eu estou encerrando os turnos cedo demais**. Em vários deles eu poderia continuar fazendo outras tarefas enquanto o CI de um PR estava rodando. Criar 2 ou 3 PRs e encerrar não corresponde ao que combinamos como “Execução Contínua Máxima”.
+
+A partir do próximo `continuar`, vou usar o turno de forma mais agressiva: verificar #29–#31, corrigir e fazer os merges possíveis; enquanto algum CI estiver rodando, trabalhar em tarefas independentes; continuar criando e implementando as próximas etapas; voltar aos CIs; corrigir falhas; fazer os merges verdes; e seguir novamente. **Não vou encerrar simplesmente porque criei novos PRs ou porque um CI está rodando.**
+
+Ainda haverá um momento em que o próprio turno do Chat termina por limite da execução. Isso eu não consigo eliminar. Mas posso **reduzir bastante a frequência com que você precisa escrever “continuar”**, executando muito mais etapas dentro de cada turno.
+
+No próximo comando, você pode escrever apenas **“continuar”**. Eu já tenho a regra de que isso significa **Execução Contínua Máxima do MLIVRETRABALHO**.
+
+### USUÁRIO
+então não mandar as respostas apenas no final envia não esqueça de gravar no arquivo do github tudo que voce fizer
+
+### ASSISTENTE
+Combinado. No MLIVRETRABALHO, vou seguir assim:
+
+- **Sem respostas intermediárias.** Executo o máximo possível e só envio a resposta quando o turno realmente precisar terminar.
+- Não vou parar porque um PR foi criado, um merge terminou ou um CI está rodando; enquanto houver outra tarefa executável, continuo.
+- Vou manter o ciclo **executar → testar → corrigir → retestar → merge → próxima etapa**.
+- **Tudo o que fizermos e conversarmos sobre o projeto continuará sendo registrado no arquivo já definido no GitHub**, inclusive suas mensagens e minhas respostas.
+- Quando o turno inevitavelmente terminar, deixarei registrado o ponto exato para a próxima execução.
+
+No seu próximo **“continuar”**, começo diretamente do #29–#31 e sigo adiante sem ficar interrompendo para apresentar relatórios.
+
+### USUÁRIO
+continuar
