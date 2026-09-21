@@ -11,7 +11,6 @@ Rastreabilidade obrigatória:
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
 | CI-001 | CI executa typecheck, build e testes de RLS | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | GitHub Actions run `35553977088` SUCCESS |
-| LEGAL-ARCH | Gate jurídico do modelo Brasil | OPEN/BLOCKING PARA REGRAS DEFINITIVAS | Documento da Verdade v1.5 §17/§33 | — | revisão jurídica externa exigida antes de produção dependente |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING | Documento da Verdade v1.5 §13/§33 | — | decisão/evidência pendente |
 | TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING | Documento da Verdade v1.5 §33 | — | arquitetura/evidência pendente |
 
@@ -25,3 +24,8 @@ Rastreabilidade obrigatória:
 ## Regra de estado
 
 `MERGED` ou `CI GREEN` **não significa Production-DONE**. O Definition of Done exige testes adequados, deploy quando aplicável, funcionamento real, Production Truth Gate e evidência. Para segurança, pentest permanece obrigatório antes da produção pública conforme risco.
+
+| MOB-001 | Aplicativo mobile é o produto operacional principal | IN PROGRESS | Documento da Verdade v1.5; Plano Mestre | `apps/mobile/` | shell Expo criado; E2E pendente |
+| MOB-002 | Navegação profissional Início / Trabalhos / Ganhos / Perfil | IN PROGRESS | UX mobile-first | `apps/mobile/app/` | Início + Trabalhos baseline; tabs completas pendentes |
+| MOB-003 | Interesse em oportunidade em 1 ação | BASELINE UI / API PENDENTE | Friction Gate | `apps/mobile/app/trabalhos.tsx` | integração API/E2E pendente |
+| ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
