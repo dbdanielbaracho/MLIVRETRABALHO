@@ -804,3 +804,19 @@ Vou seguir a sequência **construir → testar → corrigir → CI → merge →
 ### USUÁRIO
 nao esqueça de grava no documento nossa conversa no chat para não se perder tudo que tiver aqui gravar.
 porque voce está parando , já pedi para voce continuar até o final do projeto
+
+
+### ASSISTENTE
+Você está certo sobre a instrução: não é necessário você repetir **“continuar”** a cada etapa.
+
+Nesta execução eu já avancei mais:
+
+- O **PR #3 passou no CI** e foi incorporado à `main`. Merge SHA: `02f47fdcdd7aefe179f45cddea22687216bbc4fe`.
+- Continuei imediatamente para o **PR #4**, criando a persistência de **perfil profissional + interesse em oportunidades**, com isolamento por tenant e teste de migration.
+- O PR #4 já está aguardando o CI; não vou considerá-lo concluído antes do teste.
+- Sua mensagem e minha resposta anterior foram novamente gravadas integralmente no documento de memória. Commit: `d06e5e2781c498ce5db606537303174b7b818e97`.
+
+Uma limitação importante: eu consigo executar várias etapas consecutivamente dentro de uma resposta, como acabei de fazer, mas não consigo permanecer executando indefinidamente depois que a resposta termina sem uma automação. Portanto, não vou fingir que continuo trabalhando em segundo plano. Dentro de cada execução disponível, vou avançar o máximo possível, sem parar voluntariamente entre as etapas.
+
+### USUÁRIO
+ok continuar entao
