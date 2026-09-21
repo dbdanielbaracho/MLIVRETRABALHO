@@ -18,6 +18,7 @@ import { TeamsController } from './teams.controller';
 import { NotificationsController } from './notifications.controller';
 import { ConversationsController } from './conversations.controller';
 import { TrustEventsController } from './trust-events.controller';
+import { PaymentEventsController } from './payment-events.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
 @Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController, CompanyJobCreateController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
