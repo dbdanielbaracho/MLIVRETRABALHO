@@ -6,5 +6,6 @@ import { MeController } from './me.controller';
 import { DatabaseService } from './database.service';
 import { AuthService } from './auth.service';
 import { ProfessionalProfileController } from './professional-profile.controller';
-@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController], providers:[DatabaseService,AuthService] })
+import { WorkAssignmentsController } from './work-assignments.controller';
+@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
