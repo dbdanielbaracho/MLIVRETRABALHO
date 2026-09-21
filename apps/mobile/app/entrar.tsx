@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-const API=process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/v1';
+const API='http://localhost:3000/v1';
 export default function Entrar(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[message,setMessage]=useState('');
  async function signin(){const r=await fetch(`${API}/auth/signin`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});setMessage(r.ok?'Entrada realizada':'Confira seu e-mail e senha');}
