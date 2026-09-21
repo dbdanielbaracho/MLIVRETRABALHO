@@ -686,3 +686,65 @@ Inclusive sua mensagem **“tudo que conversarmos no chat”** já foi registrad
 
 ### USUÁRIO
 comece a executar todo o projeto usaremos o Claude no final para avaliar tudo  ou melhor se você precisar do Claude para ajudar validar alguma coisa ok passo para ele., mas novamente como voce vai construir o projeto quais serão suas fontes
+
+
+### ASSISTENTE
+Sim. Podemos começar a executar o projeto inteiro, mantendo o **mobile como produto principal**. E concordo com o modelo para o Claude: eu conduzo arquitetura, implementação, testes e integração; podemos usá-lo durante o projeto quando houver uma questão realmente útil para revisão independente e, principalmente, fazer uma **auditoria adversarial completa no final**. O Claude não substituirá evidência técnica nem teste executável.
+
+### Quais serão minhas fontes para construir o MLIVRETRABALHO
+
+Teremos uma hierarquia clara de fontes. Isso é importante para evitar que eu simplesmente “invente uma solução que parece boa”.
+
+**1. O próprio MLIVRETRABALHO será a fonte normativa principal.**
+Vou partir do `Documento da Verdade`, Requirements Ledger, ADRs, Registro Integral, Evidence Registry, código e testes existentes no GitHub. Uma decisão já aprovada não deve ser silenciosamente substituída por algo que eu encontre na internet.
+
+**2. Aplicativos concorrentes reais.**
+Continuaremos estudando principalmente **Estaff, Instawork, Qwick, Indeed Flex e Job&Talent**. E adicionaremos concorrentes especializados quando estivermos trabalhando em determinada função. A comparação será feita por problema, e não copiando um aplicativo inteiro.
+
+Por exemplo, a documentação atual da Instawork mostra uma jornada mobile de perfil → oportunidades compatíveis → escolha do shift → trabalho → clock-out → pagamento. A Indeed Flex documenta cadastro/perfil → aplicação/verificação → booking → clock-in/out → pagamento. A Estaff enfatiza agenda, oportunidades, reputação e pagamentos para o profissional e publicação/acompanhamento de equipe pelo aplicativo da empresa.
+
+E há coisas novas que precisamos considerar: a Qwick documenta matching automático usando skills, experiência, confiabilidade, histórico e preferências da empresa, além de confirmação automática de profissionais. Isso é particularmente relevante para nosso **Matching + Allocation Engine**.
+
+**3. Documentação técnica oficial.**
+Para React Native/Expo, Next.js, NestJS/Fastify, PostgreSQL, PostGIS, Redis, OR-Tools, Railway, GitHub Actions etc., vou privilegiar a documentação oficial da tecnologia, especialmente quando estivermos tomando decisões de arquitetura ou implementando APIs.
+
+**4. Fontes primárias para funcionalidades dos concorrentes.**
+Não quero basear uma decisão importante em blog genérico dizendo “Qwick faz X”. Procuraremos documentação/help center/site oficial e registraremos a evidência no Evidence Registry.
+
+Um bom exemplo é check-in/out: a Qwick documenta que a maioria dos shifts pode ser aprovada automaticamente quando horário e presença estão dentro dos parâmetros esperados, enquanto casos anormais vão para verificação. Isso conversa diretamente com nosso princípio: **caso normal automático; exceção pede intervenção**.
+
+**5. Engenharia e testes reais.**
+Uma fonte ainda mais importante será o próprio sistema funcionando. Nossa hierarquia continua sendo aproximadamente:
+
+**produção real > teste reproduzível > código > documentação oficial/evidência > Documento da Verdade > decisão registrada > hipótese.**
+
+Ou seja, eu não vou dizer “multi-tenancy está seguro” porque escrevemos isso em um documento. O teste precisa tentar acessar dados da Empresa B usando a Empresa A e falhar.
+
+### Como transformarei essas fontes em produto
+
+Para cada módulo importante, o processo será:
+
+**necessidade do usuário → benchmark → fonte primária → comparação → solução MLIVRETRABALHO → UX mobile → requisito → arquitetura → código → teste → revisão → deploy → evidência.**
+
+E haverá uma pergunta constante:
+
+> **Existe uma maneira mais simples de fazer isso no celular sem sacrificar confiabilidade ou segurança?**
+
+Isso será especialmente importante porque alguns concorrentes ainda têm jornadas relativamente longas. Não significa que devemos copiá-los. Devemos descobrir **quais informações realmente precisam ser pedidas naquele momento** e quais podem ser obtidas posteriormente/contextualmente.
+
+### E o Claude?
+
+Eu usaria em dois momentos.
+
+Durante a construção, somente quando quisermos uma **segunda análise independente** de algo difícil — arquitetura, algoritmo, segurança, pagamentos, UX ou algum problema em que seja útil confrontar duas abordagens.
+
+No final, entregamos para ele **Documento da Verdade + Requirements Ledger + ADRs + código + testes + Evidence Registry + evidências de produção** e pedimos uma revisão adversarial: encontrar requisito esquecido, inconsistência, vulnerabilidade, fluxo ruim, overengineering, race condition, problema de tenancy, pagamento ou IA.
+
+Depois eu confronto cada achado com o sistema e os testes. **Claude não aprova o projeto sozinho; evidência decide.**
+
+E já registrei sua mensagem atual no Registro Integral. O commit dessa atualização foi `0e254a6522fd7869769eff14fadca770a0d9fc5e`.
+
+A partir daqui, a execução pode continuar no GitHub pelo **Requirements Ledger + fundação mobile-first + primeira jornada vertical profissional/empresa**, sem esperar a auditoria final do Claude.
+
+### USUÁRIO
+ok, começar então o projeto e so parar quando terminar
