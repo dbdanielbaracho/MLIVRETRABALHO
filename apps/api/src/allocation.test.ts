@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import { rankCandidates } from './allocation';
+test('ranks best eligible candidate first and excludes unavailable',()=>{const r=rankCandidates([{professionalId:'b',match:{availability:true,roleFit:.6,reliability:.6,distanceKm:20}},{professionalId:'a',match:{availability:true,roleFit:.95,reliability:.9,distanceKm:4}},{professionalId:'c',match:{availability:false,roleFit:1,reliability:1,distanceKm:1}}]);assert.deepEqual(r.map(x=>x.professionalId),['a','b']);});
