@@ -835,3 +835,20 @@ O PR #5 ainda não será considerado concluído até o CI passar. Depois dele, a
 
 ### USUÁRIO
 status
+
+
+### ASSISTENTE
+### Status atual — MLIVRETRABALHO
+
+Acabei de verificar o estado real no GitHub. O **PR #5 passou no CI** (`run 35560568619`, `success`) e eu já fiz o merge na `main`.
+
+**Novo merge:** `aabce2448a55bc85fb45ec20ba6caf14e71e198f`
+
+Eu colocaria o **projeto completo em aproximadamente 18–22% implementado**, considerando todo o escopo aprovado — não apenas a fundação técnica.
+
+A parte mais importante neste momento é transformar os baselines que já existem em uma **primeira jornada realmente funcional de ponta a ponta**. O próximo marco é: **cadastro/login → perfil → oportunidade real no PostgreSQL → interesse → confirmação → agenda → check-in → check-out → conclusão → ganhos → avaliação → Work Passport**.
+
+E o documento de memória continua sendo atualizado. Registrei também seu pedido de **“status”** e a resposta anterior. Commit documental: `41640218d57ed6f0b474a535988f66bfd09f9be0`.
+
+### USUÁRIO
+continuar até o final do projeto
