@@ -932,3 +932,35 @@ Se o CI ficar verde, o próximo passo é merge e avanço imediato para persistê
 
 ### USUÁRIO
 status
+
+
+### ASSISTENTE
+Você tem razão. **“Aguardando CI” não explica o que está acontecendo.**
+
+Vou mudar o formato para mostrar **o que está sendo feito, quem está fazendo e se eu estou ou não executando alguma coisa**.
+
+Neste caso específico:
+
+**O que eu estava fazendo:** corrigindo o **PR #6**, que implementa cadastro e login do MLIVRETRABALHO.
+
+**O que aconteceu:** encontrei um erro no teste do banco de dados e corrigi o código.
+
+**O que significa “aguardando CI”:** eu enviei a correção para o GitHub. Agora o **GitHub Actions**, e não eu, precisa executar automaticamente os testes dessa correção.
+
+**Estou trabalhando neste exato momento?** 🔴 **Não.** Depois de enviar esta mensagem, eu não fico executando ferramentas em segundo plano.
+
+**O projeto parou?** 🟡 **Temporariamente nesse ponto**, porque precisamos saber o resultado do teste automático antes de fazer merge. Quando houver uma nova execução minha, eu verifico o resultado: se passou, faço merge e avanço; se falhou, abro o erro e corrijo.
+
+Daqui para frente vou terminar cada atualização assim:
+
+> **EU:** 🔴 não executando neste instante  
+> **GITHUB:** 🟡 executando/aguardando testes  
+> **ETAPA ATUAL:** PR #6 — cadastro e login  
+> **ÚLTIMA AÇÃO:** corrigi o teste do banco  
+> **PRÓXIMA AÇÃO:** verificar CI → corrigir ou merge → continuar desenvolvimento  
+> **PROJETO:** ainda não concluído
+
+Assim fica explícito quando **eu** estou executando, quando é um sistema externo que está trabalhando e quando realmente está tudo parado.
+
+### USUÁRIO
+continuar entao até o final do projeto todo
