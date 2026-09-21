@@ -1299,3 +1299,26 @@ Não existe execução minha em segundo plano após esta resposta.
 
 ### USUÁRIO
 continuar
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Neste turno, **#18, #19 e #20 passaram no CI e foram incorporados ao `main`**. Portanto, o projeto agora tem API mobile configurável, Agenda operacional real com check-in/início/check-out/conclusão e a fundação persistente do Earnings Ledger.
+
+Também avancei mais três frentes. O **PR #21** faz a conclusão do trabalho criar **exatamente um ganho** de forma idempotente e adiciona a API autenticada `/v1/earnings/mine`. O **PR #22** substitui a tela estática de Ganhos pela consulta real ao ledger, mostrando total, valores individuais e status. O **PR #23** inicia a infraestrutura de **avaliações verificadas**, vinculadas ao trabalho realmente executado, formando a base do Work Passport.
+
+PR #21 — Earnings API idempotente
+PR #22 — Ganhos reais no aplicativo
+PR #23 — Avaliações verificadas / Work Passport
+
+Na última consulta, o CI do **#21 estava executando**; #22 e #23 ainda precisavam completar seus ciclos de CI. O registro integral foi atualizado no `main` no commit `113d99f54135a1682cfa9f2c8270b0f62274dec0`.
+
+**Ponto exato de retomada:** validar/corrigir/merge #21–#23 → API e UX da avaliação bilateral → Work Passport real → confirmação pela empresa/seleção de candidato → completar o fluxo empresa → testes E2E e de isolamento → seguir pelos demais módulos do projeto.
+
+Não há bloqueio externo neste ponto.
+
+### USUÁRIO
+continuar
