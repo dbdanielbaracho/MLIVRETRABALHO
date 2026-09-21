@@ -274,3 +274,120 @@ Retomada executada e o projeto avançou de documentação para implementação r
 O que ainda não está “terminado”: `SEC-001` tem baseline implementada e CI verde, mas ainda precisa integração real API→PostgreSQL com contexto de tenant por transação, autenticação/membership, E2E, deploy e Production Truth Gate. `LEGAL-ARCH`, `FIN-RISK` e `TRUST-ARCH` continuam abertos nos comportamentos que dependem deles.
 
 O **Registro Integral da Conversa** foi atualizado com esta retomada. O próximo ponto de execução ficou claramente definido: ligar a API ao PostgreSQL de forma tenant-safe e provar o isolamento também via requisições HTTP.
+
+
+---
+
+## CONTINUAÇÃO — APÓS PERSISTÊNCIA DO REGISTRO HISTÓRICO
+
+### USUÁRIO
+10 páginas, sem metadados de auditoria embutidos (nenhum campo de data/autor no PDF em si — vou preservar apenas o que está no corpo do texto). Vendo o texto extraído para conversão fiel.
+
+Conferido de forma rigorosa (contagem de todas as palavras do PDF original vs. o Markdown gerado, ignorando só a formatação de tabela/heading): **zero palavras do conteúdo original estão faltando** — todo o vocabulário do PDF está presente no arquivo convertido. A única correção necessária foi o título, já resolvida acima.
+
+Presented file
+
+Um ponto importante para você conferir antes do commit: incluí uma "Nota de conversão" no topo do arquivo deixando explícito que o **próprio PDF original já era um registro consolidado** (síntese em terceira pessoa nas Seções 1–12), não uma transcrição literal palavra por palavra — e que, na Seção 13, só as falas do USUÁRIO estão entre aspas como citação direta; as respostas do ASSISTENTE já estavam registradas em paráfrase no PDF de origem. Preservei esse mesmo grau de literalidade, sem reconstruir nada além do que já existia — reconstruir a fala literal do assistente seria fabricação, já que não há fonte mais literal recuperável para esse período.
+
+Também marquei `[Página N]` nos pontos de quebra de página do PDF original, como âncora de auditoria, e sinalizei onde havia uma imagem (mockup do layout) que não é conversível para texto.
+
+Está pronto para você conferir e seguir com o commit em `docs/conversas/`.
+
+Registro historico consolidado pre 2026 09 20
+
+Documento·MD 
+
+svg
+
+### ASSISTENTE
+Executado. O arquivo que você enviou foi lido integralmente e persistido no GitHub **sem transformar o conteúdo histórico em uma falsa transcrição literal**. A própria nota de conversão deixa claro que o PDF original já era consolidado e que as respostas do assistente na Seção 13 estavam em paráfrase.
+
+O novo arquivo está em:
+
+`docs/conversas/REGISTRO_HISTORICO_CONSOLIDADO_PRE_2026-09-20.md`
+
+Commit: `8284797`.
+
+Também atualizei `docs/conversas/HISTORICO_PRE_2026-09-20.md`. Ele agora informa que o **artefato consolidado foi efetivamente persistido**, mas mantém corretamente a ressalva de que as transcrições originais palavra por palavra que nunca estiveram no PDF continuam como:
+
+> **TRECHO HISTÓRICO NÃO DISPONÍVEL LITERALMENTE**
+
+Commit dessa atualização: `108a6f1`.
+
+Depois do commit, reli o arquivo diretamente da `main` para verificar que a nota de auditoria e o conteúdo chegaram ao GitHub. Com isso, o antigo PDF deixa de ser apenas um “artefato externo pendente”: seu conteúdo textual consolidado agora faz parte oficialmente do repositório.
+
+### USUÁRIO
+o que fazer agora
+
+### ASSISTENTE
+Agora que a documentação e o histórico foram recuperados e persistidos, o próximo passo é **parar de trabalhar apenas na documentação e iniciar a construção efetiva do MLIVRETRABALHO**.
+
+Eu seguiria esta ordem, respeitando os gates que já definimos:
+
+1. **Fechar a fundação técnica do repositório** — criar o monorepo `pnpm + Turborepo`, `apps/mobile`, `apps/web`, backend NestJS/Fastify, packages compartilhados, serviço Python/OR-Tools, lint, TypeScript, testes e GitHub Actions.
+
+2. **Criar o Requirements Ledger completo** — transformar o Documento da Verdade em requisitos rastreáveis (`UX-*`, `AI-*`, `PAY-*`, `SEC-*`, `TRUST-*`, etc.). Isso impede que funcionalidades sejam esquecidas durante a implementação.
+
+3. **Resolver os gates que bloqueiam arquitetura definitiva** — `ADR-MT-001` para multi-tenancy; `TRUST-ARCH`; `FIN-RISK`; continuar `LEGAL-ARCH` como gate que exige validação jurídica externa antes de produção; e manter `COMP-EVIDENCE` para decisões baseadas em concorrentes.
+
+4. **Construir primeiro o núcleo funcional**, sem esperar os gates externos para tudo que é reversível: Identity → Professional/Company → taxonomy → opportunities → matching → interesse/aceite → scheduling → check-in/out → scores → earnings/ledger → notifications.
+
+5. Em seguida entram **Matching Engine + Allocation Engine + Preferred/Network/Open Pools + Work Passport + Workforce Planner + Company Score + Reliability Score causal**, sempre mantendo LLM fora da decisão crítica isolada.
+
+6. Depois fazemos **pagamentos reais, Trust & Safety, compliance e integrações**, somente fechando comportamentos irreversíveis depois dos respectivos gates.
+
+7. Finalmente: E2E, segurança, performance, auditoria adversarial, aplicativo mobile, web empresarial, Railway, observabilidade e **Production Truth Gate**. Só então alguma funcionalidade recebe status `CONCLUÍDO`.
+
+O ponto importante é que **não precisamos esperar advogado, PSP ou todas as decisões externas para começar a programar**. A própria governança permite desenvolver infraestrutura neutra, interfaces e componentes reversíveis enquanto os gates permanecem abertos.
+
+Portanto, **o próximo trabalho concreto é criar o Requirements Ledger + ADR-MT-001 e iniciar a estrutura real do monorepo no GitHub**. É daí que eu continuaria agora.
+
+### USUÁRIO
+não esperar nenhum advogado fazer o aplicativo sem verificar advogados
+
+### ASSISTENTE
+Certo. Vamos ajustar a execução do **MLIVRETRABALHO**:
+
+**não vamos esperar advogado para desenvolver o aplicativo.** O desenvolvimento pode continuar normalmente.
+
+Isso significa que podemos implementar agora mobile, web, backend, banco, autenticação, perfis, empresas, oportunidades, matching, Allocation Engine, agenda, check-in/out, Work Passport, scores, notificações, pools, ledger, UX e toda a infraestrutura.
+
+O `LEGAL-ARCH` deixa de ser um bloqueio para **desenvolvimento**. As questões jurídicas que ainda não estiverem verificadas serão tratadas como requisitos técnicos configuráveis/reversíveis, em vez de impedir a construção. Isso evita que uma interpretação jurídica provisória fique codificada de forma difícil de alterar.
+
+A distinção que manteria é simples: **construir o aplicativo não depende de advogado; afirmar conformidade jurídica definitiva é outra coisa.** Podemos construir e testar o produto completo sem essa validação.
+
+Portanto, o caminho agora é:
+
+**Requirements Ledger → ADRs técnicos → monorepo → banco → backend → mobile → web → motores de IA/alocação → pagamentos/ledger → Trust & Safety → testes → Railway → Production Truth Gate.**
+
+E não vou colocar “aguardando advogado” como motivo para interromper o desenvolvimento.
+
+### USUÁRIO
+esqueça as questões juridicas
+
+### ASSISTENTE
+Certo. Para o desenvolvimento do **MLIVRETRABALHO**, vou deixar as questões jurídicas fora do caminho crítico.
+
+Vamos concentrar o trabalho em **produto, UX, arquitetura, código, banco de dados, mobile, web, IA, matching/alocação, pagamentos, segurança, testes, GitHub e deploy**.
+
+Não vou parar a construção esperando análise jurídica. Quando alguma decisão técnica tiver implicações jurídicas, ela pode continuar configurável para não amarrar a arquitetura, mas isso não interromperá o desenvolvimento.
+
+O próximo passo é partir para a **estrutura real do projeto e implementação no GitHub**.
+
+### USUÁRIO
+gravar todas as conversas no documento no github qual foi mesmo o documento que foi acriado
+
+### ASSISTENTE
+Sim. Criamos **dois registros de conversa**, porque agora existem dois períodos:
+
+- `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-20.md` — este é o documento que devemos **continuar alimentando com todas as conversas atuais do projeto**, preservando literalmente o que for escrito.
+- `docs/conversas/REGISTRO_HISTORICO_CONSOLIDADO_PRE_2026-09-20.md` — guarda o histórico anterior recuperado do PDF antigo. Ele é histórico e não deve ser usado para acrescentar as conversas novas.
+
+Portanto, daqui para frente, o documento principal para registrar **tudo o que conversarmos sobre o MLIVRETRABALHO** é:
+
+**`REGISTRO_INTEGRAL_CONTINUACAO_2026-09-20.md`**
+
+E a regra permanece: **não resumir, não reescrever e não omitir** quando tivermos o texto original da conversa.
+
+### USUÁRIO
+então registrar no documento tudo que conversamos aqui
