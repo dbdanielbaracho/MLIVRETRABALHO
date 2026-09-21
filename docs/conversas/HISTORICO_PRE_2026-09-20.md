@@ -1,18 +1,26 @@
 # Histórico de conversas anterior a 20/09/2026
 
+> **COBERTURA HISTÓRICA PARCIAL — FONTE CONSOLIDADA PERSISTIDA**
+
+## Material histórico agora persistido
+
+A conversão integral em Markdown do antigo `AI_Workforce_Network_Registro_Consolidado_da_Conversa.pdf` está agora persistida neste repositório em:
+
+`docs/conversas/REGISTRO_HISTORICO_CONSOLIDADO_PRE_2026-09-20.md`
+
+Esse arquivo preserva o conteúdo do PDF de origem e o seu grau original de literalidade. O próprio PDF era um **registro consolidado**: as Seções 1–12 são sínteses de decisões; na Seção 13, as falas do USUÁRIO aparecem como citações diretas, enquanto as respostas do ASSISTENTE já estavam em terceira pessoa/paráfrase no documento original.
+
+Portanto, a persistência desse Markdown elimina a pendência do **artefato consolidado**, mas **não transforma o período anterior em transcrição literal completa das conversas originais**.
+
+## Lacuna que permanece
+
 > **TRECHO HISTÓRICO NÃO DISPONÍVEL LITERALMENTE**
 
-## Escopo da lacuna
+As transcrições originais palavra por palavra das sessões anteriores que não estejam reproduzidas literalmente no registro consolidado continuam indisponíveis. Não reconstruir essas falas por memória, resumo ou inferência.
 
-Antes de 20/09/2026 ocorreram sessões de criação e evolução do projeto, incluindo versões **v0.1 a v1.2 do Documento da Verdade**, revisões adversariais, pesquisa de concorrentes, validações com fontes primárias e decisões de produto, UX, arquitetura, pagamentos, Trust & Safety, jurídico, compliance e governança.
+## Relação com o estado normativo atual
 
-A transcrição literal completa dessas sessões não está atualmente persistida como texto neste repositório.
-
-## Regra
-
-Não reconstruir essas conversas como transcrição literal a partir de memória, resumos ou inferências.
-
-As decisões normativas recuperáveis foram consolidadas em:
+As decisões normativas recuperáveis e atualmente vigentes estão consolidadas em:
 
 `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.4.md`
 
@@ -20,14 +28,10 @@ As evidências recuperáveis são mantidas em:
 
 `docs/evidencias/EVIDENCE_REGISTRY.md`
 
-O registro literal recuperável a partir de 20/09/2026 está em:
+O registro literal recuperável da continuação iniciada em 20/09/2026 está em:
 
 `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-20.md`
 
-## Artefato histórico conhecido
+## Regra de interpretação
 
-Existiu o arquivo `AI_Workforce_Network_Registro_Consolidado_da_Conversa.pdf`, produzido antes da consolidação do repositório MLIVRETRABALHO. Enquanto o binário não estiver efetivamente presente no GitHub, ele deve ser considerado um artefato histórico externo pendente de persistência, e não parte disponível do repositório.
-
-## Objetivo
-
-Este arquivo torna a lacuna histórica explícita para que nenhum colaborador, agente ou conversa futura conclua incorretamente que o histórico literal do GitHub começa com a criação do projeto.
+Nenhum colaborador, agente ou conversa futura deve tratar o Markdown histórico convertido como uma transcrição mais literal do que o PDF de origem. Quando houver diferença entre histórico consolidado e estado normativo atual, o Documento da Verdade vigente define o requisito atual; código, testes e produção demonstram o que efetivamente existe.
