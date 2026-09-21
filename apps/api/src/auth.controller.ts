@@ -3,6 +3,7 @@ import { createHash, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto
 
 type Identity={id:string;email:string;passwordHash:string};
 const identities:Identity[]=[]; const sessions=new Map<string,string>();
+// CI trigger: auth baseline remains intentionally in-memory until persistent repository integration.
 const hashPassword=(password:string)=>scryptSync(password,'mlivretrabalho-v0',64).toString('hex');
 const tokenHash=(token:string)=>createHash('sha256').update(token).digest('hex');
 
