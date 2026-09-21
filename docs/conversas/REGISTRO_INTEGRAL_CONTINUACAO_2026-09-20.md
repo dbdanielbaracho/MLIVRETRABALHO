@@ -226,3 +226,51 @@ Portanto, **não foi uma decisão de arquitetura manter o GitHub resumido**. Foi
 
 ### USUÁRIO
 então consertar e fazer isto os arquivos devem estar colocado na integra
+
+---
+
+## RETOMADA E IMPLEMENTAÇÃO — 20/09/2026 23:14 (America/Sao_Paulo)
+
+### USUÁRIO
+continuar o projeto novametne
+
+### ASSISTENTE
+Vou retomar do ponto exato em que o projeto ficou, conferir o estado real no GitHub e seguir com o próximo bloco de trabalho — incluindo documentação e registro da conversa, sem recomeçar do zero.
+
+### ASSISTENTE
+O repositório está consistente: o histórico anterior foi persistido e o `Documento da Verdade v1.4` está completo. O próximo bloqueio técnico explícito no próprio documento é **ADR-MT-001 (multi-tenancy)**; sem ele, o schema definitivo não deve ser congelado. Vou fechar esse gate primeiro e deixar a decisão registrada no GitHub.
+
+### ASSISTENTE
+A decisão de tenancy já foi registrada e o Evidence Registry foi atualizado com fontes técnicas verificadas. A escolha ficou em **pool + `tenant_id` + PostgreSQL RLS**, com `FORCE RLS`, role runtime sem bypass, contexto por transação e testes cross-tenant obrigatórios; schema-per-tenant e banco dedicado ficam como opções enterprise futuras, não como padrão.
+
+### ASSISTENTE
+Com o gate de tenancy fechado, já não precisamos ficar apenas em documentação. O próximo avanço seguro é iniciar a base executável do produto: **monorepo + API + schema inicial + testes de isolamento + CI**, sem entrar ainda nos fluxos bloqueados por LEGAL-ARCH/FIN-RISK/TRUST-ARCH.
+
+### ASSISTENTE
+A base executável já começou numa branch própria (`feat/foundation-v0.1`): workspace pnpm/Turborepo criado. Agora estou montando a API e, principalmente, o primeiro teste que deve **falhar se houver vazamento entre empresas** — isso transforma a decisão de RLS em evidência testável, não só documentação.
+
+### ASSISTENTE
+A primeira migration agora também existe: `tenants`, `tenant_memberships` e um domínio inicial `company_jobs`, com RLS + `FORCE RLS` nos dados tenant-owned. O próximo passo desta mesma execução é provar as negativas: Tenant A não pode ler, alterar, excluir ou inserir dados como Tenant B.
+
+### ASSISTENTE
+O bloco inicial já está amarrado ao **Requirements Ledger**: monorepo, API/readiness, role de banco sem bypass, migration RLS e CI têm IDs e estado explícito. Ainda não vou chamar isso de “pronto”: agora precisa passar pelo GitHub Actions com PostgreSQL real no CI.
+
+### ASSISTENTE
+O CI realmente iniciou no PR #1 e está subindo PostgreSQL 17. Assim que os checks terminarem, eu corrijo qualquer falha no próprio branch antes do merge; não vou pular o gate.
+
+### ASSISTENTE
+Até aqui o CI passou **instalação, typecheck e build**. Falta apenas o estágio de testes com PostgreSQL/RLS; esse é o check mais importante deste PR porque valida o isolamento real entre tenants.
+
+### ASSISTENTE
+Retomada executada e o projeto avançou de documentação para implementação real.
+
+- **ADR-MT-001 fechado:** multi-tenancy definido como `tenant_id` + PostgreSQL RLS, com `FORCE RLS`, role runtime sem bypass e testes cross-tenant.
+- **Documento da Verdade v1.5** publicado e README atualizado.
+- **Foundation v0.1** criada: pnpm/Turborepo, API NestJS + Fastify, `/v1/health/ready`, migration inicial de tenancy, role `app_runtime`, testes RLS e GitHub Actions.
+- **PR #1 foi aprovado pelo CI e mesclado** em `main`; o CI passou typecheck, build e os testes com PostgreSQL 17.
+- **Merge SHA:** `77fdcad7bf903c1d0b8e987270f496baa58b82d8`.
+- O **Requirements Ledger** e a evidência `SEC-001_RLS_BASELINE_2026-09-20.md` foram atualizados.
+
+O que ainda não está “terminado”: `SEC-001` tem baseline implementada e CI verde, mas ainda precisa integração real API→PostgreSQL com contexto de tenant por transação, autenticação/membership, E2E, deploy e Production Truth Gate. `LEGAL-ARCH`, `FIN-RISK` e `TRUST-ARCH` continuam abertos nos comportamentos que dependem deles.
+
+O **Registro Integral da Conversa** foi atualizado com esta retomada. O próximo ponto de execução ficou claramente definido: ligar a API ao PostgreSQL de forma tenant-safe e provar o isolamento também via requisições HTTP.
