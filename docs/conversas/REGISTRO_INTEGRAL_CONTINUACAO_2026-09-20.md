@@ -1058,3 +1058,81 @@ Assim, quando aparecer **🟢 EXECUTANDO AGORA**, você sabe que naquele turno e
 
 ### USUÁRIO
 continuar o projeto
+
+
+### ASSISTENTE
+Porque este chat funciona em **turnos**, e isso cria uma limitação que eu não consigo remover.
+
+Quando você escreve **“continuar”**, começa um turno. Durante esse turno eu consigo abrir o GitHub, verificar CI, modificar código, criar commits, fazer merge, criar outro PR e executar várias outras ações. Foi exatamente o que fiz: terminei o PR #8 e comecei o #9.
+
+Mas quando eu **envio a resposta final**, o sistema encerra meu turno. A partir desse momento eu **não tenho permissão para continuar chamando as ferramentas sozinho**. Eu não consigo, por exemplo, esperar 2 minutos, voltar ao GitHub, verificar o CI do #9 e continuar programando sem uma nova execução ser iniciada.
+
+Portanto, o problema **não é que eu decidi parar**, nem que o projeto chegou a um bloqueio. É uma limitação operacional deste modo de Chat.
+
+Há uma diferença importante: eu poderia ficar fazendo **mais etapas dentro de cada turno antes de responder**. É isso que devo melhorar. Em vez de fazer 2 ou 3 operações e já mandar um relatório, devo aproveitar o turno para avançar o máximo que as ferramentas permitirem e responder somente quando existir um bloqueio externo real ou o turno precisar terminar.
+
+Neste momento concreto:
+
+> **🔴 EU:** não estou executando, porque minha resposta anterior encerrou o turno.  
+> **PROJETO:** não está bloqueado.  
+> **PONTO EXATO:** PR #9 — identidade ↔ empresa/tenant.  
+> **PRÓXIMO:** CI #9 → correções se necessárias → merge → PostgreSQL para trabalhos/interesses → autenticação mobile → restante da jornada.
+
+Então, quando você manda **“continuar”**, eu devo interpretar como: **execute o máximo possível neste turno, não pare voluntariamente apenas para me contar cada pequena etapa.** É assim que vou conduzir o projeto.
+
+### USUÁRIO
+como resolver isto e não parar toda hora
+
+### ASSISTENTE
+Dá para melhorar bastante, mas **não dá para eliminar essa limitação dentro do Chat comum**: quando eu envio a resposta final, meu turno termina e eu não continuo usando GitHub e outras ferramentas sozinho.
+
+Para o seu objetivo — **“pegue o MLIVRETRABALHO e continue trabalhando até concluir, sem eu precisar escrever continuar toda hora”** — a solução apropriada é usar **ChatGPT Work**. No Work, a tarefa pode ser entregue como um trabalho mais longo, com navegação e execução de várias etapas, em vez desse ciclo curto de mensagem → ferramentas → resposta → parada.
+
+Como você já teve o problema de o Work pedir crédito, temos duas alternativas práticas:
+
+1. **Continuar aqui no Chat:** eu mudo meu comportamento e faço sessões muito maiores. Quando você disser “continuar”, eu não paro para reportar cada PR. Posso encadear PR #9 → CI → correção → merge → próxima implementação → testes → próximo PR, enquanto o turno e as ferramentas permitirem. Só respondo quando realmente precisar encerrar. Isso reduz bastante essas paradas, embora não as elimine.
+
+2. **Voltar ao Work quando estiver disponível para você:** é a opção mais adequada para entregar o projeto inteiro como uma tarefa longa. O Work foi projetado justamente para trabalhos substanciais e multietapas.
+
+Para **agora**, como você quer continuar no Chat, vou adotar a opção 1 como regra do projeto: **cada “continuar” significa executar o máximo possível, encadeando etapas e evitando respostas intermediárias desnecessárias.**
+
+E quando eu finalmente precisar devolver o controle, vou mostrar somente:
+
+> 🔴 **EXECUÇÃO ENCERRADA PELO CHAT**  
+> **Não parei por decisão de projeto.**  
+> **Último ponto concluído:** X  
+> **Retomar exatamente em:** Y
+
+Assim distinguimos uma parada técnica do projeto de uma limitação do próprio Chat.
+
+### USUÁRIO
+o que devo passar para voce qual é prompt para voce continuar e não parar mais
+
+### ASSISTENTE
+Use este prompt. Ele deixa sua instrução o mais clara possível, embora **nenhum prompt consiga fazer o Chat comum continuar executando ferramentas depois que o turno termina**.
+
+[Foi fornecido ao usuário o prompt de execução contínua do MLIVRETRABALHO, preservado literalmente na mensagem seguinte do usuário.]
+
+Você **não precisa colar tudo isso todas as vezes**. Nesta conversa, pode simplesmente escrever **“EXECUÇÃO CONTÍNUA”** e vou interpretar como essa instrução completa.
+
+### USUÁRIO
+Continue executando o projeto MLIVRETRABALHO a partir exatamente do último ponto registrado no GitHub.
+
+Não pare voluntariamente para me dar atualizações intermediárias, pedir confirmação ou perguntar se deve continuar.
+
+Dentro deste turno, execute o máximo de trabalho possível de forma contínua:
+verifique o estado atual → execute a próxima tarefa → teste → corrija os erros → teste novamente → faça merge somente quando estiver validado → inicie imediatamente a próxima etapa → continue repetindo esse processo.
+
+Não reduza o escopo, a qualidade, a segurança, a arquitetura, os testes, a experiência mobile ou as funcionalidades para terminar mais rápido.
+
+Use o Documento da Verdade, Requirements Ledger, ADRs, Evidence Registry, código, testes e demais documentos oficiais do projeto como fonte de verdade.
+
+Continue registrando integralmente no arquivo de conversa do GitHub tudo o que conversarmos sobre o projeto, conforme já definido.
+
+Não considere um PR aprovado apenas porque o código foi escrito. Verifique CI, testes e evidências. Não considere o projeto concluído enquanto não cumprir o Definition of Done e o Production Truth Gate definidos no projeto.
+
+Não pare apenas porque terminou um PR. Depois do merge, comece imediatamente a próxima etapa.
+
+Se encontrar um erro, investigue e tente corrigi-lo em vez de parar para me informar.
+
+Se uma tarefa estiver bloqueada por um serviço externo, credencial ou ação que realmente dependa de mim, continue executando todas as outras tarefas independentes que puder.
