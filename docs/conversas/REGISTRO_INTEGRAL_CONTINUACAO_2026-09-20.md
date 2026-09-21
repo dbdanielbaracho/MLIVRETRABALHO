@@ -669,3 +669,20 @@ Daqui para frente, para este projeto, a regra é: **todas as mensagens do usuár
 
 ### USUÁRIO
 tudo que conversarmos no chat
+
+
+### ASSISTENTE
+Exatamente. **Tudo que conversarmos neste chat sobre o projeto MLIVRETRABALHO**, linha por linha:
+
+**suas mensagens + minhas respostas**, sem resumir, sem selecionar apenas decisões e sem omitir partes.
+
+Tudo será acrescentado ao mesmo documento:
+
+`docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-20.md`
+
+Inclusive sua mensagem **“tudo que conversarmos no chat”** já foi registrada.
+
+**Commit:** `a64e59c98576c0986190fd1cc5677eb12b710d36`
+
+### USUÁRIO
+comece a executar todo o projeto usaremos o Claude no final para avaliar tudo  ou melhor se você precisar do Claude para ajudar validar alguma coisa ok passo para ele., mas novamente como voce vai construir o projeto quais serão suas fontes
