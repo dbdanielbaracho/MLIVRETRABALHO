@@ -1136,3 +1136,64 @@ Não pare apenas porque terminou um PR. Depois do merge, comece imediatamente a 
 Se encontrar um erro, investigue e tente corrigi-lo em vez de parar para me informar.
 
 Se uma tarefa estiver bloqueada por um serviço externo, credencial ou ação que realmente dependa de mim, continue executando todas as outras tarefas independentes que puder.
+
+
+### ASSISTENTE
+Use este. Ele é mais direto e inclui explicitamente a regra de **não encerrar o turno prematuramente**:
+
+[Foi fornecido o prompt completo “EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO”; a mensagem seguinte do usuário preserva literalmente o conteúdo completo.]
+
+Depois disso, nas próximas vezes você pode simplesmente escrever **“EXECUÇÃO CONTÍNUA MÁXIMA”**. Eu vou tratar isso como a instrução completa acima.
+
+Isso faz com que eu **evite encerrar o turno enquanto ainda consigo realizar trabalho útil**, mas não consegue remover a limitação técnica do Chat que encerra a execução depois que uma resposta final é enviada.
+
+### USUÁRIO
+EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO
+
+Continue o projeto MLIVRETRABALHO exatamente do ponto atual no GitHub.
+
+IMPORTANTE: NÃO encerre voluntariamente este turno para me apresentar status, progresso ou atualizações intermediárias.
+
+Enquanto as ferramentas permitirem continuar trabalhando, continue executando.
+
+Siga continuamente este ciclo:
+
+VERIFICAR ESTADO ATUAL → EXECUTAR → TESTAR → ANALISAR RESULTADO → CORRIGIR → TESTAR NOVAMENTE → MERGE QUANDO VALIDADO → INICIAR IMEDIATAMENTE A PRÓXIMA ETAPA → REPETIR.
+
+Não pare depois de criar um PR.
+Não pare apenas porque o CI está executando se houver outras tarefas independentes que possam ser realizadas.
+Não pare depois de um merge.
+Não pare depois de concluir uma funcionalidade.
+Não peça minha autorização para passar para a próxima etapa.
+Não envie relatórios intermediários se ainda houver trabalho que possa ser executado neste turno.
+
+Se encontrar erro, investigue, corrija e teste novamente.
+
+Se uma tarefa estiver bloqueada por serviço externo, credencial ou dependência, continue todas as outras tarefas que não dependam desse bloqueio.
+
+Mantenha o escopo completo do projeto. Não reduza qualidade, segurança, arquitetura, funcionalidades, testes ou experiência mobile para avançar mais rápido.
+
+Use como fontes de verdade o Documento da Verdade, Requirements Ledger, ADRs, Evidence Registry, código, testes e documentação oficial do projeto.
+
+Continue registrando integralmente no documento de conversa do GitHub todas as mensagens do usuário e do assistente relacionadas ao projeto.
+
+Continue trabalhando durante este turno pelo máximo de etapas que o ambiente permitir.
+
+Só envie a resposta final quando:
+
+1. não for tecnicamente possível executar mais ações neste turno; ou
+2. todas as próximas tarefas possíveis estiverem realmente bloqueadas por algo externo que dependa de mim; ou
+3. todo o projeto estiver implementado, testado, integrado, implantado e aprovado pelo Production Truth Gate.
+
+Antes de considerar o projeto concluído, verifique todos os requisitos, testes, CI, segurança, integrações, deploy e Production Truth Gate.
+
+Quando for realmente necessário encerrar o turno, informe exatamente:
+
+- o que foi concluído;
+- onde a execução parou;
+- por que não foi possível continuar dentro do mesmo turno;
+- a próxima ação exata para retomada.
+
+Não diga que continuará trabalhando depois da resposta final, pois não existe execução de ferramentas em segundo plano.
+
+COMECE A EXECUÇÃO AGORA. NÃO RESPONDA APENAS COM STATUS. EXECUTE O PROJETO.
