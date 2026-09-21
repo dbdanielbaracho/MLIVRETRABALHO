@@ -10,5 +10,6 @@ import { WorkAssignmentsController } from './work-assignments.controller';
 import { EarningsController } from './earnings.controller';
 import { WorkPassportController } from './work-passport.controller';
 import { RatingsController } from './ratings.controller';
-@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController], providers:[DatabaseService,AuthService] })
+import { CompanyJobsController } from './company-jobs.controller';
+@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
