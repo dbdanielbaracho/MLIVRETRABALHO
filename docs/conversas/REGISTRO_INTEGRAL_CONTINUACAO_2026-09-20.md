@@ -820,3 +820,18 @@ Uma limitação importante: eu consigo executar várias etapas consecutivamente 
 
 ### USUÁRIO
 ok continuar entao
+
+
+### ASSISTENTE
+Continuei a execução.
+
+O **PR #4 passou no CI** (`run 35560404669`, `success`) e já foi incorporado à `main`. Merge: `a1ae001eb5290d1416f7f8970e15b0b9d2a9b382`.
+
+Em seguida já iniciei o próximo bloco e abri o **PR #5**, adicionando ao aplicativo principal do profissional: **Ganhos**, **Perfil**, **Agenda/Próximo trabalho**, navegação entre as áreas principais, rastreabilidade `MOB-004/005/006` no Requirements Ledger e evidência técnica específica da entrega.
+
+Também continuei atualizando o nosso registro integral da conversa. Último commit documental: `216f0d80f65dd4794c03162eed39aa7174e7a79d`.
+
+O PR #5 ainda não será considerado concluído até o CI passar. Depois dele, a sequência continua para **identidade/perfil real → confirmação → agenda real → check-in/out → conclusão → ganhos/ledger → avaliação → Work Passport**, além da jornada da empresa e dos motores posteriores.
+
+### USUÁRIO
+status
