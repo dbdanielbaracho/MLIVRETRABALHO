@@ -29,3 +29,7 @@ Rastreabilidade obrigatória:
 | MOB-002 | Navegação profissional Início / Trabalhos / Ganhos / Perfil | IN PROGRESS | UX mobile-first | `apps/mobile/app/` | Início + Trabalhos baseline; tabs completas pendentes |
 | MOB-003 | Interesse em oportunidade em 1 ação | BASELINE UI / API PENDENTE | Friction Gate | `apps/mobile/app/trabalhos.tsx` | integração API/E2E pendente |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
+
+| MOB-004 | Ganhos acessíveis em 1 ação | BASELINE UI / DATA PENDENTE | Friction Gate | `apps/mobile/app/ganhos.tsx` | CI + integração financeira pendentes |
+| MOB-005 | Perfil profissional mobile | BASELINE UI / DATA PENDENTE | Jornada profissional | `apps/mobile/app/perfil.tsx` | identidade/profile API pendentes |
+| MOB-006 | Próximo trabalho/agenda mobile | BASELINE UI / DATA PENDENTE | Jornada profissional | `apps/mobile/app/agenda.tsx` | confirmação/check-in pendentes |
