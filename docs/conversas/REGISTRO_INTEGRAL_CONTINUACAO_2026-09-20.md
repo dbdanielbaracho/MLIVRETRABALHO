@@ -1322,3 +1322,27 @@ Não há bloqueio externo neste ponto.
 
 ### USUÁRIO
 continuar
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Os **PRs #21, #22 e #23 passaram integralmente no CI e foram incorporados ao `main`**. Com isso, a jornada já conecta **trabalho concluído → registro financeiro idempotente → API de Ganhos → Ganhos reais no aplicativo**, além da fundação persistente das avaliações verificadas.
+
+Avancei também para o **Work Passport real**. O **PR #24** cria uma API autenticada que calcula o histórico exclusivamente a partir de trabalhos concluídos e avaliações vinculadas a trabalhos reais: quantidade de trabalhos concluídos, média das avaliações, número de avaliações e histórico profissional verificado.
+
+Criei ainda o **PR #25**, que implementa a avaliação do profissional depois de um trabalho concluído, exigindo identidade autenticada, tenant correto e papel empresarial autorizado.
+
+PR #24 — Work Passport verificado
+PR #25 — API de avaliação verificada
+
+Na última consulta, o **CI do #24 estava na fila** e o #25 ainda aguardava o início do CI. O registro integral da conversa também foi atualizado no `main`, commit `ac047166db3e481419fa054041541e936adc05c6`.
+
+**Retomada exata:** validar/corrigir/merge #24/#25 → interface mobile do Work Passport → confirmação/seleção do profissional pela empresa → jornada mobile da empresa → testes E2E e cross-tenant → Matching/Allocation e demais módulos.
+
+Não existe bloqueio externo neste ponto.
+
+### USUÁRIO
+continuar
