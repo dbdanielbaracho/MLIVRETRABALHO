@@ -790,3 +790,17 @@ Vou manter o mesmo processo nos próximos blocos: **implementar → testar → C
 
 ### USUÁRIO
 eu nao quero vai ficar falando para continuar voce tem que continuar até terminar o projeto todo
+
+
+### ASSISTENTE
+Entendido. Não vou ficar esperando você escrever **“continuar”** entre cada etapa.
+
+Já avancei para o próximo bloco: criei a **API de oportunidades**, conectei a tela mobile de **Trabalhos** à API e implementei a primeira ação **“Quero trabalhar”**. O **PR #3** já está aberto para CI e validação.
+
+Também registrei integralmente esta nova conversa no documento de memória. **Commit:** `2219df6e5defdf3ce27dd50926abe957af7b71df`.
+
+Vou seguir a sequência **construir → testar → corrigir → CI → merge → evidenciar → próxima etapa**, sem exigir que você autorize cada bloco. Quando houver uma dependência que realmente exija uma ação sua — por exemplo, credencial externa — eu identificarei especificamente o bloqueio.
+
+### USUÁRIO
+nao esqueça de grava no documento nossa conversa no chat para não se perder tudo que tiver aqui gravar.
+porque voce está parando , já pedi para voce continuar até o final do projeto
