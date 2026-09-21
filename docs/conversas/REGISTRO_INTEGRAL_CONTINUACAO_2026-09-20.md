@@ -852,3 +852,25 @@ E o documento de memória continua sendo atualizado. Registrei também seu pedid
 
 ### USUÁRIO
 continuar até o final do projeto
+
+
+### ASSISTENTE
+Continuando a execução.
+
+Já avancei para o **PR #6 — Identity v0.6**, com:
+
+- schema de `identities` e `sessions`;
+- endpoint de criação de conta;
+- endpoint de login;
+- hashing inicial de senha;
+- geração de sessão/token;
+- tela mobile **Criar conta**;
+- tela mobile **Entrar**;
+- validação da nova migration incorporada ao CI.
+
+O PR ainda está em validação, portanto não estou classificando identidade como concluída. Depois do CI, a implementação precisa evoluir da fundação atual para persistência real no PostgreSQL, autenticação das requisições, associação profissional/empresa, perfil real e então continuar a jornada operacional.
+
+Também gravei novamente a conversa no nosso documento permanente de memória. **Commit:** `572893deed555002c82ee54fd9e9167ff0b42666`.
+
+### USUÁRIO
+continuar até o final do projeto e nao parar mais
