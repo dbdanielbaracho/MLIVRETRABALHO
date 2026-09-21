@@ -652,3 +652,20 @@ O objetivo final não é simplesmente “ter 50 etapas concluídas”. É chegar
 
 ### USUÁRIO
 não esqueça sempre de registrar a nossa conversa aqui no documento já especificado para colocar as conversar do chat, novamente todas as conversar aqui tem que estarem no documento nao pode deixar nenhuma linha
+
+
+### ASSISTENTE
+Sim. Essa regra fica permanente para o **MLIVRETRABALHO**.
+
+Acabei de atualizar novamente:
+
+`docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-20.md`
+
+Registrei as conversas recentes, incluindo as respostas completas sobre as etapas do projeto, prioridade absoluta do aplicativo mobile, origem/comparações do layout e o plano de 50 etapas.
+
+**Commit:** `cefe54db91f370b3fe4e469dddaad09c693d3e79`
+
+Daqui para frente, para este projeto, a regra é: **todas as mensagens do usuário + todas as minhas respostas devem entrar nesse Registro Integral, sem resumir e sem omitir linhas.**
+
+### USUÁRIO
+tudo que conversarmos no chat
