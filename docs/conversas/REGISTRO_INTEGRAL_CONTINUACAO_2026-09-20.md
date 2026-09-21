@@ -964,3 +964,26 @@ Assim fica explícito quando **eu** estou executando, quando é um sistema exter
 
 ### USUÁRIO
 continuar entao até o final do projeto todo
+
+
+### ASSISTENTE
+**ETAPA ATUAL:** PR #6 — cadastro e login persistente.
+
+O novo CI falhou novamente. Eu abri os logs e encontrei que a migration de identidade ainda estava tentando usar o socket local do PostgreSQL porque `DATABASE_URL` não estava disponível naquele processo.
+
+**Já fiz outra correção**, agora com uma URL PostgreSQL explícita de fallback para o ambiente de CI.
+
+Novo commit técnico: `01085d1a429316057af58ab1b162750f435375c3`
+
+Também gravei integralmente sua mensagem e minha resposta anterior no documento de conversa. Commit: `57617e7e9aad80d79222e2f82b027ce955110920`.
+
+**EU:** 🔴 não executando depois que esta resposta for enviada.  
+**GITHUB:** 🟡 deve validar o novo commit automaticamente.  
+**ÚLTIMA AÇÃO:** corrigi novamente o teste PostgreSQL do PR #6.  
+**PRÓXIMA AÇÃO:** CI verde → merge #6 → persistência PostgreSQL real → autenticação protegida → continuar a jornada completa.  
+**PROJETO:** 🟠 em desenvolvimento, ainda longe de concluído.
+
+**IMPORTANTE:** quando minha execução parar, como acontecerá após esta mensagem, vou informar explicitamente como acima. Não vou dizer que estou “continuando” enquanto nenhuma ferramenta estiver realmente executando.
+
+### USUÁRIO
+continuar
