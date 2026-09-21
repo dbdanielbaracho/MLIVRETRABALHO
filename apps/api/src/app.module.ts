@@ -14,6 +14,7 @@ import { CompanyJobsController } from './company-jobs.controller';
 import { CompanyDashboardController } from './company-dashboard.controller';
 import { AvailabilityController } from './availability.controller';
 import { ReplacementController } from './replacement.controller';
+import { TeamsController } from './teams.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
 @Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController, CompanyJobCreateController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
