@@ -1630,3 +1630,7 @@ Continuar e seguir as regras ja definida
 
 ### ASSISTENTE
 [Continuação da execução: #73, #75 e #76 estavam CI verde e foram incorporados. #77 criado para Replacement com disponibilidade e Reliability reais, CI verde e incorporado. #78 team allocation preview com disponibilidade real, CI verde e incorporado. #79 webhook financeiro provider-agnostic ficou verde mas conflitou após merges e foi reconstruído como #82. #80 criado para recomendação automática segura de substituto mantendo confirmação humana. #81 criado para Talent Pools no mobile empresa. Sem respostas intermediárias.]
+
+
+### ASSISTENTE
+[Execução contínua adicional: #80 CI falhou por uso incorreto do shape retornado por rankCandidates; log inspecionado e corrigido, novo CI em execução. #81 Talent Pools mobile ficou verde e foi incorporado. #82 webhook financeiro reconstruído ficou verde e foi incorporado. #83 criado para operações mobile de Replacement e recomendação em um toque; CI disparado. Registro mantido sem atualizações intermediárias.]
