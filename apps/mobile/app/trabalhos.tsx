@@ -1,18 +1,8 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-
-export default function Trabalhos() {
-  return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Trabalhos para você</Text>
-        <View style={styles.card}>
-          <Text style={styles.role}>Garçom</Text>
-          <Text style={styles.meta}>Hoje · 18:00–23:00</Text>
-          <Text style={styles.meta}>Local e valor aparecem aqui quando a API estiver conectada.</Text>
-          <Text style={styles.action}>Quero trabalhar</Text>
-        </View>
-      </View>
-    </SafeAreaView>
-  );
-}
-const styles=StyleSheet.create({screen:{flex:1,backgroundColor:'#fff'},content:{padding:24,gap:20},title:{fontSize:30,fontWeight:'800'},card:{padding:20,borderWidth:1,borderRadius:16,gap:10},role:{fontSize:24,fontWeight:'800'},meta:{fontSize:16},action:{fontSize:18,fontWeight:'800',marginTop:8}});
+import { useEffect, useState } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { authenticatedTenantHeaders } from '../lib/session';
+import { bootstrapTenant } from '../lib/bootstrap';
+const API='http://localhost:3000/v1';
+type Job={id:string;title:string;startsAt?:string;endsAt?:string;location?:string;payCents?:number};
+export default function Trabalhos(){const [jobs,setJobs]=useState<Job[]>([]),[message,setMessage]=useState('');useEffect(()=>{void load();},[]);async function headers(){let h=await authenticatedTenantHeaders();if(!h['x-tenant-id']){await bootstrapTenant();h=await authenticatedTenantHeaders();}return h;}async function load(){const h=await headers();const r=await fetch(`${API}/jobs`,{headers:h});if(r.ok)setJobs(await r.json());else setMessage('Entre e complete seu acesso para ver trabalhos.');}async function interest(id:string){const h=await headers();const r=await fetch(`${API}/jobs/${id}/interest`,{method:'POST',headers:h});setMessage(r.ok?'Interesse enviado':'Não foi possível enviar o interesse');}return <SafeAreaView style={s.screen}><View style={s.content}><Text style={s.title}>Trabalhos para você</Text>{jobs.map(j=><View key={j.id} style={s.card}><Text style={s.role}>{j.title}</Text><Text>{j.location??'Local a confirmar'}</Text><Text>{j.payCents!=null?`R$ ${(j.payCents/100).toFixed(2)}`:'Valor a confirmar'}</Text><Pressable onPress={()=>interest(j.id)}><Text style={s.action}>Quero trabalhar</Text></Pressable></View>)}<Text>{message}</Text></View></SafeAreaView>}
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#fff'},content:{padding:24,gap:20},title:{fontSize:30,fontWeight:'800'},card:{padding:20,borderWidth:1,borderRadius:16,gap:10},role:{fontSize:24,fontWeight:'800'},action:{fontSize:18,fontWeight:'800',marginTop:8}});
