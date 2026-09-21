@@ -8,5 +8,6 @@ import { AuthService } from './auth.service';
 import { ProfessionalProfileController } from './professional-profile.controller';
 import { WorkAssignmentsController } from './work-assignments.controller';
 import { EarningsController } from './earnings.controller';
-@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController], providers:[DatabaseService,AuthService] })
+import { RatingsController } from './ratings.controller';
+@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, RatingsController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
