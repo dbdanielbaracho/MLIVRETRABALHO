@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "pnpm exec tsc src/matching.ts src/matching.test.ts src/allocation.ts src/allocation.test.ts --module commonjs --target es2022 --esModuleInterop --skipLibCheck --outDir .test-dist && node --test .test-dist/*.test.js",
+    "test": "pnpm exec tsc src/matching.ts src/matching.test.ts src/allocation.ts src/allocation.test.ts src/reliability-score.ts src/reliability-score.test.ts --module commonjs --target es2022 --esModuleInterop --skipLibCheck --outDir .test-dist && node --test .test-dist/*.test.js",
     "start": "node dist/main.js"
   },
   "dependencies": {
