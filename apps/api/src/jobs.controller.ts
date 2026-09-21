@@ -1,32 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-
-type Job = { id:string; title:string; startsAt:string; endsAt:string; location:string; payCents:number; status:'open'|'confirmed' };
-type Interest = { jobId:string; professionalId:string; status:'interested'|'confirmed' };
-
-const jobs: Job[] = [
-  { id:'job-demo-1', title:'Garçom', startsAt:'2026-09-21T18:00:00-03:00', endsAt:'2026-09-21T23:00:00-03:00', location:'São Paulo', payCents:15000, status:'open' },
-];
-const interests: Interest[] = [];
-
+import { Controller, Get, Headers, NotFoundException, Param, Post } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { DatabaseService } from './database.service';
 @Controller('jobs')
 export class JobsController {
-  @Get()
-  list(): Job[] { return jobs.filter((job)=>job.status==='open'); }
-
-  @Post(':jobId/interest')
-  expressInterest(@Param('jobId') jobId:string, @Body() body:{professionalId?:string}): Interest {
-    const job=jobs.find((item)=>item.id===jobId);
-    if(!job) throw new Error('job_not_found');
-    const professionalId=body.professionalId ?? 'professional-demo';
-    const existing=interests.find((item)=>item.jobId===jobId && item.professionalId===professionalId);
-    if(existing) return existing;
-    const interest:Interest={jobId,professionalId,status:'interested'};
-    interests.push(interest);
-    return interest;
-  }
-
-  @Get(':jobId/interest/:professionalId')
-  getInterest(@Param('jobId') jobId:string,@Param('professionalId') professionalId:string):Interest|null {
-    return interests.find((item)=>item.jobId===jobId && item.professionalId===professionalId) ?? null;
-  }
+ constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
+ private async context(authorization?:string,tenantId?:string){const identity=await this.auth.identityFromAuthorization(authorization);if(!tenantId)throw new NotFoundException('tenant_required');await this.auth.requireMembership(identity.id,tenantId);return {identity,tenantId};}
+ @Get() async list(@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){const c=await this.context(authorization,tenantId);return this.db.tenant(c.tenantId,async db=>(await db.query('SELECT id,title,status,location,starts_at AS "startsAt",ends_at AS "endsAt",pay_cents AS "payCents" FROM company_jobs WHERE status=$1 ORDER BY starts_at NULLS LAST,created_at',['open'])).rows);}
+ @Post(':jobId/interest') async expressInterest(@Param('jobId') jobId:string,@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){const c=await this.context(authorization,tenantId);return this.db.tenant(c.tenantId,async db=>{const p=await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1',[c.identity.id]);const professional=p.rows[0];if(!professional)throw new NotFoundException('professional_profile_required');const j=await db.query<{id:string}>('SELECT id FROM company_jobs WHERE id=$1 AND status=$2',[jobId,'open']);if(!j.rows[0])throw new NotFoundException('job_not_found');const r=await db.query('INSERT INTO job_interests(tenant_id,job_id,professional_id) VALUES($1,$2,$3) ON CONFLICT(job_id,professional_id) DO UPDATE SET status=job_interests.status RETURNING job_id AS "jobId",professional_id AS "professionalId",status',[c.tenantId,jobId,professional.id]);return r.rows[0];});}
+ @Get(':jobId/interest') async getInterest(@Param('jobId') jobId:string,@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){const c=await this.context(authorization,tenantId);return this.db.tenant(c.tenantId,async db=>{const r=await db.query('SELECT ji.job_id AS "jobId",ji.professional_id AS "professionalId",ji.status FROM job_interests ji JOIN professional_profiles p ON p.id=ji.professional_id WHERE ji.job_id=$1 AND p.identity_id=$2',[jobId,c.identity.id]);return r.rows[0]??null;});}
 }
