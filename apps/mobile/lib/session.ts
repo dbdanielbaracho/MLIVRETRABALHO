@@ -9,4 +9,4 @@ const TENANT_KEY='mlivretrabalho.tenantId';
 export const saveTenant=(tenantId:string)=>SecureStore.setItemAsync(TENANT_KEY,tenantId);
 export const getTenant=()=>SecureStore.getItemAsync(TENANT_KEY);
 export const clearTenant=()=>SecureStore.deleteItemAsync(TENANT_KEY);
-export const authenticatedTenantHeaders=async()=>{const [token,tenantId]=await Promise.all([getSession(),getTenant()]);return {...(token?{Authorization:`Bearer ${token}`}:{}),...(tenantId?{'x-tenant-id':tenantId}:{})};};
+export const authenticatedTenantHeaders=async():Promise<Record<string,string>>=>{const [token,tenantId]=await Promise.all([getSession(),getTenant()]);return {...(token?{Authorization:`Bearer ${token}`}:{}),...(tenantId?{'x-tenant-id':tenantId}:{})};};
