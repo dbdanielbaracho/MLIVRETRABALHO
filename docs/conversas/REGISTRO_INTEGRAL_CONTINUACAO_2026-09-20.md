@@ -1274,3 +1274,28 @@ Com esse comando, a próxima execução deve começar verificando **#17 e #18**,
 
 ### USUÁRIO
 EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO. Retome exatamente do último ponto confirmado no GitHub e execute o máximo possível neste turno, sem atualizações intermediárias, sem pedir confirmação e sem parar voluntariamente enquanto houver trabalho executável.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+O **PR #17 passou no CI e foi incorporado ao `main`**, commit `477b4a37ae5ed75d6d9ef571ad911528d767ec44`. A API real agora suporta a jornada autenticada do profissional com **check-in → início → check-out → conclusão**, validando identidade, tenant e transições permitidas.
+
+O **#18 falhou inicialmente** porque o TypeScript mobile não reconhecia `process`. Investiguei o log, corrigi a tipagem do ambiente Expo e disparei novo CI; na última consulta ele estava executando.
+
+Além disso, criei o **PR #19**, conectando **Minha Agenda** ao ciclo operacional real, com botões de uma ação para check-in, início, check-out e conclusão. Também criei o **PR #20**, iniciando a infraestrutura financeira com um **earnings ledger persistente e isolado por tenant**, ligado aos trabalhos realizados.
+
+PR #18 — API configurável no mobile
+PR #19 — Agenda e ciclo de trabalho mobile
+PR #20 — Earnings Ledger
+
+O registro integral foi novamente atualizado no `main`: `b27b694ba577cd7cf15a900ddc32726953a743a7`.
+
+**Próximo ponto exato:** validar/corrigir/merge #18–#20 → fazer a conclusão do trabalho gerar Ganhos de forma idempotente e segura → API de Ganhos → tela Ganhos real → avaliação bilateral → Work Passport → continuar a jornada completa e os módulos restantes.
+
+Não existe execução minha em segundo plano após esta resposta.
+
+### USUÁRIO
+continuar
