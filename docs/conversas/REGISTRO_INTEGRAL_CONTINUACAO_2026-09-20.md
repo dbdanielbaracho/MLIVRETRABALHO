@@ -15,6 +15,22 @@ Para partes históricas cuja transcrição original não esteja disponível no c
 
 Não inventar nem reconstruir uma suposta fala literal a partir de memória/resumo.
 
+## Cobertura histórica e lacuna conhecida
+
+### Sessões anteriores a 20/09/2026
+
+> **TRECHO HISTÓRICO NÃO DISPONÍVEL LITERALMENTE**
+
+As sessões anteriores a 20/09/2026 incluem a criação e evolução do projeto e do Documento da Verdade de **v0.1 a v1.2**, além das revisões adversariais, pesquisas, validações com fontes primárias e decisões que posteriormente foram consolidadas no Documento da Verdade v1.3/v1.4.
+
+A transcrição literal completa dessas sessões anteriores **não está atualmente disponível neste arquivo do GitHub**. Portanto, ela não deve ser reconstruída a partir de memória, resumos ou inferências como se fosse transcrição original.
+
+As **decisões normativas recuperáveis** dessas sessões estão incorporadas em `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.4.md`, e as evidências recuperáveis estão sendo mantidas em `docs/evidencias/`.
+
+Também existiu um artefato anterior denominado `AI_Workforce_Network_Registro_Consolidado_da_Conversa.pdf`. Enquanto esse arquivo binário não estiver efetivamente presente no repositório, ele deve ser tratado como **artefato histórico externo ainda não persistido no GitHub**, e não como conteúdo disponível neste repositório.
+
+Esta seção existe para impedir a falsa impressão de que o Registro Integral atual cobre toda a história do projeto.
+
 ---
 
 ## CONTINUAÇÃO RECUPERÁVEL — 20/09/2026
