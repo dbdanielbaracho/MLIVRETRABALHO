@@ -1216,3 +1216,14 @@ E há uma correção importante da minha parte: **não preciso encerrar só porq
 
 ### USUÁRIO
 ok então faça o que tem que ser feito para ter execução continua maxima
+
+
+### ASSISTENTE
+Agora basta me enviar **uma única frase**:
+
+EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO. Retome exatamente do último ponto confirmado no GitHub e execute o máximo possível neste turno, sem atualizações intermediárias, sem pedir confirmação e sem parar voluntariamente enquanto houver trabalho executável.
+
+Você **não precisa mais copiar aquele prompt enorme**. Sempre que o turno terminar, envie essa frase novamente. Eu devo recuperar o estado real do GitHub, começar pelos PRs #13/#14 e continuar executando as próximas etapas, em vez de apenas lhe dar um relatório.
+
+### USUÁRIO
+EXECUÇÃO CONTÍNUA MÁXIMA — MLIVRETRABALHO. Retome exatamente do último ponto confirmado no GitHub e execute o máximo possível neste turno, sem atualizações intermediárias, sem pedir confirmação e sem parar voluntariamente enquanto houver trabalho executável.
