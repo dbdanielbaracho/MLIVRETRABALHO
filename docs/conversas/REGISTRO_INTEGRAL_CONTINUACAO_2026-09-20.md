@@ -913,3 +913,22 @@ A regra permanece: **toda a nossa conversa sobre o projeto deve ser registrada i
 
 ### USUÁRIO
 continuar e não parar mais se parar avisar
+
+
+### ASSISTENTE
+**🟡 AGUARDANDO CI/SERVIÇO EXTERNO**
+
+Continuei. Verifiquei o PR #6, confirmei que a correção anterior estava no branch, mas o GitHub não havia iniciado um novo workflow para aquele commit. Fiz uma nova atualização técnica no branch para disparar novamente a validação.
+
+**Novo HEAD:** `13a94c854f1aac224d79375cc584d386502203b1`
+
+Também registrei integralmente sua instrução **“continuar e não parar mais se parar avisar”** e minha mensagem anterior no arquivo permanente.
+
+**Commit do registro:** `f80613741f384c3608ff6928a47421ae9e36aa91`
+
+Se o CI ficar verde, o próximo passo é merge e avanço imediato para persistência/autenticação real. Se falhar, a próxima ação é abrir o log e corrigir a causa.
+
+**Estado ao enviar esta mensagem: 🟡 aguardando o GitHub Actions do PR #6; não estou escondendo uma parada.**
+
+### USUÁRIO
+status
