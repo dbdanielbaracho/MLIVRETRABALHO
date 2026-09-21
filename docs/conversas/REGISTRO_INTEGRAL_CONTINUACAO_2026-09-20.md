@@ -748,3 +748,26 @@ A partir daqui, a execução pode continuar no GitHub pelo **Requirements Ledger
 
 ### USUÁRIO
 ok, começar então o projeto e so parar quando terminar
+
+
+### ASSISTENTE
+Comecei a execução efetiva.
+
+Já criei a branch **`feat/mobile-first-v0.2`** e abri o **PR #2 — “Mobile-first v0.2: start primary app journey”**.
+
+Neste primeiro bloco eu já coloquei no repositório a fundação **React Native + Expo + Expo Router**, a tela inicial do profissional, a primeira tela **Trabalhos**, a ação **“Quero trabalhar”**, a navegação conceitual `Início | Trabalhos | Ganhos | Perfil`, o **Plano Mestre de Execução** e novos requisitos `MOB-001`, `MOB-002`, `MOB-003` e `ROADMAP-001` no Requirements Ledger.
+
+Também removi do Requirements Ledger o bloqueio que dizia que precisaríamos esperar revisão jurídica externa para continuar o desenvolvimento, conforme sua decisão anterior. Os controles técnicos de segurança, pagamentos e Trust & Safety permanecem porque são necessários para o funcionamento confiável do produto.
+
+O PR tem neste momento **8 arquivos alterados e 126 linhas adicionadas**. Ainda **não vou fazer merge**, porque o CI do novo commit ainda não apareceu como executado; vou manter nossa regra de não chamar algo de pronto antes da evidência.
+
+E sua instrução desta mensagem também já foi registrada integralmente no documento de conversa. Commit do registro: **`d10f093ce94d9f58af628ade42a80072637bfc85`**.
+
+A execução agora segue pela primeira fatia completa:
+
+**Mobile profissional → identidade/perfil → oportunidades reais da API → Quero/Aceitar → confirmação → agenda → check-in → trabalho → check-out → ganhos → avaliação → Work Passport**, enquanto backend e banco são construídos para sustentar exatamente essa experiência.
+
+Não vou tratar o projeto como concluído antes dos testes, integração, deploy e Production Truth Gate.
+
+### USUÁRIO
+ok continuar até o final não parar mais nao esqueça de registrar no nosso documento tudo que conversamos para manter um documento de memoria
