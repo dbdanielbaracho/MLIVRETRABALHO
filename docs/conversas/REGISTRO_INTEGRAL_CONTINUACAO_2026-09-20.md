@@ -1029,3 +1029,32 @@ Neste momento específico: **🔴 PARADO. O PR #7 está aberto e a próxima exec
 
 ### USUÁRIO
 continuar o projeto até o final sem parar nao parar mais
+
+
+### ASSISTENTE
+Sim. O problema é que, enquanto estou usando as ferramentas, você pode não ter uma indicação suficientemente clara de **qual etapa estou executando**.
+
+A partir de agora, no projeto MLIVRETRABALHO, vou usar este padrão:
+
+**🟢 EXECUTANDO AGORA — MLIVRETRABALHO**  
+`Etapa: PR #8 — autenticação`  
+`Ação: verificando os testes no GitHub...`
+
+Quando mudar de tarefa, atualizo a ação:
+
+`Ação: corrigindo erro encontrado...`  
+`Ação: enviando correção ao GitHub...`  
+`Ação: verificando novo CI...`  
+`Ação: fazendo merge...`  
+`Ação: iniciando próxima funcionalidade...`
+
+E só no final apresento:
+
+**🔴 TURNO ENCERRADO — não estou mais executando ferramentas.**  
+`Parei exatamente em: ...`  
+`Próxima ação: ...`
+
+Assim, quando aparecer **🟢 EXECUTANDO AGORA**, você sabe que naquele turno eu estou realmente mexendo no projeto. Quando aparecer **🔴**, sabe que a execução terminou. Não vou usar “aguardando” para dar a impressão de que continuo trabalhando em segundo plano.
+
+### USUÁRIO
+continuar o projeto
