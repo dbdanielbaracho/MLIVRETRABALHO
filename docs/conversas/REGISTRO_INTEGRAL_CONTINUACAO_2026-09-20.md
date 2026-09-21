@@ -1405,3 +1405,27 @@ continuar
 
 ### ASSISTENTE
 [Execução contínua realizada sem resposta intermediária: validação e merge de #29, reconstrução consolidada dos conflitos #30/#31 em #32, criação da experiência mobile da empresa em #33, implementação do Match Score transparente em #34, candidatos/confirmação mobile em #35, Allocation Engine determinístico em #36 e dashboard operacional da empresa em #37. A resposta final deste turno é registrada abaixo quando emitida.]
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Desta vez executei uma sequência maior antes de responder. Foram incorporados ao `main` os fluxos de **confirmação de profissional, criação/gestão de trabalhos pela empresa, publicação mobile, candidatos/interessados, confirmação mobile e Match Score determinístico e explicável**.
+
+Os conflitos dos antigos #30/#31 foram consolidados corretamente no **#32**, que passou no CI e foi incorporado. Também passaram e foram incorporados **#33, #34 e #35**.
+
+Continuei depois dos merges. O **#36** implementa a primeira base do **Allocation Engine**, classificando profissionais elegíveis de forma determinística, excluindo indisponíveis e preservando as explicações do Match Score. O **#37** adiciona o dashboard operacional da empresa, com trabalhos abertos, profissionais confirmados, em atividade e trabalhos concluídos.
+
+PR #36 — Allocation Engine determinístico
+PR #37 — Dashboard operacional da empresa
+
+Na última verificação, **#36 e #37 estavam com CI efetivamente em execução**. O registro no GitHub também foi atualizado no commit `4461e0c0fa1689e227196f747831a183011a6ba7`.
+
+**Retomada exata:** terminar #36/#37 → corrigir/merge → conectar Matching/Allocation aos candidatos reais → dashboard mobile da empresa → testes E2E e cross-tenant → disponibilidade/agenda → geolocalização → equipes/pools → Backup/Replacement Engine → scores → demais módulos do roadmap.
+
+Não há bloqueio externo.
+
+### USUÁRIO
+ContInuar e seguir a mesma orientaçao
