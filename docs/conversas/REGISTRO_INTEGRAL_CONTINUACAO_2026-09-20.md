@@ -391,3 +391,264 @@ E a regra permanece: **não resumir, não reescrever e não omitir** quando tive
 
 ### USUÁRIO
 então registrar no documento tudo que conversamos aqui
+
+
+### ASSISTENTE
+Claro. Considerando tudo o que definimos para o **MLIVRETRABALHO**, o projeto completo pode ser organizado em **16 etapas**, do controle documental até a operação real em produção. Essas etapas são sequência de execução, **não redução de escopo**.
+
+### 1. Fonte da verdade e memória do projeto
+Manter o GitHub como fonte persistente. Alimentar continuamente o **Documento da Verdade**, **Registro Integral da Conversa**, histórico anterior, Evidence Registry, ADRs, Requirements Ledger e evidências de produção. Nenhuma funcionalidade deve ser considerada existente apenas porque foi discutida.
+
+### 2. Requirements Ledger
+Converter todo o Documento da Verdade em requisitos identificáveis, por exemplo `UX-*`, `CORE-*`, `AI-*`, `PAY-*`, `SEC-*`, `TRUST-*` e `OPS-*`. Cada requisito deverá chegar ao fluxo **requisito → código → teste → PR/SHA → deploy → evidência**.
+
+### 3. Fundação técnica
+Consolidar o monorepo com **pnpm + Turborepo**, aplicativo **React Native + Expo**, web **Next.js**, API **NestJS/Fastify**, packages compartilhados e serviços especializados quando necessários. Configurar TypeScript, lint, testes, CI no GitHub Actions e ambientes.
+
+A fundação já começou e a baseline de multi-tenancy/RLS já foi implementada e testada; portanto não devemos recomeçar essa parte do zero.
+
+### 4. Banco de dados e multi-tenancy
+Evoluir PostgreSQL/PostGIS e a arquitetura `tenant_id + RLS`. Implementar empresas, unidades, memberships, profissionais, skills, funções, oportunidades, jornadas, schedules, pagamentos, avaliações etc. Todo acesso tenant-owned deve ser protegido e testado contra vazamento entre empresas.
+
+### 5. Identidade e acesso
+Construir cadastro/login, sessões, recuperação de conta, profissional, empresa, usuários empresariais, memberships, permissões e RBAC. O contexto da empresa deve chegar de forma segura até cada transação no banco.
+
+### 6. Profissionais, empresas e taxonomia
+Implementar perfil profissional, empresa/unidades e a taxonomia:
+
+**Vertical → Família profissional → Função → Especialização → Skills → Certificações → Nível comprovado.**
+
+O sistema deve suportar muitas profissões, e não ficar limitado a garçom, bartender, cozinha ou limpeza.
+
+### 7. Marketplace de trabalho
+Construir a jornada fundamental:
+
+**Empresa precisa de trabalhador → cria oportunidade → plataforma encontra profissionais → profissional demonstra interesse/aceita → confirmação → trabalho → conclusão.**
+
+Devem existir trabalhos pontuais, recorrentes, temporários, flexíveis, permanentes e demais modalidades previstas no produto.
+
+### 8. Aplicativo mobile
+O mobile é o produto operacional principal. A navegação aprovada permanece simples:
+
+**Profissional:** `Início | Trabalhos | Ganhos | Perfil`
+**Empresa:** `Início | Trabalhos | Equipe | Conta`
+
+Os estados aparecem contextualmente: **Oportunidade → Quero/Aceitar → Confirmado → Check-in → Em andamento → Finalizar → Ganhos**.
+
+### 9. Matching e Allocation Engine
+Construir o núcleo inteligente. O **Matching Engine** calcula adequação entre pessoa e oportunidade. O **Allocation Engine** escolhe combinações eficientes de pessoas, trabalhos, horários, locais e equipes.
+
+Entram disponibilidade, skills, distância, experiência, remuneração, preferências, histórico, confiabilidade, agenda, compatibilidade e outros sinais. O LLM não será sozinho o decisor crítico.
+
+### 10. Workforce OS
+Depois do marketplace básico, implementar a camada que diferencia o projeto de um simples aplicativo de vagas: **Preferred Pool → Network Pool → Open Pool**, workforce planner, equipes, múltiplas unidades, recorrência, talent bench, substituição/backup e organização automática da força de trabalho.
+
+### 11. Work Passport, reputação e inteligência
+Construir **Professional Score, Reliability Score, Company Score, Match Score, Work Passport, Work Graph e Team Graph**.
+
+O histórico de trabalho deve formar uma identidade profissional verificável. O Reliability Score também precisa distinguir a origem dos acontecimentos — profissional, empresa ou evento externo — para não atribuir automaticamente a responsabilidade à pessoa errada.
+
+### 12. Pagamentos e ganhos
+Implementar ledger financeiro, ganhos, taxas, payout, reconciliação, refunds, disputas e idempotência.
+
+As duas arquiteturas previstas continuam possíveis: **split automático** e **pagamento consolidado com distribuição 1:N**. Para o usuário, a complexidade deve ficar escondida: empresa paga de maneira simples e profissional recebe de maneira simples.
+
+### 13. Trust & Safety
+Construir proteção bilateral: identidade, KYC/KYB quando utilizado, fraude, contas falsas, no-show, cancelamentos, abuso, denúncias, disputas, manipulação de ratings, segurança de conta, fraude financeira e revisão humana para casos críticos.
+
+Também entra aqui o **Backup/Replacement Engine**, para substituir rapidamente um profissional quando necessário.
+
+### 14. IA avançada e automação
+Adicionar **AI Workforce Copilot**, linguagem natural/voz, Workforce Planner, recomendações de equipe, otimização com Python/OR-Tools e, quando houver dados reais suficientes, previsão de demanda e risco de no-show.
+
+A regra continua sendo: **IA deve retirar complexidade da experiência, e não adicionar telas e decisões.**
+
+### 15. Testes, segurança e auditoria adversarial
+Cada jornada passa por testes unitários, integração, E2E, isolamento entre tenants, segurança, concorrência, idempotência, performance e regressão de UX.
+
+O revisor adversarial tenta quebrar o sistema. Situações como **pagamento para pessoa errada, payout duplicado, vazamento entre empresas, autenticação quebrada, perda de dados ou vulnerabilidade crítica** acionam Stop-the-Line.
+
+### 16. Deploy e Production Truth Gate
+Implantar API, banco, web e serviços no ambiente definido, incluindo Railway quando aplicável. Configurar observabilidade, logs, Sentry/OpenTelemetry, migrations e CI/CD.
+
+Então fazemos a prova final:
+
+**requisito → implementação → testes → commit/SHA → deploy do mesmo SHA → jornada real em produção → evidência.**
+
+Somente depois disso marcamos uma funcionalidade como **CONCLUÍDA**.
+
+---
+
+A visão completa, portanto, é:
+
+**Documentar → especificar → arquitetar → construir fundação → identidade → marketplace → mobile → matching → alocação → Workforce OS → reputação → pagamentos → segurança → IA → testar → colocar em produção → medir → melhorar.**
+
+E o produto final deve realizar continuamente:
+
+**necessidade da empresa → oportunidade → matching → seleção/alocação → confirmação → trabalho → check-in/out → pagamento → avaliação → Work Passport → aprendizado → próxima oportunidade.**
+
+Esse é o caminho que eu usaria como **roteiro mestre de execução do MLIVRETRABALHO**, mantendo todas as funcionalidades que já definimos.
+
+### USUÁRIO
+nos temos que centrar muito no aplicativo do celular ele é o principal
+
+### ASSISTENTE
+Sim. Isso deve ser tratado como uma **regra estrutural do MLIVRETRABALHO**, e não apenas como preferência de interface.
+
+O **aplicativo celular é o produto principal**. É nele que devemos concentrar a maior parte do esforço de produto, UX e testes, principalmente para o profissional. O web será complementar, especialmente para operações empresariais que realmente se beneficiem de uma tela maior.
+
+A prioridade de desenvolvimento deve ficar assim:
+
+**Mobile primeiro → backend/API → motores de matching e alocação → pagamentos/ledger → web complementar.**
+
+No celular, a experiência precisa ser extremamente simples. O profissional deve abrir o aplicativo e rapidamente entender **qual trabalho existe, quanto paga, onde é, quando é, se combina com seu perfil e o que precisa fazer agora**. A sequência principal deve funcionar praticamente como:
+
+**Abrir app → ver oportunidade → Quero/Aceitar → confirmação → chegar → check-in → trabalhar → check-out → receber → avaliar → próxima oportunidade.**
+
+Para a empresa, também queremos uma experiência mobile forte:
+
+**Preciso de pessoas → informar necessidade → IA recomenda equipe → confirmar → acompanhar quem chegou → substituir ausência → finalizar → pagar.**
+
+E manteremos a navegação que já definimos:
+
+**Profissional:** `Início | Trabalhos | Ganhos | Perfil`
+**Empresa:** `Início | Trabalhos | Equipe | Conta`
+
+Uma consequência importante para a execução: **não devemos construir primeiro um grande sistema web e depois adaptar para celular**. Devemos projetar e implementar primeiro os fluxos críticos no React Native/Expo, com APIs concebidas para atender essa experiência. O painel web entra onde houver benefício real para empresas e administração.
+
+Também manteria uma regra mensurável: sempre que houver conflito de prioridade entre melhorar uma tela web secundária e melhorar uma jornada operacional importante no celular, **a jornada mobile recebe prioridade**.
+
+Essa regra deve entrar no **Documento da Verdade, Requirements Ledger e roadmap**, para não ficar apenas registrada na conversa.
+
+### USUÁRIO
+este layout foi construido a partir de que conhecimento e comparações
+
+### ASSISTENTE
+O layout mobile que definimos para o **MLIVRETRABALHO** não nasceu apenas de uma escolha estética. Ele foi construído combinando o modelo operacional do nosso produto com padrões de UX de produtos que resolvem partes semelhantes do problema.
+
+As principais referências foram:
+
+- **Tinder** — simplicidade da decisão. Uma oportunidade por contexto, pouca carga cognitiva e ação muito evidente. Daí vem a ideia de o profissional conseguir olhar uma oportunidade e rapidamente decidir **“Quero”**.
+- **Uber** — referência para o fluxo operacional em tempo real: status claro, localização, chegada, início/fim da atividade e mostrar ao usuário **o que ele precisa fazer agora**, em vez de apresentar dezenas de menus.
+- **Nubank** — referência para hierarquia visual e simplicidade financeira. Isso influenciou principalmente **Ganhos**, pagamentos e a ideia de esconder complexidade operacional do usuário.
+- **Instawork** e **Qwick** — referências mais diretamente ligadas ao trabalho por turnos: descoberta de oportunidades, confirmação, disponibilidade, turno, check-in, histórico, reputação e recorrência.
+- **Estaff** — referência brasileira que estudamos para marketplace/intermediação de profissionais, fluxo operacional e também para compreender onde poderíamos reduzir burocracia.
+- **Indeed Flex** e **Job&Talent** — entram na comparação mais ampla de staffing/workforce, embora nem todo elemento deles tenha sido usado diretamente no desenho da navegação.
+
+Mas existe uma diferença importante: **não copiamos a interface de nenhum deles**. A lógica foi separar os melhores princípios de cada categoria e aplicá-los ao nosso produto.
+
+Por isso chegamos a:
+
+**Profissional:** `Início | Trabalhos | Ganhos | Perfil`
+
+**Empresa:** `Início | Trabalhos | Equipe | Conta`
+
+E, em vez de criar uma aba para cada função, o estado da interface muda conforme o trabalho:
+
+**Oportunidade → Quero/Aceitar → Confirmado → Check-in → Em andamento → Finalizar → Ganhos.**
+
+Também estabelecemos métricas de fricção: interesse em **1 ação**, check-in em **1**, check-out em **1**, ganhos em **1**, próximo trabalho em **0–1** e recontratação em **1–2**. Se uma operação normal começar a exigir três, quatro ou cinco decisões, temos que justificar por que essa complexidade existe.
+
+Portanto, o conhecimento usado foi uma combinação de **benchmark competitivo + padrões de UX de aplicativos de alta frequência + características específicas de workforce/marketplace + nossa regra Friction First**.
+
+Há, porém, um próximo nível que vale fazer antes de congelarmos o design final: realizar uma **auditoria atual, tela por tela, dos aplicativos móveis dos concorrentes**, especialmente Instawork, Qwick, Indeed Flex, Estaff e Job&Talent, e confrontar cada jornada deles com a nossa. Isso permitiria provar onde nosso layout é mais simples e também descobrir alguma solução boa que ainda não incorporamos.
+
+### USUÁRIO
+listar todos os passos que teremos para construção deste projeto
+
+### ASSISTENTE
+Sim. Para não perdermos a visão do todo, eu trataria este como o **Plano Mestre de Construção do MLIVRETRABALHO**. E há uma regra acima de todas as etapas: **o aplicativo celular é o produto principal**; web é complementar.
+
+## Plano completo — do projeto até produção
+
+| Etapa | O que construiremos | Resultado esperado |
+|---|---|---|
+| **1. Governança e memória** | Documento da Verdade, Registro Integral, histórico, Evidence Registry e regras de atualização do GitHub | Nada importante se perde |
+| **2. Requirements Ledger** | Converter todo o produto em requisitos `MOB-*`, `CORE-*`, `AI-*`, `PAY-*`, `SEC-*`, `TRUST-*` etc. | 100% do escopo rastreável |
+| **3. Benchmark dos concorrentes** | Estaff, Instawork, Qwick, Indeed Flex, Job&Talent e especialistas por assunto | Saber o que existe e onde podemos simplificar/melhorar |
+| **4. UX mobile definitiva** | Jornadas, wireframes, design system, componentes, estados, acessibilidade e Friction Gate | Blueprint completo do aplicativo |
+| **5. Arquitetura técnica** | Monorepo, mobile, backend, banco, APIs, filas, cache, storage, observabilidade | Base técnica definida |
+| **6. Fundação executável** | pnpm/Turborepo, React Native/Expo, NestJS/Fastify, PostgreSQL, CI e ambientes | Projeto realmente executável |
+| **7. Banco + multi-tenancy** | tenants, empresas, unidades, profissionais, memberships, RLS, migrations | Dados isolados e estrutura escalável |
+| **8. Identidade** | cadastro, login, recuperação, sessões, permissões e perfis | Usuários conseguem entrar e operar |
+| **9. Onboarding mobile** | onboarding extremamente curto para profissional e empresa | Entrada simples no marketplace |
+| **10. Perfil profissional** | experiência, skills, funções, disponibilidade, localização, preferências, documentos | Perfil utilizável pelo matching |
+| **11. Empresa e unidades** | empresa, locais, equipes, gestores, preferências e necessidades | Empresa operacional |
+| **12. Taxonomia profissional** | vertical → família → função → especialização → skill → certificação | Suporte a muitas profissões |
+| **13. Criação de trabalho** | função, quantidade, local, horário, remuneração, requisitos e recorrência | Empresa publica necessidade |
+| **14. Marketplace mobile** | descoberta de trabalhos, cards, detalhes, busca contextual e recomendações | Profissional encontra oportunidades |
+| **15. Interesse e aceite** | `Quero` / `Aceitar`, seleção, confirmação e estados | Conversão oportunidade → trabalho |
+| **16. Matching Engine** | skills, distância, disponibilidade, histórico, remuneração, preferências etc. | Ranking de profissionais/oportunidades |
+| **17. Allocation Engine** | otimização de pessoa/equipe/horário/local com regras + OR-Tools quando necessário | Alocação inteligente |
+| **18. Agenda** | próximos trabalhos, calendário, conflitos, recorrência e lembretes | Organização da semana |
+| **19. Jornada do trabalho** | confirmação → chegada → check-in → trabalho → check-out → conclusão | Ciclo operacional completo |
+| **20. Geolocalização** | distância, local do trabalho e validações operacionais necessárias | Suporte espacial ao marketplace |
+| **21. Equipes** | montar equipe, completar vagas, acompanhar presença e substituir pessoas | Workforce real para empresas |
+| **22. Pools** | Preferred Pool → Network Pool → Open Pool | Recontratação e preenchimento mais rápidos |
+| **23. Backup/Replacement Engine** | detectar ausência e encontrar substituto rapidamente | Menos turnos descobertos |
+| **24. Scores** | Professional, Reliability, Company e Match Score | Reputação e qualidade mensuráveis |
+| **25. Work Passport** | histórico comprovado, trabalhos, skills, pontualidade, avaliações e certificações | Identidade profissional portátil |
+| **26. Work Graph / Team Graph** | relações profissional–skill–empresa–unidade–equipe–trabalho–resultado | Base de inteligência do sistema |
+| **27. Workforce Planner** | “Monte minha semana” e “Monte minha equipe” | Planejamento assistido por IA |
+| **28. AI Workforce Copilot** | linguagem natural, voz, recomendações e execução de ações autorizadas | Usuário conversa com o sistema |
+| **29. Ganhos mobile** | saldo, trabalhos, valores, pagamentos e histórico claros | Profissional entende quanto ganhou |
+| **30. Ledger financeiro** | GMV, payable, fee, processor fee, ajustes, refunds, payout e reconciliação | Contabilidade transacional do produto |
+| **31. Pagamentos** | split automático e arquitetura para distribuição consolidada | Empresa paga e profissional recebe |
+| **32. Avaliações** | profissional ↔ empresa, contextualizadas por trabalho | Reputação bilateral |
+| **33. Chat** | comunicação profissional/empresa dentro do aplicativo | Menos necessidade de sair do app |
+| **34. Notificações** | oportunidade, aceite, lembrete, mudança, pagamento, mensagem etc. | Reengajamento contextual |
+| **35. Trust & Safety** | identidade, fraude, denúncias, disputas, abuso, contas falsas, no-show | Marketplace protegido |
+| **36. Painel web empresarial** | operações que realmente se beneficiem de desktop: equipes, unidades, relatórios etc. | Complemento ao mobile |
+| **37. Administração interna** | suporte, incidentes, fraude, disputas, operações, configurações | Operação da plataforma |
+| **38. Analytics** | fill rate, time-to-fill, acceptance, no-show, cancelamento, retenção, receita etc. | Produto mensurável |
+| **39. Inteligência preditiva** | previsão de demanda, no-show e recomendações, quando houver dados suficientes | IA baseada em dados reais |
+| **40. Segurança** | autenticação, autorização, tenant isolation, secrets, rate limits, auditoria e testes | Produto resistente a ataques |
+| **41. Testes completos** | unitário, integração, banco, API, mobile, E2E, concorrência e performance | Evidência de funcionamento |
+| **42. Auditoria adversarial** | tentar quebrar fluxos, pagamentos, segurança, UX, tenancy e IA | Encontrar problemas antes do usuário |
+| **43. CI/CD** | GitHub Actions, migrations, builds, testes e controle de releases | Deploy reproduzível |
+| **44. Infraestrutura de produção** | Railway, PostgreSQL gerenciado, Redis, storage, observabilidade | Ambiente real |
+| **45. Deploy mobile/web/backend** | API + web + serviços + builds mobile | Produto operacional |
+| **46. Production Truth Gate** | conferir versão, SHA, APIs, banco e jornadas reais | Provar que produção = versão testada |
+| **47. Piloto operacional** | começar com densidade controlada de empresas/profissionais | Validar marketplace real |
+| **48. Medição e aprendizado** | comportamento, conversão, fill rate, retenção, problemas e feedback | Aprendizado real |
+| **49. Expansão** | novas profissões, cidades, empresas, integrações e automações | Escala |
+| **50. Evolução contínua** | observar → entender → recomendar → criar/melhorar → medir → aprender | Produto melhora continuamente |
+
+## O mobile atravessa praticamente tudo
+
+Não vamos cometer o erro de construir o backend e o painel web quase completos e deixar o aplicativo para o final.
+
+A sequência de cada funcionalidade importante deve ser mais parecida com:
+
+**Jornada mobile → UX → requisito → API necessária → banco → implementação mobile → testes → integração → evidência.**
+
+Por exemplo, para oportunidades:
+
+**Tela mobile da oportunidade → botão Quero/Aceitar → API → matching → banco → confirmação → notificação → próximo estado da tela → teste E2E.**
+
+Assim construímos **fatias verticais completas**, em vez de dezenas de componentes desconectados.
+
+## Primeira jornada que precisa funcionar de ponta a ponta
+
+Nosso primeiro grande marco funcional deve ser:
+
+**Profissional cria conta → completa perfil → vê trabalho → demonstra interesse/aceita → empresa seleciona/confirma → profissional recebe confirmação → chega → check-in → trabalha → check-out → trabalho concluído → valor aparece em Ganhos → avaliação → histórico entra no Work Passport.**
+
+Em paralelo, a empresa precisa conseguir:
+
+**Criar conta → criar empresa/unidade → informar necessidade → receber candidatos/recomendação → confirmar profissional/equipe → acompanhar presença → substituir ausência → concluir → avaliar → acompanhar pagamento.**
+
+Quando essas duas jornadas estiverem funcionando **no celular, com backend e banco reais**, teremos o primeiro núcleo verdadeiro do MLIVRETRABALHO.
+
+### E a prioridade de esforço
+
+Eu colocaria aproximadamente a atenção de produto/UX nesta ordem:
+
+**1º Mobile profissional → 2º Mobile empresa → 3º backend/IA que sustenta os dois → 4º operação/admin → 5º web empresarial.**
+
+Backend obviamente será construído desde o início, mas deve **servir à experiência mobile**, e não fazer o mobile se adaptar à arquitetura.
+
+O objetivo final não é simplesmente “ter 50 etapas concluídas”. É chegar a um aplicativo em que a pessoa consiga **encontrar trabalho, trabalhar e receber usando o celular com o mínimo possível de esforço**, enquanto a empresa consegue **encontrar, montar e administrar sua força de trabalho com a mesma simplicidade**.
+
+### USUÁRIO
+não esqueça sempre de registrar a nossa conversa aqui no documento já especificado para colocar as conversar do chat, novamente todas as conversar aqui tem que estarem no documento nao pode deixar nenhuma linha
