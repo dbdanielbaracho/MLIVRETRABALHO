@@ -1852,3 +1852,23 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — progresso deste turno: #108 CI verde/merge (semântica Forbidden financeira); #111 CI verde/merge (safety_cases sem DELETE runtime). #110 conflitou e foi reconstruído como #112; #112 CI verde/merge, tornando idempotência compatível com ledger append-only via DO NOTHING. #113 criado para retornar deterministicamente o evento existente em webhook duplicado; CI em execução. #114 criado para ForbiddenException em recusas de autorização de Trust & Safety; CI disparado. Documento atualizado novamente conforme regra permanente.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Neste turno, **#108 e #111 foram aprovados e incorporados**. O #110 conflitou; reconstruí como **#112**, o CI ficou verde e também fiz o merge. Com isso, o ledger financeiro está mais coerente com o modelo append-only e a idempotência passou para `DO NOTHING`.
+
+Também criei **#113**, para devolver deterministicamente o evento financeiro existente quando um webhook repetir a mesma chave de idempotência, e **#114**, para corrigir a semântica de autorização do Trust & Safety. Ambos ficaram em CI.
+
+E, conforme você pediu, **nosso documento foi atualizado novamente durante a execução**. Último commit do registro: `d41225448f5fad833bd7990db612ea328e0af52c`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.** O próximo `continuar` retoma exatamente em #113/#114 e segue as mesmas regras.
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+🟢 EXECUTANDO — execução contínua máxima retomada em #113/#114; atualização permanente do documento mantida.
