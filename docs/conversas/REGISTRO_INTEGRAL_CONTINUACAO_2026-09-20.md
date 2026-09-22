@@ -1707,3 +1707,27 @@ continuar
 
 ### ASSISTENTE
 [Execução contínua adicional: #94 safety report assignment access CI verde/merge. #95 ligação Agenda→chat CI verde/merge. #96 criado para entrada de notificações e contador de não lidas na Home mobile, CI disparado. Auditoria do chat iniciada; foi identificado que o código usa tenant_memberships enquanto o restante da identidade usa memberships, portanto a próxima correção deve tratar esse desvio antes de adicionar notificações de mensagem.]
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Nesta continuação avancei do ponto exato combinado. O **#91** estava verde, mas apresentou conflito de merge; reconstruí sobre o `main` atual como **#92**, rodei o CI e fiz o merge somente após sucesso.
+
+Também concluí e incorporei: **#93 Trust & Safety no mobile**, **#94 validação de acesso ao assignment em relatos de segurança** e **#95 acesso ao chat diretamente pela Agenda**.
+
+Criei ainda o **#96**, que coloca acesso às notificações na tela inicial e mostra a quantidade de notificações não lidas. O CI foi disparado e estava pendente na última consulta.
+
+Durante a auditoria seguinte encontrei um ponto que precisa ser corrigido antes de ampliar o chat: `conversations.controller.ts` consulta `tenant_memberships`, enquanto o fluxo atual de identidade utiliza `memberships`. Registrei essa descoberta e ela entra como próxima correção, evitando construir novas funcionalidades sobre uma autorização potencialmente inconsistente.
+
+O registro da conversa e do progresso foi atualizado novamente no GitHub; último commit do registro: `0a1d7bdb6e6d658ade28ebe0a14a3842eeeaa3c4`.
+
+**Retomada exata:** #96 → corrigir autorização do chat → testes de isolamento/participantes → notificações de novas mensagens → restante de Trust & Safety → financeiro/PSP → testes E2E e segurança → deploy → **Production Truth Gate**.
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+[Execução contínua máxima retomada.]
