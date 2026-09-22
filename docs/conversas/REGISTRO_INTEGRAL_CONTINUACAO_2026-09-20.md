@@ -1897,3 +1897,7 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado exatamente em #118; mesmas regras e atualização permanente do documento mantidas.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — progresso deste turno: #118 CI verde/merge. #119 criado, CI verde e merge: no_show/late_arrival agora exigem assignmentId, evitando penalidade de presença sem vínculo de trabalho. #120 criado para limitar consulta de histórico de trust-events a profissional visível no tenant; CI em execução. #121 criado para tornar a tela Segurança acessível diretamente pela Home mobile; CI em execução. Documento atualizado novamente conforme regra permanente.
