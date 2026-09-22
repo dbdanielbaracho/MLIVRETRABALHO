@@ -1735,3 +1735,7 @@ continuar
 
 ### ASSISTENTE
 [Execução contínua adicional: #96 CI verde/merge. #97 correção da autorização de chat para schema canônico memberships, CI verde/merge. #98 notificações de novas mensagens ficou CI verde mas foi fechado/reconstruído como #101 sobre main após #97 para preservar a correção de autorização. #99 categorias de Trust & Safety mobile em CI. #100 visão de reconciliação financeira por assignment em CI, sem alegar PSP real. #101 CI disparado.]
+
+
+### ASSISTENTE
+[Execução contínua adicional: #99 categorias de safety report CI verde/merge. #100 reconciliação financeira CI verde/merge. #101 notificações de chat sobre autorização canônica continua em CI. #102 criado para classificar reconciliação por assignment em no_earning/pending/reconciled/overpaid; CI disparado. Registro atualizado antes do encerramento técnico do turno.]
