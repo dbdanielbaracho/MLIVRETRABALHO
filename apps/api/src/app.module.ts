@@ -25,5 +25,5 @@ import { PaymentWebhookController } from './payment-webhook.controller';
 import { SafetyCasesController } from './safety-cases.controller';
 import { SafetyAdminController } from './safety-admin.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
-@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController, CompanyJobCreateController], providers:[DatabaseService,AuthService] })
+@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController, CompanyJobCreateController, CompanyDashboardController, AvailabilityController, ReplacementController, TeamsController, NotificationsController, ConversationsController, TrustEventsController, PaymentEventsController, TalentPoolsController, TeamAllocationController, PaymentWebhookController, SafetyCasesController, SafetyAdminController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
