@@ -10,9 +10,9 @@ Rastreabilidade obrigatória:
 | API-001 | API NestJS + Fastify com health/readiness | MERGED / BUILD GREEN / DEPLOY PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | PR #1; CI build green; smoke de produção pendente |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
-| CI-001 | CI executa typecheck, build e testes | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | CI contínuo em PRs; runs #388 e #389 SUCCESS nos PRs #156/#157 |
+| CI-001 | CI executa typecheck, build e testes | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | CI contínuo em PRs; runs #388, #389 e #393 SUCCESS nos PRs #156/#157/#159 |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING | Documento da Verdade v1.5 §13/§33 | — | decisão/evidência pendente |
-| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING | Documento da Verdade v1.5 §33 | — | arquitetura/evidência pendente |
+| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL | Documento da Verdade v1.5 §33 | reporting baseline implementado; demais enforcement pendente | reporting/access corrigido no PR #159; KYC/KYB/suspensão/disputa pendentes |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Release foundation v0.1
@@ -54,6 +54,7 @@ Rastreabilidade obrigatória:
 | SEC-AVAIL-001 | Availability rejeita timestamps inválidos | MERGED / CI GREEN | validação de entrada | `apps/api/src/availability.controller.ts` | PR #151; CI SUCCESS |
 | SEC-TEAM-001 | Team Allocation valida job/team e autorização | MERGED / CI GREEN | validação/tenant safety | `apps/api/src/team-allocation.controller.ts` | PR #149; CI SUCCESS |
 | SEC-POOL-001 | Talent Pools valida papel e visibilidade profissional no tenant | MERGED / CI GREEN | tenant safety | `apps/api/src/talent-pools.controller.ts` | PR #146; CI SUCCESS |
+| SEC-SAFETY-001 | Safety case ligado a assignment usa membership real e regra de acesso testada | MERGED / CI GREEN | Trust & Safety reporting/access control | `apps/api/src/safety-cases.controller.ts`, `apps/api/src/safety-access-policy.ts` | PR #159; CI #393 SUCCESS; merge `4374fe8`; corrigida referência inválida `memberships` → `tenant_memberships` |
 
 ## Deploy / Production Truth
 
