@@ -1976,3 +1976,7 @@ ok continuar então
 
 ### ASSISTENTE
 🟢 EXECUTANDO — turno máximo retomado em #125/#126; também avançarei automação de CI quando seguro e útil. Documento permanente continua sendo atualizado.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — turno máximo: #126 CI verde/merge, auto-match agora usa reliability real. #125 falhou inicialmente no typecheck por aspas do alias SQL; logs inspecionados, correção aplicada, novo CI verde e merge concluído. #127 CI verde mas conflitou após #125; reconstruído como #129 sobre main atual para exigir disponibilidade cobrindo o horário antes de selecionar substituto. #128 criado para impedir substituição de assignment já completed/cancelled; CI em execução. Documento atualizado novamente.
