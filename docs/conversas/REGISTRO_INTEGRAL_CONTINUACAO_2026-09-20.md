@@ -1922,3 +1922,7 @@ continuar e seguir as mesmas instruções
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado em #120/#121; mesmas instruções, execução contínua e atualização permanente do documento mantidas.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — progresso: #121 CI verde/merge, Segurança agora acessível pela Home mobile. #120 conflitou após mudanças anteriores; fechado e reconstruído como #122. #122 CI verde/merge, restringindo histórico de trust-events a profissional visível no tenant. #123 criado para retornar 404 quando safety case não existe em mudança de status; CI em execução. #124 criado com orientação explícita de emergência na tela Segurança, esclarecendo que o canal in-app não substitui serviço de emergência; CI disparado. Documento atualizado novamente.
