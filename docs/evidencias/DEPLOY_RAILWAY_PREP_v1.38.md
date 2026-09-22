@@ -1,16 +1,25 @@
-# Evidência — Railway Deploy Prep v1.38
+# Evidência — Railway Deploy Prep v1.38 / correção v1.39
 
 Data: 2026-09-22
 
-## Implementado
-- `railway.json` com builder `RAILPACK`;
-- build da API via `pnpm --filter @mlivretrabalho/api build`;
-- start via `pnpm --filter @mlivretrabalho/api start`;
-- healthcheck em `/v1/health/ready` com timeout de 300s.
+## Histórico
+A v1.38 adicionou `railway.json` seguindo o antigo Config as Code. Após verificação nas docs atuais do Railway, esse mecanismo foi identificado como **deprecated para novos serviços** e substituído na v1.39 por Railway Infrastructure as Code.
+
+## Estado vigente — v1.39
+- removido `railway.json` para evitar duas fontes de configuração;
+- adicionada `.railway/railway.ts` usando a DSL oficial `railway/iac`;
+- fonte GitHub: `dbdanielbaracho/MLIVRETRABALHO`;
+- build da API: `pnpm --filter @mlivretrabalho/api build`;
+- start da API: `pnpm --filter @mlivretrabalho/api start`;
+- healthcheck: `/v1/health/ready`;
+- SDK Railway TypeScript fixado em `3.11.0` no `package.json` raiz.
+
+## Operação IaC
+A infraestrutura não é aplicada automaticamente pelo deploy do código. Deve ser revisada com `railway config plan` e aplicada com `railway config apply` contra um projeto/environment Railway explicitamente selecionado.
 
 ## Variáveis externas obrigatórias
 - `DATABASE_URL` para PostgreSQL;
 - opcionalmente `APP_VERSION` para expor a versão no healthcheck.
 
 ## Não concluído por esta mudança
-Esta configuração prepara o repositório, mas **não prova deploy real**. Permanecem pendentes: criação/identificação do serviço Railway do MLIVRETRABALHO, banco de produção, execução de migrations, domínio/URL pública, smoke tests reais e Production Truth Gate.
+Esta configuração prepara o repositório, mas **não prova deploy real**. Permanecem pendentes: criação/identificação do projeto e environment Railway do MLIVRETRABALHO, PostgreSQL de produção, migration runner seguro, `railway config plan/apply`, URL pública, smoke tests reais e Production Truth Gate.
