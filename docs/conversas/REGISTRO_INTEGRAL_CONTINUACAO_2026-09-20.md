@@ -2040,3 +2040,7 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — execução máxima retomada exatamente de #132/#133/#134, mantendo todas as regras e o registro permanente.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — #132/#133/#134 estavam verdes e foram incorporados. Pagamentos agora rejeitam reutilização inconsistente de idempotencyKey no webhook; Replacement ganhou semântica 403 correta e validação do assignment já na criação do pedido. #135 adicionou guarda de replay por timestamp de 5 minutos ao webhook; CI verde e merge concluído. #136 tentou tornar CI reprodutível com frozen-lockfile, mas o CI provou que o repositório ainda não possui pnpm-lock.yaml; PR fechado sem merge para não mascarar o problema. #137 criado para retornar Forbidden em acesso negado ao chat; CI em execução. Documento atualizado.
