@@ -1769,3 +1769,7 @@ continuar
 
 ### ASSISTENTE
 [Execução contínua máxima retomada.]
+
+
+### ASSISTENTE
+[Execução contínua adicional: #101 e #102 estavam CI verde e foram merged. Auditoria pós-merge detectou que a alteração pretendida de reconciliationStatus do #102 não aparece no main, portanto foi marcada para reaplicação/correção em vez de ser considerada concluída. #103 criado para validar que assignment de webhook financeiro pertence ao tenant informado; CI em execução. Uma tentativa de criar a correção #102b foi bloqueada pela camada de segurança da ferramenta e não foi tratada como concluída.]
