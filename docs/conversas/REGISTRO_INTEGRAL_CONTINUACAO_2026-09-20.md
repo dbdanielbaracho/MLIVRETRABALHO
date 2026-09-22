@@ -2071,3 +2071,24 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — #137 CI verde/merge. Auditoria do lockfile confirmou packageManager pnpm@10.15.1 e manifests, mas nenhum pnpm-lock.yaml versionado; não foi inventado lockfile manualmente. #138 criado: extrai predicados de segurança do webhook e adiciona testes executáveis para freshness/replay e consistência de idempotência; CI em execução. #139 criado: chat passa a diferenciar assignment inexistente no tenant (404) de assignment existente sem autorização (403); CI iniciado. Documento atualizado.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+O **#137 passou no CI e foi incorporado**, corrigindo a autorização do chat. Também confirmei tecnicamente o problema do lockfile: o projeto declara `pnpm@10.15.1`, mas ainda não há `pnpm-lock.yaml` versionado; não fabriquei um lockfile manualmente.
+
+Avancei em duas frentes adicionais: **#138** adiciona testes executáveis para proteção contra replay e consistência de idempotência do webhook financeiro; **#139** diferencia corretamente no chat um assignment inexistente (`404`) de um assignment existente ao qual o usuário não tem acesso (`403`). Ambos entraram no CI.
+
+Registro atualizado: `6ac13deed0f7eb498cad55f930accdf1f14a3a8a`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.**
+Retomada: **#138/#139 → merges verdes → testes cross-tenant → lockfile reprodutível → PSP/split → E2E → auditoria → deploy → Production Truth Gate.**
+
+### USUÁRIO
+CONTINUAR
+
+### ASSISTENTE
+🟢 EXECUTANDO — retomado exatamente em #138/#139, mantendo execução máxima e todas as regras.
