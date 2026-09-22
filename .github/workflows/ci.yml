@@ -74,7 +74,7 @@ jobs:
           APPLIED="$(psql "$MIGRATION_TEST_URL" -tAc 'SELECT count(*) FROM schema_migrations' | tr -d ' ')"
           test "$APPLIED" = "$EXPECTED"
 
-      - name: Smoke API readiness
+      - name: Smoke API readiness and Production Truth Gate contract
         run: |
           pnpm --filter @mlivretrabalho/api start > /tmp/mlivre-api.log 2>&1 &
           API_PID=$!
@@ -84,3 +84,4 @@ jobs:
             sleep 0.5
           done
           BASE_URL=http://127.0.0.1:3000 bash scripts/smoke-api.sh || { cat /tmp/mlivre-api.log; exit 1; }
+          BASE_URL=http://127.0.0.1:3000 EXPECTED_VERSION=0.1.0 bash scripts/production-truth-gate.sh || { cat /tmp/mlivre-api.log; exit 1; }
