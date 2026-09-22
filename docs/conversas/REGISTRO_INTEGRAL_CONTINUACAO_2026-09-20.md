@@ -1634,3 +1634,27 @@ Continuar e seguir as regras ja definida
 
 ### ASSISTENTE
 [Execução contínua adicional: #80 CI falhou por uso incorreto do shape retornado por rankCandidates; log inspecionado e corrigido, novo CI em execução. #81 Talent Pools mobile ficou verde e foi incorporado. #82 webhook financeiro reconstruído ficou verde e foi incorporado. #83 criado para operações mobile de Replacement e recomendação em um toque; CI disparado. Registro mantido sem atualizações intermediárias.]
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto. Segui as regras já definidas: execução contínua, testes/CI, correção automática de falhas, merge somente após CI verde e registro no GitHub, sem atualizações intermediárias.
+
+Nesta rodada foram incorporados ao `main`: **#73 Replacement operacional**, **#75 reforço de integridade de tenant para equipes**, **#76 API de Talent Pools**, **#77 Replacement usando disponibilidade e Reliability reais**, **#78 Allocation de equipes**, **#81 Talent Pools no mobile**, **#82 webhook financeiro provider-agnostic** e **#80 recomendação automática de substituto**.
+
+No #80 o CI inicialmente falhou. Analisei o log, identifiquei que o código estava usando incorretamente o retorno de `rankCandidates`, corrigi, executei novamente e só depois do **CI verde** fiz o merge.
+
+Também abri o **#83**, que leva as operações de substituição para o aplicativo da empresa, incluindo a ação **“Encontrar substituto”** ligada ao Replacement Engine. Na última consulta, o CI do #83 ainda estava executando.
+
+O sistema agora avançou significativamente no fluxo **falta/cancelamento → Replacement → Talent Pool → disponibilidade → ranking → recomendação → confirmação**, além da infraestrutura financeira para receber eventos idempotentes de um futuro PSP. **Ainda não considero pagamentos reais prontos**, porque falta conectar um PSP/split real e validar reconciliação ponta a ponta.
+
+Tudo desta execução foi novamente registrado em `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-20.md`; última atualização do registro: `4dfb090e31c6b947c2ac485c123f5b17fa571333`.
+
+**Retomada exata:** #83 → confirmação mobile do substituto → Reliability real também no Team Allocation → testes E2E/cross-tenant → fluxo financeiro/split PSP → Trust & Safety → completar jornadas mobile → segurança/testes → infraestrutura/deploy → **Production Truth Gate**.
+
+### USUÁRIO
+continuar usando sempre as mesmas regras que acordamos
+
+### ASSISTENTE
+[Execução contínua máxima retomada com as mesmas regras acordadas; sem atualizações intermediárias.]
