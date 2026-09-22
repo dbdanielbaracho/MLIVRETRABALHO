@@ -1682,3 +1682,20 @@ ok continuar
 
 ### ASSISTENTE
 [Execução contínua máxima retomada do PR #91, seguindo as regras permanentes.]
+
+
+### USUÁRIO
+o que está fazendo
+
+### ASSISTENTE
+Neste exato momento, **não estou executando nenhuma ação no GitHub**, porque sua pergunta interrompeu a sequência para eu responder.
+
+O último ponto executado foi registrar no GitHub sua mensagem **“ok continuar”** e a retomada da execução. O próximo passo permanece exatamente no **PR #91 — Trust & Safety para owner/admin**: verificar o CI → corrigir se necessário → merge se verde → implementar Trust & Safety no mobile → testes de segurança/cross-tenant → continuar os próximos módulos.
+
+Portanto, **não perdi o ponto nem mudei de projeto**. Quando você mandar continuar, retomo do #91 seguindo as mesmas regras.
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+[Execução contínua máxima retomada do PR #91.]
