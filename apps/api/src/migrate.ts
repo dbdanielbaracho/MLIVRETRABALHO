@@ -40,9 +40,9 @@ async function applyMigration(client:PoolClient,filename:string,sql:string){
 
 async function main(){
   if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL_required');
-  const root=process.cwd();
-  const migrationsDir=resolve(root,'packages/db/migrations');
-  const rolesSql=await readFile(resolve(root,'packages/db/infra/roles.sql'),'utf8');
+  const repoRoot=resolve(__dirname,'../../..');
+  const migrationsDir=resolve(repoRoot,'packages/db/migrations');
+  const rolesSql=await readFile(resolve(repoRoot,'packages/db/infra/roles.sql'),'utf8');
   const filenames=(await readdir(migrationsDir)).filter(x=>/^\d+.*\.sql$/.test(x)).sort();
   const pool=new Pool({connectionString:process.env.DATABASE_URL});
   const client=await pool.connect();
