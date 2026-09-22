@@ -22,6 +22,7 @@ import { PaymentEventsController } from './payment-events.controller';
 import { TalentPoolsController } from './talent-pools.controller';
 import { TeamAllocationController } from './team-allocation.controller';
 import { PaymentWebhookController } from './payment-webhook.controller';
+import { SafetyAdminController } from './safety-admin.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
 @Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController, CompanyJobCreateController], providers:[DatabaseService,AuthService] })
 export class AppModule {}
