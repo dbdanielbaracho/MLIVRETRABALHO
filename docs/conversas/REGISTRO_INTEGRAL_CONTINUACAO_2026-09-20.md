@@ -1666,3 +1666,19 @@ continuar usando sempre as mesmas regras que acordamos
 
 ### ASSISTENTE
 [Execução contínua adicional: #89 safety_cases DB CI verde/merge. #90 reporting API CI verde/merge. #91 criado para fila/revisão de casos Trust & Safety por owner/admin, CI disparado. O trabalho prosseguiu até o limite do turno, mantendo merge somente verde e registro integral.]
+
+
+### ASSISTENTE
+Neste momento, eu estava **continuando o MLIVRETRABALHO** exatamente do último ponto.
+
+O último passo executado foi atualizar novamente o arquivo de registro integral da conversa no GitHub. Antes disso, o **#90 (API de Trust & Safety) já havia sido incorporado ao `main`**.
+
+O ponto operacional em que eu estava é o **PR #91 — operações de Trust & Safety para owner/admin**. A sequência definida é: verificar o CI do #91 → corrigir qualquer falha → merge somente se ficar verde → começar Trust & Safety no mobile → testes de autorização e isolamento entre tenants → continuar os módulos seguintes.
+
+Quando você perguntou “o que você está fazendo agora”, a execução foi interrompida para eu responder. **Não existe execução do GitHub acontecendo em segundo plano enquanto estou respondendo.** Na próxima continuação, retomo exatamente do #91, sem recomeçar o projeto.
+
+### USUÁRIO
+ok continuar
+
+### ASSISTENTE
+[Execução contínua máxima retomada do PR #91, seguindo as regras permanentes.]
