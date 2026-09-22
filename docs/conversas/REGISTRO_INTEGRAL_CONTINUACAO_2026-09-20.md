@@ -2001,3 +2001,7 @@ continuar e seguir as mesmas regrAS
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado exatamente em #128/#129, mantendo todas as mesmas regras, turno máximo e registro permanente no GitHub.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — #129 CI verde/merge. #128 conflitou e foi reconstruído como #130; #130 CI verde/merge, bloqueando seleção de substituto para assignment completed/cancelled. #131 CI verde mas conflitou após #130; reconstruído como #134 sobre main atual para validar existência/estado do assignment já na criação do pedido. #132 criado para rejeitar reutilização inconsistente de idempotencyKey também no webhook financeiro; CI em execução. #133 criado para ForbiddenException em negação de role no Replacement; CI disparado. Documento atualizado novamente.
