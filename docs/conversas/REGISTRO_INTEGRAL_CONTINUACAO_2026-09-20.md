@@ -1876,3 +1876,24 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — progresso: #114 CI verde/merge. #113 conflitou após mudanças de idempotência e foi reconstruído como #115; #115 CI verde/merge. #116 CI verde/merge para rejeitar reutilização inconsistente de chave idempotente nos eventos financeiros manuais. #117 CI verde/merge criando contrato neutro PaymentProviderAdapter para futura integração PSP real, sem alegar provedor live. #118 criado para ForbiddenException na autorização de trust-events; CI em execução. Documento atualizado novamente.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Neste turno, concluí e incorporei **#114**, **#115**, **#116** e **#117**. Isso inclui melhorias de autorização em Trust & Safety, resposta determinística para webhook financeiro duplicado, proteção contra reutilização inconsistente de chave de idempotência e a criação do contrato neutro `PaymentProviderAdapter`, que prepara a arquitetura para integrar um PSP real sem fingir que pagamentos reais já estão funcionando.
+
+Também criei o **#118**, corrigindo a semântica de autorização dos `trust-events`; o CI estava em execução na última verificação.
+
+Nosso documento foi novamente atualizado durante a execução. Último commit: `195b04fc6f949899b6ab7cb59e3d9490e0410345`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.**
+Retomada exata: **#118 → segurança/integridade de trust-events → PSP/split real → testes financeiros/cross-tenant → E2E → jornadas restantes → auditoria adversarial → deploy → Production Truth Gate.**
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+🟢 EXECUTANDO — retomado exatamente em #118; mesmas regras e atualização permanente do documento mantidas.
