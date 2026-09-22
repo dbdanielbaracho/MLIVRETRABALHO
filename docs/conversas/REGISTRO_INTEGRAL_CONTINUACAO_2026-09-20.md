@@ -1795,3 +1795,7 @@ continuar
 
 ### ASSISTENTE
 [Execução contínua máxima retomada.]
+
+
+### ASSISTENTE
+[Execução contínua: #103 CI verde/merge, validando assignment do webhook dentro do tenant. #104 reaplicou reconciliationStatus, CI verde/merge e verificação pós-merge confirmou o campo no main. #105 CI verde mas conflitou após #104; fechado e reconstruído como #107 sobre main atual para validar assignment também na criação manual de payment events. #106 criado para usar ForbiddenException nas recusas de autorização financeira; CI em execução. #107 CI disparado.]
