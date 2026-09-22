@@ -1926,3 +1926,24 @@ continuar e seguir as mesmas instruções
 
 ### ASSISTENTE
 🟢 EXECUTANDO — progresso: #121 CI verde/merge, Segurança agora acessível pela Home mobile. #120 conflitou após mudanças anteriores; fechado e reconstruído como #122. #122 CI verde/merge, restringindo histórico de trust-events a profissional visível no tenant. #123 criado para retornar 404 quando safety case não existe em mudança de status; CI em execução. #124 criado com orientação explícita de emergência na tela Segurança, esclarecendo que o canal in-app não substitui serviço de emergência; CI disparado. Documento atualizado novamente.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto e segui as mesmas instruções.
+
+**#121 foi incorporado**, deixando Segurança acessível diretamente pela Home. O #120 apresentou conflito; reconstruí corretamente como **#122**, que passou no CI e foi incorporado, restringindo o histórico de `trust-events` aos profissionais visíveis no tenant.
+
+Também criei **#123**, para retornar `404` quando alguém tentar alterar um caso de segurança inexistente, e **#124**, adicionando orientação para situações de risco imediato e deixando claro que o canal interno não substitui serviços de emergência. Ambos ficaram no processo de CI.
+
+O nosso documento foi atualizado novamente. Último commit: `22816ae413d4d8e3900752c68752caf0741b12a7`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.**
+Retomada exata: **#123/#124 → merges somente verdes → Trust & Safety restante → pagamentos/PSP/split → testes cross-tenant e E2E → jornadas restantes → auditoria adversarial → deploy → Production Truth Gate.**
+
+### USUÁRIO
+continuar porque tenho que ficar toda hora falando para continuar
+
+### ASSISTENTE
+🟢 EXECUTANDO — retomado em #123/#124. Dentro deste turno continuarei sem parar voluntariamente; a necessidade de novo “continuar” só ocorre quando o turno do Chat termina. Documento continua sendo atualizado.
