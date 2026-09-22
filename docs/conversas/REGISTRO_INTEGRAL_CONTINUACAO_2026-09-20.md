@@ -2005,3 +2005,38 @@ continuar e seguir as mesmas regrAS
 
 ### ASSISTENTE
 🟢 EXECUTANDO — #129 CI verde/merge. #128 conflitou e foi reconstruído como #130; #130 CI verde/merge, bloqueando seleção de substituto para assignment completed/cancelled. #131 CI verde mas conflitou após #130; reconstruído como #134 sobre main atual para validar existência/estado do assignment já na criação do pedido. #132 criado para rejeitar reutilização inconsistente de idempotencyKey também no webhook financeiro; CI em execução. #133 criado para ForbiddenException em negação de role no Replacement; CI disparado. Documento atualizado novamente.
+
+
+### USUÁRIO
+tem arrumar um jeito para eu não ficar toda hora dizendo para continuar
+
+### ASSISTENTE
+Sim. Para o que você quer — **eu continuar programando, testar, acompanhar CI, corrigir, fazer merge e seguir para a próxima etapa sem você ficar escrevendo “continuar”** — o Chat normal tem uma limitação: depois que eu envio a resposta final, não posso iniciar sozinho outro turno.
+
+Como você quer permanecer no **Chat e não no Work**, vou ajustar nosso método ao máximo dentro dessa limitação: quando você disser `continuar`, esse comando passa a significar **execução máxima do turno**, e eu não devo encerrar voluntariamente só porque um PR terminou, um CI ficou verde ou uma etapa foi concluída. Enquanto houver outra tarefa executável, sigo para ela. O GitHub continua sendo o ponto permanente de continuidade e o registro da conversa continua sendo atualizado.
+
+Mas existe uma diferença importante: **não há uma configuração no Chat que me permita gerar sozinho uma nova mensagem sua e começar outro turno**. Uma automação também não é adequada para programar continuamente o projeto, porque ela executaria em horários/condições programados, não manteria esta mesma sessão de desenvolvimento funcionando indefinidamente.
+
+Portanto, para reduzir drasticamente suas intervenções, a solução que vou aplicar é: **turnos muito mais longos + CI/CD cada vez mais automatizado no próprio GitHub**. Assim, o GitHub continua executando testes e verificações mesmo quando meu turno terminar, e no próximo turno eu pego os resultados e avanço imediatamente.
+
+E vou mudar um comportamento meu: **não vou encerrar simplesmente porque chegamos a “CI em execução” quando ainda existir trabalho independente que eu possa fazer.** Vou continuar em outras frentes até realmente atingir o limite do turno ou um bloqueio que impeça avanço seguro.
+
+Você não precisa repetir todas as regras novamente. Elas permanecem válidas para o **MLIVRETRABALHO**.
+
+### USUÁRIO
+qual é a instrução que passo para  voce agora
+
+### ASSISTENTE
+Basta escrever:
+
+**`CONTINUAR`**
+
+Isso significa para mim: retomar o MLIVRETRABALHO exatamente do último ponto confirmado no GitHub, seguir as mesmas regras, executar o máximo possível no turno, acompanhar e corrigir CI, fazer merge somente quando estiver verde, continuar para as próximas tarefas sem pedir confirmação e atualizar continuamente nosso documento no GitHub.
+
+Você **não precisa mais copiar todas as instruções**. Apenas mande **`continuar`**.
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+🟢 EXECUTANDO — execução máxima retomada exatamente de #132/#133/#134, mantendo todas as regras e o registro permanente.
