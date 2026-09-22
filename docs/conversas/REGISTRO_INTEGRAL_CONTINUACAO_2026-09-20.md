@@ -1947,3 +1947,7 @@ continuar porque tenho que ficar toda hora falando para continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado em #123/#124. Dentro deste turno continuarei sem parar voluntariamente; a necessidade de novo “continuar” só ocorre quando o turno do Chat termina. Documento continua sendo atualizado.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — #123 e #124 CI verde/merge. Auditoria do Replacement encontrou alias SQL inválido no RETURNING da criação; #125 criado para corrigir. #126 criado para substituir reliability=.5 do auto-match por reliabilityScore real (completed/cancelled/no_show/late_arrival) e remover parâmetro SQL não utilizado. #125 CI em execução; #126 aguardando disparo/registro de CI. Documento atualizado novamente.
