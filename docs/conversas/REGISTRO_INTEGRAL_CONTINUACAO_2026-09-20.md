@@ -1825,3 +1825,26 @@ continuar e seguir as mesmas regras não esqueça de atualizar sempre o nosso do
 
 ### ASSISTENTE
 [Execução contínua adicional: #107 CI verde/merge. #106 conflitou e foi reconstruído como #108 sobre main atual. #109 criou migration 0020 tornando payment_events append-only ao revogar UPDATE/DELETE; CI verde/merge. #110 criado para trocar idempotência de payment events de no-op UPDATE para DO NOTHING, compatível com ledger imutável; CI em execução. #111 criado para revogar DELETE de safety_cases e preservar registros de incidentes; CI em execução. #108 CI em execução. Documento atualizado novamente durante a execução, conforme regra permanente.]
+
+
+### USUÁRIO
+eu preciso saber se voce está executando ou não senão eu fico no escuro sem saber
+
+### ASSISTENTE
+Sim. E você tem razão em querer uma indicação clara.
+
+**Neste exato momento: NÃO estou executando o projeto**, porque quando eu envio uma resposta, aquele turno de execução termina. Não existe trabalho no GitHub rodando silenciosamente em segundo plano.
+
+Daqui para frente, nas execuções do MLIVRETRABALHO, vou deixar o estado inequívoco:
+
+- **🟢 EXECUTANDO** = estou dentro do turno usando as ferramentas e trabalhando no projeto.
+- **🟡 AGUARDANDO CI** = existe CI em andamento, mas durante o turno continuo fazendo outras tarefas independentes.
+- **🔴 EXECUÇÃO ENCERRADA PELO CHAT** = o turno terminou e **não há trabalho acontecendo**.
+
+E mantenho a regra já combinada: enquanto estiver **🟢 EXECUTANDO**, continuo o máximo possível, sem parar voluntariamente entre uma etapa e outra, e **atualizo nosso documento no GitHub**. Quando aparecer 🔴, você saberá que precisa mandar **“continuar”** para iniciar outro turno de execução.
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+🟢 EXECUTANDO — execução contínua máxima retomada; documento continuará sendo atualizado.
