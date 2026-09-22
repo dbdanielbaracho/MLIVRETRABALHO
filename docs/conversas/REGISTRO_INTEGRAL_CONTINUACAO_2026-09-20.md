@@ -1848,3 +1848,7 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — execução contínua máxima retomada; documento continuará sendo atualizado.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — progresso deste turno: #108 CI verde/merge (semântica Forbidden financeira); #111 CI verde/merge (safety_cases sem DELETE runtime). #110 conflitou e foi reconstruído como #112; #112 CI verde/merge, tornando idempotência compatível com ledger append-only via DO NOTHING. #113 criado para retornar deterministicamente o evento existente em webhook duplicado; CI em execução. #114 criado para ForbiddenException em recusas de autorização de Trust & Safety; CI disparado. Documento atualizado novamente conforme regra permanente.
