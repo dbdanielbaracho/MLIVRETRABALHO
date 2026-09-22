@@ -1658,3 +1658,7 @@ continuar usando sempre as mesmas regras que acordamos
 
 ### ASSISTENTE
 [Execução contínua máxima retomada com as mesmas regras acordadas; sem atualizações intermediárias.]
+
+
+### ASSISTENTE
+[Execução contínua adicional: #83 CI verde/merge. #84 criado para Reliability real no Team Allocation, CI verde/merge. #85 confirmação mobile do substituto, CI verde/merge. #86 hardening de geolocalização com validação de pares/ranges e SQL parametrizado, CI verde/merge. #87 unread notification count, CI verde/merge. #88 valida assignment/profissional em trust events, CI verde/merge. #89 fundação DB de Trust & Safety cases criada, CI em execução. #90 API de reports Trust & Safety criada, CI em execução e dependente de #89. Sem respostas intermediárias.]
