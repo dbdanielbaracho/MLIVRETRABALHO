@@ -1821,3 +1821,7 @@ continuar e seguir as mesmas regras não esqueça de atualizar sempre o nosso do
 
 ### ASSISTENTE
 [Execução contínua máxima retomada. Regra de atualização permanente do documento mantida.]
+
+
+### ASSISTENTE
+[Execução contínua adicional: #107 CI verde/merge. #106 conflitou e foi reconstruído como #108 sobre main atual. #109 criou migration 0020 tornando payment_events append-only ao revogar UPDATE/DELETE; CI verde/merge. #110 criado para trocar idempotência de payment events de no-op UPDATE para DO NOTHING, compatível com ledger imutável; CI em execução. #111 criado para revogar DELETE de safety_cases e preservar registros de incidentes; CI em execução. #108 CI em execução. Documento atualizado novamente durante a execução, conforme regra permanente.]
