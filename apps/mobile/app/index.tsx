@@ -18,7 +18,7 @@ export default function Home() {
           <Link href="/trabalhos">Trabalhos</Link>
           <Link href="/ganhos">Ganhos</Link>
           <Link href="/perfil">Perfil</Link>
-          <Link href="/notificacoes">Avisos{unread?` (${unread})`:``}</Link>
+          <Link href="/notificacoes">Avisos{unread?` (${unread})`:``}</Link>\n          <Link href="/seguranca">Segurança</Link>
         </View>
       </View>
     </SafeAreaView>
