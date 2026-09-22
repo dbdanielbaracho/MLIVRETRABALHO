@@ -1980,3 +1980,24 @@ ok continuar então
 
 ### ASSISTENTE
 🟢 EXECUTANDO — turno máximo: #126 CI verde/merge, auto-match agora usa reliability real. #125 falhou inicialmente no typecheck por aspas do alias SQL; logs inspecionados, correção aplicada, novo CI verde e merge concluído. #127 CI verde mas conflitou após #125; reconstruído como #129 sobre main atual para exigir disponibilidade cobrindo o horário antes de selecionar substituto. #128 criado para impedir substituição de assignment já completed/cancelled; CI em execução. Documento atualizado novamente.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto. Usei este turno de forma mais longa, conforme combinamos.
+
+Concluí **#126**, colocando confiabilidade real no auto-match. O **#125** falhou inicialmente no typecheck; fui aos logs, identifiquei o problema de aspas no SQL, corrigi, rodei novamente e, com CI verde, fiz o merge.
+
+Também avancei a validação de substituições: o #127 passou no CI, mas conflitou após o #125; reconstruí como **#129** sobre o `main` atual para impedir selecionar um substituto sem disponibilidade que cubra o horário do trabalho. Criei ainda o **#128**, impedindo substituição quando o assignment original já estiver `completed` ou `cancelled`.
+
+Nosso documento foi atualizado novamente: `d4a0e83d921167c2d915dd9ef4684b08fe05ea6d`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.**
+Retomada exata: **#128/#129 → merges verdes → Replacement restante → pagamentos/PSP/split → testes cross-tenant/E2E → jornadas restantes → auditoria adversarial → deploy → Production Truth Gate.**
+
+### USUÁRIO
+continuar e seguir as mesmas regrAS
+
+### ASSISTENTE
+🟢 EXECUTANDO — retomado exatamente em #128/#129, mantendo todas as mesmas regras, turno máximo e registro permanente no GitHub.
