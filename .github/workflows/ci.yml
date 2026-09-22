@@ -61,3 +61,15 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+
+      - name: Verify production migration runner
+        env:
+          PGPASSWORD: postgres
+          MIGRATION_TEST_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_migrations
+        run: |
+          createdb -h localhost -U postgres mlivretrabalho_migrations
+          DATABASE_URL="$MIGRATION_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
+          DATABASE_URL="$MIGRATION_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
+          EXPECTED="$(find packages/db/migrations -maxdepth 1 -type f -name '*.sql' | wc -l | tr -d ' ')"
+          APPLIED="$(psql "$MIGRATION_TEST_URL" -tAc 'SELECT count(*) FROM schema_migrations' | tr -d ' ')"
+          test "$APPLIED" = "$EXPECTED"
