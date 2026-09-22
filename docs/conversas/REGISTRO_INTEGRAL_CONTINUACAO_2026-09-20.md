@@ -1799,3 +1799,25 @@ continuar
 
 ### ASSISTENTE
 [Execução contínua: #103 CI verde/merge, validando assignment do webhook dentro do tenant. #104 reaplicou reconciliationStatus, CI verde/merge e verificação pós-merge confirmou o campo no main. #105 CI verde mas conflitou após #104; fechado e reconstruído como #107 sobre main atual para validar assignment também na criação manual de payment events. #106 criado para usar ForbiddenException nas recusas de autorização financeira; CI em execução. #107 CI disparado.]
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Nesta rodada concluí e fiz merge do **#103**, validando o `assignment` do webhook financeiro dentro do tenant. Corrigi também definitivamente o problema detectado anteriormente: o **#104** restaurou `reconciliationStatus`, passou no CI, foi incorporado e eu verifiquei depois do merge que o campo **está realmente presente no `main`**.
+
+O **#105** passou no CI, mas entrou em conflito depois do #104. Não forcei o merge: reconstruí a alteração sobre o `main` atual como **#107**, mantendo a validação do assignment também para eventos financeiros criados manualmente.
+
+Também criei o **#106** para corrigir a semântica de segurança, usando `ForbiddenException` nas recusas de autorização financeira. #106 e #107 ficaram em processo de CI.
+
+Registro atualizado no GitHub: `bf344bfb5571c3914ebe2d7cad8624e5b37a8b75`.
+
+**Retomada exata:** #106/#107 → merges somente verdes → segurança/idempotência do webhook → abstração de PSP/split real → testes financeiros/cross-tenant → demais jornadas → E2E → auditoria adversarial → deploy → **Production Truth Gate**.
+
+### USUÁRIO
+continuar e seguir as mesmas regras não esqueça de atualizar sempre o nosso documento
+
+### ASSISTENTE
+[Execução contínua máxima retomada. Regra de atualização permanente do documento mantida.]
