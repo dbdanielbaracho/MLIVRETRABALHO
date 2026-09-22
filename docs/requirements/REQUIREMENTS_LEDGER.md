@@ -7,12 +7,12 @@ Rastreabilidade obrigatória:
 | ID | Requisito | Estado | Decisão/ADR | Código | Teste/Evidência |
 |---|---|---|---|---|---|
 | INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / CI GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; CI run `35553977088` SUCCESS |
-| API-001 | API NestJS + Fastify com health/readiness | MERGED / BUILD GREEN / DEPLOY PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | PR #1; CI build green; smoke de produção pendente |
+| API-001 | API NestJS + Fastify com health/readiness | MERGED / BUILD PRODUÇÃO GREEN / PRE-DEPLOY BLOQUEADO POR DATABASE_URL | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway build real SUCCESS; migration pre-deploy bloqueada por `DATABASE_URL_required`; smoke produção pendente |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
 | CI-001 | CI executa typecheck, build e testes | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | CI contínuo em PRs; runs #388, #389 e #393 SUCCESS nos PRs #156/#157/#159 |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING | Documento da Verdade v1.5 §13/§33 | — | decisão/evidência pendente |
-| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL | Documento da Verdade v1.5 §33 | reporting baseline implementado; demais enforcement pendente | reporting/access corrigido no PR #159; KYC/KYB/suspensão/disputa pendentes |
+| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL | Documento da Verdade v1.5 §33 | reporting baseline implementado; demais enforcement pendente | reporting/access corrigido no PR #159; KYC/KYB/suspensão/disputas pendentes |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Release foundation v0.1
@@ -58,4 +58,16 @@ Rastreabilidade obrigatória:
 
 ## Deploy / Production Truth
 
-Nenhum deploy do MLIVRETRABALHO foi comprovado nesta fase. Não existe projeto Railway explicitamente identificado como MLIVRETRABALHO na conta conectada; portanto `DEPLOY` e `Production Truth Gate` permanecem **PENDENTES** até existir serviço identificado, URL pública, banco de produção, migrations aplicadas e smoke tests reais.
+Infraestrutura de produção agora está **identificada e parcialmente provisionada**, mas o Production Truth Gate ainda não foi atingido.
+
+- Railway project: `MLIVRETRABALHO`;
+- Railway environment: `production`;
+- Railway service: `@mlivretrabalho/api` conectado à `main`;
+- domínio Railway gerado: `mlivretrabalhoapi-production.up.railway.app`;
+- build/start/pre-deploy/healthcheck configurados;
+- Neon project: `mlivretrabalho`, branch `production`;
+- primeira tentativa real de deploy: build e image push **SUCCESS**; pre-deploy **FAILED** em `DATABASE_URL_required`;
+- causa atual: segredo `DATABASE_URL` ainda não associado ao serviço Railway;
+- migrations de produção, healthcheck público e smoke real permanecem pendentes até essa associação.
+
+Evidência: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`.
