@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "typecheck": "turbo run typecheck",
+    "typecheck": "turbo run typecheck && tsc .railway/railway.ts --noEmit --module nodenext --moduleResolution nodenext --target es2022 --skipLibCheck",
     "test": "turbo run test",
     "db:test:rls": "bash packages/db/tests/rls-isolation.sh"
   },
