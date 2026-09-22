@@ -2044,3 +2044,26 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — #132/#133/#134 estavam verdes e foram incorporados. Pagamentos agora rejeitam reutilização inconsistente de idempotencyKey no webhook; Replacement ganhou semântica 403 correta e validação do assignment já na criação do pedido. #135 adicionou guarda de replay por timestamp de 5 minutos ao webhook; CI verde e merge concluído. #136 tentou tornar CI reprodutível com frozen-lockfile, mas o CI provou que o repositório ainda não possui pnpm-lock.yaml; PR fechado sem merge para não mascarar o problema. #137 criado para retornar Forbidden em acesso negado ao chat; CI em execução. Documento atualizado.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Neste turno avancei além dos PRs pendentes: **#132, #133 e #134 passaram e foram incorporados**. Também criei e incorporei o **#135**, adicionando proteção temporária contra replay no webhook financeiro com janela de cinco minutos.
+
+Tentei ainda endurecer a reprodutibilidade do CI no **#136**. O próprio CI revelou um problema estrutural: o repositório **não possui `pnpm-lock.yaml`**. Fechei o PR sem merge em vez de mascarar o problema. O lockfile deverá ser criado deliberadamente antes de ativarmos `--frozen-lockfile`.
+
+Também abri o **#137** para corrigir a semântica de autorização do chat para `403 Forbidden`; ele ficou em CI.
+
+Registro atualizado no commit `507be1c4bc6cef81b18ae287937756cf2422b553`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.**
+Retomada exata: **#137 → lockfile/CI reprodutível → testes cross-tenant do chat → segurança financeira/adapter PSP → PSP e split reais → E2E → auditoria → deploy → Production Truth Gate.**
+
+### USUÁRIO
+continuar
+
+### ASSISTENTE
+🟢 EXECUTANDO — retomado exatamente em #137, seguindo todas as mesmas regras e execução máxima.
