@@ -10,8 +10,8 @@ Rastreabilidade obrigatória:
 | API-001 | API NestJS + Fastify com health/readiness | MERGED / BUILD PRODUÇÃO GREEN / PRE-DEPLOY BLOQUEADO POR DATABASE_URL | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway build real SUCCESS; migration pre-deploy bloqueada por `DATABASE_URL_required`; smoke produção pendente |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
-| CI-001 | CI executa typecheck, build e testes | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | CI contínuo em PRs; runs #388, #389, #393 e #414 SUCCESS nos PRs #156/#157/#159/#168 |
-| FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING | Documento da Verdade v1.5 §13/§33 | infraestrutura neutra de payment events/webhook existe; risco financeiro definitivo não congelado | pesquisa/provider real e decisão/evidência pendentes |
+| CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426 SUCCESS nos PRs #156/#157/#159/#168/#169/#170 |
+| FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING / PESQUISA + ADR PROPOSTO / HARDENING NEUTRO MERGED | Documento da Verdade v1.5 §13/§33; `ADR-FIN-001-PROPOSED.md` | payment events append-only, provider provenance, webhook baseline, raw-body readiness; provider definitivo não selecionado | `FIN_RISK_PSP_RESEARCH_2026-09-22.md`; PR #169 CI #424; PR #170 CI #426; provider/comercial/legal/unit economics/sandbox real pendentes |
 | TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / PESQUISA + ADR PROPOSTO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting baseline implementado; enforcement definitivo não integrado | `TRUST_ARCH_RESEARCH_2026-09-22.md`; PR #159 reporting/access; PR #167 fechado sem merge (migration conflitante + gate ainda OPEN); revisão jurídica/provider pendentes |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
@@ -55,6 +55,8 @@ Rastreabilidade obrigatória:
 | SEC-TEAM-001 | Team Allocation valida job/team e autorização | MERGED / CI GREEN | validação/tenant safety | `apps/api/src/team-allocation.controller.ts` | PR #149; CI SUCCESS |
 | SEC-POOL-001 | Talent Pools valida papel e visibilidade profissional no tenant | MERGED / CI GREEN | tenant safety | `apps/api/src/talent-pools.controller.ts` | PR #146; CI SUCCESS |
 | SEC-SAFETY-001 | Safety case ligado a assignment usa membership real e regra de acesso testada | MERGED / CI GREEN | Trust & Safety reporting/access control | `apps/api/src/safety-cases.controller.ts`, `apps/api/src/safety-access-policy.ts` | PR #159; CI #393 SUCCESS; merge `4374fe8`; corrigida referência inválida `memberships` → `tenant_memberships` |
+| FIN-EVENT-001 | Fatos financeiros externos não podem ser fabricados por company/admin | MERGED / CI GREEN | `ADR-FIN-001-PROPOSED.md` | `apps/api/src/payment-events.controller.ts`, `payment-webhook.controller.ts`, migration `0022_payment_event_provider.sql` | PR #169; CI #424 SUCCESS; merge `3b18954`; `PAYMENT_PROVIDER_PROVENANCE_v1.45.md` |
+| FIN-WEBHOOK-001 | API preserva raw HTTP body para assinatura futura de provider | MERGED / CI GREEN | arquitetura provider-neutral | `apps/api/src/main.ts` | PR #170; CI #426 SUCCESS; merge `625482c`; `PAYMENT_RAW_BODY_v1.46.md` |
 
 ## Deploy / Production Truth
 
