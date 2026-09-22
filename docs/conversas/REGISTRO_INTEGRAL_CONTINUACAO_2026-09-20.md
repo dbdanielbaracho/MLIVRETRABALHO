@@ -2119,3 +2119,7 @@ CONTINUAR
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado exatamente em #143/#144, mantendo todas as regras e execução máxima.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — #143 CI verde/merge. #144 conflitou após #143 e foi reconstruído como #145 sobre main atual; #145 CI verde/merge, validando team e professional antes da inclusão. Auditoria das rotas recém-montadas continuou: #146 endurece Talent Pools com 403 e visibilidade tenant do profissional; #147 valida job/team no Team Allocation e corrige 403; #148 rejeita timestamps inválidos em Availability. #146/#147/#148 estão no CI. Documento atualizado.
