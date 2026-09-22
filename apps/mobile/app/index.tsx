@@ -1,7 +1,11 @@
 import { Link } from 'expo-router';
+import { useEffect,useState } from 'react';
+import { authenticatedTenantHeaders } from '../lib/session';
+import { apiUrl } from '../lib/api';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 export default function Home() {
+  const [unread,setUnread]=useState(0);useEffect(()=>{void (async()=>{try{const h=await authenticatedTenantHeaders();const r=await fetch(apiUrl('/notifications/unread-count'),{headers:h});if(r.ok)setUnread((await r.json()).count??0);}catch{}})();},[]);
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
@@ -14,6 +18,7 @@ export default function Home() {
           <Link href="/trabalhos">Trabalhos</Link>
           <Link href="/ganhos">Ganhos</Link>
           <Link href="/perfil">Perfil</Link>
+          <Link href="/notificacoes">Avisos{unread?` (${unread})`:``}</Link>
         </View>
       </View>
     </SafeAreaView>
