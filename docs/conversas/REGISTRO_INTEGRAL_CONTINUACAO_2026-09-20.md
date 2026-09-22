@@ -1901,3 +1901,24 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — progresso deste turno: #118 CI verde/merge. #119 criado, CI verde e merge: no_show/late_arrival agora exigem assignmentId, evitando penalidade de presença sem vínculo de trabalho. #120 criado para limitar consulta de histórico de trust-events a profissional visível no tenant; CI em execução. #121 criado para tornar a tela Segurança acessível diretamente pela Home mobile; CI em execução. Documento atualizado novamente conforme regra permanente.
+
+
+### ASSISTENTE
+🔴 **EXECUÇÃO ENCERRADA PELO CHAT**
+
+Não parei por decisão de projeto.
+
+Neste turno, **#118 foi aprovado e incorporado**. Em seguida criei o **#119**, que exige `assignmentId` para registrar `no_show` ou `late_arrival`; passou no CI e também foi incorporado. Isso impede penalidades de presença sem vínculo com um trabalho específico.
+
+Também avancei com **#120**, restringindo o histórico de `trust-events` a profissionais realmente visíveis dentro do tenant, e **#121**, tornando a tela **Segurança** acessível diretamente pela Home do aplicativo. Ambos estavam em CI.
+
+Nosso documento foi atualizado novamente. Último commit do registro: `35ccb17e7af9514e56b654ac73c8efd19ae9ec05`.
+
+**Agora: 🔴 NÃO ESTOU EXECUTANDO.**
+Retomada exata: **#120/#121 → merges somente verdes → Trust & Safety → PSP/split real → testes cross-tenant/E2E → jornadas restantes → auditoria adversarial → deploy → Production Truth Gate.**
+
+### USUÁRIO
+continuar e seguir as mesmas instruções
+
+### ASSISTENTE
+🟢 EXECUTANDO — retomado em #120/#121; mesmas instruções, execução contínua e atualização permanente do documento mantidas.
