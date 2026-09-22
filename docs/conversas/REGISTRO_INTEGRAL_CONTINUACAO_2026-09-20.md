@@ -2092,3 +2092,7 @@ CONTINUAR
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado exatamente em #138/#139, mantendo execução máxima e todas as regras.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — #138/#139 CI verde e merge concluído. Auditoria descobriu falha crítica de runtime em AppModule: vários controllers já implementados/importados não estavam registrados, portanto suas rotas não eram montadas. #140 corrigiu o registro de dashboard, disponibilidade, replacement, teams, notifications, chat, trust, pagamentos, talent pools, allocation, webhook e safety; CI verde/merge. #141 endureceu Trust: professional_not_found agora 404 e criação de incident/commendation exige profissional visível no tenant; CI verde/merge. #142 corrige dashboard role denial para 403; CI verde/merge. #143 corrige teams role denial para 403; CI em execução. #144 valida existência do time e visibilidade do profissional antes de adicionar membro; CI em execução. Documento atualizado.
