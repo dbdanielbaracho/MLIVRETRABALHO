@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "pnpm --filter @mlivretrabalho/api build"
+  },
+  "deploy": {
+    "startCommand": "pnpm --filter @mlivretrabalho/api start",
+    "healthcheckPath": "/v1/health/ready",
+    "healthcheckTimeout": 300
+  }
+}
