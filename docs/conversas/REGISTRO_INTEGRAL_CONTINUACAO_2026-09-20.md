@@ -1872,3 +1872,7 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — execução contínua máxima retomada em #113/#114; atualização permanente do documento mantida.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — progresso: #114 CI verde/merge. #113 conflitou após mudanças de idempotência e foi reconstruído como #115; #115 CI verde/merge. #116 CI verde/merge para rejeitar reutilização inconsistente de chave idempotente nos eventos financeiros manuais. #117 CI verde/merge criando contrato neutro PaymentProviderAdapter para futura integração PSP real, sem alegar provedor live. #118 criado para ForbiddenException na autorização de trust-events; CI em execução. Documento atualizado novamente.
