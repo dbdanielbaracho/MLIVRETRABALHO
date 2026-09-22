@@ -10,9 +10,9 @@ Rastreabilidade obrigatória:
 | API-001 | API NestJS + Fastify com health/readiness | MERGED / BUILD PRODUÇÃO GREEN / PRE-DEPLOY BLOQUEADO POR DATABASE_URL | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway build real SUCCESS; migration pre-deploy bloqueada por `DATABASE_URL_required`; smoke produção pendente |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
-| CI-001 | CI executa typecheck, build e testes | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | CI contínuo em PRs; runs #388, #389 e #393 SUCCESS nos PRs #156/#157/#159 |
-| FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING | Documento da Verdade v1.5 §13/§33 | — | decisão/evidência pendente |
-| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL | Documento da Verdade v1.5 §33 | reporting baseline implementado; demais enforcement pendente | reporting/access corrigido no PR #159; KYC/KYB/suspensão/disputas pendentes |
+| CI-001 | CI executa typecheck, build e testes | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | CI contínuo em PRs; runs #388, #389, #393 e #414 SUCCESS nos PRs #156/#157/#159/#168 |
+| FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING | Documento da Verdade v1.5 §13/§33 | infraestrutura neutra de payment events/webhook existe; risco financeiro definitivo não congelado | pesquisa/provider real e decisão/evidência pendentes |
+| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / PESQUISA + ADR PROPOSTO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting baseline implementado; enforcement definitivo não integrado | `TRUST_ARCH_RESEARCH_2026-09-22.md`; PR #159 reporting/access; PR #167 fechado sem merge (migration conflitante + gate ainda OPEN); revisão jurídica/provider pendentes |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Release foundation v0.1
@@ -58,7 +58,7 @@ Rastreabilidade obrigatória:
 
 ## Deploy / Production Truth
 
-Infraestrutura de produção agora está **identificada e parcialmente provisionada**, mas o Production Truth Gate ainda não foi atingido.
+Infraestrutura de produção está **identificada e parcialmente provisionada**, mas o Production Truth Gate ainda não foi atingido.
 
 - Railway project: `MLIVRETRABALHO`;
 - Railway environment: `production`;
@@ -68,6 +68,8 @@ Infraestrutura de produção agora está **identificada e parcialmente provision
 - Neon project: `mlivretrabalho`, branch `production`;
 - primeira tentativa real de deploy: build e image push **SUCCESS**; pre-deploy **FAILED** em `DATABASE_URL_required`;
 - causa atual: segredo `DATABASE_URL` ainda não associado ao serviço Railway;
-- migrations de produção, healthcheck público e smoke real permanecem pendentes até essa associação.
+- migrations de produção, healthcheck público e smoke real permanecem pendentes até essa associação;
+- contrato automatizado do Production Truth Gate está versionado em `scripts/production-truth-gate.sh`, merge PR #168 `f43c8e9`, CI #414 SUCCESS;
+- execução em localhost na CI prova o **contrato do gate**, não a produção.
 
-Evidência: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`.
+Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md` e `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md`.
