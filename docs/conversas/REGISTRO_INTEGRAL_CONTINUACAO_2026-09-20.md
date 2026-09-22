@@ -2067,3 +2067,7 @@ continuar
 
 ### ASSISTENTE
 🟢 EXECUTANDO — retomado exatamente em #137, seguindo todas as mesmas regras e execução máxima.
+
+
+### ASSISTENTE
+🟢 EXECUTANDO — #137 CI verde/merge. Auditoria do lockfile confirmou packageManager pnpm@10.15.1 e manifests, mas nenhum pnpm-lock.yaml versionado; não foi inventado lockfile manualmente. #138 criado: extrai predicados de segurança do webhook e adiciona testes executáveis para freshness/replay e consistência de idempotência; CI em execução. #139 criado: chat passa a diferenciar assignment inexistente no tenant (404) de assignment existente sem autorização (403); CI iniciado. Documento atualizado.
