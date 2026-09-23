@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE company_jobs ADD COLUMN IF NOT EXISTS work_city text;
+COMMIT;
