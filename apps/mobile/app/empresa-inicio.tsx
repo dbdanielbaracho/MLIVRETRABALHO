@@ -1,7 +1,7 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { authenticatedTenantHeaders } from '../lib/session';
+import { authenticatedTenantHeaders, clearSession, clearTenant } from '../lib/session';
 import { apiUrl } from '../lib/api';
 
 type Dashboard = {
@@ -59,6 +59,16 @@ export default function EmpresaInicio() {
     setMessage(response.ok ? 'Profissional adicionado aos preferidos.' : 'Não foi possível adicionar aos preferidos.');
   }
 
+  async function signout() {
+    const headers = await authenticatedTenantHeaders();
+    try {
+      await fetch(apiUrl('/auth/signout'), { method: 'POST', headers });
+    } finally {
+      await Promise.all([clearSession(), clearTenant()]);
+      router.replace('/');
+    }
+  }
+
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
@@ -104,6 +114,9 @@ export default function EmpresaInicio() {
             </Pressable>
           </View>
         ))}
+        <Pressable style={s.signout} onPress={() => void signout()}>
+          <Text style={s.bold}>Sair da conta</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -121,5 +134,6 @@ const s = StyleSheet.create({
   bold: { fontWeight: '800' },
   ratingRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
   ratingButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 10 },
-  preferredButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' }
+  preferredButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' },
+  signout: { padding: 14, alignItems: 'center', marginTop: 10 }
 });
