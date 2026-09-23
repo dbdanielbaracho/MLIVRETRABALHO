@@ -7,12 +7,12 @@ Rastreabilidade obrigatória:
 | ID | Requisito | Estado | Decisão/ADR | Código | Teste/Evidência |
 |---|---|---|---|---|---|
 | INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / CI GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; CI run `35553977088` SUCCESS |
-| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `5b89e3cb-959c-41fb-83a8-b511a40d50ae` SUCCESS; `/v1/health/ready` HTTP 200 pelo healthcheck Railway |
+| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `fcbfa2d5-1155-4eba-b469-f85081d48789` SUCCESS; `/v1/health/ready` HTTP 200 pelo healthcheck Railway |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
 | CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426/#433 SUCCESS nos PRs #156/#157/#159/#168/#169/#170/#171 |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING / PESQUISA + ADR PROPOSTO / HARDENING NEUTRO MERGED | Documento da Verdade v1.5 §13/§33; `ADR-FIN-001-PROPOSED.md` | payment events append-only, provider provenance, webhook baseline, raw-body readiness; provider definitivo não selecionado | `FIN_RISK_PSP_RESEARCH_2026-09-22.md`; PR #169 CI #424; PR #170 CI #426; provider/comercial/legal/unit economics/sandbox real pendentes |
-| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / BASELINE KYC-KYB NEUTRO MERGED / ENFORCEMENT NÃO ATIVO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting baseline + verification cases/API provider-neutral; nenhum usuário pode autoaprovar; enforcement definitivo não integrado | `TRUST_ARCH_RESEARCH_2026-09-22.md`; PR #159; PR #171 CI #433 SUCCESS, merge `418a1dcc`; `TRUST_VERIFICATIONS_v1.47.md`; revisão jurídica/provider/callback autenticado pendentes |
+| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / BASELINE KYC-KYB NEUTRO MERGED+DEPLOYED / ENFORCEMENT NÃO ATIVO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting baseline + verification cases/API provider-neutral; nenhum usuário pode autoaprovar; enforcement definitivo não integrado | `TRUST_ARCH_RESEARCH_2026-09-22.md`; PR #159; PR #171 CI #433 SUCCESS; merge `418a1dcc`; deploy `fcbfa2d5...` SUCCESS; revisão jurídica/provider/callback autenticado pendentes |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Release foundation v0.1
@@ -55,7 +55,7 @@ Rastreabilidade obrigatória:
 | SEC-TEAM-001 | Team Allocation valida job/team e autorização | MERGED / CI GREEN | validação/tenant safety | `apps/api/src/team-allocation.controller.ts` | PR #149; CI SUCCESS |
 | SEC-POOL-001 | Talent Pools valida papel e visibilidade profissional no tenant | MERGED / CI GREEN | tenant safety | `apps/api/src/talent-pools.controller.ts` | PR #146; CI SUCCESS |
 | SEC-SAFETY-001 | Safety case ligado a assignment usa membership real e regra de acesso testada | MERGED / CI GREEN | Trust & Safety reporting/access control | `apps/api/src/safety-cases.controller.ts`, `apps/api/src/safety-access-policy.ts` | PR #159; CI #393 SUCCESS; merge `4374fe8`; corrigida referência inválida `memberships` → `tenant_memberships` |
-| TRUST-VERIFY-001 | Baseline provider-neutral para KYC/KYB, sem autoaprovação nem enforcement automático | MERGED / CI GREEN / DEPLOY EM ANDAMENTO | `ADR-TRUST-001-PROPOSED.md` | `verification.controller.ts`, `verification-policy.ts`, migration `0023_verification_cases.sql` | PR #171; CI #433 SUCCESS; merge `418a1dcc`; `TRUST_VERIFICATIONS_v1.47.md` |
+| TRUST-VERIFY-001 | Baseline provider-neutral para KYC/KYB, sem autoaprovação nem enforcement automático | MERGED / CI GREEN / DEPLOYED | `ADR-TRUST-001-PROPOSED.md` | `verification.controller.ts`, `verification-policy.ts`, migration `0023_verification_cases.sql` | PR #171; CI #433 SUCCESS; merge `418a1dcc`; deployment `fcbfa2d5-1155-4eba-b469-f85081d48789` SUCCESS; migration 0023 aplicada; readiness HTTP 200 |
 | FIN-EVENT-001 | Fatos financeiros externos não podem ser fabricados por company/admin | MERGED / CI GREEN | `ADR-FIN-001-PROPOSED.md` | `apps/api/src/payment-events.controller.ts`, `payment-webhook.controller.ts`, migration `0022_payment_event_provider.sql` | PR #169; CI #424 SUCCESS; merge `3b18954`; `PAYMENT_PROVIDER_PROVENANCE_v1.45.md` |
 | FIN-WEBHOOK-001 | API preserva raw HTTP body para assinatura futura de provider | MERGED / CI GREEN | arquitetura provider-neutral | `apps/api/src/main.ts` | PR #170; CI #426 SUCCESS; merge `625482c`; `PAYMENT_RAW_BODY_v1.46.md` |
 
@@ -72,14 +72,13 @@ Infraestrutura de produção canônica está concentrada no **Railway**.
 - domínio externo oficial: `https://mlivretrabalho.predibeacon.com`;
 - custom domain Railway anexado à porta 8080; DNS/certificado/resolução pública ainda precisam de prova externa reproduzível;
 - runtime da API escuta em `PORT=8080`;
-- deployment API base `5b89e3cb-959c-41fb-83a8-b511a40d50ae`: **SUCCESS**;
-- novo deployment do merge #171 (`418a1dcc`) está em andamento para aplicar `0023_verification_cases.sql`;
+- deployment atual do merge #171: `fcbfa2d5-1155-4eba-b469-f85081d48789` — **SUCCESS**;
 - Postgres Railway: **SUCCESS**;
-- migration runner de produção confirmado até `0022_payment_event_provider.sql`; `0023` pendente de confirmação do deploy atual;
-- Nest application start e Railway healthcheck `/v1/health/ready`: **SUCCESS / HTTP 200** no deployment base;
-- réplica da API: **1 running / 0 crashed** no deployment base;
+- migration runner de produção: **SUCCESS**, migrations aplicadas até `0023_verification_cases.sql`;
+- Nest application start: **SUCCESS**;
+- Railway healthcheck `/v1/health/ready`: **HTTP 200**;
 - Neon foi descartado da arquitetura operacional e não é dependência da produção;
 - contrato automatizado do Production Truth Gate está versionado em `scripts/production-truth-gate.sh`, merge PR #168 `f43c8e9`, CI #414 SUCCESS;
-- Production Truth público completo permanece pendente de uma requisição externa reproduzível ao domínio oficial e execução do script contra a URL pública.
+- Production Truth público completo permanece pendente de uma requisição externa reproduzível ao domínio oficial e execução do script contra a URL pública. A ferramenta externa desta sessão ainda não consegue acessar esse domínio e isso não é tratado como prova de falha do serviço.
 
 Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md` e `docs/evidencias/TRUST_VERIFICATIONS_v1.47.md`.
