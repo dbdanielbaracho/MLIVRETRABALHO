@@ -1,0 +1,2 @@
+function tokens(value:string){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().split(/\s+/).filter(Boolean);}
+export function roleFit(required?:string|null,candidate?:string|null){const r=tokens(required??'');const c=tokens(candidate??'');if(!r.length||!c.length)return 0;const rs=new Set(r),cs=new Set(c);if(r.join(' ')==c.join(' '))return 1;let hits=0;for(const t of rs)if(cs.has(t))hits++;return Math.max(0,Math.min(1,hits/rs.size));}
