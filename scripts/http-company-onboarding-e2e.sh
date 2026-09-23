@@ -6,9 +6,12 @@ STAMP="$(date +%s)-$RANDOM"
 EMAIL="company-onboard-${STAMP}@example.test"
 PASSWORD="CompanyPass123!"
 WORKSPACE="Empresa HTTP ${STAMP}"
+START_AT="$(node -e 'process.stdout.write(new Date(Date.now()+24*60*60*1000).toISOString())')"
+END_AT="$(node -e 'process.stdout.write(new Date(Date.now()+32*60*60*1000).toISOString())')"
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
+status_only(){ local method="$1" url="$2" token="$3" tenant="$4" body="$5"; curl -sS -o /tmp/company-onboarding-negative.json -w '%{http_code}' -X "$method" "${BASE_URL%/}$url" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "$body"; }
 
 SIGNUP="$(request POST /v1/auth/signup '' '' "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"company\",\"workspaceName\":\"$WORKSPACE\"}")"
 TENANT_ID="$(printf '%s' "$SIGNUP" | json_field tenantId)"
@@ -24,10 +27,17 @@ ME="$(request GET /v1/me "$TOKEN")"
 printf '%s' "$ME" | grep -q "$TENANT_ID"
 printf '%s' "$ME" | grep -q 'owner'
 
-JOB="$(request POST /v1/company/jobs "$TOKEN" "$TENANT_ID" '{"title":"Bartender","requiredRole":"Bartender","workCity":"São Paulo","location":"Centro","payCents":10000}')"
+MISSING_WINDOW_STATUS="$(status_only POST /v1/company/jobs "$TOKEN" "$TENANT_ID" '{"title":"Bartender inválido","workCity":"São Paulo","payCents":10000}')"
+test "$MISSING_WINDOW_STATUS" = "400"
+REVERSED_WINDOW_STATUS="$(status_only POST /v1/company/jobs "$TOKEN" "$TENANT_ID" "{\"title\":\"Bartender inválido 2\",\"workCity\":\"São Paulo\",\"startsAt\":\"$END_AT\",\"endsAt\":\"$START_AT\",\"payCents\":10000}")"
+test "$REVERSED_WINDOW_STATUS" = "400"
+
+JOB="$(request POST /v1/company/jobs "$TOKEN" "$TENANT_ID" "{\"title\":\"Bartender\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Centro\",\"startsAt\":\"$START_AT\",\"endsAt\":\"$END_AT\",\"payCents\":10000}")"
 test "$(printf '%s' "$JOB" | json_field title)" = "Bartender"
 test "$(printf '%s' "$JOB" | json_field status)" = "open"
+test "$(printf '%s' "$JOB" | json_field startsAt)" = "$START_AT"
+test "$(printf '%s' "$JOB" | json_field endsAt)" = "$END_AT"
 
 request POST /v1/auth/signout "$TOKEN" '' '{}' >/dev/null
 
-echo "PASS: company signup creates workspace + owner membership + usable tenant"
+echo "PASS: company signup creates workspace + owner membership + valid scheduled job"
