@@ -18,7 +18,7 @@ PRO_ID="$(printf '%s' "$PRO_SIGNUP" | json_field id)"
 COMPANY_ID="$(printf '%s' "$COMPANY_SIGNUP" | json_field id)"
 
 # Minimal fixture: one tenant and the two memberships. Everything after this line goes through HTTP.
-TENANT_ID="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -tAc "INSERT INTO tenants(slug,display_name) VALUES('http-${STAMP}','HTTP Journey') RETURNING id")"
+TENANT_ID="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -qAtc "WITH created AS (INSERT INTO tenants(slug,display_name) VALUES('http-${STAMP}','HTTP Journey') RETURNING id) SELECT id FROM created")"
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q <<SQL
 INSERT INTO tenant_memberships(tenant_id,subject_id,identity_id,role) VALUES
 ('$TENANT_ID','$COMPANY_ID','$COMPANY_ID','company'),
