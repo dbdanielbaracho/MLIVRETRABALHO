@@ -1,15 +1,14 @@
 import { BadRequestException, Body, Controller, ForbiddenException, Headers, Param, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
+import { canRate, isValidRatingScore } from './rating-policy';
 
 @Controller('assignments')
 export class RatingsController {
   constructor(private readonly db: DatabaseService, private readonly auth: AuthService) {}
 
   private validateScore(score?: number) {
-    if (!Number.isInteger(score) || score! < 1 || score! > 5) {
-      throw new BadRequestException('rating_score_invalid');
-    }
+    if (!isValidRatingScore(score)) throw new BadRequestException('rating_score_invalid');
   }
 
   @Post(':id/rating')
@@ -23,9 +22,8 @@ export class RatingsController {
     if (!tenantId) throw new BadRequestException('tenant_required');
     const membership = await this.auth.requireMembership(identity.id, tenantId);
     this.validateScore(body.score);
-    if (!['owner', 'admin', 'manager', 'company'].includes(membership.role)) {
-      throw new ForbiddenException('company_role_required');
-    }
+    if (!canRate('professional', membership.role)) throw new ForbiddenException('company_role_required');
+
     return this.db.tenant(tenantId, async db => {
       const assignment = (
         await db.query<{ professional_id: string }>(
@@ -53,7 +51,7 @@ export class RatingsController {
     if (!tenantId) throw new BadRequestException('tenant_required');
     const membership = await this.auth.requireMembership(identity.id, tenantId);
     this.validateScore(body.score);
-    if (membership.role !== 'professional') throw new ForbiddenException('professional_role_required');
+    if (!canRate('company', membership.role)) throw new ForbiddenException('professional_role_required');
 
     return this.db.tenant(tenantId, async db => {
       const assignment = (
