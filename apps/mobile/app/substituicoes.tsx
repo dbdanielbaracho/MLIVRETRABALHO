@@ -21,10 +21,19 @@ type Replacement = {
   reason?: string | null;
 };
 
+type Recommendation = {
+  replacementRequestId: string;
+  recommendedProfessionalId: string;
+  recommendedProfessionalName: string;
+  score: number;
+  reasons: string[];
+};
+
 export default function Substituicoes() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [replacements, setReplacements] = useState<Replacement[]>([]);
   const [reasons, setReasons] = useState<Record<string, string>>({});
+  const [recommendations, setRecommendations] = useState<Record<string, Recommendation>>({});
   const [message, setMessage] = useState('');
 
   useEffect(() => { void load(); }, []);
@@ -50,6 +59,36 @@ export default function Substituicoes() {
     if (response.ok) await load();
   }
 
+  async function autoMatch(replacementId: string) {
+    const headers = await authenticatedTenantHeaders();
+    const response = await fetch(apiUrl(`/company/replacements/${replacementId}/auto-match`), { method: 'POST', headers });
+    if (!response.ok) {
+      setMessage('Nenhum substituto disponível no momento.');
+      return;
+    }
+    const recommendation = await response.json() as Recommendation;
+    setRecommendations(current => ({ ...current, [replacementId]: recommendation }));
+    setMessage('Substituto recomendado encontrado.');
+  }
+
+  async function confirmReplacement(replacementId: string, professionalId: string) {
+    const headers = await authenticatedTenantHeaders();
+    const response = await fetch(apiUrl(`/company/replacements/${replacementId}/select`), {
+      method: 'POST',
+      headers: { ...headers, 'content-type': 'application/json' },
+      body: JSON.stringify({ professionalId })
+    });
+    setMessage(response.ok ? 'Substituto confirmado.' : 'Não foi possível confirmar o substituto.');
+    if (response.ok) {
+      setRecommendations(current => {
+        const next = { ...current };
+        delete next[replacementId];
+        return next;
+      });
+      await load();
+    }
+  }
+
   const openByAssignment = new Map(replacements.filter(x => x.status === 'open').map(x => [x.assignmentId, x]));
 
   return (
@@ -60,7 +99,8 @@ export default function Substituicoes() {
         {message ? <Text>{message}</Text> : null}
         {assignments.length === 0 ? <Text>Nenhum trabalho disponível para substituição.</Text> : null}
         {assignments.map(item => {
-          const open = item.replacementOpen || openByAssignment.has(item.id);
+          const replacement = openByAssignment.get(item.id);
+          const recommendation = replacement ? recommendations[replacement.id] : undefined;
           return (
             <View key={item.id} style={s.card}>
               <Text style={s.name}>{item.professionalName}</Text>
@@ -68,8 +108,23 @@ export default function Substituicoes() {
               <Text>{item.location ?? 'Local não informado'}</Text>
               <Text>Status: {item.status}</Text>
               {item.startsAt ? <Text>Início: {new Date(item.startsAt).toLocaleString()}</Text> : null}
-              {open ? (
-                <Text style={s.bold}>Substituição já solicitada</Text>
+              {replacement ? (
+                <>
+                  <Text style={s.bold}>Substituição solicitada</Text>
+                  {recommendation ? (
+                    <View style={s.recommendation}>
+                      <Text style={s.bold}>{recommendation.recommendedProfessionalName}</Text>
+                      <Text>Compatibilidade: {Math.round(recommendation.score * 100)}%</Text>
+                      <Pressable style={s.button} onPress={() => void confirmReplacement(replacement.id, recommendation.recommendedProfessionalId)}>
+                        <Text style={s.bold}>Confirmar substituto</Text>
+                      </Pressable>
+                    </View>
+                  ) : (
+                    <Pressable style={s.button} onPress={() => void autoMatch(replacement.id)}>
+                      <Text style={s.bold}>Buscar melhor substituto</Text>
+                    </Pressable>
+                  )}
+                </>
               ) : (
                 <>
                   <TextInput
@@ -99,5 +154,6 @@ const s = StyleSheet.create({
   name: { fontSize: 19, fontWeight: '800' },
   bold: { fontWeight: '800' },
   input: { borderWidth: 1, borderRadius: 10, padding: 12, marginTop: 4 },
-  button: { borderWidth: 1, borderRadius: 10, padding: 12, alignItems: 'center' }
+  button: { borderWidth: 1, borderRadius: 10, padding: 12, alignItems: 'center', marginTop: 4 },
+  recommendation: { borderWidth: 1, borderRadius: 10, padding: 12, gap: 6 }
 });
