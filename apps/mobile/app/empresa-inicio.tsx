@@ -106,6 +106,7 @@ export default function EmpresaInicio() {
         <Text style={s.title}>Operação</Text>
         <View style={s.actions}>
           <Link href="/empresa" style={s.action}>+ Publicar trabalho</Link>
+          <Link href="/planejamento" style={s.action}>Planejamento</Link>
           <Link href="/candidatos" style={s.action}>Ver interessados</Link>
           <Link href="/substituicoes" style={s.action}>Substituições</Link>
           <Link href="/equipes" style={s.action}>Equipes</Link>
