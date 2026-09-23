@@ -21,10 +21,42 @@ import { TrustEventsController } from './trust-events.controller';
 import { PaymentEventsController } from './payment-events.controller';
 import { TalentPoolsController } from './talent-pools.controller';
 import { TeamAllocationController } from './team-allocation.controller';
+import { PlannerController } from './planner.controller';
 import { PaymentWebhookController } from './payment-webhook.controller';
 import { SafetyCasesController } from './safety-cases.controller';
 import { SafetyAdminController } from './safety-admin.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
 import { VerificationController } from './verification.controller';
-@Module({ controllers: [HealthController, JobsController, AuthController, MeController, ProfessionalProfileController, WorkAssignmentsController, EarningsController, WorkPassportController, RatingsController, CompanyJobsController, CompanyJobCreateController, CompanyDashboardController, AvailabilityController, ReplacementController, TeamsController, NotificationsController, ConversationsController, TrustEventsController, PaymentEventsController, TalentPoolsController, TeamAllocationController, PaymentWebhookController, SafetyCasesController, SafetyAdminController, VerificationController], providers:[DatabaseService,AuthService] })
+
+@Module({
+  controllers: [
+    HealthController,
+    JobsController,
+    AuthController,
+    MeController,
+    ProfessionalProfileController,
+    WorkAssignmentsController,
+    EarningsController,
+    WorkPassportController,
+    RatingsController,
+    CompanyJobsController,
+    CompanyJobCreateController,
+    CompanyDashboardController,
+    PlannerController,
+    AvailabilityController,
+    ReplacementController,
+    TeamsController,
+    NotificationsController,
+    ConversationsController,
+    TrustEventsController,
+    PaymentEventsController,
+    TalentPoolsController,
+    TeamAllocationController,
+    PaymentWebhookController,
+    SafetyCasesController,
+    SafetyAdminController,
+    VerificationController
+  ],
+  providers: [DatabaseService, AuthService]
+})
 export class AppModule {}
