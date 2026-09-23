@@ -1,7 +1,7 @@
 import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { authenticatedTenantHeaders, clearSession, clearTenant } from '../lib/session';
+import { authenticatedTenantHeaders, clearSession, clearTenant, getTenant } from '../lib/session';
 import { apiUrl } from '../lib/api';
 
 type Dashboard = {
@@ -9,6 +9,16 @@ type Dashboard = {
   confirmedWorkers: number;
   activeWorkers: number;
   completedAssignments: number;
+};
+
+type ActiveAssignment = {
+  id: string;
+  professionalId: string;
+  status: string;
+  title: string;
+  location?: string | null;
+  startsAt?: string | null;
+  professionalName: string;
 };
 
 type CompletedAssignment = {
@@ -21,20 +31,33 @@ type CompletedAssignment = {
   ratingScore?: number | null;
 };
 
+const statusLabel: Record<string, string> = {
+  confirmed: 'Confirmado',
+  checked_in: 'Check-in realizado',
+  in_progress: 'Trabalhando agora',
+  checked_out: 'Check-out realizado'
+};
+
 export default function EmpresaInicio() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
+  const [active, setActive] = useState<ActiveAssignment[]>([]);
   const [completed, setCompleted] = useState<CompletedAssignment[]>([]);
+  const [tenantId, setTenantId] = useState('');
   const [message, setMessage] = useState('');
 
   useEffect(() => { void load(); }, []);
 
   async function load() {
     const headers = await authenticatedTenantHeaders();
-    const [dashboardResponse, completedResponse] = await Promise.all([
+    const currentTenant = await getTenant();
+    if (currentTenant) setTenantId(currentTenant);
+    const [dashboardResponse, activeResponse, completedResponse] = await Promise.all([
       fetch(apiUrl('/company/dashboard'), { headers }),
+      fetch(apiUrl('/company/dashboard/assignments'), { headers }),
       fetch(apiUrl('/company/dashboard/completed'), { headers })
     ]);
     if (dashboardResponse.ok) setDashboard(await dashboardResponse.json());
+    if (activeResponse.ok) setActive(await activeResponse.json());
     if (completedResponse.ok) setCompleted(await completedResponse.json());
   }
 
@@ -69,6 +92,14 @@ export default function EmpresaInicio() {
     }
   }
 
+  function openConversation(assignmentId: string) {
+    if (!tenantId) {
+      setMessage('Não foi possível identificar a empresa ativa.');
+      return;
+    }
+    router.push({ pathname: '/conversa', params: { assignmentId, tenantId } });
+  }
+
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
@@ -94,8 +125,22 @@ export default function EmpresaInicio() {
           </View>
         ))}
 
+        <Text style={s.heading}>Trabalhos ativos</Text>
+        {active.length === 0 ? <Text>Nenhum profissional confirmado ou trabalhando agora.</Text> : active.map(item => (
+          <View key={item.id} style={s.card}>
+            <Text style={s.bold}>{item.professionalName}</Text>
+            <Text>{item.title}</Text>
+            <Text>{item.location ?? 'Local não informado'}</Text>
+            <Text>Status: {statusLabel[item.status] ?? item.status}</Text>
+            {item.startsAt ? <Text>Início: {new Date(item.startsAt).toLocaleString()}</Text> : null}
+            <Pressable style={s.inlineButton} onPress={() => openConversation(item.id)}>
+              <Text style={s.bold}>Abrir conversa</Text>
+            </Pressable>
+          </View>
+        ))}
+
         <Text style={s.heading}>Trabalhos concluídos</Text>
-        <Text>{message}</Text>
+        {message ? <Text>{message}</Text> : null}
         {completed.length === 0 ? <Text>Nenhum trabalho concluído.</Text> : null}
         {completed.map(item => (
           <View key={item.id} style={s.card}>
@@ -133,6 +178,7 @@ const s = StyleSheet.create({
   card: { borderWidth: 1, borderRadius: 14, padding: 18, gap: 6 },
   value: { fontSize: 28, fontWeight: '800' },
   bold: { fontWeight: '800' },
+  inlineButton: { borderWidth: 1, borderRadius: 10, padding: 10, alignItems: 'center', marginTop: 4 },
   ratingRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
   ratingButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 10 },
   preferredButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' },
