@@ -82,6 +82,15 @@ contains "$MINE" "$ASSIGNMENT2_ID"
 contains "$MINE" "$TENANT_ID"
 contains "$MINE" "$TENANT2_ID"
 
+COMPANY_ASSIGNMENTS="$(request GET /v1/company/dashboard/assignments "$COMPANY2_TOKEN" "$TENANT2_ID")"
+contains "$COMPANY_ASSIGNMENTS" "$ASSIGNMENT2_ID"
+not_contains "$COMPANY_ASSIGNMENTS" "$ASSIGNMENT_ID"
+REPLACEMENT="$(request POST "/v1/company/replacements/$ASSIGNMENT2_ID" "$COMPANY2_TOKEN" "$TENANT2_ID" '{"reason":"Imprevisto operacional"}')"
+REPLACEMENT_ID="$(printf '%s' "$REPLACEMENT" | json_field id)"
+REPLACEMENTS="$(request GET /v1/company/replacements "$COMPANY2_TOKEN" "$TENANT2_ID")"
+contains "$REPLACEMENTS" "$REPLACEMENT_ID"
+contains "$REPLACEMENTS" "$ASSIGNMENT2_ID"
+
 COMPANY_MESSAGE="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$COMPANY_TOKEN" "$TENANT_ID" '{"body":"Olá, confirme seu horário."}')"
 contains "$COMPANY_MESSAGE" 'confirme seu horário'
 PRO_MESSAGES="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
@@ -114,4 +123,4 @@ request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY2_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: HTTP journey multi-company + tenant-isolated company job list/chat/notifications"
+echo "PASS: HTTP journey multi-company + tenant-isolated company jobs/chat/notifications/replacements"
