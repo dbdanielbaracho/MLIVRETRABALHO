@@ -51,6 +51,9 @@ request POST "/v1/jobs/$SEED_B_ID/interest" "$PRO_B_TOKEN" >/dev/null
 request POST "/v1/company/jobs/$SEED_A_ID/confirm" "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PRO_A_ID\"}" >/dev/null
 request POST "/v1/company/jobs/$SEED_B_ID/confirm" "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PRO_B_ID\"}" >/dev/null
 
+DASHBOARD_ASSIGNMENTS="$(request GET /v1/company/dashboard/assignments "$COMPANY_TOKEN" "$TENANT_ID")"
+node -e 'const rows=JSON.parse(process.argv[1]),a=process.argv[2],b=process.argv[3];if(!rows.some(x=>x.professionalId===a)||!rows.some(x=>x.professionalId===b)){console.error("dashboard professionalId missing",rows);process.exit(1)}' "$DASHBOARD_ASSIGNMENTS" "$PRO_A_ID" "$PRO_B_ID"
+
 TARGET_JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender Evento\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"startsAt\":\"$TARGET_START\",\"endsAt\":\"$TARGET_END\",\"payCents\":18000}")"
 TARGET_JOB_ID="$(printf '%s' "$TARGET_JOB" | json_field id)"
 OUTSIDE_JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender Fora da Disponibilidade\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"startsAt\":\"$OUTSIDE_START\",\"endsAt\":\"$OUTSIDE_END\",\"payCents\":18000}")"
@@ -64,6 +67,13 @@ request POST "/v1/company/teams/$TEAM_ID/members" "$COMPANY_TOKEN" "$TENANT_ID" 
 TEAMS="$(request GET /v1/company/teams "$COMPANY_TOKEN" "$TENANT_ID")"
 node -e 'const teams=JSON.parse(process.argv[1]),id=process.argv[2];const t=teams.find(x=>x.id===id);if(!t||t.memberCount!==2){console.error(teams);process.exit(1)}' "$TEAMS" "$TEAM_ID"
 
+MEMBERS="$(request GET "/v1/company/teams/$TEAM_ID/members" "$COMPANY_TOKEN" "$TENANT_ID")"
+node -e '
+const rows=JSON.parse(process.argv[1]),a=process.argv[2],b=process.argv[3];
+const A=rows.find(x=>x.professionalId===a),B=rows.find(x=>x.professionalId===b);
+if(!A||!B||A.displayName!=="Bartender São Paulo"||B.displayName!=="Cozinha Rio"){console.error("team members assertion failed",rows);process.exit(1)}
+' "$MEMBERS" "$PRO_A_ID" "$PRO_B_ID"
+
 ALLOCATION="$(request GET "/v1/company/teams/$TEAM_ID/allocation/$TARGET_JOB_ID" "$COMPANY_TOKEN" "$TENANT_ID")"
 node -e '
 const rows=JSON.parse(process.argv[1]),a=process.argv[2],b=process.argv[3];
@@ -75,8 +85,14 @@ if(!A.reasons.includes("alta compatibilidade com a função")||!A.reasons.includ
 OUTSIDE_ALLOCATION="$(request GET "/v1/company/teams/$TEAM_ID/allocation/$OUTSIDE_JOB_ID" "$COMPANY_TOKEN" "$TENANT_ID")"
 node -e 'const rows=JSON.parse(process.argv[1]);if(rows.length!==0){console.error("availability network assertion failed",rows);process.exit(1)}' "$OUTSIDE_ALLOCATION"
 
+request DELETE "/v1/company/teams/$TEAM_ID/members/$PRO_B_ID" "$COMPANY_TOKEN" "$TENANT_ID" >/dev/null
+MEMBERS_AFTER="$(request GET "/v1/company/teams/$TEAM_ID/members" "$COMPANY_TOKEN" "$TENANT_ID")"
+node -e 'const rows=JSON.parse(process.argv[1]),a=process.argv[2],b=process.argv[3];if(rows.length!==1||rows[0].professionalId!==a||rows.some(x=>x.professionalId===b)){console.error("team remove assertion failed",rows);process.exit(1)}' "$MEMBERS_AFTER" "$PRO_A_ID" "$PRO_B_ID"
+TEAMS_AFTER="$(request GET /v1/company/teams "$COMPANY_TOKEN" "$TENANT_ID")"
+node -e 'const teams=JSON.parse(process.argv[1]),id=process.argv[2];const t=teams.find(x=>x.id===id);if(!t||t.memberCount!==1){console.error("member count after remove failed",teams);process.exit(1)}' "$TEAMS_AFTER" "$TEAM_ID"
+
 request POST /v1/auth/signout "$PRO_A_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$PRO_B_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 
-echo 'PASS: team allocation uses network availability + real role/city/reliability signals'
+echo 'PASS: team allocation + mobile team member operations use real business data without technical IDs'
