@@ -1,4 +1,5 @@
 import { BadRequestException, ForbiddenException, Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import type { PoolClient } from 'pg';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { rankCandidates } from './allocation';
@@ -12,7 +13,7 @@ export class ReplacementController {
 
  private async ctx(a?:string,t?:string){const i=await this.auth.identityFromAuthorization(a);if(!t)throw new BadRequestException('tenant_required');const m=await this.auth.requireMembership(i.id,t);if(!['owner','admin','manager','company'].includes(m.role))throw new ForbiddenException('company_role_required');return t;}
 
- private async ranked(db:any,replacementId:string,tenant:string,openOnly=false){
+ private async ranked(db:PoolClient,replacementId:string,tenant:string,openOnly=false){
   const rr=(await db.query<{assignmentId:string;jobId:string;originalProfessionalId:string;title:string;requiredRole:string|null;workCity:string|null;startsAt:string|null;endsAt:string|null}>(`SELECT rr.assignment_id AS "assignmentId",wa.job_id AS "jobId",wa.professional_id AS "originalProfessionalId",j.title,j.required_role AS "requiredRole",j.work_city AS "workCity",j.starts_at AS "startsAt",j.ends_at AS "endsAt" FROM replacement_requests rr JOIN work_assignments wa ON wa.id=rr.assignment_id AND wa.tenant_id=rr.tenant_id JOIN company_jobs j ON j.id=wa.job_id AND j.tenant_id=rr.tenant_id WHERE rr.id=$1 AND rr.tenant_id=$2${openOnly?" AND rr.status='open'":''}`,[replacementId,tenant])).rows[0];
   if(!rr)throw new BadRequestException(openOnly?'replacement_not_open':'replacement_not_found');
   const rows=(await db.query<{professionalId:string;primaryRole:string|null;homeCity:string|null;available:boolean;completed:number;cancelled:number;noShows:number;lateArrivals:number}>(`SELECT DISTINCT tpm.professional_id AS "professionalId",p.primary_role AS "primaryRole",p.home_city AS "homeCity",EXISTS(SELECT 1 FROM professional_availability_network pa WHERE pa.professional_id=tpm.professional_id AND pa.starts_at<=$3::timestamptz AND pa.ends_at>=$4::timestamptz) AS available,(SELECT count(*)::int FROM work_assignments wa2 WHERE wa2.tenant_id=$1 AND wa2.professional_id=tpm.professional_id AND wa2.status='completed') completed,(SELECT count(*)::int FROM work_assignments wa2 WHERE wa2.tenant_id=$1 AND wa2.professional_id=tpm.professional_id AND wa2.status='cancelled') cancelled,(SELECT count(*)::int FROM trust_events te WHERE te.tenant_id=$1 AND te.professional_id=tpm.professional_id AND te.event_type='no_show') AS "noShows",(SELECT count(*)::int FROM trust_events te WHERE te.tenant_id=$1 AND te.professional_id=tpm.professional_id AND te.event_type='late_arrival') AS "lateArrivals" FROM talent_pool_members tpm JOIN professional_profiles p ON p.id=tpm.professional_id WHERE tpm.tenant_id=$1 AND tpm.professional_id<>$2`,[tenant,rr.originalProfessionalId,rr.startsAt,rr.endsAt])).rows;
