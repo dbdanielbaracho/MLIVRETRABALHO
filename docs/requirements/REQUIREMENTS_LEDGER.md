@@ -7,12 +7,14 @@ Rastreabilidade obrigatória:
 | ID | Requisito | Estado | Decisão/ADR | Código | Teste/Evidência |
 |---|---|---|---|---|---|
 | INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / CI GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; CI run `35553977088` SUCCESS |
-| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `fcbfa2d5-1155-4eba-b469-f85081d48789` SUCCESS; `/v1/health/ready` HTTP 200 pelo healthcheck Railway |
+| INFRA-LOCK-001 | Instalações pnpm reproduzíveis com lockfile congelado | OPEN / LOCKFILE GERADO EM CI / COMMIT BLOQUEADO PELA FERRAMENTA | disciplina de build reproduzível | `pnpm-lock.yaml` ainda ausente na `main`; CI ainda usa `--no-frozen-lockfile` | PR diagnóstico #173 fechado sem merge; CI #441 gerou artifact `pnpm-lockfile-generated` id `10726990759`; lockfile real 275570 bytes; integração atual não permite upload do arquivo gerado e bloqueou auto-commit do workflow |
+| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `a8f78439-6bdb-4725-9b98-d956f8575e50` SUCCESS; `/v1/health/ready` previamente confirmado HTTP 200 pelo healthcheck Railway |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
-| CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426/#433 SUCCESS nos PRs #156/#157/#159/#168/#169/#170/#171 |
+| CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426/#433/#439 SUCCESS nos PRs #156/#157/#159/#168/#169/#170/#171/#172 |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING / PESQUISA + ADR PROPOSTO / HARDENING NEUTRO MERGED | Documento da Verdade v1.5 §13/§33; `ADR-FIN-001-PROPOSED.md` | payment events append-only, provider provenance, webhook baseline, raw-body readiness; provider definitivo não selecionado | `FIN_RISK_PSP_RESEARCH_2026-09-22.md`; PR #169 CI #424; PR #170 CI #426; provider/comercial/legal/unit economics/sandbox real pendentes |
 | TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / BASELINE KYC-KYB NEUTRO MERGED+DEPLOYED / ENFORCEMENT NÃO ATIVO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting baseline + verification cases/API provider-neutral; nenhum usuário pode autoaprovar; enforcement definitivo não integrado | `TRUST_ARCH_RESEARCH_2026-09-22.md`; PR #159; PR #171 CI #433 SUCCESS; merge `418a1dcc`; deploy `fcbfa2d5...` SUCCESS; revisão jurídica/provider/callback autenticado pendentes |
+| MATCH-001 | Recomendações usam sinais reais em vez de placeholders | OPEN / PARCIAL | Matching Engine | reliability e availability reais; `roleFit=.5` e `distanceKm=20` ainda fixos em `company-jobs.controller.ts` porque schema atual não possui skill/role estruturada nem localização adequada para distância | `matching.ts`; `matching.test.ts`; requer expansão de perfil/job antes de remover placeholders sem inventar dados |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Release foundation v0.1
@@ -38,12 +40,13 @@ Rastreabilidade obrigatória:
 | MOB-006 | Próximo trabalho/agenda mobile | ASSIGNMENT LIFECYCLE IMPLEMENTADO / UNIT + DB INTEGRATION GREEN / DEVICE E2E PENDENTE | Jornada profissional | `apps/mobile/app/agenda.tsx`, `apps/api/src/work-assignments.controller.ts`, `apps/api/src/assignment-lifecycle.ts` | PR #154 testa transições; PR #156 valida cadeia no PostgreSQL; CI #382/#388 SUCCESS |
 | MOB-007 | Confirmação pela empresa após interesse | IMPLEMENTADA / POLICY TEST GREEN / DEVICE E2E PENDENTE | Jornada empresa/profissional | `apps/api/src/company-jobs.controller.ts`, `apps/api/src/company-confirmation-policy.ts` | PR #152 valida vaga/autorização; PR #157 testa create/idempotency/conflict; CI #379/#389 SUCCESS |
 | MOB-008 | Conversa associada ao assignment | BASELINE IMPLEMENTADA / E2E PENDENTE | Jornada profissional | `apps/mobile/app/conversa.tsx`, `apps/api/src/conversations.controller.ts` | autorização por assignment implementada; E2E pendente |
+| MOB-009 | Empresa avalia profissional após trabalho concluído | IMPLEMENTADA / DB INTEGRATION GREEN / DEPLOYED / DEVICE E2E PENDENTE | Jornada empresa → avaliação → Work Passport | `apps/mobile/app/empresa-inicio.tsx`, `apps/api/src/company-dashboard.controller.ts`, `apps/api/src/ratings.controller.ts` | PR #172; CI #439 SUCCESS; merge `b2ca4db`; deploy `a8f78439-6bdb-4725-9b98-d956f8575e50` SUCCESS; `COMPANY_RATING_MOBILE_v1.48.md` |
 
 ## Testes integrados da jornada
 
 | ID | Requisito | Estado | Decisão/ADR | Código | Teste/Evidência |
 |---|---|---|---|---|---|
-| TEST-JOURNEY-001 | Vaga → interesse → confirmação → assignment → check-in → início → check-out → conclusão → earnings | DB INTEGRATION GREEN / HTTP+DEVICE E2E PENDENTE | Plano Mestre / Definition of Done | `packages/db/tests/professional-journey.sh` | PR #156; CI #388 SUCCESS; merge `9644d1f` |
+| TEST-JOURNEY-001 | Vaga → interesse → confirmação → assignment → check-in → início → check-out → conclusão → earnings → avaliação | DB INTEGRATION GREEN / HTTP+DEVICE E2E PENDENTE | Plano Mestre / Definition of Done | `packages/db/tests/professional-journey.sh` | PR #156 + extensão PR #172; CI #388/#439 SUCCESS; rating persiste e atualização é idempotente |
 | TEST-CONFIRM-001 | Confirmação repetida é idempotente e estados incompatíveis são rejeitados | UNIT GREEN / CONTROLLER WIRED | ciclo da vaga/assignment | `apps/api/src/company-confirmation-policy.ts`, `company-confirmation-policy.test.ts` | PR #157; CI #389 SUCCESS; merge `0255fae` |
 
 ## Segurança/validação recente
@@ -72,13 +75,13 @@ Infraestrutura de produção canônica está concentrada no **Railway**.
 - domínio externo oficial: `https://mlivretrabalho.predibeacon.com`;
 - custom domain Railway anexado à porta 8080; DNS/certificado/resolução pública ainda precisam de prova externa reproduzível;
 - runtime da API escuta em `PORT=8080`;
-- deployment atual do merge #171: `fcbfa2d5-1155-4eba-b469-f85081d48789` — **SUCCESS**;
+- deployment atual do merge #172: `a8f78439-6bdb-4725-9b98-d956f8575e50` — **SUCCESS**;
 - Postgres Railway: **SUCCESS**;
 - migration runner de produção: **SUCCESS**, migrations aplicadas até `0023_verification_cases.sql`;
 - Nest application start: **SUCCESS**;
-- Railway healthcheck `/v1/health/ready`: **HTTP 200**;
+- Railway healthcheck `/v1/health/ready`: **HTTP 200** comprovado no deployment anterior e configuração preservada;
 - Neon foi descartado da arquitetura operacional e não é dependência da produção;
 - contrato automatizado do Production Truth Gate está versionado em `scripts/production-truth-gate.sh`, merge PR #168 `f43c8e9`, CI #414 SUCCESS;
 - Production Truth público completo permanece pendente de uma requisição externa reproduzível ao domínio oficial e execução do script contra a URL pública. A ferramenta externa desta sessão ainda não consegue acessar esse domínio e isso não é tratado como prova de falha do serviço.
 
-Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md` e `docs/evidencias/TRUST_VERIFICATIONS_v1.47.md`.
+Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md`, `docs/evidencias/TRUST_VERIFICATIONS_v1.47.md` e `docs/evidencias/COMPANY_RATING_MOBILE_v1.48.md`.
