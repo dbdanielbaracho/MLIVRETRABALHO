@@ -13,18 +13,19 @@
 - Pre-deploy: `pnpm --filter @mlivretrabalho/api migrate`.
 - Start: `pnpm --filter @mlivretrabalho/api start`.
 - Healthcheck: `/v1/health/ready`.
-- Domínio Railway: `mlivretrabalhoapi-production.up.railway.app`.
-- Roteamento do domínio corrigido para a porta runtime `8080`.
+- Domínio técnico Railway: `mlivretrabalhoapi-production.up.railway.app`.
+- Domínio externo oficial: `https://mlivretrabalho.predibeacon.com`.
+- Custom domain Railway associado à porta runtime `8080`.
 
 ## Histórico do bloqueio anterior
 
-As primeiras tentativas de deploy construíram a imagem corretamente, mas falharam no pre-deploy com `DATABASE_URL_required`. Durante esse diagnóstico foi criado temporariamente um PostgreSQL no Neon. Essa alternativa foi **descartada da arquitetura operacional** por decisão do projeto: produção deve permanecer concentrada no Railway. O projeto Neon não é fonte de dados nem dependência da produção atual.
+As primeiras tentativas de deploy construíram a imagem corretamente, mas falharam no pre-deploy com `DATABASE_URL_required`. Durante esse diagnóstico foi criado temporariamente um PostgreSQL no Neon. Essa alternativa foi **descartada da arquitetura operacional** por decisão do projeto: produção permanece concentrada no Railway. O projeto Neon não é fonte de dados nem dependência da produção atual.
 
 ## Correção definitiva — PostgreSQL no Railway
 
-Em 2026-09-23 foi criado o serviço `Postgres` dentro do projeto Railway `MLIVRETRABALHO` e a API passou a referenciar a conexão interna por `${{Postgres.DATABASE_URL}}`.
+Foi criado o serviço `Postgres` dentro do projeto Railway `MLIVRETRABALHO` e a API passou a referenciar a conexão interna por `${{Postgres.DATABASE_URL}}`.
 
-Deployment API validado: `5b89e3cb-959c-41fb-83a8-b511a40d50ae`.
+Deployment base validado: `5b89e3cb-959c-41fb-83a8-b511a40d50ae`.
 
 Resultado:
 - Postgres Railway: **SUCCESS**;
@@ -34,22 +35,34 @@ Resultado:
 - migration runner aplicou o schema até `0022_payment_event_provider.sql`;
 - start da aplicação NestJS: **SUCCESS**;
 - Railway healthcheck em `/v1/health/ready`: **HTTP 200**;
-- API deployment: **SUCCESS**;
 - réplica runtime: **1 running / 0 crashed**.
 
-Logs confirmam a aplicação das migrations `0016` a `0022` no trecho final do runner e, em seguida, `Nest application successfully started`. O healthcheck interno do Railway concluiu com status HTTP `200`.
+## Deploy Trust v1.47
+
+Merge de produção: `418a1dcc2c991b6a231fad4990003bda8111e3f0` (PR #171).
+Deployment Railway: `fcbfa2d5-1155-4eba-b469-f85081d48789`.
+
+Resultado confirmado:
+- deployment: **SUCCESS**;
+- migrations `0013`–`0022`: reconhecidas e ignoradas como já aplicadas;
+- migration nova: **`0023_verification_cases.sql` aplicada com sucesso**;
+- `VerificationController` registrado no runtime;
+- aplicação NestJS iniciou com sucesso;
+- Railway healthcheck `GET /v1/health/ready`: **HTTP 200** (~38,6 ms).
+
+O baseline KYC/KYB está, portanto, implantado no PostgreSQL e na API de produção. Isso **não** significa que KYC/KYB real esteja concluído: não há provider real, callback autenticado ou enforcement automático ativo.
 
 ## Roteamento público
 
-A aplicação recebeu `PORT=8080` no runtime Railway, mas o domínio gerado anteriormente estava associado à porta 3000. A configuração do domínio foi corrigida para `8080` sem alteração da aplicação. O serviço permaneceu online após a mudança.
+O endereço externo oficial do projeto é `https://mlivretrabalho.predibeacon.com`, anexado no Railway à porta `8080`.
 
-A ferramenta externa desta sessão não conseguiu resolver o domínio Railway por limitação de rede/DNS do ambiente de execução; portanto, o Production Truth Gate público completo ainda deve ser distinguido do healthcheck interno Railway. O estado comprovado é: banco, migrations, processo da API e healthcheck Railway estão verdes.
+A ferramenta externa desta sessão ainda não conseguiu acessar o domínio oficial. Portanto, o **Production Truth Gate público completo permanece pendente** até existir uma requisição externa reproduzível e bem-sucedida contra esse endereço. Essa limitação não altera a evidência interna do Railway: banco, migrations, processo da API e readiness estão verdes.
 
 ## Próximo gate
 
-1. confirmar requisição pública externa ao domínio Railway após a correção da porta;
-2. executar `scripts/production-truth-gate.sh` contra a URL pública real com a versão esperada;
-3. persistir a evidência da resposta pública e do SHA/versão;
+1. confirmar resolução DNS/HTTPS pública de `https://mlivretrabalho.predibeacon.com`;
+2. executar `scripts/production-truth-gate.sh` contra o domínio oficial e versão/SHA esperados;
+3. persistir a evidência da resposta pública;
 4. somente então marcar o Production Truth Gate público como PASS.
 
 ## Segurança
