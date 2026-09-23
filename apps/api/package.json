@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "pnpm exec tsc src/matching.ts src/matching.test.ts src/allocation.ts src/allocation.test.ts src/reliability-score.ts src/reliability-score.test.ts src/payment-webhook-security.ts src/payment-webhook-security.test.ts src/assignment-lifecycle.ts src/assignment-lifecycle.test.ts src/company-confirmation-policy.ts src/company-confirmation-policy.test.ts src/safety-access-policy.ts src/safety-access-policy.test.ts src/verification-policy.ts src/verification-policy.test.ts src/migrate.ts src/migrate.test.ts src/health.controller.ts src/health.controller.test.ts src/database.service.ts --module commonjs --target es2022 --esModuleInterop --experimentalDecorators --emitDecoratorMetadata --skipLibCheck --outDir .test-dist && node --test .test-dist/*.test.js",
+    "test": "pnpm exec tsc src/matching.ts src/matching.test.ts src/role-fit.ts src/role-fit.test.ts src/allocation.ts src/allocation.test.ts src/reliability-score.ts src/reliability-score.test.ts src/payment-webhook-security.ts src/payment-webhook-security.test.ts src/assignment-lifecycle.ts src/assignment-lifecycle.test.ts src/company-confirmation-policy.ts src/company-confirmation-policy.test.ts src/safety-access-policy.ts src/safety-access-policy.test.ts src/verification-policy.ts src/verification-policy.test.ts src/migrate.ts src/migrate.test.ts src/health.controller.ts src/health.controller.test.ts src/database.service.ts --module commonjs --target es2022 --esModuleInterop --experimentalDecorators --emitDecoratorMetadata --skipLibCheck --outDir .test-dist && node --test .test-dist/*.test.js",
     "migrate": "node dist/migrate.js",
     "start": "node dist/main.js"
   },
