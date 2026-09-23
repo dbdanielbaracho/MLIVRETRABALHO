@@ -56,6 +56,14 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Export mobile Android bundle
+        env:
+          CI: '1'
+        run: |
+          pnpm --filter @mlivretrabalho/mobile export:android
+          test -d apps/mobile/dist
+          find apps/mobile/dist -type f | grep -q .
+
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
