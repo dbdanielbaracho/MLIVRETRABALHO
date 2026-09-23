@@ -7,7 +7,7 @@ Rastreabilidade obrigatória:
 | ID | Requisito | Estado | Decisão/ADR | Código | Teste/Evidência |
 |---|---|---|---|---|---|
 | INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / CI GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; CI run `35553977088` SUCCESS |
-| API-001 | API NestJS + Fastify com health/readiness | MERGED / BUILD PRODUÇÃO GREEN / PRE-DEPLOY BLOQUEADO POR DATABASE_URL | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway build real SUCCESS; migration pre-deploy bloqueada por `DATABASE_URL_required`; smoke produção pendente |
+| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `5b89e3cb-959c-41fb-83a8-b511a40d50ae` SUCCESS; `/v1/health/ready` HTTP 200 pelo healthcheck Railway |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
 | CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426 SUCCESS nos PRs #156/#157/#159/#168/#169/#170 |
@@ -60,18 +60,23 @@ Rastreabilidade obrigatória:
 
 ## Deploy / Production Truth
 
-Infraestrutura de produção está **identificada e parcialmente provisionada**, mas o Production Truth Gate ainda não foi atingido.
+Infraestrutura de produção canônica está concentrada no **Railway**.
 
 - Railway project: `MLIVRETRABALHO`;
 - Railway environment: `production`;
-- Railway service: `@mlivretrabalho/api` conectado à `main`;
-- domínio Railway gerado: `mlivretrabalhoapi-production.up.railway.app`;
-- build/start/pre-deploy/healthcheck configurados;
-- Neon project: `mlivretrabalho`, branch `production`;
-- primeira tentativa real de deploy: build e image push **SUCCESS**; pre-deploy **FAILED** em `DATABASE_URL_required`;
-- causa atual: segredo `DATABASE_URL` ainda não associado ao serviço Railway;
-- migrations de produção, healthcheck público e smoke real permanecem pendentes até essa associação;
+- Railway API service: `@mlivretrabalho/api` conectado à `main`;
+- Railway PostgreSQL service: `Postgres`, com volume persistente de 5 GB;
+- `DATABASE_URL` da API referencia internamente `${{Postgres.DATABASE_URL}}`; nenhuma credencial é armazenada no repositório;
+- domínio Railway: `mlivretrabalhoapi-production.up.railway.app`;
+- runtime da API escuta em `PORT=8080`; roteamento do domínio corrigido de 3000 para 8080;
+- deployment API `5b89e3cb-959c-41fb-83a8-b511a40d50ae`: **SUCCESS**;
+- Postgres Railway: **SUCCESS**;
+- migration runner de produção: **SUCCESS**, migrations aplicadas até `0022_payment_event_provider.sql`;
+- Nest application start: **SUCCESS**;
+- Railway healthcheck `/v1/health/ready`: **HTTP 200**;
+- réplica da API: **1 running / 0 crashed**;
+- Neon foi descartado da arquitetura operacional e não é dependência da produção;
 - contrato automatizado do Production Truth Gate está versionado em `scripts/production-truth-gate.sh`, merge PR #168 `f43c8e9`, CI #414 SUCCESS;
-- execução em localhost na CI prova o **contrato do gate**, não a produção.
+- Production Truth público completo permanece pendente de uma requisição externa reproduzível ao domínio e execução do script contra a URL pública. A ferramenta externa desta sessão apresentou limitação de DNS/URL e não serve como prova negativa do serviço.
 
 Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md` e `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md`.
