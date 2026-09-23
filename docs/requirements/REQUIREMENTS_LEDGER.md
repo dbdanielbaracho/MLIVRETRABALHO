@@ -8,13 +8,13 @@ Rastreabilidade obrigatória:
 |---|---|---|---|---|---|
 | INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / CI GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; CI run `35553977088` SUCCESS |
 | INFRA-LOCK-001 | Instalações pnpm reproduzíveis com lockfile congelado | OPEN / LOCKFILE GERADO EM CI / COMMIT BLOQUEADO PELA FERRAMENTA | disciplina de build reproduzível | `pnpm-lock.yaml` ainda ausente na `main`; CI ainda usa `--no-frozen-lockfile` | PR diagnóstico #173 fechado sem merge; CI #441 gerou artifact `pnpm-lockfile-generated` id `10726990759`; lockfile real 275570 bytes; integração atual não permite upload do arquivo gerado e bloqueou auto-commit do workflow |
-| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `8cfe02a6-8c53-4896-989d-977a9e79c1a4` SUCCESS; migration 0024 aplicada; `/v1/health/ready` preservado pelo healthcheck Railway |
+| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED RAILWAY / DB + MIGRATIONS + INTERNAL READINESS GREEN / PUBLIC TRUTH PENDENTE | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deployment `d5fb0361-ac9f-49b9-a694-88e97d069b62` SUCCESS; migration 0025 aplicada; `/v1/health/ready` HTTP 200 |
 | SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED / CI GREEN / PRODUCTION-DONE PENDENTE | `ADR-MT-001` | `packages/db/migrations/0001_tenancy_foundation.sql` | `packages/db/tests/rls-isolation.sh`; `docs/evidencias/SEC-001_RLS_BASELINE_2026-09-20.md` |
 | SEC-002 | Runtime DB role sem owner/superuser/BYPASSRLS | BASELINE MERGED / CI GREEN | `ADR-MT-001` | `packages/db/infra/roles.sql` | teste de flags no RLS suite; CI run `35553977088` SUCCESS |
-| CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426/#433/#439/#446 SUCCESS nos PRs #156/#157/#159/#168/#169/#170/#171/#172/#174 |
+| CI-001 | CI executa typecheck, build, testes, migration runner e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` | runs #388/#389/#393/#414/#424/#426/#433/#439/#446/#450 SUCCESS nos PRs #156/#157/#159/#168/#169/#170/#171/#172/#174/#175 |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING / PESQUISA + ADR PROPOSTO / HARDENING NEUTRO MERGED | Documento da Verdade v1.5 §13/§33; `ADR-FIN-001-PROPOSED.md` | payment events append-only, provider provenance, webhook baseline, raw-body readiness; provider definitivo não selecionado | `FIN_RISK_PSP_RESEARCH_2026-09-22.md`; PR #169 CI #424; PR #170 CI #426; provider/comercial/legal/unit economics/sandbox real pendentes |
 | TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / BASELINE KYC-KYB NEUTRO MERGED+DEPLOYED / ENFORCEMENT NÃO ATIVO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting baseline + verification cases/API provider-neutral; nenhum usuário pode autoaprovar; enforcement definitivo não integrado | `TRUST_ARCH_RESEARCH_2026-09-22.md`; PR #159; PR #171 CI #433 SUCCESS; merge `418a1dcc`; deploy `fcbfa2d5...` SUCCESS; revisão jurídica/provider/callback autenticado pendentes |
-| MATCH-001 | Recomendações usam sinais reais em vez de placeholders | PARCIAL / ROLE FIT REAL DEPLOYED / DISTÂNCIA PENDENTE | Matching Engine | reliability + availability + `roleFit` reais; `distanceKm=20` ainda fixo até existir sinal de proximidade de baixa precisão/consentido | PR #174; CI #446 SUCCESS; merge `01b4eb7`; deploy `8cfe02a6...` SUCCESS; migration `0024_matching_roles.sql`; `MATCH_ROLE_FIT_v1.50.md` |
+| MATCH-001 | Recomendações usam sinais reais em vez de placeholders | BASELINE REAL / SEM PLACEHOLDERS FIXOS / DEPLOYED | Matching Engine | availability + reliability + role fit reais; proximidade usa cidade opcional/baixa precisão e não inventa distância quando desconhecida | PR #174 CI #446, merge `01b4eb7`, migration `0024`; PR #175 CI #450, merge `9e61542`, deploy `d5fb0361...`, migration `0025`; `MATCH_ROLE_FIT_v1.50.md`; `MATCH_CITY_PROXIMITY_v1.51.md` |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Release foundation v0.1
@@ -75,13 +75,13 @@ Infraestrutura de produção canônica está concentrada no **Railway**.
 - domínio externo oficial: `https://mlivretrabalho.predibeacon.com`;
 - custom domain Railway anexado à porta 8080; DNS/certificado/resolução pública ainda precisam de prova externa reproduzível;
 - runtime da API escuta em `PORT=8080`;
-- deployment atual do merge #174: `8cfe02a6-8c53-4896-989d-977a9e79c1a4` — **SUCCESS**;
+- deployment atual do merge #175: `d5fb0361-ac9f-49b9-a694-88e97d069b62` — **SUCCESS**;
 - Postgres Railway: **SUCCESS**;
-- migration runner de produção: **SUCCESS**, migrations aplicadas até `0024_matching_roles.sql`;
+- migration runner de produção: **SUCCESS**, migrations aplicadas até `0025_job_work_city.sql`;
 - Nest application start: **SUCCESS**;
-- Railway healthcheck `/v1/health/ready`: configuração ativa; deployments anteriores comprovaram HTTP 200;
+- Railway healthcheck `/v1/health/ready`: **HTTP 200** no deployment atual;
 - Neon foi descartado da arquitetura operacional e não é dependência da produção;
 - contrato automatizado do Production Truth Gate está versionado em `scripts/production-truth-gate.sh`, merge PR #168 `f43c8e9`, CI #414 SUCCESS;
 - Production Truth público completo permanece pendente de uma requisição externa reproduzível ao domínio oficial e execução do script contra a URL pública. A ferramenta externa desta sessão ainda não consegue acessar esse domínio e isso não é tratado como prova de falha do serviço.
 
-Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md`, `docs/evidencias/TRUST_VERIFICATIONS_v1.47.md`, `docs/evidencias/COMPANY_RATING_MOBILE_v1.48.md` e `docs/evidencias/MATCH_ROLE_FIT_v1.50.md`.
+Evidências: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `docs/evidencias/PRODUCTION_TRUTH_GATE_v1.44.md`, `docs/evidencias/TRUST_VERIFICATIONS_v1.47.md`, `docs/evidencias/COMPANY_RATING_MOBILE_v1.48.md`, `docs/evidencias/MATCH_ROLE_FIT_v1.50.md` e `docs/evidencias/MATCH_CITY_PROXIMITY_v1.51.md`.
