@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
@@ -24,9 +25,7 @@ export default function EmpresaInicio() {
   const [completed, setCompleted] = useState<CompletedAssignment[]>([]);
   const [message, setMessage] = useState('');
 
-  useEffect(() => {
-    void load();
-  }, []);
+  useEffect(() => { void load(); }, []);
 
   async function load() {
     const headers = await authenticatedTenantHeaders();
@@ -53,6 +52,11 @@ export default function EmpresaInicio() {
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
         <Text style={s.title}>Operação</Text>
+        <View style={s.actions}>
+          <Link href="/empresa" style={s.action}>+ Publicar trabalho</Link>
+          <Link href="/candidatos" style={s.action}>Ver interessados</Link>
+        </View>
+
         {[
           ['Trabalhos abertos', dashboard?.openJobs],
           ['Confirmados', dashboard?.confirmedWorkers],
@@ -92,6 +96,8 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
   content: { padding: 24, gap: 12 },
   title: { fontSize: 30, fontWeight: '800' },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4 },
+  action: { borderWidth: 1, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
   heading: { fontSize: 22, fontWeight: '800', marginTop: 10 },
   card: { borderWidth: 1, borderRadius: 14, padding: 18, gap: 6 },
   value: { fontSize: 28, fontWeight: '800' },
