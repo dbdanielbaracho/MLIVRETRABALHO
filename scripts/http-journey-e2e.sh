@@ -17,6 +17,7 @@ AVAIL_END="$(node -e 'process.stdout.write(new Date(Date.now()+57*60*60*1000).to
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 contains(){ [[ "$1" == *"$2"* ]] || { echo "missing expected value: $2" >&2; return 1; }; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
+status_only(){ local method="$1" url="$2" token="$3" tenant="$4"; curl -sS -o /tmp/http-journey-negative.json -w '%{http_code}' -X "$method" "${BASE_URL%/}$url" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant"; }
 
 PRO_SIGNUP="$(request POST /v1/auth/signup '' '' "{\"email\":\"$PRO_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}")"
 test "$(printf '%s' "$PRO_SIGNUP" | json_field accountType)" = "professional"
@@ -73,6 +74,19 @@ contains "$MINE" "$ASSIGNMENT2_ID"
 contains "$MINE" "$TENANT_ID"
 contains "$MINE" "$TENANT2_ID"
 
+COMPANY_MESSAGE="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$COMPANY_TOKEN" "$TENANT_ID" '{"body":"Olá, confirme seu horário."}')"
+contains "$COMPANY_MESSAGE" 'confirme seu horário'
+PRO_MESSAGES="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
+contains "$PRO_MESSAGES" 'confirme seu horário'
+PRO_NOTIFICATIONS="$(request GET /v1/notifications/mine "$PRO_TOKEN" "$TENANT_ID")"
+contains "$PRO_NOTIFICATIONS" 'new_message'
+PRO_REPLY="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID" '{"body":"Confirmado, estarei no horário."}')"
+contains "$PRO_REPLY" 'Confirmado'
+COMPANY_NOTIFICATIONS="$(request GET /v1/notifications/mine "$COMPANY_TOKEN" "$TENANT_ID")"
+contains "$COMPANY_NOTIFICATIONS" 'new_message'
+WRONG_TENANT_STATUS="$(status_only GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$COMPANY2_TOKEN" "$TENANT2_ID")"
+test "$WRONG_TENANT_STATUS" = "404"
+
 for STEP in check-in start check-out complete; do
   STATUS="$(case "$STEP" in check-in) echo checked_in;; start) echo in_progress;; check-out) echo checked_out;; complete) echo completed;; esac)"
   test "$(request POST "/v1/assignments/$ASSIGNMENT_ID/$STEP" "$PRO_TOKEN" "$TENANT_ID" '{}' | json_field status)" = "$STATUS"
@@ -92,4 +106,4 @@ request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY2_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: HTTP journey multi-company aggregation with two independent company tenants"
+echo "PASS: HTTP journey multi-company + tenant-isolated chat/notifications"
