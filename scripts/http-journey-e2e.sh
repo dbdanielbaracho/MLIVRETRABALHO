@@ -15,6 +15,7 @@ AVAIL_START="$(node -e 'process.stdout.write(new Date(Date.now()+23*60*60*1000).
 AVAIL_END="$(node -e 'process.stdout.write(new Date(Date.now()+57*60*60*1000).toISOString())')"
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
+contains(){ [[ "$1" == *"$2"* ]] || { echo "missing expected value: $2" >&2; return 1; }; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
 
 PRO_SIGNUP="$(request POST /v1/auth/signup '' '' "{\"email\":\"$PRO_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}")"
@@ -35,7 +36,7 @@ PROFILE="$(request PUT /v1/professional-profile "$PRO_TOKEN" '' '{"displayName":
 PROFESSIONAL_ID="$(printf '%s' "$PROFILE" | json_field id)"
 
 AVAILABILITY="$(request POST /v1/availability/mine "$PRO_TOKEN" '' "{\"startsAt\":\"$AVAIL_START\",\"endsAt\":\"$AVAIL_END\"}")"
-printf '%s' "$AVAILABILITY" | grep -q 'startsAt'
+contains "$AVAILABILITY" 'startsAt'
 
 JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender A\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Centro\",\"startsAt\":\"$START_AT\",\"endsAt\":\"$END_AT\",\"payCents\":25000}")"
 JOB_ID="$(printf '%s' "$JOB" | json_field id)"
@@ -43,17 +44,17 @@ JOB2="$(request POST /v1/company/jobs "$COMPANY2_TOKEN" "$TENANT2_ID" "{\"title\
 JOB2_ID="$(printf '%s' "$JOB2" | json_field id)"
 
 JOBS="$(request GET /v1/jobs "$PRO_TOKEN")"
-printf '%s' "$JOBS" | grep -q "$JOB_ID"
-printf '%s' "$JOBS" | grep -q "$JOB2_ID"
+contains "$JOBS" "$JOB_ID"
+contains "$JOBS" "$JOB2_ID"
 
 for JOBX in "$JOB_ID" "$JOB2_ID"; do
   test "$(request POST "/v1/jobs/$JOBX/interest" "$PRO_TOKEN" | json_field status)" = "interested"
 done
 
 RECOMMENDATIONS="$(request GET "/v1/company/jobs/$JOB_ID/recommendations" "$COMPANY_TOKEN" "$TENANT_ID")"
-printf '%s' "$RECOMMENDATIONS" | grep -q "$PROFESSIONAL_ID"
+contains "$RECOMMENDATIONS" "$PROFESSIONAL_ID"
 RECOMMENDATIONS2="$(request GET "/v1/company/jobs/$JOB2_ID/recommendations" "$COMPANY2_TOKEN" "$TENANT2_ID")"
-printf '%s' "$RECOMMENDATIONS2" | grep -q "$PROFESSIONAL_ID"
+contains "$RECOMMENDATIONS2" "$PROFESSIONAL_ID"
 
 CONFIRM="$(request POST "/v1/company/jobs/$JOB_ID/confirm" "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
 ASSIGNMENT_ID="$(printf '%s' "$CONFIRM" | json_field id)"
@@ -63,14 +64,14 @@ test "$(printf '%s' "$CONFIRM" | json_field tenantId)" = "$TENANT_ID"
 test "$(printf '%s' "$CONFIRM2" | json_field tenantId)" = "$TENANT2_ID"
 
 PRO_ME="$(request GET /v1/me "$PRO_TOKEN")"
-printf '%s' "$PRO_ME" | grep -q "$TENANT_ID"
-printf '%s' "$PRO_ME" | grep -q "$TENANT2_ID"
+contains "$PRO_ME" "$TENANT_ID"
+contains "$PRO_ME" "$TENANT2_ID"
 
 MINE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
-printf '%s' "$MINE" | grep -q "$ASSIGNMENT_ID"
-printf '%s' "$MINE" | grep -q "$ASSIGNMENT2_ID"
-printf '%s' "$MINE" | grep -q "$TENANT_ID"
-printf '%s' "$MINE" | grep -q "$TENANT2_ID"
+contains "$MINE" "$ASSIGNMENT_ID"
+contains "$MINE" "$ASSIGNMENT2_ID"
+contains "$MINE" "$TENANT_ID"
+contains "$MINE" "$TENANT2_ID"
 
 for STEP in check-in start check-out complete; do
   STATUS="$(case "$STEP" in check-in) echo checked_in;; start) echo in_progress;; check-out) echo checked_out;; complete) echo completed;; esac)"
@@ -78,17 +79,14 @@ for STEP in check-in start check-out complete; do
 done
 
 EARNINGS="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
-printf '%s' "$EARNINGS" | grep -q '25000'
-printf '%s' "$EARNINGS" | grep -q "$TENANT_ID"
+contains "$EARNINGS" '25000'
+contains "$EARNINGS" "$TENANT_ID"
 
 RATING="$(request POST "/v1/assignments/$ASSIGNMENT_ID/rating" "$COMPANY_TOKEN" "$TENANT_ID" '{"score":5,"comment":"Excelente"}')"
 test "$(printf '%s' "$RATING" | json_field score)" = "5"
 
 PASSPORT="$(request GET /v1/work-passport/mine "$PRO_TOKEN")"
-test "$(printf '%s' "$PASSPORT" | json_field completedWorkCount)" = "1"
-test "$(printf '%s' "$PASSPORT" | json_field ratingCount)" = "1"
-test "$(printf '%s' "$PASSPORT" | json_field averageRating)" = "5"
-printf '%s' "$PASSPORT" | grep -q "$TENANT_ID"
+node -e 'const p=JSON.parse(process.argv[1]);const tenant=process.argv[2];if(p.completedWorkCount!==1||p.ratingCount!==1||p.averageRating!==5||!p.verifiedHistory?.some(x=>x.tenantId===tenant)){console.error("passport assertion failed",JSON.stringify(p));process.exit(1)}' "$PASSPORT" "$TENANT_ID"
 
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
