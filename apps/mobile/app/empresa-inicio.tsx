@@ -13,6 +13,7 @@ type Dashboard = {
 
 type CompletedAssignment = {
   id: string;
+  professionalId: string;
   title: string;
   location?: string | null;
   professionalName: string;
@@ -48,6 +49,16 @@ export default function EmpresaInicio() {
     if (response.ok) await load();
   }
 
+  async function addPreferred(professionalId: string) {
+    const headers = await authenticatedTenantHeaders();
+    const response = await fetch(apiUrl('/company/talent-pools'), {
+      method: 'POST',
+      headers: { ...headers, 'content-type': 'application/json' },
+      body: JSON.stringify({ professionalId, pool: 'preferred' })
+    });
+    setMessage(response.ok ? 'Profissional adicionado aos preferidos.' : 'Não foi possível adicionar aos preferidos.');
+  }
+
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
@@ -70,9 +81,9 @@ export default function EmpresaInicio() {
           </View>
         ))}
 
-        <Text style={s.heading}>Avaliar trabalhos concluídos</Text>
+        <Text style={s.heading}>Trabalhos concluídos</Text>
         <Text>{message}</Text>
-        {completed.length === 0 ? <Text>Nenhum trabalho concluído para avaliar.</Text> : null}
+        {completed.length === 0 ? <Text>Nenhum trabalho concluído.</Text> : null}
         {completed.map(item => (
           <View key={item.id} style={s.card}>
             <Text style={s.bold}>{item.professionalName}</Text>
@@ -86,6 +97,9 @@ export default function EmpresaInicio() {
                 </Pressable>
               ))}
             </View>
+            <Pressable style={s.preferredButton} onPress={() => void addPreferred(item.professionalId)}>
+              <Text style={s.bold}>Adicionar aos preferidos</Text>
+            </Pressable>
           </View>
         ))}
       </ScrollView>
@@ -104,5 +118,6 @@ const s = StyleSheet.create({
   value: { fontSize: 28, fontWeight: '800' },
   bold: { fontWeight: '800' },
   ratingRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
-  ratingButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 10 }
+  ratingButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 10 },
+  preferredButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' }
 });

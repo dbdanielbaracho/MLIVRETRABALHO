@@ -71,6 +71,7 @@ export class CompanyDashboardController {
     return this.db.tenant(c.tenantId, async db => {
       const r = await db.query(
         `SELECT wa.id,
+                p.id AS "professionalId",
                 j.title,
                 j.location,
                 p.display_name AS "professionalName",

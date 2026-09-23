@@ -116,6 +116,15 @@ contains "$EARNINGS" "$TENANT_ID"
 RATING="$(request POST "/v1/assignments/$ASSIGNMENT_ID/rating" "$COMPANY_TOKEN" "$TENANT_ID" '{"score":5,"comment":"Excelente"}')"
 test "$(printf '%s' "$RATING" | json_field score)" = "5"
 
+COMPLETED="$(request GET /v1/company/dashboard/completed "$COMPANY_TOKEN" "$TENANT_ID")"
+contains "$COMPLETED" "$PROFESSIONAL_ID"
+PREFERRED="$(request POST /v1/company/talent-pools "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PROFESSIONAL_ID\",\"pool\":\"preferred\"}")"
+test "$(printf '%s' "$PREFERRED" | json_field professionalId)" = "$PROFESSIONAL_ID"
+test "$(printf '%s' "$PREFERRED" | json_field pool)" = "preferred"
+TALENT_POOL="$(request GET /v1/company/talent-pools "$COMPANY_TOKEN" "$TENANT_ID")"
+contains "$TALENT_POOL" "$PROFESSIONAL_ID"
+contains "$TALENT_POOL" 'preferred'
+
 PASSPORT="$(request GET /v1/work-passport/mine "$PRO_TOKEN")"
 node -e 'const p=JSON.parse(process.argv[1]);const tenant=process.argv[2];if(p.completedWorkCount!==1||p.ratingCount!==1||p.averageRating!==5||!p.verifiedHistory?.some(x=>x.tenantId===tenant)){console.error("passport assertion failed",JSON.stringify(p));process.exit(1)}' "$PASSPORT" "$TENANT_ID"
 
@@ -123,4 +132,4 @@ request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY2_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: HTTP journey multi-company + tenant-isolated company jobs/chat/notifications/replacements"
+echo "PASS: HTTP journey multi-company + company jobs/chat/notifications/replacements/talent-pool"
