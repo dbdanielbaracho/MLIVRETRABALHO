@@ -3,6 +3,10 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
 STAMP="$(date +%s)-$RANDOM"
 PASSWORD='NotifyPass123!'
+START_A="$(node -e 'process.stdout.write(new Date(Date.now()+24*60*60*1000).toISOString())')"
+END_A="$(node -e 'process.stdout.write(new Date(Date.now()+32*60*60*1000).toISOString())')"
+START_B="$(node -e 'process.stdout.write(new Date(Date.now()+48*60*60*1000).toISOString())')"
+END_B="$(node -e 'process.stdout.write(new Date(Date.now()+56*60*60*1000).toISOString())')"
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
 PRO_EMAIL="notify-pro-${STAMP}@example.test"; A_EMAIL="notify-a-${STAMP}@example.test"; B_EMAIL="notify-b-${STAMP}@example.test"
@@ -14,8 +18,8 @@ PRO_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$PRO_EMAIL\",\"pas
 A_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$A_EMAIL\",\"password\":\"$PASSWORD\"}"|json_field accessToken)"
 B_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$B_EMAIL\",\"password\":\"$PASSWORD\"}"|json_field accessToken)"
 PROFILE="$(request PUT /v1/professional-profile "$PRO_TOKEN" '' '{"displayName":"Notify Pro","homeCity":"São Paulo","primaryRole":"Garçom"}')"; PRO_ID="$(printf '%s' "$PROFILE"|json_field id)"
-JOB_A="$(request POST /v1/company/jobs "$A_TOKEN" "$TENANT_A" '{"title":"Garçom A","requiredRole":"Garçom","workCity":"São Paulo","payCents":10000}')"; JOB_A_ID="$(printf '%s' "$JOB_A"|json_field id)"
-JOB_B="$(request POST /v1/company/jobs "$B_TOKEN" "$TENANT_B" '{"title":"Garçom B","requiredRole":"Garçom","workCity":"São Paulo","payCents":11000}')"; JOB_B_ID="$(printf '%s' "$JOB_B"|json_field id)"
+JOB_A="$(request POST /v1/company/jobs "$A_TOKEN" "$TENANT_A" "{\"title\":\"Garçom A\",\"requiredRole\":\"Garçom\",\"workCity\":\"São Paulo\",\"startsAt\":\"$START_A\",\"endsAt\":\"$END_A\",\"payCents\":10000}")"; JOB_A_ID="$(printf '%s' "$JOB_A"|json_field id)"
+JOB_B="$(request POST /v1/company/jobs "$B_TOKEN" "$TENANT_B" "{\"title\":\"Garçom B\",\"requiredRole\":\"Garçom\",\"workCity\":\"São Paulo\",\"startsAt\":\"$START_B\",\"endsAt\":\"$END_B\",\"payCents\":11000}")"; JOB_B_ID="$(printf '%s' "$JOB_B"|json_field id)"
 request POST "/v1/jobs/$JOB_A_ID/interest" "$PRO_TOKEN" >/dev/null
 request POST "/v1/jobs/$JOB_B_ID/interest" "$PRO_TOKEN" >/dev/null
 request POST "/v1/company/jobs/$JOB_A_ID/confirm" "$A_TOKEN" "$TENANT_A" "{\"professionalId\":\"$PRO_ID\"}" >/dev/null
