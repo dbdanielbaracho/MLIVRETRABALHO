@@ -88,6 +88,7 @@ jobs:
             if curl --fail --silent http://127.0.0.1:3000/v1/health/ready >/dev/null; then break; fi
             sleep 0.5
           done
+          BASE_URL=http://127.0.0.1:3000 bash scripts/http-company-onboarding-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 DATABASE_URL="$HTTP_TEST_URL" bash scripts/http-journey-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/smoke-api.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 EXPECTED_VERSION=0.1.0 bash scripts/production-truth-gate.sh || { cat /tmp/mlivre-api.log; exit 1; }
