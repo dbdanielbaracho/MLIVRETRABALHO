@@ -7,6 +7,10 @@ STAMP="$(date +%s)-$RANDOM"
 PRO_EMAIL="pro-${STAMP}@example.test"
 COMPANY_EMAIL="company-${STAMP}@example.test"
 PASSWORD="JourneyPass123!"
+START_AT="$(node -e 'process.stdout.write(new Date(Date.now()+24*60*60*1000).toISOString())')"
+END_AT="$(node -e 'process.stdout.write(new Date(Date.now()+32*60*60*1000).toISOString())')"
+AVAIL_START="$(node -e 'process.stdout.write(new Date(Date.now()+23*60*60*1000).toISOString())')"
+AVAIL_END="$(node -e 'process.stdout.write(new Date(Date.now()+33*60*60*1000).toISOString())')"
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
@@ -31,7 +35,10 @@ COMPANY_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$COMPANY_EMAIL
 PROFILE="$(request PUT /v1/professional-profile "$PRO_TOKEN" "$TENANT_ID" '{"displayName":"HTTP Bartender","homeCity":"São Paulo","primaryRole":"Bartender"}')"
 PROFESSIONAL_ID="$(printf '%s' "$PROFILE" | json_field id)"
 
-JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" '{"title":"Bartender","requiredRole":"Bartender","workCity":"São Paulo","location":"Centro","payCents":25000}')"
+AVAILABILITY="$(request POST /v1/availability/mine "$PRO_TOKEN" "$TENANT_ID" "{\"startsAt\":\"$AVAIL_START\",\"endsAt\":\"$AVAIL_END\"}")"
+printf '%s' "$AVAILABILITY" | grep -q 'startsAt'
+
+JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Centro\",\"startsAt\":\"$START_AT\",\"endsAt\":\"$END_AT\",\"payCents\":25000}")"
 JOB_ID="$(printf '%s' "$JOB" | json_field id)"
 
 JOBS="$(request GET /v1/jobs "$PRO_TOKEN" "$TENANT_ID")"
@@ -70,4 +77,4 @@ test "$(printf '%s' "$PASSPORT" | json_field averageRating)" = "5"
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: HTTP journey signup→job→interest→confirm→work→earnings→rating→passport"
+echo "PASS: HTTP journey signup→availability→job→interest→recommend→confirm→work→earnings→rating→passport"
