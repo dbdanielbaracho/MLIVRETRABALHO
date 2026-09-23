@@ -74,14 +74,20 @@ jobs:
           APPLIED="$(psql "$MIGRATION_TEST_URL" -tAc 'SELECT count(*) FROM schema_migrations' | tr -d ' ')"
           test "$APPLIED" = "$EXPECTED"
 
-      - name: Smoke API readiness and Production Truth Gate contract
+      - name: HTTP journey, readiness and Production Truth contract
+        env:
+          PGPASSWORD: postgres
+          HTTP_TEST_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
         run: |
-          pnpm --filter @mlivretrabalho/api start > /tmp/mlivre-api.log 2>&1 &
+          createdb -h localhost -U postgres mlivretrabalho_http
+          DATABASE_URL="$HTTP_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
+          DATABASE_URL="$HTTP_TEST_URL" pnpm --filter @mlivretrabalho/api start > /tmp/mlivre-api.log 2>&1 &
           API_PID=$!
           trap 'kill "$API_PID" 2>/dev/null || true' EXIT
-          for i in $(seq 1 20); do
+          for i in $(seq 1 30); do
             if curl --fail --silent http://127.0.0.1:3000/v1/health/ready >/dev/null; then break; fi
             sleep 0.5
           done
+          BASE_URL=http://127.0.0.1:3000 DATABASE_URL="$HTTP_TEST_URL" bash scripts/http-journey-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/smoke-api.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 EXPECTED_VERSION=0.1.0 bash scripts/production-truth-gate.sh || { cat /tmp/mlivre-api.log; exit 1; }
