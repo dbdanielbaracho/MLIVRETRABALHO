@@ -16,6 +16,7 @@ AVAIL_END="$(node -e 'process.stdout.write(new Date(Date.now()+57*60*60*1000).to
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 contains(){ [[ "$1" == *"$2"* ]] || { echo "missing expected value: $2" >&2; return 1; }; }
+not_contains(){ [[ "$1" != *"$2"* ]] || { echo "unexpected value present: $2" >&2; return 1; }; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
 status_only(){ local method="$1" url="$2" token="$3" tenant="$4"; curl -sS -o /tmp/http-journey-negative.json -w '%{http_code}' -X "$method" "${BASE_URL%/}$url" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant"; }
 
@@ -43,6 +44,13 @@ JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\
 JOB_ID="$(printf '%s' "$JOB" | json_field id)"
 JOB2="$(request POST /v1/company/jobs "$COMPANY2_TOKEN" "$TENANT2_ID" "{\"title\":\"Bartender B\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Paulista\",\"startsAt\":\"$START2_AT\",\"endsAt\":\"$END2_AT\",\"payCents\":30000}")"
 JOB2_ID="$(printf '%s' "$JOB2" | json_field id)"
+
+COMPANY_JOBS="$(request GET /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID")"
+contains "$COMPANY_JOBS" "$JOB_ID"
+not_contains "$COMPANY_JOBS" "$JOB2_ID"
+COMPANY2_JOBS="$(request GET /v1/company/jobs "$COMPANY2_TOKEN" "$TENANT2_ID")"
+contains "$COMPANY2_JOBS" "$JOB2_ID"
+not_contains "$COMPANY2_JOBS" "$JOB_ID"
 
 JOBS="$(request GET /v1/jobs "$PRO_TOKEN")"
 contains "$JOBS" "$JOB_ID"
@@ -106,4 +114,4 @@ request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY2_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: HTTP journey multi-company + tenant-isolated chat/notifications"
+echo "PASS: HTTP journey multi-company + tenant-isolated company job list/chat/notifications"
