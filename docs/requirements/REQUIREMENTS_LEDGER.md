@@ -8,16 +8,17 @@ Rastreabilidade obrigatória:
 |---|---|---|---|---|---|
 | INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / CI GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; CI `35553977088` SUCCESS |
 | INFRA-LOCK-001 | Instalações pnpm reproduzíveis com lockfile congelado | OPEN / LOCKFILE GERADO EM CI / COMMIT BLOQUEADO PELA FERRAMENTA | disciplina de build reproduzível | `pnpm-lock.yaml` ainda ausente na `main`; CI ainda usa `--no-frozen-lockfile` | PR diagnóstico #173 fechado sem merge; CI #441 gerou artifact `pnpm-lockfile-generated` id `10726990759`; lockfile real 275570 bytes |
-| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED / PUBLIC PRODUCTION TRUTH PASS | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deploy `5e0af5e4-46f1-4948-9b6e-a7e67f974345` SUCCESS; readiness interno 200; readiness HTTPS público no domínio oficial PASS |
-| SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED + DEPLOYED / RUNTIME ROLE ENFORCED / PENTEST PENDENTE | `ADR-MT-001` | RLS + filtros explícitos tenant + `SET LOCAL ROLE app_runtime` | RLS suite; PR #181 CI #472; PR #182 CI #474; PR #183 CI #478; migration `0027`; deploy `5e0af5e4...` |
+| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED / PUBLIC PRODUCTION TRUTH PASS | Documento da Verdade v1.5 §22.3 | `apps/api/` | Railway deploy `d1881c1f-0a8a-46ef-9531-c2efa94748a7` SUCCESS; readiness interno 200; readiness HTTPS público no domínio oficial PASS |
+| SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED + DEPLOYED / RUNTIME ROLE ENFORCED / PENTEST PENDENTE | `ADR-MT-001` | RLS + filtros explícitos tenant + `SET LOCAL ROLE app_runtime` | RLS suite; PR #181 CI #472; PR #182 CI #474; PR #183 CI #478; PR #184 CI #481; migration `0027`; deploy `d1881c1f...` |
 | SEC-002 | Runtime tenant DB role sem owner/superuser/BYPASSRLS | MERGED / CI GREEN / DEPLOYED | `ADR-MT-001` | `packages/db/infra/roles.sql`, `apps/api/src/database.service.ts`, `0027_runtime_rls_role.sql` | `app_runtime` NOLOGIN/NOSUPERUSER/NOBYPASSRLS; full HTTP journey passa sob `SET LOCAL ROLE`; PR #182 CI #474 |
-| CI-001 | CI executa typecheck, build, testes, migration runner, jornada HTTP e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml`, `scripts/http-journey-e2e.sh` | runs #456/#462/#464/#466/#472/#474/#478 SUCCESS; jornada HTTP multiempresa, chat e runtime role restrito testados |
+| CI-001 | CI executa typecheck, build, testes, migration runner, jornada HTTP e Production Truth contract | ATIVO / GREEN | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml`, `scripts/http-journey-e2e.sh` | runs #456/#462/#464/#466/#472/#474/#478/#481 SUCCESS; jornada HTTP multiempresa, chat, job list e runtime role restrito testados |
 | FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING / PESQUISA + ADR PROPOSTO / HARDENING NEUTRO MERGED | Documento da Verdade v1.5 §13/§33; `ADR-FIN-001-PROPOSED.md` | payment events append-only, provider provenance, webhook baseline, raw-body readiness; provider definitivo não selecionado | `FIN_RISK_PSP_RESEARCH_2026-09-22.md`; PR #169/#170; provider/comercial/legal/unit economics/sandbox real pendentes |
 | TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING PARCIAL / BASELINE KYC-KYB NEUTRO DEPLOYED / ENFORCEMENT NÃO ATIVO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting + verification provider-neutral; sem autoaprovação | PR #159/#171; revisão jurídica/provider/callback autenticado pendentes |
 | MATCH-001 | Recomendações usam sinais reais em vez de placeholders | BASELINE REAL / DEPLOYED | Matching Engine | availability + reliability + role fit reais; proximidade por cidade opcional/baixa precisão; distância desconhecida não gera score inventado | PR #174/#175/#178; CI #446/#450/#462; migrations 0024/0025; `MATCHING_ROLE_SIGNALS_v1.50.md` |
 | ONBOARD-001 | Signup/onboarding sem fixture administrativa | IMPLEMENTADO / HTTP E2E GREEN / DEPLOYED | ADR-MT-001 + NETWORK_SHARED | empresa cria workspace/owner no signup; profissional independente descobre vagas da rede; membership profissional nasce só na confirmação | PR #179 CI #464; PR #180 CI #466; deploys SUCCESS; jornada HTTP sem tenant/membership fixture |
 | NETWORK-001 | Descoberta profissional cross-company sem membership prévio | IMPLEMENTADO / DEPLOYED | ADR-MT-001 NETWORK_SHARED | `marketplace_jobs`, `marketplace_interests`, `professional_availability_network`, projection trigger | PR #180; migration `0026_network_shared_marketplace.sql`; CI #466; deploy `3b5e4dad...` |
 | MULTI-001 | Profissional opera com múltiplas empresas sem trocar workspace | IMPLEMENTADO / HTTP E2E GREEN / DEPLOYED | tenant isolation + friction gate | assignments/earnings/passport agregados por memberships profissionais; mutações usam tenant do item | PR #181 CI #472; merge `079c42c`; deploy base SUCCESS; teste com 2 empresas |
+| COMPANY-JOBS-001 | Empresa seleciona vaga operacional sem digitar UUID | IMPLEMENTADO / HTTP E2E GREEN / DEPLOYED | Friction Gate | `GET /v1/company/jobs`, `apps/mobile/app/candidatos.tsx` | PR #184; CI #481 SUCCESS; cada empresa lista apenas as próprias vagas; deploy `d1881c1f...` SUCCESS; `COMPANY_JOB_SELECTION_v1.58.md` |
 | ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |
 
 ## Regra de estado
@@ -43,7 +44,7 @@ Rastreabilidade obrigatória:
 
 | ID | Requisito | Estado | Código | Teste/Evidência |
 |---|---|---|---|---|
-| TEST-JOURNEY-001 | Signup → disponibilidade → vaga → interesse → recomendação → confirmação → assignment → chat/notificação → check-in → início → check-out → conclusão → earnings → avaliação → Work Passport → signout | DB + HTTP E2E GREEN / DEVICE E2E PENDENTE | `professional-journey.sh`, `http-journey-e2e.sh` | sem fixture de tenant/membership; multiempresa com 2 empresas; chat tenant-isolated; PR #180/#181/#183; CI #466/#472/#478 |
+| TEST-JOURNEY-001 | Signup → disponibilidade → vaga → interesse → recomendação → confirmação → assignment → chat/notificação → check-in → início → check-out → conclusão → earnings → avaliação → Work Passport → signout | DB + HTTP E2E GREEN / DEVICE E2E PENDENTE | `professional-journey.sh`, `http-journey-e2e.sh` | sem fixture de tenant/membership; multiempresa com 2 empresas; lista de vagas tenant-isolated; chat tenant-isolated; PR #180/#181/#183/#184; CI #466/#472/#478/#481 |
 | TEST-CONFIRM-001 | Confirmação repetida idempotente; estados incompatíveis rejeitados | UNIT GREEN | `company-confirmation-policy.ts` | PR #157 CI #389 |
 | TEST-COMPANY-ONBOARD-001 | Signup empresa → workspace owner → signin → publicação de vaga sem DB fixture | HTTP E2E GREEN | `http-company-onboarding-e2e.sh` | PR #179 CI #464 |
 
@@ -51,7 +52,7 @@ Rastreabilidade obrigatória:
 
 | ID | Requisito | Estado | Código | Teste/Evidência |
 |---|---|---|---|---|
-| SEC-JOBS-001 | Company Jobs valida papel/vaga/lifecycle | MERGED / CI GREEN | `company-jobs.controller.ts` | PR #152; CI #379 |
+| SEC-JOBS-001 | Company Jobs valida papel/vaga/lifecycle | MERGED / CI GREEN | `company-jobs.controller.ts`, `company-job-create.controller.ts` | PR #152; PR #184 CI #481; listagem tenant-isolated |
 | SEC-AVAIL-001 | Availability rejeita timestamps inválidos | MERGED / CI GREEN | `availability.controller.ts` | PR #151 + HTTP journey |
 | SEC-TEAM-001 | Team Allocation valida job/team/autorização | MERGED / CI GREEN | `team-allocation.controller.ts` | PR #149 |
 | SEC-POOL-001 | Talent Pools valida papel/visibilidade | MERGED / CI GREEN | `talent-pools.controller.ts` | PR #146 |
@@ -74,14 +75,13 @@ Infraestrutura canônica de produção está concentrada no **Railway**.
 - tenant-owned transactions executam `SET LOCAL ROLE app_runtime` (`NOBYPASSRLS`) e `app.tenant_id`;
 - domínio externo oficial: `https://mlivretrabalho.predibeacon.com`;
 - custom domain Railway: porta 8080;
-- deployment atual após PR #183: `5e0af5e4-46f1-4948-9b6e-a7e67f974345` — **SUCCESS**;
-- migration runner: **SUCCESS**, migrations até `0027_runtime_rls_role.sql` presentes e sem nova migration no PR #183;
+- deployment atual após PR #184: `d1881c1f-0a8a-46ef-9531-c2efa94748a7` — **SUCCESS**;
+- migration runner: **SUCCESS**, migrations até `0027_runtime_rls_role.sql` presentes; PR #184 não adiciona migration;
 - Nest start/readiness: **SUCCESS**;
 - Railway internal readiness: **HTTP 200**;
-- verificação externa independente HTTPS em `https://mlivretrabalho.predibeacon.com/v1/health/ready`: **PASS**;
-- resposta pública observada: `status=ok`, `service=api`, `version=0.1.0`, `database=ok`;
-- essa resposta satisfaz `scripts/smoke-api.sh` e `scripts/production-truth-gate.sh` com `EXPECTED_VERSION=0.1.0`;
+- verificação externa HTTPS já registrada em `https://mlivretrabalho.predibeacon.com/v1/health/ready`: **PASS**;
+- resposta pública registrada: `status=ok`, `service=api`, `version=0.1.0`, `database=ok`;
 - **Production Truth Gate público health/readiness: PASS**;
 - Neon não faz parte da arquitetura operacional.
 
-Evidências principais: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `PRODUCTION_TRUTH_GATE_v1.44.md`, `PRODUCTION_TRUTH_PUBLIC_PASS_2026-09-23.md`, `NETWORK_SHARED_MARKETPLACE_v1.54.md`, `PROFESSIONAL_MULTI_COMPANY_v1.55.md`, `RUNTIME_RLS_ROLE_v1.56.md`, `CHAT_NOTIFICATIONS_TENANT_E2E_v1.57.md`.
+Evidências principais: `docs/evidencias/DEPLOY_PRODUCTION_BOOTSTRAP_2026-09-22.md`, `PRODUCTION_TRUTH_GATE_v1.44.md`, `PRODUCTION_TRUTH_PUBLIC_PASS_2026-09-23.md`, `NETWORK_SHARED_MARKETPLACE_v1.54.md`, `PROFESSIONAL_MULTI_COMPANY_v1.55.md`, `RUNTIME_RLS_ROLE_v1.56.md`, `CHAT_NOTIFICATIONS_TENANT_E2E_v1.57.md`, `COMPANY_JOB_SELECTION_v1.58.md`.
