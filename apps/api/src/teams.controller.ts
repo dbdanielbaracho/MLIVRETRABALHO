@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Body, Controller, Delete, Get, Headers, Param, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
@@ -12,6 +12,11 @@ export class TeamsController {
     const membership = await this.auth.requireMembership(identity.id, t);
     if (!['owner', 'admin', 'manager', 'company'].includes(membership.role)) throw new ForbiddenException('company_role_required');
     return t;
+  }
+
+  private async requireTeam(db: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> }, tenant: string, id: string) {
+    const team = (await db.query('SELECT 1 FROM workforce_teams WHERE tenant_id=$1 AND id=$2', [tenant, id])).rows[0];
+    if (!team) throw new BadRequestException('team_not_found');
   }
 
   @Get()
@@ -28,6 +33,25 @@ export class TeamsController {
         [tenant]
       )
     ).rows);
+  }
+
+  @Get(':id/members')
+  async members(@Param('id') id: string, @Headers('authorization') a?: string, @Headers('x-tenant-id') t?: string) {
+    const tenant = await this.ctx(a, t);
+    return this.db.tenant(tenant, async db => {
+      await this.requireTeam(db, tenant, id);
+      return (await db.query(
+        `SELECT wtm.professional_id AS "professionalId",
+                p.display_name AS "displayName",
+                p.primary_role AS "primaryRole",
+                p.home_city AS "homeCity"
+           FROM workforce_team_members wtm
+           JOIN professional_profiles p ON p.id=wtm.professional_id
+          WHERE wtm.tenant_id=$1 AND wtm.team_id=$2
+          ORDER BY p.display_name`,
+        [tenant, id]
+      )).rows;
+    });
   }
 
   @Post()
@@ -50,8 +74,7 @@ export class TeamsController {
     const tenant = await this.ctx(a, t);
     if (!body.professionalId) throw new BadRequestException('professional_required');
     return this.db.tenant(tenant, async db => {
-      const team = (await db.query('SELECT 1 FROM workforce_teams WHERE tenant_id=$1 AND id=$2', [tenant, id])).rows[0];
-      if (!team) throw new BadRequestException('team_not_found');
+      await this.requireTeam(db, tenant, id);
 
       const professional = (await db.query(
         'SELECT 1 FROM work_assignments WHERE tenant_id=$1 AND professional_id=$2 LIMIT 1',
@@ -66,6 +89,24 @@ export class TeamsController {
          RETURNING team_id AS "teamId",professional_id AS "professionalId"`,
         [id, body.professionalId, tenant]
       )).rows[0] ?? { teamId: id, professionalId: body.professionalId };
+    });
+  }
+
+  @Delete(':id/members/:professionalId')
+  async remove(
+    @Param('id') id: string,
+    @Param('professionalId') professionalId: string,
+    @Headers('authorization') a?: string,
+    @Headers('x-tenant-id') t?: string
+  ) {
+    const tenant = await this.ctx(a, t);
+    return this.db.tenant(tenant, async db => {
+      await this.requireTeam(db, tenant, id);
+      await db.query(
+        'DELETE FROM workforce_team_members WHERE tenant_id=$1 AND team_id=$2 AND professional_id=$3',
+        [tenant, id, professionalId]
+      );
+      return { removed: true };
     });
   }
 }

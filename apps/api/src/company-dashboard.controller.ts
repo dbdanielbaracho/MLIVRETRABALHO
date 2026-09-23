@@ -41,6 +41,7 @@ export class CompanyDashboardController {
       const r = await db.query(
         `SELECT wa.id,
                 wa.status,
+                p.id AS "professionalId",
                 j.title,
                 j.location,
                 j.starts_at AS "startsAt",
