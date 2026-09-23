@@ -55,6 +55,7 @@ export default function EmpresaInicio() {
         <View style={s.actions}>
           <Link href="/empresa" style={s.action}>+ Publicar trabalho</Link>
           <Link href="/candidatos" style={s.action}>Ver interessados</Link>
+          <Link href="/substituicoes" style={s.action}>Substituições</Link>
         </View>
 
         {[
