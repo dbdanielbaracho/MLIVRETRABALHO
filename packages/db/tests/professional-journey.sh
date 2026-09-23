@@ -8,12 +8,15 @@ DECLARE
   t uuid:=gen_random_uuid();
   p uuid:=gen_random_uuid();
   j uuid:=gen_random_uuid();
+  rater uuid:=gen_random_uuid();
   a uuid;
   c timestamptz;
   e_status text;
   e_amount integer;
+  rating_score integer;
 BEGIN
   INSERT INTO tenants(id,slug,display_name) VALUES(t,'journey-'||replace(t::text,'-',''),'Journey Test');
+  INSERT INTO identities(id,email,password_hash) VALUES(rater,'company-'||replace(rater::text,'-','')||'@example.test','test-hash');
   INSERT INTO professional_profiles(id,subject_id,display_name) VALUES(p,gen_random_uuid(),'Journey Professional');
   INSERT INTO company_jobs(id,tenant_id,title,status,location,starts_at,ends_at,pay_cents)
     VALUES(j,t,'Bartender','open','São Paulo',now()+interval '1 day',now()+interval '1 day 8 hours',25000);
@@ -38,6 +41,19 @@ BEGIN
   SELECT status,amount_cents INTO e_status,e_amount FROM earnings_ledger WHERE assignment_id=a;
   IF e_status<>'payable' THEN RAISE EXCEPTION 'earnings_status_invalid: %',e_status; END IF;
   IF e_amount<>25000 THEN RAISE EXCEPTION 'earnings_amount_invalid: %',e_amount; END IF;
+
+  INSERT INTO work_ratings(tenant_id,assignment_id,rater_identity_id,professional_id,score,comment)
+    VALUES(t,a,rater,p,5,'Ótimo trabalho');
+  SELECT score INTO rating_score FROM work_ratings WHERE assignment_id=a AND rater_identity_id=rater;
+  IF rating_score<>5 THEN RAISE EXCEPTION 'rating_not_persisted: %',rating_score; END IF;
+
+  INSERT INTO work_ratings(tenant_id,assignment_id,rater_identity_id,professional_id,score,comment)
+    VALUES(t,a,rater,p,4,'Atualizada')
+    ON CONFLICT(assignment_id,rater_identity_id)
+    DO UPDATE SET score=EXCLUDED.score,comment=EXCLUDED.comment;
+  SELECT score INTO rating_score FROM work_ratings WHERE assignment_id=a AND rater_identity_id=rater;
+  IF rating_score<>4 THEN RAISE EXCEPTION 'rating_not_idempotently_updated: %',rating_score; END IF;
+
   IF (SELECT status FROM work_assignments WHERE id=a)<>'completed' THEN RAISE EXCEPTION 'assignment_not_completed'; END IF;
   IF (SELECT status FROM job_interests WHERE job_id=j AND professional_id=p)<>'confirmed' THEN RAISE EXCEPTION 'interest_not_confirmed'; END IF;
 END $$;
