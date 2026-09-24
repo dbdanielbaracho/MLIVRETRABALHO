@@ -9,6 +9,7 @@ export function ProfessionalNav() {
       <Link href="/disponibilidade" style={s.item}>Disponibilidade</Link>
       <Link href="/ganhos" style={s.item}>Ganhos</Link>
       <Link href="/notificacoes" style={s.item}>Notificações</Link>
+      <Link href="/seguranca" style={s.item}>Segurança</Link>
       <Link href="/perfil" style={s.item}>Perfil</Link>
     </View>
   );
