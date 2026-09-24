@@ -51,8 +51,29 @@ not_contains "$COMPANY_B_CASES" "$CASE_ID"
 
 CROSS_STATUS="$(status_only POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_B_TOKEN" "$TENANT_B" '{"status":"reviewing"}')"
 test "$CROSS_STATUS" = "404"
-UPDATED="$(request POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" '{"status":"reviewing"}')"
+UPDATED="$(request POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" '{"status":"reviewing","note":"Revisão humana iniciada"}')"
 test "$(printf '%s' "$UPDATED" | json_field status)" = "reviewing"
+test "$(printf '%s' "$UPDATED" | json_field changed)" = "true"
+
+EVENTS="$(request GET "/v1/company/safety-cases/$CASE_ID/events" "$COMPANY_A_TOKEN" "$TENANT_A")"
+node - "$EVENTS" <<'NODE'
+const events=JSON.parse(process.argv[2]);
+if(!Array.isArray(events)||events.length!==1){console.error('expected exactly one safety event',events);process.exit(1)}
+const event=events[0];
+if(event.fromStatus!=='open'||event.toStatus!=='reviewing'||event.note!=='Revisão humana iniciada'||!event.actorIdentityId){
+  console.error('invalid safety audit event',event);process.exit(1)
+}
+NODE
+
+IDEMPOTENT="$(request POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" '{"status":"reviewing","note":"Não deve duplicar"}')"
+test "$(printf '%s' "$IDEMPOTENT" | json_field changed)" = "false"
+EVENTS_AFTER="$(request GET "/v1/company/safety-cases/$CASE_ID/events" "$COMPANY_A_TOKEN" "$TENANT_A")"
+node - "$EVENTS_AFTER" <<'NODE'
+const events=JSON.parse(process.argv[2]);if(events.length!==1){console.error('idempotent status duplicated audit history',events);process.exit(1)}
+NODE
+
+CROSS_EVENTS="$(status_only GET "/v1/company/safety-cases/$CASE_ID/events" "$COMPANY_B_TOKEN" "$TENANT_B")"
+test "$CROSS_EVENTS" = "404"
 MINE_AFTER="$(request GET /v1/safety-cases/mine "$PRO_TOKEN")"
 contains "$MINE_AFTER" 'reviewing'
 
@@ -60,4 +81,4 @@ request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_A_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_B_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: safety case reporting + multi-company history + tenant isolation"
+echo "PASS: safety case reporting + immutable status audit + tenant isolation"
