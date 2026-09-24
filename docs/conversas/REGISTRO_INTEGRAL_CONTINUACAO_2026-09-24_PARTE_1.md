@@ -60,3 +60,15 @@ continuar até o final já tinha salado que noa iria usar o tinyfish recuperar a
 - Regra reforçada: continuar até o final sem pedir confirmação; não trocar de projeto; documentar continuamente as mensagens e marcos relevantes no Registro Integral; manter código/ADRs/testes/evidências no GitHub.
 - Restrição reforçada pelo usuário: **não usar TinyFish neste projeto**. A partir deste ponto, TinyFish fica excluído do fluxo do MLIVRETRABALHO, salvo instrução futura explícita do usuário em sentido contrário.
 - Continuação técnica retoma exatamente a branch `mobile/safety-appeals-v1.81`, sem descartar o trabalho já feito.
+
+### Assistente — continuação após recuperação de memória
+- `scripts/http-safety-appeals-e2e.sh` reforçado para provar que um Safety case criado pela empresa aparece ao profissional realmente envolvido no assignment, com `reportedByMe=false`, antes de permitir o recurso.
+- Evidência v1.81 criada em `docs/evidencias/SAFETY_APPEALS_MOBILE_v1.81.md`.
+- PR #226 aberto, diff integral revisado e GitHub Actions novamente falhou sem steps executados; tratado como o mesmo bloqueio externo do Issue #214.
+- PR #226 mesclado no `main`: `3c086b7d3a11f2bdbd0783b13f853f52c9352a4a`.
+- Railway iniciou deploy da v1.81 após merge.
+- TRUST-ARCH interno reduzido: matriz proposta de enforcement humano criada em `docs/evidencias/TRUST_ENFORCEMENT_MATRIX_PROPOSED_2026-09-24.md`.
+- SLA operacional proposto de incidentes criado em `docs/evidencias/TRUST_INCIDENT_SLA_PROPOSED_2026-09-24.md`.
+- Issue #219 atualizado: enforcement matrix, appeal/contest/review flow e baseline de SLA operacional marcados como concluídos internamente; provider KYC/KYB, retenção/LGPD final, revisão jurídica e pentest permanecem externos.
+- Documento da Verdade v1.7 criado como novo delta normativo, incluindo regra de continuidade/memória, exclusão de TinyFish do fluxo do projeto, Production Truth atual, v1.80/v1.81 e matriz de gates.
+- README atualizado para apontar `DOCUMENTO_DA_VERDADE_v1.7.md` como fonte normativa vigente.
