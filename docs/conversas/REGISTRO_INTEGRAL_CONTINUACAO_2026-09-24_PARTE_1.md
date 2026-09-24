@@ -98,3 +98,9 @@ ok continuar então e sempre documentar as conversas que estão no chat referent
 - Railway production permanece saudável: API deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` SUCCESS, Postgres SUCCESS, pending work zero.
 - O CI mais recente do `main` (run `36032646458`, commit `0379d287b330bf5a3f2a12fa537262c3080d77a0`) voltou a falhar antes de qualquer step, com `runner_id=0`, `runner_name=""` e `steps=[]`.
 - Rerun do job `foundation` solicitado; o novo job também terminou `failure` sem steps, reproduzindo o bloqueio externo de runner. Production Truth/CI permanece OPEN, sem interpretar o resultado como falha do código.
+
+### Assistente — avanço adicional após a confirmação documental
+- WEB-ARCH #224 testado em ambiente limpo independente; `git clone` falhou porque o ambiente não conseguiu resolver `github.com`. Isso confirma que o bloqueio atual continua sendo rede/package-resolution externa. Nenhuma dependência Next.js foi adicionada sem lockfile reproduzível.
+- Pacote completo para revisão jurídica brasileira criado em `docs/evidencias/LEGAL_REVIEW_PACKET_2026-09-24.md`, cobrindo autonomia, Matching/Allocation, score/reliability, pools/recorrência, geolocalização, replacement, Trust/Safety, KYC/KYB, pagamentos, modalidades de contratação e LGPD.
+- Issue #221 atualizado: preparação jurídica interna marcada como concluída; o gate permanece OPEN somente até existir revisão profissional brasileira identificada com data, escopo/commit, fontes jurídicas, riscos, restrições, conclusão e gatilhos de re-review.
+- `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` atualizado com a preparação legal concluída, nova evidência do bloqueio WEB-ARCH e rechecagem do runner GitHub.
