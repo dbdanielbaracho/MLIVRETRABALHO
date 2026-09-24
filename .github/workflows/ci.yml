@@ -105,6 +105,7 @@ jobs:
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-team-allocation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-planner-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-safety-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
+          BASE_URL=http://127.0.0.1:3000 bash scripts/http-safety-appeals-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-trust-causality-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-ratings-reputation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-finance-reconciliation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
