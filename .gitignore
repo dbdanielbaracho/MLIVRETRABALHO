@@ -9,3 +9,5 @@ coverage/
 *.log
 .DS_Store
 .expo/
+apps/mobile/android/
+artifacts/
