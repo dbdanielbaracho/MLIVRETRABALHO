@@ -28,6 +28,7 @@ import { SafetyCasesController } from './safety-cases.controller';
 import { SafetyAdminController } from './safety-admin.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
 import { VerificationController } from './verification.controller';
+import { CopilotController } from './copilot.controller';
 
 @Module({
   controllers: [
@@ -57,7 +58,8 @@ import { VerificationController } from './verification.controller';
     PaymentWebhookController,
     SafetyCasesController,
     SafetyAdminController,
-    VerificationController
+    VerificationController,
+    CopilotController
   ],
   providers: [DatabaseService, AuthService]
 })

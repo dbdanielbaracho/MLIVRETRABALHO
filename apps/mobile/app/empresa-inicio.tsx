@@ -105,6 +105,7 @@ export default function EmpresaInicio() {
       <ScrollView contentContainerStyle={s.content}>
         <Text style={s.title}>Operação</Text>
         <View style={s.actions}>
+          <Link href="/copilot" style={s.action}>Assistente</Link>
           <Link href="/empresa" style={s.action}>+ Publicar trabalho</Link>
           <Link href="/planejamento" style={s.action}>Planejamento</Link>
           <Link href="/analytics" style={s.action}>Indicadores</Link>
