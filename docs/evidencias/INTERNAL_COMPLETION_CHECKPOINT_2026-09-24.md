@@ -28,6 +28,7 @@ Registrar o limite real alcançado pelo trabalho executável internamente nesta 
 | Finance pilot scope | guarantee/advance/credit/default coverage fora do piloto | `FIN_PILOT_SCOPE_DECISION_2026-09-24.md` |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
 | Android pilot distribution | package de piloto, APK build script, hash/build metadata, workflow, rollback/support | PR #227 |
+| Legal review preparation | escopo, perguntas, evidência mínima e gatilhos de re-review preparados | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
 | Conversa/memória | continuidade persistida | `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-24_PARTE_1.md` |
 
@@ -40,7 +41,7 @@ Necessário:
 - GitHub Actions alocar runner e executar o pipeline completo do commit corrente;
 - probe HTTP público canônico do commit corrente.
 
-Fato observado repetidamente: jobs `ubuntu-latest` terminam com `runner_id=0`, `runner_name=""`, `steps=[]`.
+Fato observado repetidamente: jobs `ubuntu-latest` terminam com `runner_id=0`, `runner_name=""`, `steps=[]`. Rerun do job mais recente em 24/09/2026 reproduziu a mesma falha antes dos steps.
 
 ### #215 FIN-RISK
 
@@ -79,11 +80,15 @@ Necessário:
 
 ### #221 LEGAL-ARCH
 
-Necessário parecer/revisão de profissional jurídico brasileiro identificado sobre o sistema concreto. IA, testes ou benchmark não fecham este gate.
+Preparação interna concluída em `docs/evidencias/LEGAL_REVIEW_PACKET_2026-09-24.md`.
+
+Necessário apenas o parecer/revisão externa de profissional jurídico brasileiro identificado sobre o sistema concreto, com data, escopo/commit, legislação/jurisprudência, riscos, restrições, conclusão e gatilhos de re-review. IA, testes ou benchmark não fecham este gate.
 
 ### #224 WEB-ARCH
 
 Necessário ambiente capaz de resolver dependências Next.js e gerar `pnpm-lock.yaml` reproduzível. Não adicionar dependências manualmente nem quebrar frozen lockfile.
+
+Em nova tentativa independente em 24/09/2026, ambiente limpo falhou ao resolver `github.com`, confirmando que o bloqueio de rede/package-resolution continua externo ao código do projeto.
 
 ## Regra para a próxima continuação
 
