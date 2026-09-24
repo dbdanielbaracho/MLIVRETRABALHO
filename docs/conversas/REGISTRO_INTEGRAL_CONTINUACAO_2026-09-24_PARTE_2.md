@@ -39,3 +39,14 @@ continuar
 ## Estado de verdade neste ponto
 
 O desenvolvimento interno seguro continua no limite atual. Nenhum dos gates externos foi falsamente fechado. Production Truth continua aguardando runner real + probe corrente; FIN-RISK/TRUST-ARCH aguardam provider/contrato/sandbox e revisões externas; Device/Pilot aguarda aparelho físico/release signing/pentest; LEGAL-ARCH aguarda parecer jurídico brasileiro identificado; WEB-ARCH aguarda ambiente com resolução de pacotes e lockfile reproduzível.
+
+## Usuário
+nao estou entendo sistema de pagamentos etc como os nossos concorrentes tratam
+
+## Assistente — comparação do modelo de pagamentos dos concorrentes
+- Estaff verificada em termos públicos atuais: o contratante paga; uma processadora de pagamentos executa o `split`; o valor do serviço é repassado diretamente ao prestador na conta cadastrada; para a Estaff ingressa apenas a taxa de intermediação como faturamento. Este é o modelo mais próximo da arquitetura financeira que já está sendo desenhada no MLIVRETRABALHO.
+- 99Freelas: usa pagamento garantido/escrow; o cliente deposita antes do início, o valor fica protegido pela plataforma e é liberado ao freelancer após conclusão/aprovação; em caso de desacordo pode haver disputa antes da liberação.
+- Workana: usa escrow para projetos de preço fixo; o cliente deposita a garantia e a plataforma atua como intermediária de retenção até as condições de liberação serem cumpridas.
+- GetNinjas: não participa do pagamento do serviço; cliente e profissional combinam e pagam diretamente entre si. A monetização ocorre principalmente pelo acesso do profissional aos leads/contatos por meio de créditos/moedas.
+- Três modelos principais observados no mercado: (1) split por PSP/processadora; (2) escrow/garantia; (3) pagamento fora da plataforma.
+- Para o MLIVRETRABALHO, o baseline técnico atual continua alinhado ao modelo de split por PSP, semelhante ao da Estaff, mas a seleção/contratação do provider e a ativação de dinheiro real permanecem bloqueadas por FIN-RISK #215 e provider due diligence #228.
