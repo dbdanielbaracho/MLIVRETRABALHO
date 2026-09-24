@@ -6,7 +6,7 @@
 
 - Projeto: MLIVRETRABALHO / AI Workforce Network.
 - Repositório oficial: `dbdanielbaracho/MLIVRETRABALHO`.
-- Documento da Verdade vigente: v1.8.
+- Documento da Verdade vigente: v1.9.
 - GitHub é fonte persistente da verdade.
 - Documento da Verdade e Registro Integral da Conversa permanecem separados.
 - Não usar TinyFish neste projeto salvo nova instrução explícita do usuário.
@@ -50,3 +50,18 @@ nao estou entendo sistema de pagamentos etc como os nossos concorrentes tratam
 - GetNinjas: não participa do pagamento do serviço; cliente e profissional combinam e pagam diretamente entre si. A monetização ocorre principalmente pelo acesso do profissional aos leads/contatos por meio de créditos/moedas.
 - Três modelos principais observados no mercado: (1) split por PSP/processadora; (2) escrow/garantia; (3) pagamento fora da plataforma.
 - Para o MLIVRETRABALHO, o baseline técnico atual continua alinhado ao modelo de split por PSP, semelhante ao da Estaff, mas a seleção/contratação do provider e a ativação de dinheiro real permanecem bloqueadas por FIN-RISK #215 e provider due diligence #228.
+
+## Usuário
+ok continuar entao e seguir nossas instruções
+
+## Assistente — formalização do baseline financeiro e continuidade documental
+- Instruções mantidas: consultar primeiro GitHub/Documento da Verdade/Registro Integral; não usar TinyFish; continuar sem refazer trabalho concluído; registrar toda conversa do projeto no GitHub.
+- Comparação dos concorrentes revalidada em fontes públicas atuais: Estaff = split via processadora; 99Freelas/Workana = garantia/escrow; GetNinjas = pagamento direto/off-platform.
+- Evidência criada: `docs/evidencias/COMPETITOR_PAYMENT_MODELS_2026-09-24.md`.
+- Decisão formalizada: o baseline financeiro do piloto será **split por PSP/provider contratado**, provider-neutral no domínio.
+- Fluxo normativo: `Empresa → PSP → split/repasses → profissional + fee da plataforma → webhook/eventos → ledger/reconciliação MLIVRETRABALHO`.
+- Não serão padrão inicial: escrow/garantia financeira, pagamento direto/off-platform, conta operacional recebendo todo o valor + PIX manual e garantia/adiantamento/crédito com caixa da plataforma.
+- `docs/adr/ADR-FIN-001-PROPOSED.md` atualizado com a decisão, permanecendo PROPOSTO e FIN-RISK OPEN até provider/contrato/sandbox/revisões externas.
+- Issue #215 FIN-RISK atualizado com o baseline do piloto e a comparação dos concorrentes.
+- Documento da Verdade v1.9 criado como delta normativo específico do baseline financeiro e provider ainda não selecionado.
+- README atualizado para apontar `DOCUMENTO_DA_VERDADE_v1.9.md` como documento normativo vigente.
