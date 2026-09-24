@@ -1,11 +1,14 @@
 {
   "expo": {
-    "name": "MLivreTrabalho",
+    "name": "MLivreTrabalho Pilot",
     "slug": "mlivretrabalho",
     "scheme": "mlivretrabalho",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.predibeacon.mlivretrabalho.pilot"
+    },
     "plugins": [
       "expo-router",
       [
