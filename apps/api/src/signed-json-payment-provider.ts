@@ -95,9 +95,9 @@ export class SignedJsonPaymentProviderAdapter implements PaymentProviderAdapter 
       assignmentId,
       eventType: normalizedEventType,
       amountCents,
-      providerReference,
-      recipientProfessionalId,
       idempotencyKey,
+      ...(providerReference !== undefined ? { providerReference: providerReference as string } : {}),
+      ...(recipientProfessionalId !== undefined ? { recipientProfessionalId: recipientProfessionalId as string } : {}),
     };
   }
 }
