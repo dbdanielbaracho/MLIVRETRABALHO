@@ -86,6 +86,7 @@ jobs:
         env:
           PGPASSWORD: postgres
           HTTP_TEST_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
+          PAYMENT_WEBHOOK_SECRET: ci-payment-webhook-secret
         run: |
           createdb -h localhost -U postgres mlivretrabalho_http
           DATABASE_URL="$HTTP_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
