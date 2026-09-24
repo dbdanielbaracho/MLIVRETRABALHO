@@ -26,6 +26,8 @@ Registrar o limite real alcançado pelo trabalho executável internamente nesta 
 | Trust minimização/retencão | proposta preparada para revisão | `TRUST_DATA_MINIMIZATION_RETENTION_PROPOSED_2026-09-24.md` |
 | Finance security baseline | webhook HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
 | Finance pilot scope | guarantee/advance/credit/default coverage fora do piloto | `FIN_PILOT_SCOPE_DECISION_2026-09-24.md` |
+| Provider shortlist | PSP/KYC candidatos pesquisados com documentação oficial; sem seleção prematura | `PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md` |
+| Provider due diligence | questionário único comercial/técnico preparado | `PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md`; Issue #228 |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
 | Android pilot distribution | package de piloto, APK build script, hash/build metadata, workflow, rollback/support | PR #227 |
 | Legal review preparation | escopo, perguntas, evidência mínima e gatilhos de re-review preparados | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
@@ -54,7 +56,7 @@ Necessário:
 - sandbox real do produto contratado;
 - revisão contábil/tributária/jurídica brasileira.
 
-Garantia/adiantamento/crédito estão fora do piloto.
+Garantia/adiantamento/crédito estão fora do piloto. Shortlist atual pesquisada: Asaas, Pagar.me e Mercado Pago; nenhuma seleção foi fechada.
 
 ### #219 TRUST-ARCH
 
@@ -64,6 +66,8 @@ Necessário:
 - revisão jurídica/LGPD com prazos/políticas finais;
 - pentest/adversarial externo;
 - somente então fechar ADR-TRUST-001.
+
+Datavalid/Serpro foi registrado como candidato de validação independente de identidade; onboarding nativo do PSP permanece alternativa preferencial para KYC/KYB financeiro quando suficiente.
 
 ### #220 Device/Pilot/Pentest
 
@@ -89,6 +93,25 @@ Necessário apenas o parecer/revisão externa de profissional jurídico brasilei
 Necessário ambiente capaz de resolver dependências Next.js e gerar `pnpm-lock.yaml` reproduzível. Não adicionar dependências manualmente nem quebrar frozen lockfile.
 
 Em nova tentativa independente em 24/09/2026, ambiente limpo falhou ao resolver `github.com`, confirmando que o bloqueio de rede/package-resolution continua externo ao código do projeto.
+
+### #228 PROVIDER-DUE-DILIGENCE
+
+Preparação interna concluída:
+
+- shortlist documentada em `PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md`;
+- questionário comparável preparado em `PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md`.
+
+Necessário externamente:
+
+- respostas comerciais escritas;
+- preços/fees;
+- elegibilidade PF/PJ;
+- responsabilidades KYC/KYB/PLD;
+- sandbox real;
+- comportamento real de webhook/idempotência;
+- settlement/refund/chargeback/negative balance;
+- termos de privacidade/retenção;
+- homologação/produção.
 
 ## Regra para a próxima continuação
 
