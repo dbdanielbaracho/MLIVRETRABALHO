@@ -1,13 +1,17 @@
 # ADR-FIN-001 — Arquitetura financeira provider-neutral
 
 **Status:** PROPOSTO / FIN-RISK permanece OPEN  
-**Data:** 2026-09-22
+**Data:** 2026-09-22  
+**Atualização:** 2026-09-24 — baseline do piloto alinhado a split por PSP, com evidência comparativa de concorrentes.
 
 ## Contexto
 
 O MLIVRETRABALHO já possui `earnings_ledger`, `payment_events`, webhook com idempotência e interface `PaymentProviderAdapter`, mas o provider financeiro não está congelado. O Documento da Verdade proíbe fechar garantia/advance/credit/default enquanto `FIN-RISK` estiver OPEN.
 
-Pesquisa primária: `docs/evidencias/FIN_RISK_PSP_RESEARCH_2026-09-22.md`.
+Pesquisas/evidências:
+- `docs/evidencias/FIN_RISK_PSP_RESEARCH_2026-09-22.md`;
+- `docs/evidencias/PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md`;
+- `docs/evidencias/COMPETITOR_PAYMENT_MODELS_2026-09-24.md`.
 
 ## Decisão proposta de arquitetura neutra
 
@@ -23,7 +27,30 @@ Pesquisa primária: `docs/evidencias/FIN_RISK_PSP_RESEARCH_2026-09-22.md`.
 
 Split, payout, garantia e crédito são conceitos distintos.
 
-### 2. Provider Adapter obrigatório
+### 2. Baseline financeiro do piloto
+
+O fluxo-alvo inicial é **split por PSP/provider contratado**, sem a conta operacional do MLIVRETRABALHO receber integralmente os valores para depois realizar PIX manual.
+
+Fluxo-alvo:
+
+`Empresa → PSP → split/repasses → profissional + fee da plataforma → webhook/eventos → ledger/reconciliação MLIVRETRABALHO`
+
+Razões:
+- mantém experiência integrada;
+- preserva fee/comissão da plataforma;
+- reduz bypass;
+- permite earnings e reconciliação;
+- aproxima-se do modelo público da Estaff, concorrente mais próximo em workforce/gigs;
+- evita assumir, como baseline, retenção financeira tipo escrow quando o caso de uso principal é turno/serviço operacional concluído.
+
+### 3. Modelos não adotados como padrão inicial
+
+- **Escrow/garantia sob controle da plataforma:** não será o baseline do piloto. Pode ser reavaliado futuramente para modalidades específicas, mas exige decisão própria de FIN-RISK/legal.
+- **Pagamento direto/off-platform:** não será o fluxo padrão porque enfraquece monetização, histórico de ganhos, reconciliação, experiência integrada e anti-bypass.
+- **Conta operacional + PIX manual:** rejeitado como default.
+- **Adiantamento, garantia ou crédito com caixa da plataforma:** fora do piloto.
+
+### 4. Provider Adapter obrigatório
 
 Domínio não conhece payload específico de PSP. Cada integração implementa adapter responsável por:
 - autenticar/verificar webhook;
@@ -32,7 +59,7 @@ Domínio não conhece payload específico de PSP. Cada integração implementa a
 - manter idempotência;
 - rejeitar evento sem autenticidade comprovada.
 
-### 3. Proveniência financeira
+### 5. Proveniência financeira
 
 Todo fato financeiro externo deve registrar:
 - `provider`;
@@ -45,19 +72,19 @@ Todo fato financeiro externo deve registrar:
 
 Eventos são append-only para o runtime.
 
-### 4. Fonte de verdade
+### 6. Fonte de verdade
 
 - PSP é fonte de verdade para o fato externo de processamento/liquidação.
 - ledger interno é fonte canônica de obrigação, decomposição e reconciliação do produto.
 - divergência entre PSP e ledger cria estado de reconciliação/alerta; não deve ser silenciosamente sobrescrita.
 
-### 5. Default/chargeback/refund
+### 7. Default/chargeback/refund
 
 Não assumir que split elimina risco. O comportamento de saldo insuficiente, refund e chargeback deve ser explicitamente definido por provider/contrato antes de produção financeira.
 
-### 6. Garantia/adiantamento/crédito
+### 8. Garantia/adiantamento/crédito
 
-Continuam **PROIBIDOS como comportamento definitivo** até FIN-RISK ser CLOSED/APROVADO. Protótipos/simulações sem dinheiro real são permitidos.
+Continuam **PROIBIDOS como comportamento definitivo** até FIN-RISK ser CLOSED/APROVADO. Para o piloto inicial, estão explicitamente fora do escopo. Protótipos/simulações sem dinheiro real são permitidos.
 
 ## Critérios para fechar FIN-RISK
 
@@ -65,7 +92,7 @@ Continuam **PROIBIDOS como comportamento definitivo** até FIN-RISK ser CLOSED/A
 2. fees reais e unit economics;
 3. PF/PJ/onboarding e compliance confirmados;
 4. política de chargeback/refund/default aprovada;
-5. decisão separada sobre qualquer guarantee/advance/credit;
+5. decisão separada sobre qualquer guarantee/advance/credit — para o piloto inicial: **não existe**;
 6. revisão contábil/tributária/jurídica brasileira;
 7. sandbox E2E + webhook assinado + idempotência + reconciliação;
 8. teste de payout duplicado/destinatário errado;
@@ -74,4 +101,4 @@ Continuam **PROIBIDOS como comportamento definitivo** até FIN-RISK ser CLOSED/A
 
 ## Reabertura
 
-Mudança material de provider, contrato, fees, responsabilidade por saldo negativo/chargeback, modelo de recebedor, antecipação ou regulação reabre FIN-RISK.
+Mudança material de provider, contrato, fees, responsabilidade por saldo negativo/chargeback, modelo de recebedor, antecipação, escrow, retenção financeira ou regulação reabre FIN-RISK.
