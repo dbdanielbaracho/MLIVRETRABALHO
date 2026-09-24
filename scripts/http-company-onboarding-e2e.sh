@@ -38,6 +38,14 @@ test "$(printf '%s' "$JOB" | json_field status)" = "open"
 test "$(printf '%s' "$JOB" | json_field startsAt)" = "$START_AT"
 test "$(printf '%s' "$JOB" | json_field endsAt)" = "$END_AT"
 
+ANALYTICS="$(request GET /v1/company/analytics "$TOKEN" "$TENANT_ID")"
+test "$(printf '%s' "$ANALYTICS" | json_field jobsCreated)" = "1"
+test "$(printf '%s' "$ANALYTICS" | json_field openJobs)" = "1"
+test "$(printf '%s' "$ANALYTICS" | json_field jobsWithInterest)" = "0"
+test "$(printf '%s' "$ANALYTICS" | json_field jobsWithConfirmation)" = "0"
+test "$(printf '%s' "$ANALYTICS" | json_field completedAssignments)" = "0"
+test "$(printf '%s' "$ANALYTICS" | json_field cancelledAssignments)" = "0"
+
 request POST /v1/auth/signout "$TOKEN" '' '{}' >/dev/null
 
-echo "PASS: company signup creates workspace + owner membership + valid scheduled job"
+echo "PASS: company signup creates workspace + owner membership + valid scheduled job + factual analytics"
