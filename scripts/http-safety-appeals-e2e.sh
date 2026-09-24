@@ -35,9 +35,15 @@ request POST "/v1/jobs/$JOB_ID/interest" "$PRO_TOKEN" >/dev/null
 ASSIGNMENT="$(request POST "/v1/company/jobs/$JOB_ID/confirm" "$COMPANY_A_TOKEN" "$TENANT_A" "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
 ASSIGNMENT_ID="$(printf '%s' "$ASSIGNMENT" | json_field id)"
 
-# The company reports a case; the professional involved must still have a contest/review path.
+# The company reports a case; the professional involved must see the case and have a contest/review path.
 CASE="$(request POST /v1/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A" "{\"assignmentId\":\"$ASSIGNMENT_ID\",\"category\":\"other\",\"description\":\"Ocorrência operacional sujeita a revisão humana\"}")"
 CASE_ID="$(printf '%s' "$CASE" | json_field id)"
+
+RELATED_CASES="$(request GET /v1/safety-cases/mine "$PRO_TOKEN")"
+contains "$RELATED_CASES" "$CASE_ID"
+contains "$RELATED_CASES" "$TENANT_A"
+contains "$RELATED_CASES" '"reportedByMe":false'
+contains "$RELATED_CASES" 'Ocorrência operacional sujeita a revisão humana'
 
 APPEAL="$(request POST /v1/safety-appeals "$PRO_TOKEN" "$TENANT_A" "{\"safetyCaseId\":\"$CASE_ID\",\"reason\":\"Solicito revisão humana e registro do meu contraditório\"}")"
 APPEAL_ID="$(printf '%s' "$APPEAL" | json_field id)"
@@ -91,4 +97,4 @@ request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_A_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_B_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: safety appeal submission + human review + immutable audit + tenant isolation"
+echo "PASS: related safety case visibility + appeal submission + human review + immutable audit + tenant isolation"

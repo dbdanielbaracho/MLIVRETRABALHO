@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ProfessionalNav } from '../components/ProfessionalNav';
@@ -13,6 +13,14 @@ const categories = [
   ['fraud', 'Fraude'],
   ['other', 'Outro']
 ] as const;
+
+const appealStatusLabel: Record<string, string> = {
+  submitted: 'Recurso enviado',
+  reviewing: 'Recurso em análise',
+  upheld: 'Decisão mantida',
+  modified: 'Decisão modificada',
+  reversed: 'Decisão revertida'
+};
 
 type Assignment = {
   id: string;
@@ -31,25 +39,41 @@ type SafetyCase = {
   description: string;
   status: string;
   createdAt: string;
+  reportedByMe?: boolean;
+};
+
+type SafetyAppeal = {
+  id: string;
+  tenantId: string;
+  safetyCaseId: string;
+  reason: string;
+  status: string;
+  createdAt: string;
 };
 
 export default function Seguranca() {
   const params = useLocalSearchParams<{ assignmentId?: string; tenantId?: string }>();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [cases, setCases] = useState<SafetyCase[]>([]);
+  const [appeals, setAppeals] = useState<SafetyAppeal[]>([]);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(params.assignmentId ?? '');
   const [selectedTenantId, setSelectedTenantId] = useState(params.tenantId ?? '');
   const [description, setDescription] = useState('');
+  const [appealCaseId, setAppealCaseId] = useState('');
+  const [appealReason, setAppealReason] = useState('');
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState<(typeof categories)[number][0]>('unsafe_work');
+
+  const appealByCase = useMemo(() => new Map(appeals.map(item => [item.safetyCaseId, item])), [appeals]);
 
   useEffect(() => { void load(); }, []);
 
   async function load() {
     const headers = await authHeaders();
-    const [assignmentsResponse, casesResponse] = await Promise.all([
+    const [assignmentsResponse, casesResponse, appealsResponse] = await Promise.all([
       fetch(apiUrl('/assignments/mine'), { headers }),
-      fetch(apiUrl('/safety-cases/mine'), { headers })
+      fetch(apiUrl('/safety-cases/mine'), { headers }),
+      fetch(apiUrl('/safety-appeals/mine'), { headers })
     ]);
 
     if (assignmentsResponse.ok) {
@@ -61,6 +85,7 @@ export default function Seguranca() {
       }
     }
     if (casesResponse.ok) setCases(await casesResponse.json());
+    if (appealsResponse.ok) setAppeals(await appealsResponse.json());
   }
 
   function selectAssignment(assignment: Assignment) {
@@ -89,6 +114,26 @@ export default function Seguranca() {
     setMessage(response.ok ? 'Relato enviado para análise.' : 'Não foi possível enviar o relato.');
     if (response.ok) {
       setDescription('');
+      await load();
+    }
+  }
+
+  async function sendAppeal(item: SafetyCase) {
+    const reason = appealReason.trim();
+    if (!reason) {
+      setMessage('Explique por que você solicita revisão.');
+      return;
+    }
+    const headers = await authHeaders();
+    const response = await fetch(apiUrl('/safety-appeals'), {
+      method: 'POST',
+      headers: { ...headers, 'x-tenant-id': item.tenantId, 'content-type': 'application/json' },
+      body: JSON.stringify({ safetyCaseId: item.id, reason })
+    });
+    setMessage(response.ok ? 'Pedido de revisão registrado para análise humana.' : 'Não foi possível registrar o pedido de revisão.');
+    if (response.ok) {
+      setAppealCaseId('');
+      setAppealReason('');
       await load();
     }
   }
@@ -133,14 +178,46 @@ export default function Seguranca() {
         <Pressable style={s.button} onPress={() => void send()}><Text style={s.bold}>Enviar relato</Text></Pressable>
         {message ? <Text>{message}</Text> : null}
 
-        <Text style={s.heading}>Meus relatos</Text>
-        {cases.length === 0 ? <Text>Nenhum relato enviado.</Text> : cases.map(item => (
-          <View key={`${item.tenantId}:${item.id}`} style={s.card}>
-            <Text style={s.bold}>{categories.find(([value]) => value === item.category)?.[1] ?? item.category}</Text>
-            <Text>{item.description}</Text>
-            <Text>Status: {item.status}</Text>
-          </View>
-        ))}
+        <Text style={s.heading}>Casos relacionados a mim</Text>
+        <Text>Você vê relatos que enviou e também casos ligados ao seu trabalho. Se discordar de uma decisão ou precisar registrar seu contraditório, peça revisão humana.</Text>
+        {cases.length === 0 ? <Text>Nenhum caso relacionado a você.</Text> : cases.map(item => {
+          const appeal = appealByCase.get(item.id);
+          const canRequestReview = !appeal && (!item.reportedByMe || item.status === 'resolved' || item.status === 'dismissed');
+          return (
+            <View key={`${item.tenantId}:${item.id}`} style={s.card}>
+              <Text style={s.bold}>{categories.find(([value]) => value === item.category)?.[1] ?? item.category}</Text>
+              <Text>{item.description}</Text>
+              <Text>Status do caso: {item.status}</Text>
+              <Text>{item.reportedByMe ? 'Relato enviado por você.' : 'Caso relacionado ao seu trabalho.'}</Text>
+              {appeal ? (
+                <View style={s.reviewBox}>
+                  <Text style={s.bold}>{appealStatusLabel[appeal.status] ?? appeal.status}</Text>
+                  <Text>{appeal.reason}</Text>
+                  <Text>A revisão é humana e não altera score ou acesso automaticamente.</Text>
+                </View>
+              ) : null}
+              {canRequestReview && appealCaseId !== item.id ? (
+                <Pressable style={s.button} onPress={() => { setAppealCaseId(item.id); setAppealReason(''); setMessage(''); }}>
+                  <Text style={s.bold}>Solicitar revisão</Text>
+                </Pressable>
+              ) : null}
+              {appealCaseId === item.id ? (
+                <View style={s.reviewBox}>
+                  <Text style={s.bold}>Seu contraditório</Text>
+                  <TextInput
+                    style={s.appealInput}
+                    multiline
+                    placeholder="Explique o que deve ser revisto"
+                    value={appealReason}
+                    onChangeText={setAppealReason}
+                  />
+                  <Pressable style={s.button} onPress={() => void sendAppeal(item)}><Text style={s.bold}>Enviar para revisão humana</Text></Pressable>
+                  <Pressable style={s.button} onPress={() => { setAppealCaseId(''); setAppealReason(''); }}><Text>Cancelar</Text></Pressable>
+                </View>
+              ) : null}
+            </View>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
@@ -152,11 +229,13 @@ const s = StyleSheet.create({
   title: { fontSize: 30, fontWeight: '800' },
   heading: { fontSize: 20, fontWeight: '800', marginTop: 4 },
   input: { borderWidth: 1, borderRadius: 12, padding: 14, minHeight: 140, textAlignVertical: 'top' },
+  appealInput: { borderWidth: 1, borderRadius: 10, padding: 12, minHeight: 100, textAlignVertical: 'top' },
   button: { borderWidth: 1, borderRadius: 12, padding: 14, alignItems: 'center' },
   bold: { fontWeight: '800' },
   alert: { fontWeight: '700' },
   categories: { gap: 8 },
   choice: { borderWidth: 1, borderRadius: 10, padding: 10 },
-  card: { borderWidth: 1, borderRadius: 12, padding: 12, gap: 4 },
+  card: { borderWidth: 1, borderRadius: 12, padding: 12, gap: 7 },
+  reviewBox: { borderWidth: 1, borderRadius: 10, padding: 12, gap: 7 },
   selected: { borderWidth: 2 }
 });
