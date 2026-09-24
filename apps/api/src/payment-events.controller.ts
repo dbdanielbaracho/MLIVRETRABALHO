@@ -48,7 +48,7 @@ export class PaymentEventsController {
   async list(@Headers('authorization')a?:string,@Headers('x-tenant-id')t?:string){
     const tenant=await this.ctx(a,t);
     return this.db.tenant(tenant,async db=>(await db.query(
-      'SELECT id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",idempotency_key AS "idempotencyKey",created_at AS "createdAt" FROM payment_events WHERE tenant_id=$1 ORDER BY created_at DESC LIMIT 200',
+      'SELECT id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",recipient_professional_id AS "recipientProfessionalId",idempotency_key AS "idempotencyKey",created_at AS "createdAt" FROM payment_events WHERE tenant_id=$1 ORDER BY created_at DESC LIMIT 200',
       [tenant]
     )).rows);
   }

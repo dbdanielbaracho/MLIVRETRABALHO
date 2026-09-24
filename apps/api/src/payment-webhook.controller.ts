@@ -46,13 +46,19 @@ export class PaymentWebhookController {
 
     return this.db.tenant(event.tenantId, async db => {
       const assignment = (
-        await db.query('SELECT 1 FROM work_assignments WHERE id=$1', [event.assignmentId])
+        await db.query<{ professionalId: string }>(
+          'SELECT professional_id AS "professionalId" FROM work_assignments WHERE id=$1',
+          [event.assignmentId],
+        )
       ).rows[0];
       if (!assignment) throw new BadRequestException('assignment_not_found');
+      if (event.recipientProfessionalId && event.recipientProfessionalId !== assignment.professionalId) {
+        throw new BadRequestException('payout_recipient_mismatch');
+      }
 
       const existing = (
         await db.query(
-          'SELECT id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",idempotency_key AS "idempotencyKey",created_at AS "createdAt" FROM payment_events WHERE idempotency_key=$1',
+          'SELECT id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",recipient_professional_id AS "recipientProfessionalId",idempotency_key AS "idempotencyKey",created_at AS "createdAt" FROM payment_events WHERE idempotency_key=$1',
           [event.idempotencyKey],
         )
       ).rows[0];
@@ -63,7 +69,7 @@ export class PaymentWebhookController {
 
       return (
         await db.query(
-          'INSERT INTO payment_events(tenant_id,provider,assignment_id,event_type,amount_cents,provider_reference,idempotency_key) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT(tenant_id,idempotency_key) DO NOTHING RETURNING id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",idempotency_key AS "idempotencyKey",created_at AS "createdAt"',
+          'INSERT INTO payment_events(tenant_id,provider,assignment_id,event_type,amount_cents,provider_reference,recipient_professional_id,idempotency_key) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(tenant_id,idempotency_key) DO NOTHING RETURNING id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",recipient_professional_id AS "recipientProfessionalId",idempotency_key AS "idempotencyKey",created_at AS "createdAt"',
           [
             event.tenantId,
             event.provider,
@@ -71,6 +77,7 @@ export class PaymentWebhookController {
             event.eventType,
             event.amountCents,
             event.providerReference ?? null,
+            event.recipientProfessionalId ?? null,
             event.idempotencyKey,
           ],
         )

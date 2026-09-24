@@ -12,6 +12,7 @@ const eventTypes = new Set<PaymentEventType>([
   'payout_paid',
   'payout_failed',
 ]);
+const payoutTypes = new Set<PaymentEventType>(['payout_sent', 'payout_paid', 'payout_failed']);
 
 export type PaymentWebhookVerificationCode =
   | 'webhook_timestamp_invalid'
@@ -68,6 +69,7 @@ export class SignedJsonPaymentProviderAdapter implements PaymentProviderAdapter 
     const eventType = payload.eventType;
     const amountCents = payload.amountCents;
     const providerReference = payload.providerReference;
+    const recipientProfessionalId = payload.recipientProfessionalId;
     const idempotencyKey = payload.idempotencyKey;
 
     if (
@@ -76,8 +78,14 @@ export class SignedJsonPaymentProviderAdapter implements PaymentProviderAdapter 
       typeof eventType !== 'string' || !eventTypes.has(eventType as PaymentEventType) ||
       typeof amountCents !== 'number' || !Number.isInteger(amountCents) || amountCents < 0 ||
       (providerReference !== undefined && typeof providerReference !== 'string') ||
+      (recipientProfessionalId !== undefined && typeof recipientProfessionalId !== 'string') ||
       typeof idempotencyKey !== 'string' || !idempotencyKey
     ) {
+      throw new PaymentWebhookVerificationError('payment_event_invalid');
+    }
+
+    const normalizedEventType = eventType as PaymentEventType;
+    if (payoutTypes.has(normalizedEventType) && (typeof recipientProfessionalId !== 'string' || !recipientProfessionalId)) {
       throw new PaymentWebhookVerificationError('payment_event_invalid');
     }
 
@@ -85,10 +93,11 @@ export class SignedJsonPaymentProviderAdapter implements PaymentProviderAdapter 
       provider: this.provider,
       tenantId,
       assignmentId,
-      eventType: eventType as PaymentEventType,
+      eventType: normalizedEventType,
       amountCents,
-      providerReference,
       idempotencyKey,
+      ...(providerReference !== undefined ? { providerReference: providerReference as string } : {}),
+      ...(recipientProfessionalId !== undefined ? { recipientProfessionalId: recipientProfessionalId as string } : {}),
     };
   }
 }
