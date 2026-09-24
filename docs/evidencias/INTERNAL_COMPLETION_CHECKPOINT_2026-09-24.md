@@ -1,7 +1,7 @@
 # MLIVRETRABALHO — Internal Completion Checkpoint
 
 **Data:** 2026-09-24  
-**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.8.md`  
+**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.9.md`  
 **Regra:** este checkpoint não declara Production-DONE nem Pilot-DONE.
 
 ## Objetivo
@@ -26,13 +26,14 @@ Registrar o limite real alcançado pelo trabalho executável internamente nesta 
 | Trust minimização/retencão | proposta preparada para revisão | `TRUST_DATA_MINIMIZATION_RETENTION_PROPOSED_2026-09-24.md` |
 | Finance security baseline | webhook HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
 | Finance pilot scope | guarantee/advance/credit/default coverage fora do piloto | `FIN_PILOT_SCOPE_DECISION_2026-09-24.md` |
+| Finance payment model | split por PSP como baseline; escrow/off-platform/manual PIX fora do padrão inicial | `COMPETITOR_PAYMENT_MODELS_2026-09-24.md`; ADR-FIN-001; Documento da Verdade v1.9 |
 | Provider shortlist | PSP/KYC candidatos pesquisados com documentação oficial; sem seleção prematura | `PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md` |
-| Provider due diligence | questionário único comercial/técnico preparado | `PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md`; Issue #228 |
+| Provider due diligence | questionário e outreach packet preparados | `PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md`; `PROVIDER_OUTREACH_PACKET_2026-09-24.md`; Issue #228 |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
 | Android pilot distribution | package de piloto, APK build script, hash/build metadata, workflow, rollback/support | PR #227 |
 | Legal review preparation | escopo, perguntas, evidência mínima e gatilhos de re-review preparados | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
-| Conversa/memória | continuidade persistida | `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-24_PARTE_1.md` |
+| Conversa/memória | continuidade persistida | `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-24_PARTE_1.md` + `PARTE_2.md` |
 
 ## Bloqueios externos reais
 
@@ -47,7 +48,11 @@ Fato observado repetidamente: jobs `ubuntu-latest` terminam com `runner_id=0`, `
 
 ### #215 FIN-RISK
 
-Necessário:
+Baseline interno agora definido:
+
+`Empresa → PSP → split/repasses → profissional + fee da plataforma → webhook/eventos → ledger/reconciliação MLIVRETRABALHO`.
+
+Necessário externamente:
 
 - PSP comercialmente elegível/contratado para o modelo Brasil;
 - fees/unit economics reais;
@@ -56,7 +61,7 @@ Necessário:
 - sandbox real do produto contratado;
 - revisão contábil/tributária/jurídica brasileira.
 
-Garantia/adiantamento/crédito estão fora do piloto. Shortlist atual pesquisada: Asaas, Pagar.me e Mercado Pago; nenhuma seleção foi fechada.
+Garantia/adiantamento/crédito estão fora do piloto. Escrow, pagamento off-platform e conta operacional + PIX manual também não são o padrão inicial.
 
 ### #219 TRUST-ARCH
 
@@ -98,8 +103,9 @@ Em nova tentativa independente em 24/09/2026, ambiente limpo falhou ao resolver 
 
 Preparação interna concluída:
 
-- shortlist documentada em `PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md`;
-- questionário comparável preparado em `PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md`.
+- shortlist documentada;
+- questionário comparável preparado;
+- pacote de outreach preparado.
 
 Necessário externamente:
 
@@ -115,9 +121,9 @@ Necessário externamente:
 
 ## Regra para a próxima continuação
 
-1. recuperar Documento da Verdade v1.8;
+1. recuperar Documento da Verdade v1.9;
 2. recuperar este checkpoint;
-3. recuperar o Registro Integral da Conversa;
+3. recuperar o Registro Integral da Conversa (Parte 1 + Parte 2);
 4. verificar primeiro se algum bloqueio externo mudou;
 5. não refazer trabalho já concluído sem evidência de regressão;
 6. continuar registrando toda a conversa no arquivo integral vigente;
