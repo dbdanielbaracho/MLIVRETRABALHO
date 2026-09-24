@@ -12,6 +12,7 @@ import { WorkPassportController } from './work-passport.controller';
 import { RatingsController } from './ratings.controller';
 import { CompanyJobsController } from './company-jobs.controller';
 import { CompanyDashboardController } from './company-dashboard.controller';
+import { CompanyAnalyticsController } from './company-analytics.controller';
 import { AvailabilityController } from './availability.controller';
 import { ReplacementController } from './replacement.controller';
 import { TeamsController } from './teams.controller';
@@ -42,6 +43,7 @@ import { VerificationController } from './verification.controller';
     CompanyJobsController,
     CompanyJobCreateController,
     CompanyDashboardController,
+    CompanyAnalyticsController,
     PlannerController,
     AvailabilityController,
     ReplacementController,
