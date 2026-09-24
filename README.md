@@ -10,7 +10,7 @@ Uma rede inteligente de trabalho que conecta profissionais, empresas e oportunid
 ## Fonte da verdade
 A documentação é mantida em `docs/`.
 
-- **Documento da Verdade vigente:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.8.md`, que incorpora as versões anteriores por referência e registra o delta normativo vigente.
+- **Documento da Verdade vigente:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.9.md`, que incorpora as versões anteriores por referência e registra o delta normativo vigente.
 - `docs/conversas/` — registro integral recuperável das conversas do projeto.
 - `docs/adr/` — decisões de arquitetura.
 - `docs/evidencias/` — evidências e pesquisas.
@@ -25,6 +25,9 @@ A documentação é mantida em `docs/`.
 - Otimização: Python + OR-Tools quando o problema real e os gates aplicáveis justificarem
 - CI/CD: GitHub Actions (pipeline definido; indisponibilidade atual de runner rastreada no Issue #214)
 - Deploy: Railway
+
+## Financeiro do piloto
+Baseline: split por PSP/provider contratado, provider-neutral no domínio. Escrow, pagamento off-platform, PIX manual por conta operacional e guarantee/advance/credit não são o padrão inicial. FIN-RISK continua OPEN até provider/contrato/sandbox/revisões externas.
 
 ## Multi-tenancy
 `ADR-MT-001` está **CLOSED/APROVADO**. O baseline é pool híbrido controlado: dados `TENANT` usam `tenant_id` + PostgreSQL RLS; runtime não pode ser owner/superuser/BYPASSRLS; testes cross-tenant são obrigatórios. Ver `docs/adr/ADR-MT-001.md`.
