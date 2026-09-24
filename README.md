@@ -10,7 +10,7 @@ Uma rede inteligente de trabalho que conecta profissionais, empresas e oportunid
 ## Fonte da verdade
 A documentação é mantida em `docs/`.
 
-- **Documento da Verdade vigente:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.6.md`, que incorpora integralmente a v1.5 por referência e registra o delta normativo vigente.
+- **Documento da Verdade vigente:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.7.md`, que incorpora as versões anteriores por referência e registra o delta normativo vigente.
 - `docs/conversas/` — registro integral recuperável das conversas do projeto.
 - `docs/adr/` — decisões de arquitetura.
 - `docs/evidencias/` — evidências e pesquisas.
