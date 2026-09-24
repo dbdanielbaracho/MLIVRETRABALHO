@@ -44,9 +44,10 @@ signed_webhook "$CAPTURE_BODY" >/dev/null
 signed_webhook "$CAPTURE_BODY" >/dev/null
 test "$(signed_status "$WRONG_PAYOUT")" = "400"
 signed_webhook "$PAYOUT_BODY" >/dev/null
+signed_webhook "$PAYOUT_BODY" >/dev/null
 
 EVENTS_A="$(request GET /v1/company/payment-events "$A_TOKEN" "$TENANT_A")"
-node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2],pro=process.argv[3];const own=rows.filter(v=>v.assignmentId===id);const p=own.find(v=>v.eventType==="payout_paid");if(own.length!==2||!p||p.recipientProfessionalId!==pro){console.error("recipient assertion failed",own);process.exit(1)}' "$EVENTS_A" "$ASSIGNMENT_ID" "$PRO_ID"
+node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2],pro=process.argv[3];const own=rows.filter(v=>v.assignmentId===id);const payouts=own.filter(v=>v.eventType==="payout_paid");const p=payouts[0];if(own.length!==2||payouts.length!==1||!p||p.recipientProfessionalId!==pro){console.error("duplicate payout/idempotency assertion failed",own);process.exit(1)}' "$EVENTS_A" "$ASSIGNMENT_ID" "$PRO_ID"
 RECON_AFTER="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const x=rows.find(v=>v.assignmentId===id);if(!x||x.capturedCents!==25000||x.paidOutCents!==25000||x.reconciliationStatus!=="reconciled"){process.exit(1)}' "$RECON_AFTER" "$ASSIGNMENT_ID"
 EVENTS_B="$(request GET /v1/company/payment-events "$B_TOKEN" "$TENANT_B")"
@@ -54,4 +55,4 @@ node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];if(rows
 
 for TOKEN in "$PRO_TOKEN" "$PRO2_TOKEN"; do request POST /v1/auth/signout "$TOKEN" '' '{}' >/dev/null; done
 request POST /v1/auth/signout "$A_TOKEN" '' '{}' >/dev/null; request POST /v1/auth/signout "$B_TOKEN" '' '{}' >/dev/null
-echo "PASS: signed finance events are idempotent, recipient-bound, tenant-isolated and reconciled"
+echo "PASS: signed finance events are idempotent, recipient-bound, duplicate-payout-safe, tenant-isolated and reconciled"
