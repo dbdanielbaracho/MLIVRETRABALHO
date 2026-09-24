@@ -1,0 +1,47 @@
+name: Pilot Android APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-pilot-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.15.1 --activate
+          pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build pilot APK
+        run: bash scripts/build-android-pilot.sh
+
+      - name: Upload pilot APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlivretrabalho-pilot-apk
+          path: artifacts/android-pilot/
+          if-no-files-found: error
+          retention-days: 14
