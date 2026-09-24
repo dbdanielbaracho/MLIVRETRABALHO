@@ -88,3 +88,13 @@ continuar até o final já tinha salado que noa iria usar o tinyfish recuperar a
 - Documento da Verdade v1.8 criado como delta normativo com distribuição do piloto, decisão financeira de escopo e proposta de minimização/retencão. README atualizado para apontar v1.8.
 - Estado ao final desta rodada: trabalho interno seguro/reversível foi avançado até o limite atual; os principais itens restantes exigem evidência externa real (runner GitHub/probe corrente, PSP comercial+sandbox, revisão jurídica/contábil/LGPD, aparelho físico, release signing, pentest e ambiente capaz de resolver dependências Next.js com frozen lockfile).
 - Checkpoint formal criado em `docs/evidencias/INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md`, separando explicitamente tudo que foi concluído internamente dos gates externos que ainda impedem Production-DONE/Pilot-DONE.
+
+### Usuário
+ok continuar então e sempre documentar as conversas que estão no chat referente a este projeto
+
+### Assistente — continuidade e regra documental confirmadas
+- Regra reafirmada: toda conversa no chat referente ao MLIVRETRABALHO deve ser acrescentada continuamente a este Registro Integral no GitHub.
+- Continuação retomada pelo Documento da Verdade v1.8 + `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` + este Registro Integral.
+- Railway production permanece saudável: API deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` SUCCESS, Postgres SUCCESS, pending work zero.
+- O CI mais recente do `main` (run `36032646458`, commit `0379d287b330bf5a3f2a12fa537262c3080d77a0`) voltou a falhar antes de qualquer step, com `runner_id=0`, `runner_name=""` e `steps=[]`.
+- Rerun do job `foundation` solicitado; o novo job também terminou `failure` sem steps, reproduzindo o bloqueio externo de runner. Production Truth/CI permanece OPEN, sem interpretar o resultado como falha do código.
