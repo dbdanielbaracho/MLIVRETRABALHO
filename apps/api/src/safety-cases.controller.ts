@@ -32,7 +32,20 @@ export class SafetyCasesController {
     for (const currentTenant of tenantIds) {
       const rows = await this.db.tenant(currentTenant, async db => (
         await db.query(
-          'SELECT id,assignment_id AS "assignmentId",category,description,status,created_at AS "createdAt",resolved_at AS "resolvedAt" FROM safety_cases WHERE reporter_identity_id=$1 AND tenant_id=$2 ORDER BY created_at DESC',
+          `SELECT sc.id,
+                  sc.assignment_id AS "assignmentId",
+                  sc.category,
+                  sc.description,
+                  sc.status,
+                  sc.created_at AS "createdAt",
+                  sc.resolved_at AS "resolvedAt",
+                  (sc.reporter_identity_id=$1) AS "reportedByMe"
+             FROM safety_cases sc
+             LEFT JOIN work_assignments wa ON wa.id=sc.assignment_id AND wa.tenant_id=sc.tenant_id
+             LEFT JOIN professional_profiles p ON p.id=wa.professional_id
+            WHERE sc.tenant_id=$2
+              AND (sc.reporter_identity_id=$1 OR p.identity_id=$1)
+            ORDER BY sc.created_at DESC`,
           [identity.id, currentTenant]
         )
       ).rows);
