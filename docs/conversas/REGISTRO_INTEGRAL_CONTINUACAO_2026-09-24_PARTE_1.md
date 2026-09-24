@@ -104,3 +104,22 @@ ok continuar então e sempre documentar as conversas que estão no chat referent
 - Pacote completo para revisão jurídica brasileira criado em `docs/evidencias/LEGAL_REVIEW_PACKET_2026-09-24.md`, cobrindo autonomia, Matching/Allocation, score/reliability, pools/recorrência, geolocalização, replacement, Trust/Safety, KYC/KYB, pagamentos, modalidades de contratação e LGPD.
 - Issue #221 atualizado: preparação jurídica interna marcada como concluída; o gate permanece OPEN somente até existir revisão profissional brasileira identificada com data, escopo/commit, fontes jurídicas, riscos, restrições, conclusão e gatilhos de re-review.
 - `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` atualizado com a preparação legal concluída, nova evidência do bloqueio WEB-ARCH e rechecagem do runner GitHub.
+
+### Usuário
+continuar
+
+### Assistente — provider due diligence e redução dos gates FIN/TRUST
+- Continuação iniciada pelo checkpoint vigente; issues abertos rechecados: #214, #215, #219, #220, #221 e #224 permanecem abertos pelos mesmos tipos de evidência externa.
+- Pesquisa atualizada em documentação oficial de PSPs/KYC para reduzir FIN-RISK/TRUST-ARCH antes do contato comercial.
+- PSP shortlist documentada: **Asaas**, **Pagar.me** e **Mercado Pago**. Nenhum provider foi selecionado como aprovado.
+- Asaas: documentação oficial mostra split, subcontas via API, sandbox, onboarding/documentos e webhooks; há avaliação regulatória/limites e requisitos comerciais que precisam de confirmação.
+- Pagar.me: API v5 possui split entre múltiplos recebedores e regras explícitas de responsabilidade/taxa; funcionalidade de split é informada como disponível apenas para clientes PSP, exigindo confirmação comercial.
+- Mercado Pago: Split Payments 1:1 está disponível no Brasil com seller OAuth/KYC; 1:N é restrito a carteira assessorada/time comercial; refund/negative-balance exige avaliação específica do modelo.
+- KYC independente: Datavalid/Serpro registrado como candidato técnico para validação biográfica/biométrica, mas a versão atual exige etapas regulatórias/contratuais SENATRAN/Serpro/GCC; não substitui KYC/KYB financeiro do PSP.
+- Estratégia de minimização preservada: preferir onboarding/KYC/KYB nativo do PSP para pagamentos e armazenar no MLIVRETRABALHO apenas status/provider reference/evidence_ref quando possível.
+- Evidência criada: `docs/evidencias/PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md`.
+- Issue **#228 PROVIDER-DUE-DILIGENCE** criado para centralizar evidência comercial/sandbox: elegibilidade do modelo, preços, PF/PJ, KYC/KYB/PLD, webhook, settlement, chargeback/refund/negative balance, privacidade e homologação.
+- Questionário único criado em `docs/evidencias/PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md` para permitir comparação objetiva dos fornecedores.
+- Issues #215 FIN-RISK e #219 TRUST-ARCH atualizados com a shortlist, questionário e referência ao #228, mantendo ambos OPEN até contrato/sandbox/revisão externa real.
+- `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` atualizado com a nova trilha de due diligence.
+- Issues #229 e #230 foram criados acidentalmente durante troca de ações da ferramenta, imediatamente fechados como `not_planned`; não representam trabalho real. O issue canônico de provider é somente #228.
