@@ -194,6 +194,39 @@ export class SafetyAppealsAdminController {
     ).rows);
   }
 
+  @Get(':id/events')
+  async events(
+    @Param('id') id: string,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-tenant-id') tenantId?: string
+  ) {
+    const context = await this.context(authorization, tenantId);
+    return this.db.tenant(context.tenantId, async db => {
+      const appeal = (
+        await db.query<{ id: string }>(
+          'SELECT id FROM safety_case_appeals WHERE id=$1 AND tenant_id=$2',
+          [id, context.tenantId]
+        )
+      ).rows[0];
+      if (!appeal) throw new NotFoundException('safety_appeal_not_found');
+
+      return (
+        await db.query(
+          `SELECT id,
+                  actor_identity_id AS "actorIdentityId",
+                  from_status AS "fromStatus",
+                  to_status AS "toStatus",
+                  note,
+                  created_at AS "createdAt"
+             FROM safety_case_appeal_events
+            WHERE appeal_id=$1 AND tenant_id=$2
+            ORDER BY created_at, id`,
+          [id, context.tenantId]
+        )
+      ).rows;
+    });
+  }
+
   @Post(':id/status')
   async status(
     @Param('id') id: string,
