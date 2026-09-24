@@ -14,8 +14,22 @@ cd apps/mobile/android
 APK="app/build/outputs/apk/debug/app-debug.apk"
 test -f "$APK"
 
-mkdir -p "$ROOT/artifacts/android-pilot"
-cp "$APK" "$ROOT/artifacts/android-pilot/MLivreTrabalho-Pilot-debug.apk"
-sha256sum "$ROOT/artifacts/android-pilot/MLivreTrabalho-Pilot-debug.apk" > "$ROOT/artifacts/android-pilot/SHA256SUMS.txt"
+OUT="$ROOT/artifacts/android-pilot"
+mkdir -p "$OUT"
+cp "$APK" "$OUT/MLivreTrabalho-Pilot-debug.apk"
+sha256sum "$OUT/MLivreTrabalho-Pilot-debug.apk" > "$OUT/SHA256SUMS.txt"
 
-printf 'Pilot APK created: %s\n' "$ROOT/artifacts/android-pilot/MLivreTrabalho-Pilot-debug.apk"
+VERSION="$(node -p "require('$ROOT/apps/mobile/app.json').expo.version")"
+COMMIT_SHA="${GITHUB_SHA:-$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || printf unknown)}"
+BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+cat > "$OUT/BUILD_INFO.txt" <<EOF
+product=MLivreTrabalho Pilot
+version=$VERSION
+android_package=com.predibeacon.mlivretrabalho.pilot
+commit_sha=$COMMIT_SHA
+build_time_utc=$BUILD_TIME
+signing=android_debug_internal_pilot_only
+EOF
+
+printf 'Pilot APK created: %s\n' "$OUT/MLivreTrabalho-Pilot-debug.apk"
+printf 'Build metadata: %s\n' "$OUT/BUILD_INFO.txt"
