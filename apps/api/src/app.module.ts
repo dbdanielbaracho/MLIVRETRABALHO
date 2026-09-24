@@ -26,6 +26,7 @@ import { PlannerController } from './planner.controller';
 import { PaymentWebhookController } from './payment-webhook.controller';
 import { SafetyCasesController } from './safety-cases.controller';
 import { SafetyAdminController } from './safety-admin.controller';
+import { SafetyAppealsAdminController, SafetyAppealsController } from './safety-appeals.controller';
 import { CompanyJobCreateController } from './company-job-create.controller';
 import { VerificationController } from './verification.controller';
 import { CopilotController } from './copilot.controller';
@@ -58,6 +59,8 @@ import { CopilotController } from './copilot.controller';
     PaymentWebhookController,
     SafetyCasesController,
     SafetyAdminController,
+    SafetyAppealsController,
+    SafetyAppealsAdminController,
     VerificationController,
     CopilotController
   ],
