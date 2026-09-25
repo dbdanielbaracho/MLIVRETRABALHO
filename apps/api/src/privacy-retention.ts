@@ -29,9 +29,11 @@ async function main(){
       FROM conversation_messages m
       JOIN conversations c ON c.id=m.conversation_id
       JOIN work_assignments wa ON wa.id=c.assignment_id
+      JOIN professional_profiles p ON p.id=wa.professional_id
       WHERE wa.status IN ('completed','cancelled')
         AND COALESCE(wa.completed_at,wa.checked_out_at,wa.confirmed_at) < now()-($1::int * interval '1 day')
         AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
+        AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=p.identity_id)
         AND NOT EXISTS (
           SELECT 1
           FROM conversation_messages participant
@@ -60,12 +62,14 @@ async function main(){
             AND i.deactivated_at < now()-($1::int * interval '1 day')
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=i.id)`,[PROFILE_DAYS]);
         await pool.query(`DELETE FROM conversation_messages m
-          USING conversations c, work_assignments wa
+          USING conversations c, work_assignments wa, professional_profiles p
           WHERE c.id=m.conversation_id
             AND wa.id=c.assignment_id
+            AND p.id=wa.professional_id
             AND wa.status IN ('completed','cancelled')
             AND COALESCE(wa.completed_at,wa.checked_out_at,wa.confirmed_at) < now()-($1::int * interval '1 day')
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
+            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=p.identity_id)
             AND NOT EXISTS (
               SELECT 1
               FROM conversation_messages participant
@@ -73,12 +77,14 @@ async function main(){
               WHERE participant.conversation_id=c.id
             )`,[CHAT_DAYS]);
         await pool.query(`DELETE FROM conversations c
-          USING work_assignments wa
+          USING work_assignments wa, professional_profiles p
           WHERE wa.id=c.assignment_id
+            AND p.id=wa.professional_id
             AND wa.status IN ('completed','cancelled')
             AND COALESCE(wa.completed_at,wa.checked_out_at,wa.confirmed_at) < now()-($1::int * interval '1 day')
             AND NOT EXISTS (SELECT 1 FROM conversation_messages m WHERE m.conversation_id=c.id)
-            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)`,[CHAT_DAYS]);
+            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
+            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=p.identity_id)`,[CHAT_DAYS]);
         await pool.query('COMMIT');
       }catch(error){await pool.query('ROLLBACK');throw error;}
     }
