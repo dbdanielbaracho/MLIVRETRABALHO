@@ -31,6 +31,7 @@ import { CompanyJobCreateController } from './company-job-create.controller';
 import { VerificationController } from './verification.controller';
 import { CopilotController } from './copilot.controller';
 import { PrivacyController } from './privacy.controller';
+import { CompanyMembersController } from './company-members.controller';
 
 @Module({
   controllers: [
@@ -47,6 +48,7 @@ import { PrivacyController } from './privacy.controller';
     CompanyJobCreateController,
     CompanyDashboardController,
     CompanyAnalyticsController,
+    CompanyMembersController,
     PlannerController,
     AvailabilityController,
     ReplacementController,
