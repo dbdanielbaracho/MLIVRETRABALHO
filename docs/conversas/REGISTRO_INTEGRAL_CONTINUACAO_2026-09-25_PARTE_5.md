@@ -67,3 +67,12 @@ não esqueça que tudo que estamos digitando aqui tem que estar gravado em arqui
 - Regra permanente: toda mensagem do usuário e toda ação/materialização relevante do assistente sobre o projeto MLIVRETRABALHO devem ser registradas sequencialmente neste Registro Integral enquanto a Parte 5 estiver ativa.
 - As Partes 1–4 permanecem preservadas e não devem ser resumidas, substituídas ou apagadas.
 - Antes de cada nova escrita sequencial, buscar o SHA atual do arquivo para evitar sobrescrita/conflito.
+
+## Usuário
+continuar e so parar quando terminar
+
+## Assistente — execução autônoma até o limite real
+- Regra reafirmada: continuar sem pedir novas confirmações e só encerrar quando todo trabalho interno seguro tiver sido executado; se restarem apenas dependências externas, comunicar explicitamente a parada nesses gates.
+- CI workflow auditado diretamente em `.github/workflows/ci.yml`: `runs-on: ubuntu-latest`, sintaxe operacional normal e pipeline completo definido; nada óbvio no workflow explica `runner_id=0/steps=null`, reforçando bloqueio externo de runner.
+- Railway revalidado: API e Postgres continuam `SUCCESS`, pending work zero.
+- Iniciada auditoria do bloco ainda fechável internamente em TRUST/LGPD após remoção do parecer jurídico externo como gate v1.12.
