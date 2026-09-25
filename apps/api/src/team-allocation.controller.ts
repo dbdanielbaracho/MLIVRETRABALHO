@@ -68,6 +68,7 @@ export class TeamAllocationController {
            (SELECT count(*)::int FROM trust_events te WHERE te.professional_id=wtm.professional_id AND te.event_type='late_arrival') AS "lateArrivals"
          FROM workforce_team_members wtm
          JOIN professional_profiles p ON p.id=wtm.professional_id
+         JOIN identities i ON i.id=p.identity_id AND i.deactivated_at IS NULL
          WHERE wtm.tenant_id=$3 AND wtm.team_id=$1`,
         [teamId, jobId, tenant]
       )).rows;
