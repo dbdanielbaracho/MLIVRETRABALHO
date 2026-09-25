@@ -95,3 +95,24 @@ Neste ponto, **todo o trabalho interno seguro identificado nesta rodada foi exec
 - **#228 PROVIDER-DUE-DILIGENCE: PARADO EXTERNAMENTE** — precisa outreach/respostas/sandbox; envio por e-mail depende de connector autorizado.
 
 Regra de retomada: no próximo turno, revalidar primeiro se qualquer gate externo mudou e executar imediatamente o que destravar, sem refazer a preparação já concluída.
+
+## Usuário
+continuar
+
+## Assistente — revalidação dos gates após parada externa
+- Railway production revalidado: API deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` SUCCESS; PostgreSQL deployment `b7718c66-745f-4027-889c-42b52f1c6a63` SUCCESS; pending work zero.
+- `main` atual confirmado em `628bdfff337297926b6249593c271d983ca57083`.
+- CI mais recente do `main`: run `36085564192`, job `foundation` id `107916554216`, conclusion `failure`, `steps=null`; nenhum workflow step executou. #214 continua **PARADO EXTERNAMENTE**.
+- Probe público canônico tentado novamente em `https://mlivretrabalho.predibeacon.com/v1/health/ready`; a ferramenta web continuou sem acesso. Isso não foi interpretado como falha da API.
+- Varredura completa dos issues abertos do repositório encontrou somente #214, #215, #219, #220, #221, #224 e #228. Não existe issue interno esquecido fora dos gates conhecidos.
+- Issue #214 atualizado com o novo head/run e com a auditoria de issues abertos.
+- Nenhum gate externo foi falsamente fechado e nenhuma nova implementação segura ficou disponível nesta revalidação.
+
+## Estado após esta revalidação
+- **#214 CI / Production Truth: PARADO EXTERNAMENTE**.
+- **#215 FIN-RISK: PARADO EXTERNAMENTE**.
+- **#219 TRUST-ARCH: PARADO EXTERNAMENTE**.
+- **#220 Device/Pilot: PARADO EXTERNAMENTE**.
+- **#221 LEGAL-ARCH: PARADO EXTERNAMENTE**.
+- **#224 WEB-ARCH: PARADO POR AMBIENTE**.
+- **#228 PROVIDER-DUE-DILIGENCE: PARADO EXTERNAMENTE**.
