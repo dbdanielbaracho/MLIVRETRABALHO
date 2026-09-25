@@ -2,8 +2,8 @@ import { BadRequestException, Body, Controller, Get, Headers, Post } from '@nest
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
-type ManualPrivacyRequestType='correction'|'erasure'|'restriction'|'objection'|'consent_withdrawal'|'automated_decision_review'|'sharing_information';
-const MANUAL_REQUEST_TYPES=new Set<ManualPrivacyRequestType>(['correction','erasure','restriction','objection','consent_withdrawal','automated_decision_review','sharing_information']);
+type ManualPrivacyRequestType='correction'|'erasure'|'restriction'|'objection'|'consent_withdrawal'|'automated_decision_review'|'sharing_information'|'portability';
+const MANUAL_REQUEST_TYPES=new Set<ManualPrivacyRequestType>(['correction','erasure','restriction','objection','consent_withdrawal','automated_decision_review','sharing_information','portability']);
 
 @Controller('privacy')
 export class PrivacyController {

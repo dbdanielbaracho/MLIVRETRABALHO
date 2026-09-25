@@ -26,18 +26,22 @@ for(const forbidden of ["password_hash","passwordHash","accessToken","token_hash
 if(!Array.isArray(x.memberships)||!Array.isArray(x.assignments)||!Array.isArray(x.earnings)||!Array.isArray(x.verifications))throw new Error("export arrays missing");
 ' "$EXPORT" "$EMAIL"
 
-MANUAL="$(request POST /v1/privacy/requests "$TOKEN" '{"requestType":"correction"}')"
-CORRECTION_REQUEST_ID="$(printf '%s' "$MANUAL" | json_field requestId)"
+CORRECTION="$(request POST /v1/privacy/requests "$TOKEN" '{"requestType":"correction"}')"
+CORRECTION_REQUEST_ID="$(printf '%s' "$CORRECTION" | json_field requestId)"
+PORTABILITY="$(request POST /v1/privacy/requests "$TOKEN" '{"requestType":"portability"}')"
+PORTABILITY_REQUEST_ID="$(printf '%s' "$PORTABILITY" | json_field requestId)"
 REQUESTS="$(request GET /v1/privacy/requests "$TOKEN")"
 node -e '
 const rows=JSON.parse(process.argv[1]);
-const accessId=process.argv[2], correctionId=process.argv[3];
+const accessId=process.argv[2], correctionId=process.argv[3], portabilityId=process.argv[4];
 if(!Array.isArray(rows))throw new Error("privacy requests list missing");
 const access=rows.find(x=>x.id===accessId);
 const correction=rows.find(x=>x.id===correctionId);
+const portability=rows.find(x=>x.id===portabilityId);
 if(!access||access.requestType!=="access"||access.status!=="completed")throw new Error("access request audit missing");
-if(!correction||correction.requestType!=="correction"||correction.status!=="submitted")throw new Error("manual request audit missing");
-' "$REQUESTS" "$ACCESS_REQUEST_ID" "$CORRECTION_REQUEST_ID"
+if(!correction||correction.requestType!=="correction"||correction.status!=="submitted")throw new Error("correction request audit missing");
+if(!portability||portability.requestType!=="portability"||portability.status!=="submitted")throw new Error("portability request audit missing");
+' "$REQUESTS" "$ACCESS_REQUEST_ID" "$CORRECTION_REQUEST_ID" "$PORTABILITY_REQUEST_ID"
 
 STATUS="$(curl -sS -o /tmp/privacy-export-unauth.json -w '%{http_code}' "${BASE_URL%/}/v1/privacy/export")"
 test "$STATUS" = "401"
@@ -46,4 +50,4 @@ test "$BAD_STATUS" = "400"
 
 request POST /v1/auth/signout "$TOKEN" '{}' >/dev/null
 
-echo "PASS: privacy export is scoped, secret-free and every DSAR action has an auditable request id"
+echo "PASS: privacy export is scoped, secret-free and access/correction/portability requests have auditable ids"
