@@ -21,7 +21,7 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | Trust enforcement baseline | case-first, human-review, appeal/contraditório | ADR-TRUST-001 + evidências Trust |
 | Real-KYC/KYB provider boundary | provider não é autoridade sobre IDs internos/enforcement | PR #232 |
 | LGPD retention/DSAR/privacy baseline | política v1.13 + runbook + notice | evidências v1.13 |
-| Privacy runtime implementation | série preparada, ainda não provada/mesclada | PRs #233–#243 |
+| Privacy/ownership runtime implementation | consolidado no PR de integração, ainda não provado/mesclado | PR #245 |
 | Finance security baseline | HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
 | Finance pilot scope | split por PSP; guarantee/advance/credit fora do piloto | Documento da Verdade v1.13 |
 | Real-PSP trust boundary | provider não é autoridade sobre IDs internos | PR #231 |
@@ -40,23 +40,42 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
 | Conversa/memória | continuidade persistida | Registro Integral Partes 1–6 |
 
-## Série code/schema preparada — Definition of Done ainda NÃO atingida
+## PR de integração #245 — Definition of Done ainda NÃO atingida
 
-Stack atual:
-- #233: binding `professional_profiles.identity_id`, grants e teste DB;
-- #234: `GET /v1/privacy/export` tenant-safe/redacted + E2E;
-- #235: desativação fail-closed, revogação de sessões e exclusão de identities desativadas de novos fluxos;
-- #236: legal hold, purge/anonymization e expiração de geolocalização precisa;
-- #237: `privacy_requests`, `requestId` e acompanhamento de DSAR;
-- #238: retenção de chat >730 dias com legal hold;
-- #239: mobile `Privacidade e dados`;
-- #240: bloqueio de desativação do único owner ativo;
-- #241: portabilidade + aviso de transparência mobile;
-- #242: export ampliado/redacted de dados do titular;
-- #243: convites seguros de membros + owner handoff;
-- #245: profile EAS Free para APK interno, empilhado sobre #243.
+A antiga série empilhada #233–#243 foi consolidada no PR final-state:
 
-PRs code/schema permanecem não mesclados sem execução real de testes. Não usar exceção documental.
+**#245 — `feat(integration): privacy runtime, owner handoff and EAS pilot route`**, base `main`.
+
+Ele integra:
+- binding `professional_profiles.identity_id` + grants/teste DB;
+- DSAR/export tenant-safe/redacted;
+- account deactivation fail-closed + session revocation;
+- legal hold, profile anonymization, precise-geo expiry e chat retention;
+- persistent `privacy_requests`/request IDs;
+- mobile `Privacidade e dados`, portabilidade e transparência;
+- export ampliado/redacted do titular;
+- sole-owner guard;
+- convites de gestão + owner handoff;
+- EAS Free pilot APK profile;
+- CI/E2Es correspondentes.
+
+### Auditoria estática adicional do estado final
+Enquanto o runner permanece indisponível, o PR #245 foi revisado estaticamente e endurecido:
+- minificação acidental de `empresa-inicio.tsx` removida; delta funcional preservado apenas para `Membros` e `Privacidade e dados`;
+- chat retention agora preserva conversa quando o **profissional designado** possui identity legal hold mesmo sem ter enviado mensagem;
+- E2E de retention cobre esse caso;
+- invite acceptance não pode rebaixar owner nem sobrescrever silenciosamente papel existente; somente mesmo papel ou promoção `admin/manager → owner` é aceita;
+- E2E de company members prova que sole owner não consegue se auto-rebaixar via convite;
+- retention `--apply` exige `PRIVACY_MAINTENANCE_DATABASE_URL`; `DATABASE_URL` sozinho é rejeitado para operação destrutiva;
+- E2E de retention prova esse fail-closed.
+
+**Importante:** auditoria estática não é PASS de CI. #245 continua não mesclado.
+
+Quando um ambiente real executar #245 green:
+1. revisar diff final vs `main`;
+2. merge #245;
+3. fechar #233–#243 como `superseded/integrated`, sem merges redundantes;
+4. deploy + smoke + Production Truth.
 
 ## #214 Production Truth / CI — CAUSA RAIZ ISOLADA ATÉ SETTINGS PRIVADOS
 
@@ -80,6 +99,8 @@ Ações restantes que o conector não consegue executar por serem settings priva
 - Account Settings → Billing and licensing / Budgets;
 - se normais, GitHub Support com o pacote já preparado.
 
+Latest final-state #245 CI observado ainda falha antes dos steps: run `36160617457`, job `108155974501`, `steps=null`.
+
 Railway continua SUCCESS e pending work zero. Probe HTTP atual continua inacessível a partir da ferramenta atual, sem ser interpretado como falha da API.
 
 ## #215 / #228 FIN-RISK + Provider — LIMITE INTERNO ATINGIDO
@@ -96,10 +117,10 @@ Restam fatos que pertencem ao provider: elegibilidade, contrato, pricing real, P
 
 AgentMail foi disponibilizado como opção de caixa dedicada para outreach; conexão/autorização depende do usuário. Gmail também permanece não conectado. Nenhum e-mail foi falsamente marcado como enviado.
 
-## #219 TRUST-ARCH — PREPARAÇÃO INTERNA COMPLETA / PROVAS EXTERNAS PENDENTES
+## #219 TRUST-ARCH — PREPARAÇÃO INTERNA CONSOLIDADA / PROVAS EXTERNAS PENDENTES
 
-Baseline + runtime privacy stack #233–#243 preparados. Restam:
-- CI/equivalente green + merge da stack;
+Baseline + runtime privacy/ownership estão consolidados no PR #245. Restam:
+- CI/equivalente green + merge #245;
 - provider real somente se PSP-native onboarding deixar gap;
 - callback/binding provider-specific em sandbox;
 - processor propagation quando aplicável;
@@ -159,7 +180,8 @@ Prioridade de desbloqueio:
 6. não usar TinyFish salvo instrução explícita;
 7. manter toda conversa no Registro Integral;
 8. não mesclar PR code/schema sem execução real de testes;
-9. não assumir custo/plano pago sem autorização explícita.
+9. não assumir custo/plano pago sem autorização explícita;
+10. usar #245 como PR de integração final-state; não voltar a planejar merges sequenciais #233–#243.
 
 ## Conclusão
-O trabalho interno foi levado além da preparação documental: root causes foram isoladas, a stack privacy/ownership foi materializada em código, a rota gratuita EAS foi preparada e os canais provider foram concretizados. Os gates remanescentes dependem de settings/serviços/credenciais/hardware/independência externa identificados explicitamente; não há evidência de um bloco interno esquecido fora da matriz atual.
+O trabalho interno foi levado além da preparação documental: root causes foram isoladas, a stack privacy/ownership foi consolidada e endurecida no PR #245, a rota gratuita EAS foi preparada e os canais provider foram concretizados. Os gates remanescentes dependem de settings/serviços/credenciais/hardware/independência externa identificados explicitamente; não há evidência de um bloco interno esquecido fora da matriz atual.
