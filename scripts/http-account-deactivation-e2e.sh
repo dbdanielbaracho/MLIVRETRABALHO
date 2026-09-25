@@ -4,6 +4,7 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
 STAMP="$(date +%s)-$RANDOM"
 EMAIL="deactivate-${STAMP}@example.test"
+COMPANY_EMAIL="deactivate-company-${STAMP}@example.test"
 PASSWORD="DeactivatePass123!"
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
@@ -15,6 +16,7 @@ request PUT /v1/professional-profile "$TOKEN" '{"displayName":"Deactivate Test",
 
 RESULT="$(request POST /v1/privacy/deactivate "$TOKEN" '{}')"
 test "$(printf '%s' "$RESULT" | json_field deactivated)" = "true"
+test -n "$(printf '%s' "$RESULT" | json_field requestId)"
 
 OLD_TOKEN_STATUS="$(curl -sS -o /tmp/deactivate-old-token.json -w '%{http_code}' -H "authorization: Bearer $TOKEN" "${BASE_URL%/}/v1/me")"
 test "$OLD_TOKEN_STATUS" = "401"
@@ -22,4 +24,13 @@ test "$OLD_TOKEN_STATUS" = "401"
 SIGNIN_STATUS="$(curl -sS -o /tmp/deactivate-signin.json -w '%{http_code}' -H 'content-type: application/json' --data "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}" "${BASE_URL%/}/v1/auth/signin")"
 test "$SIGNIN_STATUS" = "401"
 
-echo "PASS: account deactivation revokes sessions and blocks signin"
+request POST /v1/auth/signup '' "{\"email\":\"$COMPANY_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"company\",\"workspaceName\":\"Sole Owner Test\"}" >/dev/null
+COMPANY_TOKEN="$(request POST /v1/auth/signin '' "{\"email\":\"$COMPANY_EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken)"
+SOLE_OWNER_STATUS="$(curl -sS -o /tmp/deactivate-sole-owner.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/privacy/deactivate" -H "authorization: Bearer $COMPANY_TOKEN")"
+test "$SOLE_OWNER_STATUS" = "400"
+grep -q 'account_deactivation_sole_tenant_owner' /tmp/deactivate-sole-owner.json
+STILL_ACTIVE_STATUS="$(curl -sS -o /tmp/deactivate-company-still-active.json -w '%{http_code}' -H "authorization: Bearer $COMPANY_TOKEN" "${BASE_URL%/}/v1/me")"
+test "$STILL_ACTIVE_STATUS" = "200"
+request POST /v1/auth/signout "$COMPANY_TOKEN" '{}' >/dev/null
+
+echo "PASS: account deactivation revokes professional sessions and blocks sole company owner orphaning"
