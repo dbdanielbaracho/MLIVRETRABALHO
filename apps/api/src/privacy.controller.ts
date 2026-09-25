@@ -91,6 +91,17 @@ export class PrivacyController {
     const requestId=await this.createRequest(identity.id,'deactivation');
     try{
       const result=await this.db.transaction(async db=>{
+        const orphanedOwnerTenant=(await db.query<{tenantId:string}>(`SELECT m.tenant_id AS "tenantId"
+          FROM tenant_memberships m
+          WHERE m.identity_id=$1 AND m.role='owner'
+            AND NOT EXISTS (
+              SELECT 1 FROM tenant_memberships other
+              JOIN identities oi ON oi.id=other.identity_id AND oi.deactivated_at IS NULL
+              WHERE other.tenant_id=m.tenant_id AND other.role='owner' AND other.identity_id<>$1
+            )
+          LIMIT 1`,[identity.id])).rows[0]??null;
+        if(orphanedOwnerTenant)throw new BadRequestException('account_deactivation_sole_tenant_owner');
+
         const profile=(await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1 FOR UPDATE',[identity.id])).rows[0]??null;
         if(profile){
           const active=(await db.query<{count:number}>('SELECT count(*)::int AS count FROM work_assignments WHERE professional_id=$1 AND status IN (\'confirmed\',\'checked_in\',\'in_progress\')',[profile.id])).rows[0]?.count??0;
