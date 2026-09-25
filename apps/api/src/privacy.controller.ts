@@ -1,14 +1,40 @@
-import { BadRequestException, Controller, Get, Headers, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
+
+type ManualPrivacyRequestType='correction'|'erasure'|'restriction'|'objection'|'consent_withdrawal'|'automated_decision_review'|'sharing_information';
+const MANUAL_REQUEST_TYPES=new Set<ManualPrivacyRequestType>(['correction','erasure','restriction','objection','consent_withdrawal','automated_decision_review','sharing_information']);
 
 @Controller('privacy')
 export class PrivacyController {
   constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
 
+  private async createRequest(identityId:string,requestType:string){
+    return (await this.db.query<{id:string}>('INSERT INTO privacy_requests(identity_id,request_type,status) VALUES($1,$2,$3) RETURNING id',[identityId,requestType,'submitted'])).rows[0].id;
+  }
+  private async finishRequest(requestId:string,status:'completed'|'partially_completed'|'rejected',resolutionCode?:string){
+    await this.db.query('UPDATE privacy_requests SET status=$2,resolution_code=$3,updated_at=now(),completed_at=now() WHERE id=$1',[requestId,status,resolutionCode??null]);
+  }
+
+  @Get('requests')
+  async requests(@Headers('authorization') authorization?:string){
+    const identity=await this.auth.identityFromAuthorization(authorization);
+    return (await this.db.query('SELECT id,request_type AS "requestType",status,resolution_code AS "resolutionCode",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at DESC',[identity.id])).rows;
+  }
+
+  @Post('requests')
+  async request(@Body() body:{requestType?:string},@Headers('authorization') authorization?:string){
+    const identity=await this.auth.identityFromAuthorization(authorization);
+    const requestType=String(body?.requestType??'') as ManualPrivacyRequestType;
+    if(!MANUAL_REQUEST_TYPES.has(requestType))throw new BadRequestException('privacy_request_type_invalid');
+    const requestId=await this.createRequest(identity.id,requestType);
+    return {requestId,requestType,status:'submitted'};
+  }
+
   @Get('export')
   async exportMine(@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
+    const requestId=await this.createRequest(identity.id,'access');
     const identityRow=(await this.db.query<{id:string;email:string;createdAt:string}>(
       'SELECT id,email,created_at AS "createdAt" FROM identities WHERE id=$1',[identity.id]
     )).rows[0];
@@ -44,7 +70,9 @@ export class PrivacyController {
       verifications.push(...tenantData.verificationRows.map((row:any)=>({...row,tenantId})));
     }
 
+    await this.finishRequest(requestId,'completed','access_export_generated');
     return {
+      requestId,
       generatedAt:new Date().toISOString(),
       identity:identityRow,
       memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),
@@ -60,22 +88,30 @@ export class PrivacyController {
   @Post('deactivate')
   async deactivate(@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
-    return this.db.transaction(async db=>{
-      const profile=(await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1 FOR UPDATE',[identity.id])).rows[0]??null;
-      if(profile){
-        const active=(await db.query<{count:number}>('SELECT count(*)::int AS count FROM work_assignments WHERE professional_id=$1 AND status IN (\'confirmed\',\'checked_in\',\'in_progress\')',[profile.id])).rows[0]?.count??0;
-        if(active>0)throw new BadRequestException('account_deactivation_active_assignment');
-        const unsettled=(await db.query<{count:number}>('SELECT count(*)::int AS count FROM earnings_ledger WHERE professional_id=$1 AND status IN (\'pending\',\'payable\')',[profile.id])).rows[0]?.count??0;
-        if(unsettled>0)throw new BadRequestException('account_deactivation_unsettled_earnings');
-      }
-      const row=(await db.query<{deactivatedAt:string}>('UPDATE identities SET deactivated_at=COALESCE(deactivated_at,now()) WHERE id=$1 RETURNING deactivated_at AS "deactivatedAt"',[identity.id])).rows[0];
-      await db.query('DELETE FROM sessions WHERE identity_id=$1',[identity.id]);
-      if(profile){
-        await db.query('DELETE FROM professional_availability_network WHERE professional_id=$1',[profile.id]);
-        await db.query('DELETE FROM professional_availability WHERE professional_id=$1',[profile.id]);
-        await db.query("UPDATE marketplace_interests SET status='withdrawn',updated_at=now() WHERE professional_id=$1 AND status='interested'",[profile.id]);
-      }
-      return {deactivated:true,deactivatedAt:row?.deactivatedAt};
-    });
+    const requestId=await this.createRequest(identity.id,'deactivation');
+    try{
+      const result=await this.db.transaction(async db=>{
+        const profile=(await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1 FOR UPDATE',[identity.id])).rows[0]??null;
+        if(profile){
+          const active=(await db.query<{count:number}>('SELECT count(*)::int AS count FROM work_assignments WHERE professional_id=$1 AND status IN (\'confirmed\',\'checked_in\',\'in_progress\')',[profile.id])).rows[0]?.count??0;
+          if(active>0)throw new BadRequestException('account_deactivation_active_assignment');
+          const unsettled=(await db.query<{count:number}>('SELECT count(*)::int AS count FROM earnings_ledger WHERE professional_id=$1 AND status IN (\'pending\',\'payable\')',[profile.id])).rows[0]?.count??0;
+          if(unsettled>0)throw new BadRequestException('account_deactivation_unsettled_earnings');
+        }
+        const row=(await db.query<{deactivatedAt:string}>('UPDATE identities SET deactivated_at=COALESCE(deactivated_at,now()) WHERE id=$1 RETURNING deactivated_at AS "deactivatedAt"',[identity.id])).rows[0];
+        await db.query('DELETE FROM sessions WHERE identity_id=$1',[identity.id]);
+        if(profile){
+          await db.query('DELETE FROM professional_availability_network WHERE professional_id=$1',[profile.id]);
+          await db.query('DELETE FROM professional_availability WHERE professional_id=$1',[profile.id]);
+          await db.query("UPDATE marketplace_interests SET status='withdrawn',updated_at=now() WHERE professional_id=$1 AND status='interested'",[profile.id]);
+        }
+        return {deactivated:true,deactivatedAt:row?.deactivatedAt};
+      });
+      await this.finishRequest(requestId,'completed','account_deactivated');
+      return {requestId,...result};
+    }catch(error){
+      await this.finishRequest(requestId,'rejected','account_deactivation_blocked');
+      throw error;
+    }
   }
 }
