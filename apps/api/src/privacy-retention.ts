@@ -6,8 +6,12 @@ const PROFILE_DAYS=30;
 const CHAT_DAYS=730;
 
 async function main(){
-  if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL_required');
-  const pool=new Pool({connectionString:process.env.DATABASE_URL});
+  const maintenanceUrl=process.env.PRIVACY_MAINTENANCE_DATABASE_URL?.trim();
+  const defaultUrl=process.env.DATABASE_URL?.trim();
+  if(APPLY&&!maintenanceUrl)throw new Error('PRIVACY_MAINTENANCE_DATABASE_URL_required_for_apply');
+  const connectionString=maintenanceUrl||defaultUrl;
+  if(!connectionString)throw new Error('DATABASE_URL_required');
+  const pool=new Pool({connectionString});
   try{
     const expiredSessions=(await pool.query<{count:number}>('SELECT count(*)::int AS count FROM sessions WHERE expires_at<=now()')).rows[0]?.count??0;
     const geoCandidates=(await pool.query<{count:number}>(`SELECT count(*)::int AS count
