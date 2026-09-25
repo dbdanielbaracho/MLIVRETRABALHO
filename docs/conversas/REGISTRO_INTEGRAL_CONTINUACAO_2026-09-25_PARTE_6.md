@@ -122,3 +122,46 @@ Continuar e resolver todos os bloqueios
   - blocker root-cause matrix;
   - Registro Integral Partes 1–6.
 - Probe público canônico e Railway direct domain foram tentados novamente via ferramenta web e seguem inacessíveis a partir deste ambiente; isso não é interpretado como API failure. Railway continua reportando deployments SUCCESS.
+
+## Usuário
+continuar
+
+## Assistente — consolidação e auditoria final-state
+- A continuação foi executada sem voltar a perguntar autorização.
+- PR #245 foi retargetado de `feat/company-member-invitations` para **`main`** e renomeado para `feat(integration): privacy runtime, owner handoff and EAS pilot route`.
+- Nova estratégia: #245 é o PR único final-state contendo o trabalho #233–#245; depois de CI/equivalente green, mesclar #245 e fechar #233–#243 como superseded/integrated, sem merges redundantes.
+- Run após retarget `36160617457`, job `108155974501`, continuou falhando antes do primeiro step (`steps=null`), confirmando que a consolidação não muda a causa externa #214.
+
+## Assistente — auditoria estática do PR #245 enquanto CI não executa
+- Comparação `main...feat/eas-pilot-build-route` foi revisada para identificar alterações desproporcionais e riscos silenciosos.
+- `apps/mobile/app/empresa-inicio.tsx` aparecia com grande remoção de linhas por minificação acidental; comparação com `main` confirmou ausência de perda funcional.
+- Formatação legível foi restaurada, preservando somente os deltas funcionais reais `Membros` e `Privacidade e dados`.
+- Encontrado gap em chat retention: legal hold da identidade do profissional designado não preservava conversa se ele nunca tivesse enviado mensagem.
+- `privacy-retention.ts` foi corrigido para proteger também `professional_profiles.identity_id` associado ao assignment.
+- `privacy-retention-e2e.sh` foi ampliado com conversa onde o profissional held não é sender e deve ser preservada.
+
+## Assistente — hardening de owner handoff
+- Auditoria de `company-members.controller.ts` encontrou bypass: `ON CONFLICT ... DO UPDATE role` permitia ao owner convidar o próprio e-mail como `manager` e aceitar, potencialmente deixando tenant sem owner; também permitia sobrescrever silenciosamente papel de membro existente.
+- Correção no PR #245:
+  - membership inexistente → insere papel convidado;
+  - mesmo papel → aceite idempotente;
+  - `admin/manager → owner` → promoção explícita permitida;
+  - qualquer outro role change por convite → `invitation_existing_membership_role_change_forbidden`.
+- `http-company-members-e2e.sh` agora prova que sole owner não consegue se auto-rebaixar e continua owner, além de manter teste de owner handoff seguro.
+
+## Assistente — hardening do retention job privilegiado
+- `privacy_legal_holds` é deliberadamente inacessível ao `app_runtime`; retention é operação de manutenção privilegiada.
+- Gap encontrado: `privacy-retention --apply` aceitava simplesmente `DATABASE_URL`, tornando fácil executar mutação destrutiva pela conexão errada.
+- Correção fail-closed aplicada no PR #245:
+  - `--apply` exige explicitamente `PRIVACY_MAINTENANCE_DATABASE_URL`;
+  - sem essa variável, retorna `PRIVACY_MAINTENANCE_DATABASE_URL_required_for_apply` antes de abrir o pool destrutivo;
+  - dry-run ainda pode usar maintenance URL quando fornecida ou DATABASE_URL para inspeção compatível.
+- E2E reforçado:
+  - primeiro tenta `--apply` apenas com DATABASE_URL e exige falha;
+  - depois executa com `PRIVACY_MAINTENANCE_DATABASE_URL` explícita e valida retenção/legal holds.
+
+## Assistente — governança reconciliada com PR único
+- Issue #214 atualizado para substituir checklist de merges sequenciais por validação/merge do PR #245 final-state.
+- Issue #219 atualizado para considerar #245 como integração de runtime Privacy/Trust/ownership.
+- Checkpoint atualizado: #245 é agora a única porta de merge do conjunto #233–#245; #233–#243 serão fechados como superseded após #245 green/merged.
+- Regra mantida: auditoria estática e correções internas aumentam confiança, mas **não contam como CI PASS**; não mesclar #245 até execução real de typecheck/build/migrations/E2Es.
