@@ -6,7 +6,7 @@
 
 - Projeto: MLIVRETRABALHO / AI Workforce Network.
 - Repositório oficial: `dbdanielbaracho/MLIVRETRABALHO`.
-- Documento da Verdade vigente: v1.9.
+- Documento da Verdade vigente: v1.10.
 - GitHub é fonte persistente da verdade.
 - Não usar TinyFish neste projeto salvo instrução explícita futura do usuário.
 - Toda conversa do chat referente ao projeto deve continuar sendo registrada em `docs/conversas/`.
@@ -45,11 +45,23 @@ continuar e me avisar se tiver parado
 - Evidência criada: `docs/evidencias/PSP_PUBLIC_PRICING_SNAPSHOT_2026-09-24.md`.
 - Nenhuma taxa pública foi usada como compromisso de preço do MLIVRETRABALHO; unit economics final continua dependente de propostas comerciais escritas.
 
+## Usuário
+continuar
+
+## Assistente — consolidação normativa v1.10
+- `main` revalidado no commit `3d4fd2ddae8aa7d0f4e656baf63c373abd63fa41` no início desta continuação.
+- Railway produção novamente confirmado saudável: API deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` SUCCESS, Postgres SUCCESS, pending work zero.
+- CI mais recente do `main`, run `36082707917`, terminou `failure`; job `foundation` novamente veio com `steps=null`. #214 permanece **PARADO EXTERNAMENTE**.
+- Documento da Verdade v1.10 criado como delta normativo sobre v1.9, incorporando: fronteira de confiança com PSP real, binding server-controlled de referências externas, matriz técnica de PSPs, pricing público apenas indicativo e status explícito dos gates.
+- README atualizado para apontar `DOCUMENTO_DA_VERDADE_v1.10.md` como fonte normativa vigente.
+- `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` reconciliado com v1.10, PR #231/v1.83, matriz técnica, pricing indicativo e Registro Integral Parte 3.
+- Nenhum gate externo foi falsamente fechado; nenhuma seleção de PSP foi declarada.
+
 ## Estado de parada neste ponto
 
 - **CI / Production Truth (#214): PARADO externamente** — GitHub Actions continua sem executar steps.
-- **FIN-RISK (#215): avanço interno continua**, mas fechamento depende de provider real, contrato, fees, sandbox e revisão jurídica/contábil.
-- **Provider due diligence (#228): preparação técnica interna avançada; resposta comercial/sandbox ainda externa.**
+- **FIN-RISK (#215): avanço interno consolidado**, mas fechamento depende de provider real, contrato, fees, sandbox e revisão jurídica/contábil.
+- **Provider due diligence (#228): preparação interna ampla concluída; respostas comerciais/sandbox permanecem externas.**
 - **TRUST-ARCH (#219): depende de provider KYC/KYB real, callback sandbox, LGPD final e pentest externo.**
 - **Device/Pilot (#220): depende de aparelho físico, signing de release e pentest.**
 - **LEGAL-ARCH (#221): depende de parecer jurídico brasileiro externo identificado.**
