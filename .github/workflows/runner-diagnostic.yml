@@ -34,3 +34,13 @@ jobs:
         run: |
           echo "runner=${RUNNER_NAME}"
           uname -a
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Prove Windows runner allocation
+        shell: pwsh
+        run: |
+          Write-Output "runner=$env:RUNNER_NAME"
+          Get-ComputerInfo | Select-Object OsName,OsVersion
