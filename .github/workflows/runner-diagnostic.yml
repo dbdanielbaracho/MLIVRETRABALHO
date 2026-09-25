@@ -25,3 +25,12 @@ jobs:
         run: |
           echo "runner=${RUNNER_NAME}"
           uname -a
+
+  ubuntu-slim:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    steps:
+      - name: Prove slim runner allocation
+        run: |
+          echo "runner=${RUNNER_NAME}"
+          uname -a
