@@ -3,7 +3,7 @@ import { createHash, randomBytes } from 'crypto';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
-const MANAGEMENT_ROLES=new Set(['owner','admin','member']);
+const MANAGEMENT_ROLES=new Set(['owner','admin','manager']);
 const UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 @Controller('company/members')
