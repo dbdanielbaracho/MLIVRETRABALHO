@@ -30,9 +30,12 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | Requirements traceability v1.11 | delta explícito para FIN-REF/TRUST-REF/gates sem apagar ledger histórico | `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md` |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
 | Android pilot distribution | package piloto, build script, hash/build metadata, workflow, rollback/support | PR #227 |
+| Pilot device execution prep | roteiro/evidence contract para instalação, update, jornadas, localização, notificações/deep links | `PILOT_DEVICE_E2E_EXECUTION_PACKET_2026-09-24.md` |
+| Independent pentest prep | escopo mínimo, evidence contract e stop-the-line preparados | `INDEPENDENT_PENTEST_SCOPE_2026-09-24.md` |
+| Web functional architecture | contrato funcional e API/role mapping definidos sem fabricar lockfile | `WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md` |
 | Legal review preparation | pacote pronto para revisão externa | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
-| Conversa/memória | continuidade persistida | Registro Integral Partes 1, 2 e 3; Parte 4 iniciada nesta continuação |
+| Conversa/memória | continuidade persistida | Registro Integral Partes 1, 2, 3 e Parte 4 vigente |
 
 ## Bloqueios externos reais
 
@@ -41,11 +44,11 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 - GitHub Actions precisa alocar runner e executar pipeline completo;
 - probe HTTP público canônico do estado corrente ainda precisa ser registrado.
 
-Última rechecagem: main `72c2e626619025a54cc78cbe4327f9e00bd3d0b2`; run `36084275735`; job `107912575642`; `failure`; `steps=[]`; `runner_id=0`; `runner_name=""`; `runner_group_id=0`. Nenhum step foi executado. Railway permanece sem regressão: API e Postgres `SUCCESS`.
+Última evidência confirmada nesta sequência: run `36084275735`; job `107912575642`; `failure`; `steps=[]`; `runner_id=0`; `runner_name=""`; `runner_group_id=0`. Nenhum step executou. Railway permanece sem regressão conhecida: API e Postgres `SUCCESS`.
 
-Novas tentativas de probe público direto foram feitas sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não é interpretado como falha da API.
+Tentativas de probe público direto foram feitas sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não é interpretado como falha da API.
 
-### #215 FIN-RISK
+### #215 FIN-RISK — FECHAMENTO PARADO EXTERNAMENTE
 
 Baseline interno:
 
@@ -61,7 +64,7 @@ Restam externamente:
 - binding de referência externa comprovado;
 - revisão contábil/tributária/jurídica brasileira.
 
-### #219 TRUST-ARCH
+### #219 TRUST-ARCH — FECHAMENTO PARADO EXTERNAMENTE
 
 Fronteira interna v1.84 concluída: provider real não pode impor tenant/identity IDs internos nem enforcement material; provider reference precisa ser resolvida por binding server-controlled antes do contexto RLS.
 
@@ -73,19 +76,38 @@ Restam externamente:
 - revisão jurídica brasileira;
 - pentest/adversarial externo.
 
-### #220 Device/Pilot/Pentest
+### #220 Device/Pilot/Pentest — EXECUÇÃO PARADA EXTERNAMENTE
 
-Restam APK/aparelho físico, jornada real em device, localização/notificações/deep links, update/rollback, release signing/keystore e pentest independente.
+Preparação interna agora inclui roteiro físico e escopo de pentest.
 
-### #221 LEGAL-ARCH
+Restam:
+- APK real em ambiente Android funcional quando runner/build estiver disponível;
+- aparelho físico;
+- jornadas real-device;
+- localização/notificações/deep links reais;
+- update/rollback real;
+- release signing/keystore;
+- pentest/retest independente.
+
+### #221 LEGAL-ARCH — PARADO EXTERNAMENTE
 
 Preparação interna concluída. Falta parecer/revisão externa de profissional jurídico brasileiro identificado.
 
-### #224 WEB-ARCH
+### #224 WEB-ARCH — IMPLEMENTAÇÃO PARADA POR AMBIENTE
 
-Continua bloqueado por ambiente capaz de resolver dependências Next.js e gerar `pnpm-lock.yaml` reproduzível.
+Preparação interna avançada:
+- contrato funcional criado em `docs/evidencias/WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md`;
+- API/role mapping auditado para dashboard, analytics, planner, teams, replacements, talent pools, finance reconciliation e Safety admin;
+- critérios de auth/tenant, caching, acessibilidade, errors, build/CI/deploy e stop-the-line definidos.
 
-### #228 PROVIDER-DUE-DILIGENCE
+Rechecagem deste ambiente:
+- DNS de `github.com` indisponível;
+- DNS de `registry.npmjs.org` indisponível;
+- probes HTTPS retornaram `000`.
+
+Portanto não criar Next dependencies nem fabricar `pnpm-lock.yaml`. Implementação `apps/web` deve retomar apenas com package resolution reproduzível e CI funcional.
+
+### #228 PROVIDER-DUE-DILIGENCE — PARADO EXTERNAMENTE
 
 Internamente concluído:
 - shortlist;
@@ -109,7 +131,7 @@ Restam externamente:
 ## Requirements traceability atual
 
 - ledger histórico: `docs/requirements/REQUIREMENTS_LEDGER.md`;
-- delta vigente para decisões posteriores: `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md`;
+- delta vigente: `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md`;
 - em conflito de estado posterior às fronteiras v1.83/v1.84, Documento da Verdade v1.11 + delta v1.11 prevalecem sem apagar histórico.
 
 ## Regra para a próxima continuação
@@ -122,8 +144,9 @@ Restam externamente:
 6. não refazer trabalho concluído sem regressão;
 7. registrar toda conversa do projeto;
 8. não usar TinyFish salvo instrução explícita futura;
-9. avisar claramente quando um gate estiver parado.
+9. avisar claramente quando um gate estiver parado;
+10. continuar automaticamente por outro bloco interno quando apenas um gate estiver bloqueado.
 
 ## Conclusão
 
-O produto **não é declarado Production-DONE nem Pilot-DONE**. O trabalho interno seguro avançou até as fronteiras provider-reference v1.83/v1.84, Documento da Verdade v1.11 e rastreabilidade de requisitos v1.11. Os gates restantes exigem terceiros, provider/contrato/sandbox, aparelho físico, infraestrutura externa ou revisão profissional independente.
+O produto **não é declarado Production-DONE nem Pilot-DONE**. Nesta rodada a preparação interna foi estendida a device/pentest e contrato funcional da web. Os gates principais restantes estão, neste ponto, dependentes de terceiros, provider/contrato/sandbox, aparelho físico, package-resolution/runner externo ou revisão profissional independente.
