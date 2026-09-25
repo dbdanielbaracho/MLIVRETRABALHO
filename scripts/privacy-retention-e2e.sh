@@ -8,13 +8,17 @@ PROFILE="bbbbbbbb-1111-4111-8111-111111111111"
 JOB1="cccccccc-1111-4111-8111-111111111111"
 JOB2="cccccccc-2222-4222-8222-222222222222"
 JOB3="cccccccc-3333-4333-8333-333333333333"
+JOB4="cccccccc-4444-4444-8444-444444444444"
 ASSIGN1="dddddddd-1111-4111-8111-111111111111"
 ASSIGN2="dddddddd-2222-4222-8222-222222222222"
 ASSIGN3="dddddddd-3333-4333-8333-333333333333"
+ASSIGN4="dddddddd-4444-4444-8444-444444444444"
 CONV_DELETE="eeeeeeee-1111-4111-8111-111111111111"
 CONV_HOLD="eeeeeeee-2222-4222-8222-222222222222"
+CONV_WORKER_HOLD="eeeeeeee-4444-4444-8444-444444444444"
 MSG_DELETE="ffffffff-1111-4111-8111-111111111111"
 MSG_HOLD="ffffffff-2222-4222-8222-222222222222"
+MSG_WORKER_HOLD="ffffffff-4444-4444-8444-444444444444"
 IDENTITY_ANON="aaaaaaaa-2222-4222-8222-222222222222"
 PROFILE_ANON="bbbbbbbb-2222-4222-8222-222222222222"
 IDENTITY_HELD="aaaaaaaa-3333-4333-8333-333333333333"
@@ -36,20 +40,24 @@ ON CONFLICT(id) DO NOTHING;
 INSERT INTO company_jobs(id,tenant_id,title,status) VALUES
  ('$JOB1','$TENANT','Old Job 1','closed'),
  ('$JOB2','$TENANT','Old Job 2','closed'),
- ('$JOB3','$TENANT','Very Old Chat Job','closed')
+ ('$JOB3','$TENANT','Very Old Chat Job','closed'),
+ ('$JOB4','$TENANT','Held Worker Chat Job','closed')
 ON CONFLICT(id) DO NOTHING;
 INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status,confirmed_at,checked_in_at,checked_out_at,completed_at,check_in_lat,check_in_lng,check_out_lat,check_out_lng) VALUES
  ('$ASSIGN1','$TENANT','$JOB1','$PROFILE','completed',now()-interval '40 days',now()-interval '40 days',now()-interval '40 days',now()-interval '40 days',-23.5,-46.6,-23.6,-46.7),
  ('$ASSIGN2','$TENANT','$JOB2','$PROFILE','completed',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',-23.5,-46.6,-23.6,-46.7),
- ('$ASSIGN3','$TENANT','$JOB3','$PROFILE','completed',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',NULL,NULL,NULL,NULL)
+ ('$ASSIGN3','$TENANT','$JOB3','$PROFILE','completed',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',NULL,NULL,NULL,NULL),
+ ('$ASSIGN4','$TENANT','$JOB4','$PROFILE_HELD','completed',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',now()-interval '800 days',NULL,NULL,NULL,NULL)
 ON CONFLICT(id) DO NOTHING;
 INSERT INTO conversations(id,tenant_id,assignment_id,created_at) VALUES
  ('$CONV_DELETE','$TENANT','$ASSIGN3',now()-interval '800 days'),
- ('$CONV_HOLD','$TENANT','$ASSIGN2',now()-interval '800 days')
+ ('$CONV_HOLD','$TENANT','$ASSIGN2',now()-interval '800 days'),
+ ('$CONV_WORKER_HOLD','$TENANT','$ASSIGN4',now()-interval '800 days')
 ON CONFLICT(id) DO NOTHING;
 INSERT INTO conversation_messages(id,tenant_id,conversation_id,sender_identity_id,body,created_at) VALUES
  ('$MSG_DELETE','$TENANT','$CONV_DELETE','$IDENTITY','expire me',now()-interval '800 days'),
- ('$MSG_HOLD','$TENANT','$CONV_HOLD','$IDENTITY','preserve me',now()-interval '800 days')
+ ('$MSG_HOLD','$TENANT','$CONV_HOLD','$IDENTITY','preserve me',now()-interval '800 days'),
+ ('$MSG_WORKER_HOLD','$TENANT','$CONV_WORKER_HOLD','$IDENTITY','preserve because assigned worker is held',now()-interval '800 days')
 ON CONFLICT(id) DO NOTHING;
 INSERT INTO privacy_legal_holds(scope_type,scope_id,reason,evidence_ref) VALUES
  ('assignment','$ASSIGN2','retention test assignment hold','test:assignment'),
@@ -64,8 +72,10 @@ ANON="$(psql "$DB_URL" -tAc "SELECT (display_name='Deleted professional' AND hom
 HELD_PROFILE="$(psql "$DB_URL" -tAc "SELECT (display_name='Keep Me' AND home_city='São Paulo' AND primary_role='Bartender')::int FROM professional_profiles WHERE id='$PROFILE_HELD'")"
 CHAT_DELETED="$(psql "$DB_URL" -tAc "SELECT (count(*)=0)::int FROM conversation_messages WHERE id='$MSG_DELETE'")"
 CHAT_HELD="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversation_messages WHERE id='$MSG_HOLD'")"
+WORKER_HELD_CHAT="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversation_messages WHERE id='$MSG_WORKER_HOLD'")"
 CONV_DELETED="$(psql "$DB_URL" -tAc "SELECT (count(*)=0)::int FROM conversations WHERE id='$CONV_DELETE'")"
 CONV_HELD="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversations WHERE id='$CONV_HOLD'")"
+CONV_WORKER_HELD="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversations WHERE id='$CONV_WORKER_HOLD'")"
 
 test "$CLEARED" = "1"
 test "$HELD" = "1"
@@ -73,8 +83,10 @@ test "$ANON" = "1"
 test "$HELD_PROFILE" = "1"
 test "$CHAT_DELETED" = "1"
 test "$CHAT_HELD" = "1"
+test "$WORKER_HELD_CHAT" = "1"
 test "$CONV_DELETED" = "1"
 test "$CONV_HELD" = "1"
+test "$CONV_WORKER_HELD" = "1"
 
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM privacy_legal_holds WHERE evidence_ref IN('test:assignment','test:identity');
@@ -82,4 +94,4 @@ DELETE FROM identities WHERE id IN('$IDENTITY','$IDENTITY_ANON','$IDENTITY_HELD'
 DELETE FROM tenants WHERE id='$TENANT';
 SQL
 
-echo "PASS: retention clears precise geo, anonymizes deactivated profile, expires old assignment chat and respects legal holds"
+echo "PASS: retention clears precise geo, anonymizes deactivated profile, expires old assignment chat and respects assignment/identity legal holds"
