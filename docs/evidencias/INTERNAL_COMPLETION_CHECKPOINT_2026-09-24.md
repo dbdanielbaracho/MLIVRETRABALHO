@@ -1,7 +1,7 @@
 # MLIVRETRABALHO — Internal Completion Checkpoint
 
 **Data:** 2026-09-24  
-**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.10.md`  
+**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.11.md`  
 **Regra:** este checkpoint não declara Production-DONE nem Pilot-DONE.
 
 ## Objetivo
@@ -19,8 +19,10 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | Matching | sinais reais + ranking explicável | PR #212 |
 | Ratings/Reputation | bidirecional + reputação de empresa | PR #207–#210 |
 | Safety/Trust | reporting, causality, appeals e audit trail | PRs #209/#213/#217/#225/#226 |
+| Trust enforcement baseline | case-first, human-review, appeal/contraditório, incident SLA | ADR-TRUST-001 + evidências Trust |
+| Real-KYC/KYB provider boundary | provider externo não é autoridade sobre IDs internos/enforcement; binding server-controlled obrigatório | PR #232; `TRUST_PROVIDER_REFERENCE_BOUNDARY_v1.84.md`; Documento da Verdade v1.11 |
 | Finance security baseline | HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
-| Finance pilot scope | split por PSP; guarantee/advance/credit fora do piloto | Documento da Verdade v1.10 |
+| Finance pilot scope | split por PSP; guarantee/advance/credit fora do piloto | Documento da Verdade v1.10/v1.11 |
 | Real-PSP trust boundary | provider não é autoridade sobre IDs internos; binding server-controlled obrigatório | PR #231; `PAYMENT_PROVIDER_REFERENCE_BOUNDARY_v1.83.md` |
 | PSP technical fit | multi-recipient fit documentado; Asaas/Pagar.me mais próximos do caso; MP 1:N condicional | `PSP_TECHNICAL_FIT_MATRIX_2026-09-24.md` |
 | PSP pricing preliminary | snapshot público apenas indicativo; não substitui proposta comercial | `PSP_PUBLIC_PRICING_SNAPSHOT_2026-09-24.md` |
@@ -38,7 +40,9 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 - GitHub Actions precisa alocar runner e executar pipeline completo;
 - probe HTTP público canônico do estado corrente ainda precisa ser registrado.
 
-Última rechecagem: run `36082707917`, job `foundation`, `failure`, `steps=null`. Nenhum step foi executado. Railway permanece sem regressão: API e Postgres `SUCCESS`.
+Última rechecagem: run `36083007417`, job `107908804460`, `failure`, `steps=null`. Nenhum step foi executado. Railway permanece sem regressão: API e Postgres `SUCCESS`.
+
+Nova tentativa de probe público direto foi feita sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não é interpretado como falha da API.
 
 ### #215 FIN-RISK
 
@@ -58,7 +62,15 @@ Restam externamente:
 
 ### #219 TRUST-ARCH
 
-Restam provider KYC/KYB real, callback sandbox, política LGPD final, revisão jurídica e pentest externo.
+Fronteira interna v1.84 concluída: provider real não pode impor tenant/identity IDs internos nem enforcement material; provider reference precisa ser resolvida por binding server-controlled antes do contexto RLS.
+
+Restam externamente:
+- provider KYC/KYB real/elegível;
+- callback sandbox autenticado/idempotente;
+- provider-reference resolution comprovada no sandbox real;
+- política LGPD/retention final;
+- revisão jurídica brasileira;
+- pentest/adversarial externo.
 
 ### #220 Device/Pilot/Pentest
 
@@ -80,21 +92,22 @@ Internamente concluído:
 - outreach packet;
 - matriz técnica;
 - pricing público indicativo;
-- fronteira de confiança provider-reference.
+- fronteira financeira provider-reference;
+- fronteira Trust/KYC provider-reference.
 
 Restam externamente:
 - confirmação comercial escrita;
 - preços/fees reais;
 - PF/PJ e compliance;
 - sandbox;
-- webhook/retries/idempotência reais;
+- webhook/callback/retries/idempotência reais;
 - settlement/refund/chargeback/negative balance;
 - privacidade/retenção;
 - homologação/produção.
 
 ## Regra para a próxima continuação
 
-1. recuperar Documento da Verdade v1.10;
+1. recuperar Documento da Verdade v1.11;
 2. recuperar este checkpoint;
 3. recuperar Registro Integral Partes 1, 2 e 3;
 4. verificar primeiro se algum bloqueio externo mudou;
@@ -105,4 +118,4 @@ Restam externamente:
 
 ## Conclusão
 
-O produto **não é declarado Production-DONE nem Pilot-DONE**. O trabalho interno seguro foi levado além da v1.9 com endurecimento v1.83 e análise de PSP, mas os gates restantes exigem terceiros, provider/contrato/sandbox, aparelho físico, infraestrutura externa ou revisão profissional independente.
+O produto **não é declarado Production-DONE nem Pilot-DONE**. O trabalho interno seguro avançou até as fronteiras provider-reference v1.83/v1.84 e foi consolidado no Documento da Verdade v1.11. Os gates restantes exigem terceiros, provider/contrato/sandbox, aparelho físico, infraestrutura externa ou revisão profissional independente.
