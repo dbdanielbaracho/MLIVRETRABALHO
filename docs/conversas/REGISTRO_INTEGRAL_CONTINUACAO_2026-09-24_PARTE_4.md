@@ -37,12 +37,34 @@ continuar
 - Issue #220 atualizado marcando esses dois itens de preparação interna como concluídos, sem marcar device E2E ou pentest como executados.
 - Restam externamente no #220: APK real quando houver ambiente Android funcional, instalação/teste em aparelho físico, push credentials quando necessários, release signing/keystore para distribuição mais ampla e pentest/retest independente.
 
+## Usuário
+qual é a nossa estrategia que já definimos para eu não ter que ficar toda hora pedindo para voce continuar e me avisar quando estiver parado
+
+## Assistente — regra operacional reafirmada
+- Estratégia reafirmada: dentro de cada rodada de execução, continuar por todos os blocos internos possíveis sem pedir autorização repetida; recuperar Documento da Verdade/checkpoint/Registro Integral/issues; marcar gates realmente bloqueados como PARADO; um gate parado não para o projeto inteiro; não inventar evidência; manter GitHub como fonte persistente; Documento da Verdade só muda por decisão normativa/material.
+- Limitação operacional explicitada: o assistente não inicia novo turno sozinho após encerrar uma resposta; porém, em cada turno de continuação, deve executar até o limite interno sem perguntar novamente se deve continuar.
+
+## Usuário
+então seguir a estrategia e continuar agora
+
+## Assistente — execução autônoma da estratégia
+- `main` revalidado inicialmente em `5967b0d77c3a6dabc665cea8bc63c4a61c1470ff`.
+- WEB-ARCH #224 testado de forma não destrutiva no ambiente atual: `github.com` e `registry.npmjs.org` não resolveram via DNS e probes HTTPS retornaram `000`.
+- Conclusão: implementação `apps/web` continua **PARADA por ambiente**; não foi criado lockfile manual nem dependências Next.js sem resolução real.
+- LEGAL-ARCH #221 rechecado: preparação interna já concluída; falta somente revisão profissional brasileira externa identificada.
+- PROVIDER-DUE-DILIGENCE #228 rechecado: preparação interna já concluída; faltam respostas comerciais/sandbox reais.
+- Auditoria de WEB-ARCH confirmou que não existia contrato funcional consolidado específico da web.
+- APIs existentes auditadas diretamente: dashboard, analytics, planner, teams, replacements, talent pools, payment reconciliation e Safety admin já fornecem base tenant-scoped para web complementar.
+- Criado `docs/evidencias/WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md`.
+- O contrato define: navegação web, auth/tenant context, mapeamento de endpoints, role boundaries, finance read-only enquanto FIN-RISK OPEN, Safety/Trust sem enforcement automático, UX/acessibilidade, caching tenant-safe, error contract, critérios de build/CI/deploy e stop-the-line.
+- Implementação real de `apps/web` permanece PARADA até package resolution/lockfile/CI funcionarem; a preparação funcional interna do gate avançou.
+
 ## Estado de parada neste ponto
 
 - **CI / Production Truth (#214): PARADO externamente** — runner continua sem alocação/steps.
 - **FIN-RISK (#215):** baseline interno e requirements rastreados; fechamento ainda depende de provider/contrato/pricing/sandbox/legal.
 - **TRUST-ARCH (#219):** fronteira v1.84 e requirements rastreados; fechamento depende de provider real/sandbox/LGPD/jurídico/pentest.
 - **Device/Pilot (#220): preparação interna adicional concluída; execução está PARADA externamente** por depender de APK/device/signing/pentest reais.
-- **LEGAL-ARCH (#221):** depende de parecer profissional externo brasileiro identificado.
-- **WEB-ARCH (#224):** depende de ambiente funcional para dependências/lockfile.
-- **Provider due diligence (#228):** preparação interna concluída; respostas comerciais e sandbox continuam externas.
+- **LEGAL-ARCH (#221): PARADO externamente** — pacote interno pronto; falta parecer profissional brasileiro identificado.
+- **WEB-ARCH (#224): contrato funcional interno agora preparado; implementação está PARADA por package resolution/lockfile/CI.**
+- **Provider due diligence (#228): PARADO externamente** — preparação interna concluída; respostas comerciais e sandbox continuam externas.
