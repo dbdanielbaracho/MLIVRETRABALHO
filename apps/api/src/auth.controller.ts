@@ -36,7 +36,7 @@ export class AuthController {
  }
  @Post('signin') async signin(@Body() body:{email?:string;password?:string}){
   if(!body.email||!body.password)throw new UnauthorizedException(); const email=body.email.trim().toLowerCase();
-  const r=await this.db.query<{id:string;email:string;password_hash:string}>('SELECT id,email,password_hash FROM identities WHERE email=$1',[email]);const identity=r.rows[0];if(!identity||!verifyPassword(body.password,identity.password_hash))throw new UnauthorizedException();
+  const r=await this.db.query<{id:string;email:string;password_hash:string}>('SELECT id,email,password_hash FROM identities WHERE email=$1 AND deactivated_at IS NULL',[email]);const identity=r.rows[0];if(!identity||!verifyPassword(body.password,identity.password_hash))throw new UnauthorizedException();
   const token=randomBytes(32).toString('base64url');await this.db.query("INSERT INTO sessions(identity_id,token_hash,expires_at) VALUES($1,$2,now()+interval '30 days')",[identity.id,tokenHash(token)]);const memberships=await this.auth.memberships(identity.id);return {accessToken:token,identity:{id:identity.id,email:identity.email},memberships};
  }
  @Post('signout') async signout(@Headers('authorization') authorization?:string){const [scheme,token]=authorization?.split(' ') ?? [];if(scheme!=='Bearer'||!token)throw new UnauthorizedException();await this.auth.identityFromAuthorization(authorization);await this.auth.revoke(token);return {ok:true};}
