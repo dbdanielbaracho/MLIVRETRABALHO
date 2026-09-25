@@ -15,7 +15,7 @@ OWNER_SIGNUP="$(request POST /v1/auth/signup '' '' "{\"email\":\"$OWNER_EMAIL\",
 TENANT_ID="$(printf '%s' "$OWNER_SIGNUP" | json_field tenantId)"
 OWNER_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$OWNER_EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken)"
 
-# A sole owner must not be able to demote itself through the invitation acceptance path.
+# A sole owner must not be able to demote itself through invitation acceptance.
 SELF_INVITE="$(request POST /v1/company/members/invitations "$OWNER_TOKEN" "$TENANT_ID" "{\"email\":\"$OWNER_EMAIL\",\"role\":\"manager\"}")"
 SELF_CODE="$(printf '%s' "$SELF_INVITE" | json_field inviteCode)"
 SELF_STATUS="$(curl -sS -o /tmp/member-invite-self-demotion.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/company/members/invitations/accept" -H "authorization: Bearer $OWNER_TOKEN" -H 'content-type: application/json' --data "{\"inviteCode\":\"$SELF_CODE\"}")"
@@ -52,17 +52,49 @@ const rows=JSON.parse(process.argv[1]); const target=process.argv[2];
 if(!rows.some(x=>x.email===target&&x.role==="owner"&&!x.deactivatedAt))throw new Error("accepted owner missing");
 ' "$MEMBERS" "$NEXT_OWNER_EMAIL"
 
-DEACTIVATE="$(request POST /v1/privacy/deactivate "$OWNER_TOKEN" '' '{}')"
-test "$(printf '%s' "$DEACTIVATE" | json_field deactivated)" = "true"
-
-NEXT_OWNER_ME="$(request GET /v1/me "$NEXT_OWNER_TOKEN")"
-printf '%s' "$NEXT_OWNER_ME" | grep -q "$TENANT_ID"
-printf '%s' "$NEXT_OWNER_ME" | grep -q 'owner'
-
+# Invitation remains single-use before either owner deactivates.
 REUSE_STATUS="$(curl -sS -o /tmp/member-invite-reuse.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/company/members/invitations/accept" -H "authorization: Bearer $NEXT_OWNER_TOKEN" -H 'content-type: application/json' --data "{\"inviteCode\":\"$CODE\"}")"
 test "$REUSE_STATUS" = "400"
 
-request POST /v1/auth/signout "$NEXT_OWNER_TOKEN" '' '{}' >/dev/null
+# Race both active owners. Advisory tenant locking must permit exactly one account
+# deactivation and force the second transaction to observe a sole-owner blocker.
+(
+  curl -sS -o /tmp/owner-deactivate.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/privacy/deactivate" -H "authorization: Bearer $OWNER_TOKEN" -H 'content-type: application/json' --data '{}' > /tmp/owner-deactivate.status
+) &
+P1=$!
+(
+  curl -sS -o /tmp/next-owner-deactivate.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/privacy/deactivate" -H "authorization: Bearer $NEXT_OWNER_TOKEN" -H 'content-type: application/json' --data '{}' > /tmp/next-owner-deactivate.status
+) &
+P2=$!
+wait "$P1"
+wait "$P2"
+
+OWNER_STATUS="$(cat /tmp/owner-deactivate.status)"
+NEXT_STATUS="$(cat /tmp/next-owner-deactivate.status)"
+SUCCESS_COUNT=0
+BLOCKED_COUNT=0
+for status in "$OWNER_STATUS" "$NEXT_STATUS"; do
+  [[ "$status" = "200" ]] && SUCCESS_COUNT=$((SUCCESS_COUNT+1))
+  [[ "$status" = "400" ]] && BLOCKED_COUNT=$((BLOCKED_COUNT+1))
+done
+test "$SUCCESS_COUNT" = "1"
+test "$BLOCKED_COUNT" = "1"
+
+if [[ "$OWNER_STATUS" = "200" ]]; then
+  grep -q '"deactivated":true' /tmp/owner-deactivate.json
+  grep -q 'account_deactivation_sole_tenant_owner' /tmp/next-owner-deactivate.json
+  ACTIVE_OWNER_TOKEN="$NEXT_OWNER_TOKEN"
+else
+  grep -q 'account_deactivation_sole_tenant_owner' /tmp/owner-deactivate.json
+  grep -q '"deactivated":true' /tmp/next-owner-deactivate.json
+  ACTIVE_OWNER_TOKEN="$OWNER_TOKEN"
+fi
+
+ACTIVE_OWNER_ME="$(request GET /v1/me "$ACTIVE_OWNER_TOKEN")"
+printf '%s' "$ACTIVE_OWNER_ME" | grep -q "$TENANT_ID"
+printf '%s' "$ACTIVE_OWNER_ME" | grep -q 'owner'
+
+request POST /v1/auth/signout "$ACTIVE_OWNER_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$WRONG_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: invitations are email-bound/single-use, cannot demote an existing owner, and enable safe ownership handoff"
+echo "PASS: invitations are email-bound/single-use, role changes are safe, and concurrent owner deactivation cannot orphan the tenant"
