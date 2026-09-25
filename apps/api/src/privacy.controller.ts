@@ -95,6 +95,14 @@ export class PrivacyController {
     const requestId=await this.createRequest(identity.id,'deactivation');
     try{
       const result=await this.db.transaction(async db=>{
+        // Serialize deactivation decisions across every tenant this identity owns.
+        // Deterministic ordering avoids two owners deactivating concurrently after
+        // both observed the other as active.
+        await db.query(`SELECT pg_advisory_xact_lock(hashtextextended(m.tenant_id::text,0))
+          FROM tenant_memberships m
+          WHERE m.identity_id=$1 AND m.role='owner'
+          ORDER BY m.tenant_id::text`,[identity.id]);
+
         const orphanedOwnerTenant=(await db.query<{tenantId:string}>(`SELECT m.tenant_id AS "tenantId" FROM tenant_memberships m WHERE m.identity_id=$1 AND m.role='owner' AND NOT EXISTS (SELECT 1 FROM tenant_memberships other JOIN identities oi ON oi.id=other.identity_id AND oi.deactivated_at IS NULL WHERE other.tenant_id=m.tenant_id AND other.role='owner' AND other.identity_id<>$1) LIMIT 1`,[identity.id])).rows[0]??null;
         if(orphanedOwnerTenant)throw new BadRequestException('account_deactivation_sole_tenant_owner');
         const profile=(await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1 FOR UPDATE',[identity.id])).rows[0]??null;
@@ -107,9 +115,10 @@ export class PrivacyController {
         const row=(await db.query<{deactivatedAt:string}>('UPDATE identities SET deactivated_at=COALESCE(deactivated_at,now()) WHERE id=$1 RETURNING deactivated_at AS "deactivatedAt"',[identity.id])).rows[0];
         await db.query('DELETE FROM sessions WHERE identity_id=$1',[identity.id]);
         if(profile){await db.query('DELETE FROM professional_availability_network WHERE professional_id=$1',[profile.id]);await db.query('DELETE FROM professional_availability WHERE professional_id=$1',[profile.id]);await db.query("UPDATE marketplace_interests SET status='withdrawn',updated_at=now() WHERE professional_id=$1 AND status='interested'",[profile.id]);}
+        await db.query("UPDATE privacy_requests SET status='completed',resolution_code='account_deactivated',updated_at=now(),completed_at=now() WHERE id=$1",[requestId]);
         return {deactivated:true,deactivatedAt:row?.deactivatedAt};
       });
-      await this.finishRequest(requestId,'completed','account_deactivated');return {requestId,...result};
+      return {requestId,...result};
     }catch(error){await this.finishRequest(requestId,'rejected','account_deactivation_blocked');throw error;}
   }
 }
