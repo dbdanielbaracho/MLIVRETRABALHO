@@ -58,3 +58,12 @@ no item 7 nao haverá profissional juridico brasileiro revisando dever processeg
 - #221 LEGAL-ARCH: não depende mais de profissional externo; revisão interna v1.12 é o baseline.
 - #224 WEB-ARCH: PARADO POR AMBIENTE.
 - #228 PROVIDER-DUE-DILIGENCE: PARADO EXTERNAMENTE.
+
+## Usuário
+não esqueça que tudo que estamos digitando aqui tem que estar gravado em arquivo que já falamos qual o arquivo
+
+## Assistente — regra permanente de registro integral reafirmada
+- Confirmado que o arquivo ativo é `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-25_PARTE_5.md`.
+- Regra permanente: toda mensagem do usuário e toda ação/materialização relevante do assistente sobre o projeto MLIVRETRABALHO devem ser registradas sequencialmente neste Registro Integral enquanto a Parte 5 estiver ativa.
+- As Partes 1–4 permanecem preservadas e não devem ser resumidas, substituídas ou apagadas.
+- Antes de cada nova escrita sequencial, buscar o SHA atual do arquivo para evitar sobrescrita/conflito.
