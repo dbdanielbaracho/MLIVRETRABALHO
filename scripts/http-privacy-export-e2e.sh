@@ -23,7 +23,10 @@ if(x.identity?.email!==email)throw new Error("identity email missing");
 if(x.professionalProfile?.displayName!=="Privacy Export Test")throw new Error("profile missing");
 const raw=JSON.stringify(x);
 for(const forbidden of ["password_hash","passwordHash","accessToken","token_hash","tokenHash"]){if(raw.includes(forbidden))throw new Error(`forbidden secret field: ${forbidden}`)}
-if(!Array.isArray(x.memberships)||!Array.isArray(x.assignments)||!Array.isArray(x.earnings)||!Array.isArray(x.verifications))throw new Error("export arrays missing");
+for(const key of ["memberships","assignments","earnings","verifications","notifications","authoredMessages","ratingsReceived","ratingsAuthored","trustEvents","safetyReports","safetyRelated","appeals","privacyRequests"]){if(!Array.isArray(x[key]))throw new Error(`export collection missing: ${key}`)}
+if(x.notice?.redaction!=='third-party free-text is omitted unless authored by the authenticated identity')throw new Error("redaction contract missing");
+const current=x.privacyRequests.find(r=>r.id===x.requestId);
+if(!current||current.requestType!=="access"||current.status!=="completed")throw new Error("completed access request missing from export audit");
 ' "$EXPORT" "$EMAIL"
 
 CORRECTION="$(request POST /v1/privacy/requests "$TOKEN" '{"requestType":"correction"}')"
@@ -35,9 +38,7 @@ node -e '
 const rows=JSON.parse(process.argv[1]);
 const accessId=process.argv[2], correctionId=process.argv[3], portabilityId=process.argv[4];
 if(!Array.isArray(rows))throw new Error("privacy requests list missing");
-const access=rows.find(x=>x.id===accessId);
-const correction=rows.find(x=>x.id===correctionId);
-const portability=rows.find(x=>x.id===portabilityId);
+const access=rows.find(x=>x.id===accessId), correction=rows.find(x=>x.id===correctionId), portability=rows.find(x=>x.id===portabilityId);
 if(!access||access.requestType!=="access"||access.status!=="completed")throw new Error("access request audit missing");
 if(!correction||correction.requestType!=="correction"||correction.status!=="submitted")throw new Error("correction request audit missing");
 if(!portability||portability.requestType!=="portability"||portability.status!=="submitted")throw new Error("portability request audit missing");
@@ -50,4 +51,4 @@ test "$BAD_STATUS" = "400"
 
 request POST /v1/auth/signout "$TOKEN" '{}' >/dev/null
 
-echo "PASS: privacy export is scoped, secret-free and access/correction/portability requests have auditable ids"
+echo "PASS: privacy export is scoped, redacted, structurally complete and privacy requests are auditable"
