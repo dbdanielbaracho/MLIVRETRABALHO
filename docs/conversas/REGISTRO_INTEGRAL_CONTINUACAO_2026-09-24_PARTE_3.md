@@ -57,12 +57,34 @@ continuar
 - `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` reconciliado com v1.10, PR #231/v1.83, matriz técnica, pricing indicativo e Registro Integral Parte 3.
 - Nenhum gate externo foi falsamente fechado; nenhuma seleção de PSP foi declarada.
 
+## Usuário
+continuar
+
+## Assistente — Trust provider boundary v1.84 e Production Truth recheck
+- `main` confirmado em `073a3d4e5224ae7b4b945ee8f354d7f6405b7361` no início da rodada.
+- Railway novamente confirmado saudável: API deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` SUCCESS; Postgres SUCCESS; pending work zero.
+- CI mais recente do `main`, run `36083007417`, job `foundation` id `107908804460`, terminou `failure` com `steps=null`; #214 permanece **PARADO EXTERNAMENTE**.
+- Probe público direto de `https://mlivretrabalho.predibeacon.com/v1/health/ready` foi tentado novamente sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não foi interpretado como falha da API; probe corrente continua pendente.
+- Issue #214 atualizado com `main` v1.10, run/job mais recente e estado real do probe.
+- Auditoria de Trust/KYC confirmou que hoje o produto apenas cria/consulta `verification_cases`; não existe callback externo vivo nem endpoint que permita ao usuário impor provider/status.
+- Identificado requisito preventivo: `provider`/`provider_reference` já existem em `verification_cases`, então a fronteira segura deve ser congelada antes de qualquer Datavalid/Serpro/PSP-native KYC real.
+- Branch `trust/provider-reference-boundary-v1.84` criada.
+- Evidência criada: `docs/evidencias/TRUST_PROVIDER_REFERENCE_BOUNDARY_v1.84.md`.
+- ADR-TRUST-001 atualizado: provider externo é autoridade apenas sobre fatos/referências próprios; não pode impor tenant, identity/business IDs internos, memberships, score, assignment/payment actions, suspensão/deactivation ou culpa de Safety case.
+- Fluxo obrigatório definido: autenticar callback → extrair provider reference → resolver vínculo server-controlled para exatamente um verification case → derivar tenant/sujeito → entrar em RLS → normalizar evidência/estado → manter enforcement material separado/human-review.
+- PR #232 `Trust v1.84: harden external provider reference boundary` aberto.
+- CI do PR #232, run `36083800975`, inicialmente apareceu queued mas terminou novamente antes dos steps; job `107911174882` com `steps=null`.
+- Diff integral revisado; somente `docs/adr/ADR-TRUST-001-PROPOSED.md` e `docs/evidencias/TRUST_PROVIDER_REFERENCE_BOUNDARY_v1.84.md` alterados.
+- PR #232 mesclado via exceção documental de runner externo. Merge squash: `06aca1daed708495af16511198bee40ae80367db`.
+- Issue #219 atualizado com a fronteira v1.84 e critérios de sandbox/callback seguro.
+- TRUST-ARCH permanece OPEN: provider real, sandbox, LGPD final, revisão jurídica e pentest externo continuam obrigatórios.
+
 ## Estado de parada neste ponto
 
-- **CI / Production Truth (#214): PARADO externamente** — GitHub Actions continua sem executar steps.
+- **CI / Production Truth (#214): PARADO externamente** — GitHub Actions continua sem executar steps; probe público corrente também não pôde ser realizado pela ferramenta atual.
 - **FIN-RISK (#215): avanço interno consolidado**, mas fechamento depende de provider real, contrato, fees, sandbox e revisão jurídica/contábil.
 - **Provider due diligence (#228): preparação interna ampla concluída; respostas comerciais/sandbox permanecem externas.**
-- **TRUST-ARCH (#219): depende de provider KYC/KYB real, callback sandbox, LGPD final e pentest externo.**
+- **TRUST-ARCH (#219): fronteira de provider v1.84 consolidada; fechamento ainda depende de provider KYC/KYB real, callback sandbox, LGPD final, jurídico e pentest externo.**
 - **Device/Pilot (#220): depende de aparelho físico, signing de release e pentest.**
 - **LEGAL-ARCH (#221): depende de parecer jurídico brasileiro externo identificado.**
 - **WEB-ARCH (#224): depende de ambiente capaz de resolver dependências Next.js e gerar lockfile reproduzível.**
