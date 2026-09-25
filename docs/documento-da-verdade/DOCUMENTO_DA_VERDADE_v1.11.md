@@ -129,3 +129,15 @@ Toda conversa do chat referente ao MLIVRETRABALHO continua sendo registrada em `
 TinyFish permanece excluído deste projeto salvo nova instrução explícita futura do usuário.
 
 Quando um gate estiver realmente parado, isso deve ser informado claramente e registrado; nenhum gate externo deve ser marcado como concluído sem evidência correspondente.
+
+---
+
+# 7. RASTREABILIDADE DE REQUISITOS v1.11
+
+O Requirements Ledger histórico permanece em `docs/requirements/REQUIREMENTS_LEDGER.md`.
+
+As decisões posteriores de FIN provider-reference v1.83, Trust provider-reference v1.84 e o estado atualizado dos gates são complementadas por:
+
+`docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md`
+
+Regra de leitura: para requisitos alterados após o ledger base, o delta v1.11 e este Documento da Verdade prevalecem sobre estados históricos conflitantes, sem apagar a rastreabilidade anterior.
