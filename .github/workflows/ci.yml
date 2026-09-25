@@ -107,6 +107,7 @@ jobs:
             sleep 0.5
           done
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-company-onboarding-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
+          BASE_URL=http://127.0.0.1:3000 bash scripts/http-company-members-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 DATABASE_URL="$HTTP_TEST_URL" bash scripts/http-journey-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-recommendations-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-notifications-multi-company-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
