@@ -29,12 +29,20 @@ continuar
 - Railway continua sem regressão conhecida: API/Postgres SUCCESS; isso não substitui o CI completo nem o probe HTTP canônico corrente.
 - Nenhum gate externo foi falsamente fechado; nenhum provider real, dinheiro real, callback KYC/KYB real ou enforcement automático foi ativado.
 
+## Assistente — avanço interno do Pilot/Device gate #220
+- Issue #220 auditado para separar preparação interna de execução física externa.
+- Criado `docs/evidencias/PILOT_DEVICE_E2E_EXECUTION_PACKET_2026-09-24.md` com contrato de evidência de build/device, fresh install, update, rollback, jornada profissional, jornada empresa, multiempresa, localização allowed/denied/unavailable e notificações/deep links.
+- O packet define stop-the-line para tenant leak/IDOR, auth/session takeover, wrong-recipient binding, crash de jornada primária, data loss em update suportado, coleta de localização fora do contrato e deep-link authorization bypass.
+- Criado `docs/evidencias/INDEPENDENT_PENTEST_SCOPE_2026-09-24.md` com escopo mínimo para auth/session, RLS/IDOR, operações, Trust/Safety, provider references, financeiro, API abuse e mobile; internal/AI review não substitui pentest independente.
+- Issue #220 atualizado marcando esses dois itens de preparação interna como concluídos, sem marcar device E2E ou pentest como executados.
+- Restam externamente no #220: APK real quando houver ambiente Android funcional, instalação/teste em aparelho físico, push credentials quando necessários, release signing/keystore para distribuição mais ampla e pentest/retest independente.
+
 ## Estado de parada neste ponto
 
 - **CI / Production Truth (#214): PARADO externamente** — runner continua sem alocação/steps.
 - **FIN-RISK (#215):** baseline interno e requirements rastreados; fechamento ainda depende de provider/contrato/pricing/sandbox/legal.
 - **TRUST-ARCH (#219):** fronteira v1.84 e requirements rastreados; fechamento depende de provider real/sandbox/LGPD/jurídico/pentest.
-- **Device/Pilot (#220):** depende de aparelho físico, update/signing e pentest.
+- **Device/Pilot (#220): preparação interna adicional concluída; execução está PARADA externamente** por depender de APK/device/signing/pentest reais.
 - **LEGAL-ARCH (#221):** depende de parecer profissional externo brasileiro identificado.
 - **WEB-ARCH (#224):** depende de ambiente funcional para dependências/lockfile.
 - **Provider due diligence (#228):** preparação interna concluída; respostas comerciais e sandbox continuam externas.
