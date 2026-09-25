@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS privacy_requests(
   completed_at timestamptz
 );
 CREATE INDEX IF NOT EXISTS privacy_requests_identity_created_idx ON privacy_requests(identity_id,created_at DESC);
-GRANT SELECT,INSERT,UPDATE ON privacy_requests TO app_runtime;
-REVOKE DELETE ON privacy_requests FROM app_runtime;
+-- Privacy requests are global identity-scoped audit records. They are accessed only
+-- through authenticated identity endpoints using the maintenance/application owner
+-- connection, never through tenant-scoped app_runtime. Do not grant app_runtime a
+-- cross-identity table without an identity RLS context.
+REVOKE ALL ON privacy_requests FROM app_runtime;
 COMMIT;
