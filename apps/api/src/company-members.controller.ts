@@ -77,9 +77,23 @@ export class CompanyMembersController{
         WHERE tenant_id=$1 AND token_hash=$2 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at>now() FOR UPDATE`,[tenantId,tokenHash])).rows[0];
       if(!invitation)throw new BadRequestException('invitation_invalid_or_expired');
       if(invitation.email.toLowerCase()!==identity.email.toLowerCase())throw new ForbiddenException('invitation_email_mismatch');
-      await db.query(`INSERT INTO tenant_memberships(tenant_id,subject_id,identity_id,role)
-        VALUES($1,$2,$2,$3)
-        ON CONFLICT(tenant_id,identity_id) WHERE identity_id IS NOT NULL DO UPDATE SET role=EXCLUDED.role`,[tenantId,identity.id,invitation.role]);
+
+      const existing=(await db.query<{role:string}>(`SELECT role FROM tenant_memberships
+        WHERE tenant_id=$1 AND identity_id=$2 FOR UPDATE`,[tenantId,identity.id])).rows[0]??null;
+
+      if(existing){
+        if(existing.role===invitation.role){
+          // Idempotent membership role: consuming the valid invitation is safe.
+        }else if(invitation.role==='owner'&&(existing.role==='admin'||existing.role==='manager')){
+          await db.query(`UPDATE tenant_memberships SET role='owner' WHERE tenant_id=$1 AND identity_id=$2`,[tenantId,identity.id]);
+        }else{
+          throw new BadRequestException('invitation_existing_membership_role_change_forbidden');
+        }
+      }else{
+        await db.query(`INSERT INTO tenant_memberships(tenant_id,subject_id,identity_id,role)
+          VALUES($1,$2,$2,$3)`,[tenantId,identity.id,invitation.role]);
+      }
+
       await db.query(`UPDATE company_member_invitations SET accepted_at=now(),accepted_by_identity_id=$2 WHERE id=$1`,[invitation.id,identity.id]);
       return {accepted:true,tenantId,role:invitation.role};
     });
