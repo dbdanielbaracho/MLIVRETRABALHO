@@ -15,6 +15,18 @@ OWNER_SIGNUP="$(request POST /v1/auth/signup '' '' "{\"email\":\"$OWNER_EMAIL\",
 TENANT_ID="$(printf '%s' "$OWNER_SIGNUP" | json_field tenantId)"
 OWNER_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$OWNER_EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken)"
 
+# A sole owner must not be able to demote itself through the invitation acceptance path.
+SELF_INVITE="$(request POST /v1/company/members/invitations "$OWNER_TOKEN" "$TENANT_ID" "{\"email\":\"$OWNER_EMAIL\",\"role\":\"manager\"}")"
+SELF_CODE="$(printf '%s' "$SELF_INVITE" | json_field inviteCode)"
+SELF_STATUS="$(curl -sS -o /tmp/member-invite-self-demotion.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/company/members/invitations/accept" -H "authorization: Bearer $OWNER_TOKEN" -H 'content-type: application/json' --data "{\"inviteCode\":\"$SELF_CODE\"}")"
+test "$SELF_STATUS" = "400"
+grep -q 'invitation_existing_membership_role_change_forbidden' /tmp/member-invite-self-demotion.json
+OWNER_MEMBERS="$(request GET /v1/company/members "$OWNER_TOKEN" "$TENANT_ID")"
+node -e '
+const rows=JSON.parse(process.argv[1]); const owner=process.argv[2];
+if(!rows.some(x=>x.email===owner&&x.role==="owner"&&!x.deactivatedAt))throw new Error("sole owner was demoted");
+' "$OWNER_MEMBERS" "$OWNER_EMAIL"
+
 request POST /v1/auth/signup '' '' "{\"email\":\"$NEXT_OWNER_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" >/dev/null
 NEXT_OWNER_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$NEXT_OWNER_EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken)"
 request POST /v1/auth/signup '' '' "{\"email\":\"$WRONG_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" >/dev/null
@@ -53,4 +65,4 @@ test "$REUSE_STATUS" = "400"
 request POST /v1/auth/signout "$NEXT_OWNER_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$WRONG_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: owner invitation is email-bound, single-use and enables safe ownership handoff before account deactivation"
+echo "PASS: invitations are email-bound/single-use, cannot demote an existing owner, and enable safe ownership handoff"
