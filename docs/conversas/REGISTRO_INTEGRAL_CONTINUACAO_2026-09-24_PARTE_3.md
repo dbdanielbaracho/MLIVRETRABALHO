@@ -30,11 +30,27 @@ continuar e me avisar se tiver parado
 - PR #231 mesclado via exceção documental já estabelecida para runner externo. Merge: `450b1cafd5927ed8515406fbb1b91dcbd4ca7280`.
 - FIN-RISK permanece OPEN: nenhum PSP real, dinheiro real, sandbox ou contrato foi ativado.
 
+## Continuação — compatibilidade técnica dos PSPs
+- Documentação oficial atual reavaliada para o caso crítico do MLIVRETRABALHO: uma empresa pagando vários profissionais no mesmo turno/evento.
+- Asaas: documentação pública suporta `splits[]` com múltiplos `walletId` e informa que não há limite de quantidade de `walletId`, respeitadas as regras de valor/percentual; há subcontas em sandbox.
+- Pagar.me: documentação v5 suporta múltiplos recebedores/N regras de split; split permanece restrito a clientes PSP e depende de elegibilidade/contrato comercial.
+- Mercado Pago: fluxo público padrão é Split 1:1; 1:N é restrito a vendedores de carteira assessorada que já estejam em contato com o time comercial.
+- Evidência criada: `docs/evidencias/PSP_TECHNICAL_FIT_MATRIX_2026-09-24.md`.
+- Issue #228 atualizado com a matriz e a ordem de due diligence: Asaas → Pagar.me → Mercado Pago. Essa ordem não é seleção final de provider.
+
+## Continuação — pricing público indicativo
+- Asaas: página pública de preços registra taxas padrão e avisa que condições do contrato/conta podem ser diferentes; valores públicos não foram tratados como proposta comercial de marketplace/split.
+- Pagar.me/Stone: página pública mostra que a oferta com Split de pagamentos utiliza taxas customizadas e requer contato comercial; portanto não existe custo público confiável para o nosso split.
+- Mercado Pago: há taxas públicas gerais de checkout, porém elas não provam custo do Split 1:N, que depende do time comercial.
+- Evidência criada: `docs/evidencias/PSP_PUBLIC_PRICING_SNAPSHOT_2026-09-24.md`.
+- Nenhuma taxa pública foi usada como compromisso de preço do MLIVRETRABALHO; unit economics final continua dependente de propostas comerciais escritas.
+
 ## Estado de parada neste ponto
 
 - **CI / Production Truth (#214): PARADO externamente** — GitHub Actions continua sem executar steps.
-- **FIN-RISK (#215): não parado internamente**, mas fechamento depende de provider real, contrato, fees, sandbox e revisão jurídica/contábil.
-- **TRUST-ARCH (#219): depende de provider KYC/KYB real, callback sandbox, LGPD final e pentest externo.
-- **Device/Pilot (#220): depende de aparelho físico, signing de release e pentest.
-- **LEGAL-ARCH (#221): depende de parecer jurídico brasileiro externo identificado.
-- **WEB-ARCH (#224): depende de ambiente capaz de resolver dependências Next.js e gerar lockfile reproduzível.
+- **FIN-RISK (#215): avanço interno continua**, mas fechamento depende de provider real, contrato, fees, sandbox e revisão jurídica/contábil.
+- **Provider due diligence (#228): preparação técnica interna avançada; resposta comercial/sandbox ainda externa.**
+- **TRUST-ARCH (#219): depende de provider KYC/KYB real, callback sandbox, LGPD final e pentest externo.**
+- **Device/Pilot (#220): depende de aparelho físico, signing de release e pentest.**
+- **LEGAL-ARCH (#221): depende de parecer jurídico brasileiro externo identificado.**
+- **WEB-ARCH (#224): depende de ambiente capaz de resolver dependências Next.js e gerar lockfile reproduzível.**
