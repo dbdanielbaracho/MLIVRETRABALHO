@@ -20,7 +20,7 @@ export class PrivacyController {
   @Get('requests')
   async requests(@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
-    return (await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",evidence_ref AS "evidenceRef",operator_note AS "operatorNote",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at DESC',[identity.id])).rows;
+    return (await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at DESC',[identity.id])).rows;
   }
 
   @Post('requests')
@@ -84,12 +84,12 @@ export class PrivacyController {
     }
 
     await this.finishRequest(requestId,'completed','access_export_generated');
-    const privacyRequests=(await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",evidence_ref AS "evidenceRef",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at',[identity.id])).rows;
+    const privacyRequests=(await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at',[identity.id])).rows;
     return {
       requestId,generatedAt:new Date().toISOString(),identity:identityRow,
       memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),professionalProfile:profile,availability,
       assignments,earnings,verifications,notifications,authoredMessages,ratingsReceived,ratingsAuthored,trustEvents,safetyReports,safetyRelated,appeals,privacyRequests,
-      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator-only privacy notes']}
+      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator evidence/notes']}
     };
   }
 
