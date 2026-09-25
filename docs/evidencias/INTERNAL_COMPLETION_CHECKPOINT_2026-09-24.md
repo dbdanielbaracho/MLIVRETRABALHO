@@ -23,6 +23,7 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | LGPD retention baseline | política operacional interna por classe/finalidade | `TRUST_DATA_RETENTION_OPERATIONAL_BASELINE_v1.13.md` |
 | DSAR baseline | confirmação/acesso/correção/exclusão tenant-safe + SLA | `DSAR_RUNBOOK_v1.13.md` |
 | Privacy notice baseline | transparência sincronizada com classes/providers/retention | `PRIVACY_NOTICE_BASELINE_v1.13.md` |
+| Privacy runtime implementation | série preparada, ainda não provada/mesclada | PRs #233–#240 |
 | Finance security baseline | HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
 | Finance pilot scope | split por PSP; guarantee/advance/credit fora do piloto | Documento da Verdade v1.13 |
 | Real-PSP trust boundary | provider não é autoridade sobre IDs internos | PR #231 |
@@ -40,11 +41,30 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
 | Conversa/memória | continuidade persistida | Registro Integral Partes 1–5 |
 
+## Privacy runtime — implementação preparada / Definition of Done ainda NÃO atingida
+
+Série empilhada atual:
+- #233: restaura binding `professional_profiles.identity_id`, grants e teste DB;
+- #234: `GET /v1/privacy/export` tenant-safe/redacted + E2E;
+- #235: desativação fail-closed, revogação de sessões e exclusão de identities desativadas de novos fluxos;
+- #236: legal hold, purge/anonymization, expiração de geolocalização precisa;
+- #237: `privacy_requests`, `requestId` e acompanhamento de DSAR;
+- #238: retenção de chat de assignment >730 dias com legal hold;
+- #239: tela mobile `Privacidade e dados` para profissional e empresa;
+- #240: bloqueio de desativação do único owner ativo de tenant.
+
+Todos permanecem OPEN/NÃO MESCLADOS porque GitHub Actions não executa os steps. Exemplos recentes:
+- #238 run `36094756341`, job `107944546741`, `steps=null`;
+- #239 run `36094927150`, job `107945062991`, `steps=null`;
+- #240 run `36095156863`, job `107945767450`, `steps=null`.
+
+Não usar exceção documental para esses PRs de código/schema.
+
 ## Bloqueios reais restantes
 
 ### #214 Production Truth / CI — PARADO EXTERNAMENTE
-- GitHub Actions continua falhando antes dos steps (`runner_id=0`/`steps=null` nas rechecagens históricas recentes).
-- `.github/workflows/ci.yml` foi auditado novamente: usa `ubuntu-latest` e contém pipeline normal; não foi identificado defeito óbvio no workflow que explique ausência total de steps.
+- GitHub Actions continua falhando antes dos steps (`runner_id=0`/`steps=null`).
+- `.github/workflows/ci.yml` já foi auditado; não há defeito óbvio que explique ausência total de steps.
 - probe HTTP canônico atual ainda precisa ser registrado quando acessível.
 - Railway API/Postgres seguem SUCCESS, pending work zero.
 
@@ -52,12 +72,13 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 Restam provider elegível/contratado, pricing real, PF/PJ/KYC/KYB/PLD, refund/chargeback/negative balance, sandbox, callback provider-specific, reconciliação real e tratamento contábil/fiscal operacional. Parecer jurídico externo não é gate obrigatório.
 
 ### #219 TRUST-ARCH — PARCIALMENTE FECHADO INTERNAMENTE / RESTANTE BLOQUEADO
-Concluído internamente: provider-reference boundary, appeals/human review, minimização, retenção operacional, DSAR e privacy notice.
+Concluído internamente: provider-reference boundary, appeals/human review, minimização, retenção operacional, DSAR/privacy notice e preparação da série runtime #233–#240.
 
 Restam:
+- execução real/green + merge da série #233–#240;
 - provider KYC/KYB real/elegível quando necessário;
-- sandbox/callback autenticado/idempotente;
-- implementação runtime + testes de DSAR/purge/legal hold/geolocation expiry quando CI estiver funcional;
+- sandbox/callback autenticado/idempotente + binding provider-specific;
+- propagation para processor/provider quando aplicável;
 - pentest/adversarial externo.
 
 ### #220 Device/Pilot/Pentest — PARADO EXTERNAMENTE
@@ -76,7 +97,7 @@ Restam outreach, respostas comerciais, sandbox, pricing, compliance e homologaç
 - ledger histórico: `docs/requirements/REQUIREMENTS_LEDGER.md`;
 - delta v1.11: provider-reference/gates;
 - delta v1.12: LEGAL-ARCH interno;
-- delta v1.13: LGPD/retention/DSAR/privacy;
+- delta v1.13: LGPD/retention/DSAR/privacy + status preparado em #233–#240;
 - Documento da Verdade v1.13 prevalece em conflito posterior.
 
 ## Regra de continuação
@@ -85,7 +106,8 @@ Restam outreach, respostas comerciais, sandbox, pricing, compliance e homologaç
 3. continuar por qualquer bloco interno seguro;
 4. não fabricar teste/evidência;
 5. não usar TinyFish salvo instrução explícita;
-6. manter toda conversa no Registro Integral.
+6. manter toda conversa no Registro Integral;
+7. não mesclar PR code/schema sem execução real de testes.
 
 ## Conclusão
-LEGAL-ARCH e a política interna LGPD foram avançados/fechados internamente até o limite seguro. Production-DONE/Pilot-DONE ainda dependem de CI/probe, providers/sandbox, runtime verification de controles, device/signing, pentest e Web quando o ambiente permitir.
+LEGAL-ARCH e a política interna LGPD foram avançados internamente e a maior parte dos controles runtime foi preparada em código. Production-DONE/Pilot-DONE ainda dependem de CI/probe, teste/merge da série privacy, providers/sandbox, device/signing, pentest e Web quando o ambiente permitir.
