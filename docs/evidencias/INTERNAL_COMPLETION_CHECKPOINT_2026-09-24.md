@@ -27,11 +27,12 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | PSP technical fit | multi-recipient fit documentado; Asaas/Pagar.me mais próximos do caso; MP 1:N condicional | `PSP_TECHNICAL_FIT_MATRIX_2026-09-24.md` |
 | PSP pricing preliminary | snapshot público apenas indicativo; não substitui proposta comercial | `PSP_PUBLIC_PRICING_SNAPSHOT_2026-09-24.md` |
 | Provider due diligence | shortlist, questionário e outreach packet preparados | Issue #228 |
+| Requirements traceability v1.11 | delta explícito para FIN-REF/TRUST-REF/gates sem apagar ledger histórico | `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md` |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
 | Android pilot distribution | package piloto, build script, hash/build metadata, workflow, rollback/support | PR #227 |
 | Legal review preparation | pacote pronto para revisão externa | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
-| Conversa/memória | continuidade persistida | Registro Integral Partes 1, 2 e 3 |
+| Conversa/memória | continuidade persistida | Registro Integral Partes 1, 2 e 3; Parte 4 iniciada nesta continuação |
 
 ## Bloqueios externos reais
 
@@ -40,9 +41,9 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 - GitHub Actions precisa alocar runner e executar pipeline completo;
 - probe HTTP público canônico do estado corrente ainda precisa ser registrado.
 
-Última rechecagem: run `36083007417`, job `107908804460`, `failure`, `steps=null`. Nenhum step foi executado. Railway permanece sem regressão: API e Postgres `SUCCESS`.
+Última rechecagem: main `72c2e626619025a54cc78cbe4327f9e00bd3d0b2`; run `36084275735`; job `107912575642`; `failure`; `steps=[]`; `runner_id=0`; `runner_name=""`; `runner_group_id=0`. Nenhum step foi executado. Railway permanece sem regressão: API e Postgres `SUCCESS`.
 
-Nova tentativa de probe público direto foi feita sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não é interpretado como falha da API.
+Novas tentativas de probe público direto foram feitas sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não é interpretado como falha da API.
 
 ### #215 FIN-RISK
 
@@ -105,17 +106,24 @@ Restam externamente:
 - privacidade/retenção;
 - homologação/produção.
 
+## Requirements traceability atual
+
+- ledger histórico: `docs/requirements/REQUIREMENTS_LEDGER.md`;
+- delta vigente para decisões posteriores: `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md`;
+- em conflito de estado posterior às fronteiras v1.83/v1.84, Documento da Verdade v1.11 + delta v1.11 prevalecem sem apagar histórico.
+
 ## Regra para a próxima continuação
 
 1. recuperar Documento da Verdade v1.11;
 2. recuperar este checkpoint;
-3. recuperar Registro Integral Partes 1, 2 e 3;
-4. verificar primeiro se algum bloqueio externo mudou;
-5. não refazer trabalho concluído sem regressão;
-6. registrar toda conversa do projeto;
-7. não usar TinyFish salvo instrução explícita futura;
-8. avisar claramente quando um gate estiver parado.
+3. recuperar Registro Integral Partes 1, 2, 3 e Parte 4 vigente;
+4. recuperar ledger base + `REQUIREMENTS_LEDGER_DELTA_v1.11.md`;
+5. verificar primeiro se algum bloqueio externo mudou;
+6. não refazer trabalho concluído sem regressão;
+7. registrar toda conversa do projeto;
+8. não usar TinyFish salvo instrução explícita futura;
+9. avisar claramente quando um gate estiver parado.
 
 ## Conclusão
 
-O produto **não é declarado Production-DONE nem Pilot-DONE**. O trabalho interno seguro avançou até as fronteiras provider-reference v1.83/v1.84 e foi consolidado no Documento da Verdade v1.11. Os gates restantes exigem terceiros, provider/contrato/sandbox, aparelho físico, infraestrutura externa ou revisão profissional independente.
+O produto **não é declarado Production-DONE nem Pilot-DONE**. O trabalho interno seguro avançou até as fronteiras provider-reference v1.83/v1.84, Documento da Verdade v1.11 e rastreabilidade de requisitos v1.11. Os gates restantes exigem terceiros, provider/contrato/sandbox, aparelho físico, infraestrutura externa ou revisão profissional independente.
