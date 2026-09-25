@@ -82,6 +82,15 @@ jobs:
           APPLIED="$(psql "$MIGRATION_TEST_URL" -tAc 'SELECT count(*) FROM schema_migrations' | tr -d ' ')"
           test "$APPLIED" = "$EXPECTED"
 
+      - name: Privacy retention and legal hold contract
+        env:
+          PGPASSWORD: postgres
+          RETENTION_TEST_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_retention
+        run: |
+          createdb -h localhost -U postgres mlivretrabalho_retention
+          DATABASE_URL="$RETENTION_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
+          DATABASE_URL="$RETENTION_TEST_URL" bash scripts/privacy-retention-e2e.sh
+
       - name: HTTP journey, readiness and Production Truth contract
         env:
           PGPASSWORD: postgres
