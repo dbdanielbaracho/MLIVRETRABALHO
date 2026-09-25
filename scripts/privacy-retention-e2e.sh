@@ -64,7 +64,14 @@ INSERT INTO privacy_legal_holds(scope_type,scope_id,reason,evidence_ref) VALUES
  ('identity','$IDENTITY_HELD','retention test identity hold','test:identity');
 SQL
 
-DATABASE_URL="$DB_URL" node apps/api/dist/privacy-retention.js --apply >/tmp/privacy-retention-result.json
+# Destructive mode must fail closed unless a separate maintenance connection is explicit.
+if DATABASE_URL="$DB_URL" node apps/api/dist/privacy-retention.js --apply >/tmp/privacy-retention-missing-maintenance.log 2>&1; then
+  echo "FAIL: retention apply accepted DATABASE_URL without maintenance URL" >&2
+  exit 1
+fi
+grep -q 'PRIVACY_MAINTENANCE_DATABASE_URL_required_for_apply' /tmp/privacy-retention-missing-maintenance.log
+
+DATABASE_URL="$DB_URL" PRIVACY_MAINTENANCE_DATABASE_URL="$DB_URL" node apps/api/dist/privacy-retention.js --apply >/tmp/privacy-retention-result.json
 
 CLEARED="$(psql "$DB_URL" -tAc "SELECT (check_in_lat IS NULL AND check_in_lng IS NULL AND check_out_lat IS NULL AND check_out_lng IS NULL)::int FROM work_assignments WHERE id='$ASSIGN1'")"
 HELD="$(psql "$DB_URL" -tAc "SELECT (check_in_lat IS NOT NULL AND check_out_lat IS NOT NULL)::int FROM work_assignments WHERE id='$ASSIGN2'")"
@@ -94,4 +101,4 @@ DELETE FROM identities WHERE id IN('$IDENTITY','$IDENTITY_ANON','$IDENTITY_HELD'
 DELETE FROM tenants WHERE id='$TENANT';
 SQL
 
-echo "PASS: retention clears precise geo, anonymizes deactivated profile, expires old assignment chat and respects assignment/identity legal holds"
+echo "PASS: retention is fail-closed without maintenance DB, clears precise geo, anonymizes profile, expires chat and respects legal holds"
