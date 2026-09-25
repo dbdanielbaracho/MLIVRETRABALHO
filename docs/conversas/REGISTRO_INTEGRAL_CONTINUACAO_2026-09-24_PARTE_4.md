@@ -57,14 +57,41 @@ então seguir a estrategia e continuar agora
 - APIs existentes auditadas diretamente: dashboard, analytics, planner, teams, replacements, talent pools, payment reconciliation e Safety admin já fornecem base tenant-scoped para web complementar.
 - Criado `docs/evidencias/WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md`.
 - O contrato define: navegação web, auth/tenant context, mapeamento de endpoints, role boundaries, finance read-only enquanto FIN-RISK OPEN, Safety/Trust sem enforcement automático, UX/acessibilidade, caching tenant-safe, error contract, critérios de build/CI/deploy e stop-the-line.
-- Implementação real de `apps/web` permanece PARADA até package resolution/lockfile/CI funcionarem; a preparação funcional interna do gate avançou.
+- Issue #224 atualizado com contrato funcional concluído e implementação explicitamente PARADA por package-resolution/lockfile/CI.
 
-## Estado de parada neste ponto
+## Assistente — preparação final FIN-RISK / provider adapters
+- Pesquisa oficial atual executada sem TinyFish para Asaas, Pagar.me v5 e Mercado Pago.
+- Asaas: documentação atual confirma Webhook `at least once`, event `id` estável em redelivery, token configurável no header `asaas-access-token`, retries e queue pause/recovery.
+- Mercado Pago: documentação atual confirma `x-signature` com validação HMAC específica do produto e `X-Idempotency-Key` para APIs aplicáveis de pagamentos/reembolsos.
+- Pagar.me v5: documentação atual confirma hook IDs/eventos/status/attempts, redelivery/query e API idempotency; a documentação v5 inspecionada não estabeleceu um contrato atual de assinatura inbound equivalente a Asaas/MP. O mecanismo antigo v2 `X-Hub-Signature` não foi presumido como válido para v5.
+- Criado `docs/evidencias/PROVIDER_ADAPTER_CONTRACT_MATRIX_2026-09-24.md` com auth/idempotency/retry/reference rules, unknowns e test contract.
+- Criado `docs/evidencias/FIN_UNIT_ECONOMICS_MODEL_v1.11.md` com fórmulas, inputs obrigatórios, multi-worker allocation, decision gates e stop-the-line sem taxas inventadas.
+- Criado `docs/evidencias/provider-responses/README_TEMPLATE.md` para preservar respostas comerciais/quotes/contracts/sandbox de forma auditável.
+- Issues #215 e #228 atualizados; ambos agora declaram que a preparação interna foi levada ao limite atual e o fechamento depende de evidence externa.
 
-- **CI / Production Truth (#214): PARADO externamente** — runner continua sem alocação/steps.
-- **FIN-RISK (#215):** baseline interno e requirements rastreados; fechamento ainda depende de provider/contrato/pricing/sandbox/legal.
-- **TRUST-ARCH (#219):** fronteira v1.84 e requirements rastreados; fechamento depende de provider real/sandbox/LGPD/jurídico/pentest.
-- **Device/Pilot (#220): preparação interna adicional concluída; execução está PARADA externamente** por depender de APK/device/signing/pentest reais.
-- **LEGAL-ARCH (#221): PARADO externamente** — pacote interno pronto; falta parecer profissional brasileiro identificado.
-- **WEB-ARCH (#224): contrato funcional interno agora preparado; implementação está PARADA por package resolution/lockfile/CI.**
-- **Provider due diligence (#228): PARADO externamente** — preparação interna concluída; respostas comerciais e sandbox continuam externas.
+## Assistente — tentativa de remover gargalo de outreach
+- Plugin directory consultado para capacidade de e-mail.
+- Gmail está disponível como plugin, porém não instalado/conectado.
+- A opção de conexão do Gmail foi apresentada ao usuário. Conexão/autorização exige ação explícita do usuário.
+- Enquanto Gmail/outro mail connector não estiver conectado, envio real dos provider outreach packets permanece **PARADO por autorização/conexão externa**.
+
+## Assistente — rechecagem final dos gates nesta rodada
+- Novo probe público de `https://mlivretrabalho.predibeacon.com/v1/health/ready` tentado sem TinyFish; web tool informou URL inacessível. Isso não foi interpretado como API failure.
+- `main` revalidado em `e7a50d7223ed9bb3efd6cad0585c8f8a42d8c67e` durante a rodada.
+- CI mais recente: run `36085326849`, job `107915820888`, `failure`, `steps=[]`, `runner_id=0`, `runner_name=""`, `runner_group_id=0`; nenhum step executou.
+- Issue #214 atualizado com esse latest run e current main.
+- Checkpoint interno atualizado com provider adapter matrix, unit economics, response template, Gmail external blocker e latest CI evidence.
+
+## Estado de parada ao final desta rodada
+
+Neste ponto, **todo o trabalho interno seguro identificado nesta rodada foi executado**. O projeto não está concluído, mas os próximos avanços materiais estão bloqueados externamente:
+
+- **#214 CI / Production Truth: PARADO EXTERNAMENTE** — runner não aloca; probe público corrente não acessível pela tool.
+- **#215 FIN-RISK: PARADO EXTERNAMENTE** — precisa provider real/contract/pricing/sandbox/accounting/legal.
+- **#219 TRUST-ARCH: PARADO EXTERNAMENTE** — precisa provider real/sandbox/LGPD/legal/pentest.
+- **#220 Device/Pilot: PARADO EXTERNAMENTE** — precisa APK/device/signing/pentest real.
+- **#221 LEGAL-ARCH: PARADO EXTERNAMENTE** — precisa parecer profissional brasileiro identificado.
+- **#224 WEB-ARCH: PARADO POR AMBIENTE** — precisa package resolution + lockfile + CI real.
+- **#228 PROVIDER-DUE-DILIGENCE: PARADO EXTERNAMENTE** — precisa outreach/respostas/sandbox; envio por e-mail depende de connector autorizado.
+
+Regra de retomada: no próximo turno, revalidar primeiro se qualquer gate externo mudou e executar imediatamente o que destravar, sem refazer a preparação já concluída.
