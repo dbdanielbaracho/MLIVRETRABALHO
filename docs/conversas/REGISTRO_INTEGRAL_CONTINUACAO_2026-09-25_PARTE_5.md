@@ -3,53 +3,58 @@
 > Continuação sequencial de `REGISTRO_INTEGRAL_CONTINUACAO_2026-09-24_PARTE_4.md`. As Partes 1–4 permanecem preservadas integralmente. Esta Parte 5 continua o mesmo Registro Integral sem substituir nem resumir o histórico anterior.
 
 ## Contexto obrigatório
-
 - Projeto: MLIVRETRABALHO / AI Workforce Network.
 - Repositório oficial: `dbdanielbaracho/MLIVRETRABALHO`.
-- Documento da Verdade vigente: `DOCUMENTO_DA_VERDADE_v1.11.md`.
-- Requirements traceability: `docs/requirements/REQUIREMENTS_LEDGER.md` + `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md`.
+- Documento da Verdade vigente: `DOCUMENTO_DA_VERDADE_v1.12.md`.
+- Requirements traceability: ledger base + deltas v1.11/v1.12.
 - GitHub é a fonte persistente da verdade.
-- Não usar TinyFish neste projeto salvo nova instrução explícita do usuário.
-- Quando um gate impedir avanço real, comunicar explicitamente que a etapa **PAROU** e registrar o bloqueio.
-- Um gate parado não para os outros; continuar automaticamente por qualquer bloco interno seguro disponível.
+- Não usar TinyFish salvo instrução explícita.
 
 ## Usuário
 continuar
 
-## Assistente — nova revalidação após estado de parada externa
+## Assistente — revalidação externa
+- Railway API/Postgres revalidados em SUCCESS, pending work zero.
+- main revalidado e CI continuou falhando antes dos steps.
+- WEB-ARCH continuou bloqueado por package resolution.
+- nenhum novo bloco interno seguro foi identificado.
 
-- Railway production revalidado novamente:
-  - API deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` = `SUCCESS`;
-  - PostgreSQL deployment `b7718c66-745f-4027-889c-42b52f1c6a63` = `SUCCESS`;
-  - pending work = zero.
-- `main` atual revalidado em `751bf629130a31c761eef29ee604c3b05fe7403e`.
-- CI mais recente do `main` revalidado:
-  - run `36088886347`;
-  - job `foundation` id `107926742061`;
-  - conclusion `failure`;
-  - `steps=null`;
-  - nenhum workflow step executou.
-- Issue #214 atualizado com esse novo head/run. O gate continua **PARADO EXTERNAMENTE** por falha de alocação/execução do runner, não por evidência de falha de código/testes.
-- Probe público canônico `https://mlivretrabalho.predibeacon.com/v1/health/ready` tentado novamente sem TinyFish; a ferramenta atual continuou sem acesso ao URL. Isso não foi interpretado como API failure; current canonical probe permanece pendente.
-- WEB-ARCH #224 rechecado no ambiente local:
-  - probe `https://github.com` retornou HTTP `000`;
-  - probe `https://registry.npmjs.org` retornou HTTP `000`;
-  - package resolution continua indisponível;
-  - não foi fabricado `pnpm-lock.yaml` nem introduzido Next.js sem resolução real.
-- Issue #224 atualizado com a nova rechecagem e permanece **PARADO POR AMBIENTE**.
-- Gmail/plugin de e-mail rechecado: Gmail continua disponível no diretório de plugins, porém `installed=false`; como já foi sugerido recentemente, não foi sugerido novamente. Provider outreach por e-mail continua **PARADO por autorização/conexão externa**.
-- Nenhum novo bloco interno seguro foi identificado após a auditoria já realizada de todos os issues abertos.
+## Usuário
+quais são os passos que ainda faltam para terminar o projeto todo
 
-## Estado de parada atual
+## Assistente
+- listados gates finais: CI/Production Truth, FIN-RISK/provider, Trust/KYC, device, signing, pentest, LEGAL-ARCH, Web, provider outreach e fechamento documental.
 
-- **#214 CI / Production Truth — PARADO EXTERNAMENTE**: runner não executa steps; probe público corrente não acessível pela tool.
-- **#215 FIN-RISK — PARADO EXTERNAMENTE**: requer provider real, contrato/pricing, sandbox, compliance e revisão contábil/jurídica.
-- **#219 TRUST-ARCH — PARADO EXTERNAMENTE**: requer provider real/sandbox, LGPD final, jurídico e pentest.
-- **#220 Device/Pilot — PARADO EXTERNAMENTE**: requer APK/device/signing/pentest real.
-- **#221 LEGAL-ARCH — PARADO EXTERNAMENTE**: requer parecer profissional brasileiro identificado.
-- **#224 WEB-ARCH — PARADO POR AMBIENTE**: requer package resolution reproduzível + lockfile + CI funcional.
-- **#228 PROVIDER-DUE-DILIGENCE — PARADO EXTERNAMENTE**: requer outreach/respostas/sandbox; e-mail depende de connector autorizado.
+## Usuário
+no item 7 nao haverá profissional juridico brasileiro revisando dever processeguir sem o profissional procurando as melhores praticas
 
-## Regra de retomada
+## Assistente — decisão normativa LEGAL-ARCH v1.12
+- Usuário decidiu remover parecer jurídico profissional brasileiro como gate obrigatório do projeto.
+- Pesquisa atual por fontes primárias foi realizada: CLT/Planalto, STF Tema 725/ADPF 324, STF Tema 1291, LGPD/Planalto e guias ANPD.
+- Tema 1291 permanece em evolução e deve ser monitorado; Tema 725/ADPF 324 não será tratado como blindagem automática para toda relação plataforma-profissional.
+- Criado `docs/evidencias/LEGAL_BEST_PRACTICES_REVIEW_v1.12.md`.
+- Criado `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.12.md`.
+- Criado `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.12.md`.
+- README atualizado para v1.12.
+- Checkpoint interno reconciliado: LEGAL-ARCH deixa de ser blocker externo geral e passa a revisão interna contínua por melhores práticas e fontes primárias.
+- Limitação permanente: revisão interna não é parecer jurídico profissional, não elimina risco residual e não substitui profissional quando lei, disputa, fiscalização ou representação formal o exigir.
 
-No próximo turno de continuação, revalidar primeiro os gates externos e executar imediatamente qualquer bloco que destravar, sem refazer o trabalho interno já concluído. Se nada destravar, registrar o novo estado de parada sem inventar evidência.
+## Novo baseline LEGAL-ARCH
+- aceitar/recusar oportunidades deve permanecer liberdade real;
+- sem exclusividade obrigatória como baseline;
+- multiempresa preservada;
+- sem punição automática por recusa;
+- sem controle contínuo fora do assignment aceito;
+- sem background location baseline;
+- score/reliability com fatos auditáveis e revisão humana para efeitos materiais;
+- LGPD: finalidade, minimização, least privilege, retenção proporcional, segurança e preferência por provider refs/status em vez de raw docs quando possível;
+- re-review interno obrigatório para exclusividade, metas, controle substancial, tracking background, enforcement automático, garantia/crédito/adiantamento, mudança de split, staffing/temp/direct hire, nova jurisdição/dado sensível ou mudança jurídica relevante.
+
+## Estado atual
+- #214 CI/Production Truth: PARADO EXTERNAMENTE.
+- #215 FIN-RISK: PARADO EXTERNAMENTE por provider/contrato/pricing/sandbox/compliance; parecer jurídico externo removido como gate.
+- #219 TRUST-ARCH: PARADO EXTERNAMENTE por provider/sandbox/LGPD operacional/pentest; parecer jurídico externo removido como gate.
+- #220 Device/Pilot: PARADO EXTERNAMENTE.
+- #221 LEGAL-ARCH: não depende mais de profissional externo; revisão interna v1.12 é o baseline.
+- #224 WEB-ARCH: PARADO POR AMBIENTE.
+- #228 PROVIDER-DUE-DILIGENCE: PARADO EXTERNAMENTE.
