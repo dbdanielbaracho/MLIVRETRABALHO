@@ -61,6 +61,20 @@ export class PrivacyController {
   async deactivate(@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
     return this.db.transaction(async db=>{
+      const orphanedOwner=(await db.query<{tenantId:string}>(`SELECT tm.tenant_id AS "tenantId"
+        FROM tenant_memberships tm
+        WHERE tm.identity_id=$1 AND tm.role='owner'
+          AND NOT EXISTS (
+            SELECT 1
+            FROM tenant_memberships tm2
+            JOIN identities i2 ON i2.id=tm2.identity_id AND i2.deactivated_at IS NULL
+            WHERE tm2.tenant_id=tm.tenant_id
+              AND tm2.role='owner'
+              AND tm2.identity_id<>$1
+          )
+        LIMIT 1`,[identity.id])).rows[0];
+      if(orphanedOwner)throw new BadRequestException('account_deactivation_owner_transfer_required');
+
       const profile=(await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1 FOR UPDATE',[identity.id])).rows[0]??null;
       if(profile){
         const active=(await db.query<{count:number}>('SELECT count(*)::int AS count FROM work_assignments WHERE professional_id=$1 AND status IN (\'confirmed\',\'checked_in\',\'in_progress\')',[profile.id])).rows[0]?.count??0;
