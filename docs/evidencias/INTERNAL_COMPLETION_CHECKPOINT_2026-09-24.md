@@ -1,12 +1,12 @@
 # MLIVRETRABALHO — Internal Completion Checkpoint
 
 **Data:** 2026-09-24  
-**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.9.md`  
+**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.10.md`  
 **Regra:** este checkpoint não declara Production-DONE nem Pilot-DONE.
 
 ## Objetivo
 
-Registrar o limite real alcançado pelo trabalho executável internamente nesta rodada e impedir regressão de status por perda de contexto.
+Registrar o limite real alcançado pelo trabalho executável internamente e impedir regressão de status por perda de contexto.
 
 ## Concluído internamente
 
@@ -14,121 +14,95 @@ Registrar o limite real alcançado pelo trabalho executável internamente nesta 
 |---|---|---|
 | Monorepo/API/Postgres | implementado e Railway deployado | Railway + Requirements Ledger |
 | Multi-tenancy/RLS/runtime role | baseline implementado | ADR-MT-001 + suites históricas |
-| Jornada profissional | implementada em código/mobile + HTTP E2E histórico | PRs #179–#200 e scripts de jornada |
+| Jornada profissional | implementada em código/mobile + HTTP E2E histórico | PRs #179–#200 |
 | Jornada empresa | jobs/candidatos/confirmação/teams/planner/replacement/analytics/chat | PRs #184–#212 |
 | Matching | sinais reais + ranking explicável | PR #212 |
-| Ratings/Reputation | bidirecional + aggregate company reputation | PR #207–#210 |
-| Safety reporting | multiempresa + audit trail | PR #209/#213 |
-| Trust causality | causa explícita + ator + append-only | PR #217 |
-| Appeals/contraditório | API, RLS, immutable audit, mobile profissional/empresa | PR #225/#226 |
-| Trust matrix | proposta human-review/deny-by-default | `TRUST_ENFORCEMENT_MATRIX_PROPOSED_2026-09-24.md` |
-| Trust incident SLA | baseline operacional proposto | `TRUST_INCIDENT_SLA_PROPOSED_2026-09-24.md` |
-| Trust minimização/retencão | proposta preparada para revisão | `TRUST_DATA_MINIMIZATION_RETENTION_PROPOSED_2026-09-24.md` |
-| Finance security baseline | webhook HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
-| Finance pilot scope | guarantee/advance/credit/default coverage fora do piloto | `FIN_PILOT_SCOPE_DECISION_2026-09-24.md` |
-| Finance payment model | split por PSP como baseline; escrow/off-platform/manual PIX fora do padrão inicial | `COMPETITOR_PAYMENT_MODELS_2026-09-24.md`; ADR-FIN-001; Documento da Verdade v1.9 |
-| Provider shortlist | PSP/KYC candidatos pesquisados com documentação oficial; sem seleção prematura | `PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md` |
-| Provider due diligence | questionário e outreach packet preparados | `PROVIDER_DUE_DILIGENCE_QUESTIONNAIRE_2026-09-24.md`; `PROVIDER_OUTREACH_PACKET_2026-09-24.md`; Issue #228 |
+| Ratings/Reputation | bidirecional + reputação de empresa | PR #207–#210 |
+| Safety/Trust | reporting, causality, appeals e audit trail | PRs #209/#213/#217/#225/#226 |
+| Finance security baseline | HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
+| Finance pilot scope | split por PSP; guarantee/advance/credit fora do piloto | Documento da Verdade v1.10 |
+| Real-PSP trust boundary | provider não é autoridade sobre IDs internos; binding server-controlled obrigatório | PR #231; `PAYMENT_PROVIDER_REFERENCE_BOUNDARY_v1.83.md` |
+| PSP technical fit | multi-recipient fit documentado; Asaas/Pagar.me mais próximos do caso; MP 1:N condicional | `PSP_TECHNICAL_FIT_MATRIX_2026-09-24.md` |
+| PSP pricing preliminary | snapshot público apenas indicativo; não substitui proposta comercial | `PSP_PUBLIC_PRICING_SNAPSHOT_2026-09-24.md` |
+| Provider due diligence | shortlist, questionário e outreach packet preparados | Issue #228 |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
-| Android pilot distribution | package de piloto, APK build script, hash/build metadata, workflow, rollback/support | PR #227 |
-| Legal review preparation | escopo, perguntas, evidência mínima e gatilhos de re-review preparados | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
+| Android pilot distribution | package piloto, build script, hash/build metadata, workflow, rollback/support | PR #227 |
+| Legal review preparation | pacote pronto para revisão externa | `LEGAL_REVIEW_PACKET_2026-09-24.md` |
 | Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
-| Conversa/memória | continuidade persistida | `docs/conversas/REGISTRO_INTEGRAL_CONTINUACAO_2026-09-24_PARTE_1.md` + `PARTE_2.md` |
+| Conversa/memória | continuidade persistida | Registro Integral Partes 1, 2 e 3 |
 
 ## Bloqueios externos reais
 
-### #214 Production Truth / CI
+### #214 Production Truth / CI — PARADO EXTERNAMENTE
 
-Necessário:
+- GitHub Actions precisa alocar runner e executar pipeline completo;
+- probe HTTP público canônico do estado corrente ainda precisa ser registrado.
 
-- GitHub Actions alocar runner e executar o pipeline completo do commit corrente;
-- probe HTTP público canônico do commit corrente.
-
-Fato observado repetidamente: jobs `ubuntu-latest` terminam com `runner_id=0`, `runner_name=""`, `steps=[]`. Rerun do job mais recente em 24/09/2026 reproduziu a mesma falha antes dos steps.
+Última rechecagem: run `36082707917`, job `foundation`, `failure`, `steps=null`. Nenhum step foi executado. Railway permanece sem regressão: API e Postgres `SUCCESS`.
 
 ### #215 FIN-RISK
 
-Baseline interno agora definido:
+Baseline interno:
 
-`Empresa → PSP → split/repasses → profissional + fee da plataforma → webhook/eventos → ledger/reconciliação MLIVRETRABALHO`.
+`Empresa → PSP → split/repasses → profissional + fee da plataforma → webhook/eventos → ledger/reconciliação`.
 
-Necessário externamente:
-
-- PSP comercialmente elegível/contratado para o modelo Brasil;
-- fees/unit economics reais;
-- responsabilidades PF/PJ/KYC/KYB/PLD;
-- política real de chargeback/refund/saldo negativo;
-- sandbox real do produto contratado;
+Restam externamente:
+- provider elegível/contratado;
+- pricing/unit economics reais;
+- PF/PJ/KYC/KYB/PLD;
+- refund/chargeback/negative balance;
+- sandbox real;
+- callback provider-specific autenticado;
+- binding de referência externa comprovado;
 - revisão contábil/tributária/jurídica brasileira.
-
-Garantia/adiantamento/crédito estão fora do piloto. Escrow, pagamento off-platform e conta operacional + PIX manual também não são o padrão inicial.
 
 ### #219 TRUST-ARCH
 
-Necessário:
-
-- provider KYC/KYB real e sandbox callback;
-- revisão jurídica/LGPD com prazos/políticas finais;
-- pentest/adversarial externo;
-- somente então fechar ADR-TRUST-001.
-
-Datavalid/Serpro foi registrado como candidato de validação independente de identidade; onboarding nativo do PSP permanece alternativa preferencial para KYC/KYB financeiro quando suficiente.
+Restam provider KYC/KYB real, callback sandbox, política LGPD final, revisão jurídica e pentest externo.
 
 ### #220 Device/Pilot/Pentest
 
-Necessário:
-
-- gerar/obter APK real em ambiente Android funcional;
-- instalar e executar em aparelho físico;
-- validar localização aceita/negada/indisponível;
-- validar notificações/deep links;
-- validar jornada profissional/empresa/multiempresa;
-- provar update/rollback no aparelho;
-- definir release signing/keystore para distribuição pública;
-- pentest independente.
+Restam APK/aparelho físico, jornada real em device, localização/notificações/deep links, update/rollback, release signing/keystore e pentest independente.
 
 ### #221 LEGAL-ARCH
 
-Preparação interna concluída em `docs/evidencias/LEGAL_REVIEW_PACKET_2026-09-24.md`.
-
-Necessário apenas o parecer/revisão externa de profissional jurídico brasileiro identificado sobre o sistema concreto, com data, escopo/commit, legislação/jurisprudência, riscos, restrições, conclusão e gatilhos de re-review. IA, testes ou benchmark não fecham este gate.
+Preparação interna concluída. Falta parecer/revisão externa de profissional jurídico brasileiro identificado.
 
 ### #224 WEB-ARCH
 
-Necessário ambiente capaz de resolver dependências Next.js e gerar `pnpm-lock.yaml` reproduzível. Não adicionar dependências manualmente nem quebrar frozen lockfile.
-
-Em nova tentativa independente em 24/09/2026, ambiente limpo falhou ao resolver `github.com`, confirmando que o bloqueio de rede/package-resolution continua externo ao código do projeto.
+Continua bloqueado por ambiente capaz de resolver dependências Next.js e gerar `pnpm-lock.yaml` reproduzível.
 
 ### #228 PROVIDER-DUE-DILIGENCE
 
-Preparação interna concluída:
+Internamente concluído:
+- shortlist;
+- questionário;
+- outreach packet;
+- matriz técnica;
+- pricing público indicativo;
+- fronteira de confiança provider-reference.
 
-- shortlist documentada;
-- questionário comparável preparado;
-- pacote de outreach preparado.
-
-Necessário externamente:
-
-- respostas comerciais escritas;
-- preços/fees;
-- elegibilidade PF/PJ;
-- responsabilidades KYC/KYB/PLD;
-- sandbox real;
-- comportamento real de webhook/idempotência;
+Restam externamente:
+- confirmação comercial escrita;
+- preços/fees reais;
+- PF/PJ e compliance;
+- sandbox;
+- webhook/retries/idempotência reais;
 - settlement/refund/chargeback/negative balance;
-- termos de privacidade/retenção;
+- privacidade/retenção;
 - homologação/produção.
 
 ## Regra para a próxima continuação
 
-1. recuperar Documento da Verdade v1.9;
+1. recuperar Documento da Verdade v1.10;
 2. recuperar este checkpoint;
-3. recuperar o Registro Integral da Conversa (Parte 1 + Parte 2);
+3. recuperar Registro Integral Partes 1, 2 e 3;
 4. verificar primeiro se algum bloqueio externo mudou;
-5. não refazer trabalho já concluído sem evidência de regressão;
-6. continuar registrando toda a conversa no arquivo integral vigente;
-7. não usar TinyFish neste projeto salvo instrução explícita futura do usuário.
+5. não refazer trabalho concluído sem regressão;
+6. registrar toda conversa do projeto;
+7. não usar TinyFish salvo instrução explícita futura;
+8. avisar claramente quando um gate estiver parado.
 
 ## Conclusão
 
-O trabalho interno seguro e reversível disponível no ambiente atual foi levado ao limite. O produto **não é declarado concluído em Production/Pilot** porque os gates acima exigem terceiros, ambientes externos, aparelho físico, contrato/provider ou revisão profissional independente.
+O produto **não é declarado Production-DONE nem Pilot-DONE**. O trabalho interno seguro foi levado além da v1.9 com endurecimento v1.83 e análise de PSP, mas os gates restantes exigem terceiros, provider/contrato/sandbox, aparelho físico, infraestrutura externa ou revisão profissional independente.
