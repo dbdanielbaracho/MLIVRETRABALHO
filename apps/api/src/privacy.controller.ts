@@ -4,13 +4,14 @@ import { DatabaseService } from './database.service';
 
 type ManualPrivacyRequestType='correction'|'erasure'|'restriction'|'objection'|'consent_withdrawal'|'automated_decision_review'|'sharing_information'|'portability';
 const MANUAL_REQUEST_TYPES=new Set<ManualPrivacyRequestType>(['correction','erasure','restriction','objection','consent_withdrawal','automated_decision_review','sharing_information','portability']);
+const DETAILS_REQUIRED=new Set<ManualPrivacyRequestType>(['correction','restriction','objection','automated_decision_review']);
 
 @Controller('privacy')
 export class PrivacyController {
   constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
 
-  private async createRequest(identityId:string,requestType:string){
-    return (await this.db.query<{id:string}>('INSERT INTO privacy_requests(identity_id,request_type,status) VALUES($1,$2,$3) RETURNING id',[identityId,requestType,'submitted'])).rows[0].id;
+  private async createRequest(identityId:string,requestType:string,details?:string|null){
+    return (await this.db.query<{id:string}>('INSERT INTO privacy_requests(identity_id,request_type,status,request_details) VALUES($1,$2,$3,$4) RETURNING id',[identityId,requestType,'submitted',details?.trim()||null])).rows[0].id;
   }
   private async finishRequest(requestId:string,status:'completed'|'partially_completed'|'rejected',resolutionCode?:string){
     await this.db.query('UPDATE privacy_requests SET status=$2,resolution_code=$3,updated_at=now(),completed_at=now() WHERE id=$1',[requestId,status,resolutionCode??null]);
@@ -19,15 +20,18 @@ export class PrivacyController {
   @Get('requests')
   async requests(@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
-    return (await this.db.query('SELECT id,request_type AS "requestType",status,resolution_code AS "resolutionCode",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at DESC',[identity.id])).rows;
+    return (await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",evidence_ref AS "evidenceRef",operator_note AS "operatorNote",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at DESC',[identity.id])).rows;
   }
 
   @Post('requests')
-  async request(@Body() body:{requestType?:string},@Headers('authorization') authorization?:string){
+  async request(@Body() body:{requestType?:string;details?:string},@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
     const requestType=String(body?.requestType??'') as ManualPrivacyRequestType;
     if(!MANUAL_REQUEST_TYPES.has(requestType))throw new BadRequestException('privacy_request_type_invalid');
-    const requestId=await this.createRequest(identity.id,requestType);
+    const details=String(body?.details??'').trim();
+    if(details.length>2000)throw new BadRequestException('privacy_request_details_too_long');
+    if(DETAILS_REQUIRED.has(requestType)&&!details)throw new BadRequestException('privacy_request_details_required');
+    const requestId=await this.createRequest(identity.id,requestType,details||null);
     return {requestId,requestType,status:'submitted'};
   }
 
@@ -80,12 +84,12 @@ export class PrivacyController {
     }
 
     await this.finishRequest(requestId,'completed','access_export_generated');
-    const privacyRequests=(await this.db.query('SELECT id,request_type AS "requestType",status,resolution_code AS "resolutionCode",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at',[identity.id])).rows;
+    const privacyRequests=(await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",evidence_ref AS "evidenceRef",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at',[identity.id])).rows;
     return {
       requestId,generatedAt:new Date().toISOString(),identity:identityRow,
       memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),professionalProfile:profile,availability,
       assignments,earnings,verifications,notifications,authoredMessages,ratingsReceived,ratingsAuthored,trustEvents,safetyReports,safetyRelated,appeals,privacyRequests,
-      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes']}
+      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator-only privacy notes']}
     };
   }
 
@@ -95,14 +99,10 @@ export class PrivacyController {
     const requestId=await this.createRequest(identity.id,'deactivation');
     try{
       const result=await this.db.transaction(async db=>{
-        // Serialize deactivation decisions across every tenant this identity owns.
-        // Deterministic ordering avoids two owners deactivating concurrently after
-        // both observed the other as active.
         await db.query(`SELECT pg_advisory_xact_lock(hashtextextended(m.tenant_id::text,0))
           FROM tenant_memberships m
           WHERE m.identity_id=$1 AND m.role='owner'
           ORDER BY m.tenant_id::text`,[identity.id]);
-
         const orphanedOwnerTenant=(await db.query<{tenantId:string}>(`SELECT m.tenant_id AS "tenantId" FROM tenant_memberships m WHERE m.identity_id=$1 AND m.role='owner' AND NOT EXISTS (SELECT 1 FROM tenant_memberships other JOIN identities oi ON oi.id=other.identity_id AND oi.deactivated_at IS NULL WHERE other.tenant_id=m.tenant_id AND other.role='owner' AND other.identity_id<>$1) LIMIT 1`,[identity.id])).rows[0]??null;
         if(orphanedOwnerTenant)throw new BadRequestException('account_deactivation_sole_tenant_owner');
         const profile=(await db.query<{id:string}>('SELECT id FROM professional_profiles WHERE identity_id=$1 FOR UPDATE',[identity.id])).rows[0]??null;
