@@ -6,7 +6,7 @@
 
 - Projeto: MLIVRETRABALHO / AI Workforce Network.
 - Repositório oficial: `dbdanielbaracho/MLIVRETRABALHO`.
-- Documento da Verdade vigente: v1.10.
+- Documento da Verdade vigente: v1.11.
 - GitHub é fonte persistente da verdade.
 - Não usar TinyFish neste projeto salvo instrução explícita futura do usuário.
 - Toda conversa do chat referente ao projeto deve continuar sendo registrada em `docs/conversas/`.
@@ -79,12 +79,22 @@ continuar
 - Issue #219 atualizado com a fronteira v1.84 e critérios de sandbox/callback seguro.
 - TRUST-ARCH permanece OPEN: provider real, sandbox, LGPD final, revisão jurídica e pentest externo continuam obrigatórios.
 
+## Assistente — consolidação normativa v1.11
+- A fronteira Trust/KYC v1.84 foi considerada decisão normativa material e não ficou restrita a ADR/evidência.
+- Criado `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.11.md`, incorporando v1.10 por referência e congelando a regra de confiança com provider KYC/KYB real.
+- v1.11 define explicitamente que resultado de provider é evidência para verification state e não enforcement automático.
+- v1.11 formaliza data minimization para identidade: preferir provider/reference/status/reason/evidence/timestamps e não documentos/biometria brutos por padrão.
+- v1.11 exige sandbox real com autenticação, idempotência/replay, binding para exatamente um verification case/tenant, proteção cross-tenant e ausência de efeitos diretos em score/assignment/payment/suspension.
+- README atualizado para apontar v1.11 como Documento da Verdade vigente e inclui baseline Trust/KYC.
+- `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` reconciliado com v1.11 e PR #232/v1.84.
+- Nenhum gate externo foi fechado por essa consolidação.
+
 ## Estado de parada neste ponto
 
 - **CI / Production Truth (#214): PARADO externamente** — GitHub Actions continua sem executar steps; probe público corrente também não pôde ser realizado pela ferramenta atual.
 - **FIN-RISK (#215): avanço interno consolidado**, mas fechamento depende de provider real, contrato, fees, sandbox e revisão jurídica/contábil.
 - **Provider due diligence (#228): preparação interna ampla concluída; respostas comerciais/sandbox permanecem externas.**
-- **TRUST-ARCH (#219): fronteira de provider v1.84 consolidada; fechamento ainda depende de provider KYC/KYB real, callback sandbox, LGPD final, jurídico e pentest externo.**
+- **TRUST-ARCH (#219): fronteira v1.84 + norma v1.11 concluídas internamente; fechamento ainda depende de provider KYC/KYB real, callback sandbox, LGPD final, jurídico e pentest externo.**
 - **Device/Pilot (#220): depende de aparelho físico, signing de release e pentest.**
 - **LEGAL-ARCH (#221): depende de parecer jurídico brasileiro externo identificado.**
 - **WEB-ARCH (#224): depende de ambiente capaz de resolver dependências Next.js e gerar lockfile reproduzível.**
