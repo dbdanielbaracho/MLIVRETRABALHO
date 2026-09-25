@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 const APPLY=process.argv.includes('--apply');
 const GEO_DAYS=30;
 const PROFILE_DAYS=30;
+const CHAT_DAYS=730;
 
 async function main(){
   if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL_required');
@@ -24,6 +25,19 @@ async function main(){
         AND i.deactivated_at < now()-($1::int * interval '1 day')
         AND (p.display_name<>'Deleted professional' OR p.home_city IS NOT NULL OR p.primary_role IS NOT NULL)
         AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=i.id)`,[PROFILE_DAYS])).rows[0]?.count??0;
+    const chatCandidates=(await pool.query<{count:number}>(`SELECT count(*)::int AS count
+      FROM conversation_messages m
+      JOIN conversations c ON c.id=m.conversation_id
+      JOIN work_assignments wa ON wa.id=c.assignment_id
+      WHERE wa.status IN ('completed','cancelled')
+        AND COALESCE(wa.completed_at,wa.checked_out_at,wa.confirmed_at) < now()-($1::int * interval '1 day')
+        AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
+        AND NOT EXISTS (
+          SELECT 1
+          FROM conversation_messages participant
+          JOIN privacy_legal_holds h ON h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=participant.sender_identity_id
+          WHERE participant.conversation_id=c.id
+        )`,[CHAT_DAYS])).rows[0]?.count??0;
 
     if(APPLY){
       await pool.query('BEGIN');
@@ -45,11 +59,31 @@ async function main(){
             AND i.deactivated_at IS NOT NULL
             AND i.deactivated_at < now()-($1::int * interval '1 day')
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=i.id)`,[PROFILE_DAYS]);
+        await pool.query(`DELETE FROM conversation_messages m
+          USING conversations c, work_assignments wa
+          WHERE c.id=m.conversation_id
+            AND wa.id=c.assignment_id
+            AND wa.status IN ('completed','cancelled')
+            AND COALESCE(wa.completed_at,wa.checked_out_at,wa.confirmed_at) < now()-($1::int * interval '1 day')
+            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
+            AND NOT EXISTS (
+              SELECT 1
+              FROM conversation_messages participant
+              JOIN privacy_legal_holds h ON h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=participant.sender_identity_id
+              WHERE participant.conversation_id=c.id
+            )`,[CHAT_DAYS]);
+        await pool.query(`DELETE FROM conversations c
+          USING work_assignments wa
+          WHERE wa.id=c.assignment_id
+            AND wa.status IN ('completed','cancelled')
+            AND COALESCE(wa.completed_at,wa.checked_out_at,wa.confirmed_at) < now()-($1::int * interval '1 day')
+            AND NOT EXISTS (SELECT 1 FROM conversation_messages m WHERE m.conversation_id=c.id)
+            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)`,[CHAT_DAYS]);
         await pool.query('COMMIT');
       }catch(error){await pool.query('ROLLBACK');throw error;}
     }
 
-    process.stdout.write(JSON.stringify({mode:APPLY?'apply':'dry-run',expiredSessions,geoCandidates,profileCandidates,geoDays:GEO_DAYS,profileDays:PROFILE_DAYS})+'\n');
+    process.stdout.write(JSON.stringify({mode:APPLY?'apply':'dry-run',expiredSessions,geoCandidates,profileCandidates,chatCandidates,geoDays:GEO_DAYS,profileDays:PROFILE_DAYS,chatDays:CHAT_DAYS})+'\n');
   }finally{await pool.end();}
 }
 
