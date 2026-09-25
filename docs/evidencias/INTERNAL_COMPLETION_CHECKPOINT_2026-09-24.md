@@ -26,6 +26,9 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 | Real-PSP trust boundary | provider não é autoridade sobre IDs internos; binding server-controlled obrigatório | PR #231; `PAYMENT_PROVIDER_REFERENCE_BOUNDARY_v1.83.md` |
 | PSP technical fit | multi-recipient fit documentado; Asaas/Pagar.me mais próximos do caso; MP 1:N condicional | `PSP_TECHNICAL_FIT_MATRIX_2026-09-24.md` |
 | PSP pricing preliminary | snapshot público apenas indicativo; não substitui proposta comercial | `PSP_PUBLIC_PRICING_SNAPSHOT_2026-09-24.md` |
+| Provider adapter contract | auth/idempotency/retries/reference rules e unknowns documentados por provider sem seleção | `PROVIDER_ADAPTER_CONTRACT_MATRIX_2026-09-24.md` |
+| Finance unit economics prep | fórmulas, inputs obrigatórios, multi-worker allocation e stop-the-line preparados sem inventar taxas | `FIN_UNIT_ECONOMICS_MODEL_v1.11.md` |
+| Provider response evidence | template auditável para respostas/quotes/contratos/sandbox preparado | `docs/evidencias/provider-responses/README_TEMPLATE.md` |
 | Provider due diligence | shortlist, questionário e outreach packet preparados | Issue #228 |
 | Requirements traceability v1.11 | delta explícito para FIN-REF/TRUST-REF/gates sem apagar ledger histórico | `docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.11.md` |
 | Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
@@ -44,9 +47,19 @@ Registrar o limite real alcançado pelo trabalho executável internamente e impe
 - GitHub Actions precisa alocar runner e executar pipeline completo;
 - probe HTTP público canônico do estado corrente ainda precisa ser registrado.
 
-Última evidência confirmada nesta sequência: run `36084275735`; job `107912575642`; `failure`; `steps=[]`; `runner_id=0`; `runner_name=""`; `runner_group_id=0`. Nenhum step executou. Railway permanece sem regressão conhecida: API e Postgres `SUCCESS`.
+Última evidência confirmada nesta rodada:
+- main `e7a50d7223ed9bb3efd6cad0585c8f8a42d8c67e`;
+- run `36085326849`;
+- job `107915820888`;
+- `failure`;
+- `steps=[]`;
+- `runner_id=0`;
+- `runner_name=""`;
+- `runner_group_id=0`.
 
-Tentativas de probe público direto foram feitas sem TinyFish; a ferramenta web atual não conseguiu acessar o domínio. Isso não é interpretado como falha da API.
+Nenhum step executou. Railway permanece sem regressão conhecida: API e Postgres `SUCCESS`.
+
+Novo probe público direto foi tentado sem TinyFish; a ferramenta web informou que `https://mlivretrabalho.predibeacon.com/v1/health/ready` não estava acessível por esse tool. Isso não é interpretado como falha da API; current canonical probe permanece pendente.
 
 ### #215 FIN-RISK — FECHAMENTO PARADO EXTERNAMENTE
 
@@ -54,13 +67,19 @@ Baseline interno:
 
 `Empresa → PSP → split/repasses → profissional + fee da plataforma → webhook/eventos → ledger/reconciliação`.
 
+Preparação interna adicional concluída nesta rodada:
+- provider adapter contract matrix;
+- unit economics model sem taxas inventadas;
+- provider response evidence template;
+- Issue #215 reconciliado com v1.11 e estado real.
+
 Restam externamente:
 - provider elegível/contratado;
-- pricing/unit economics reais;
+- pricing/unit economics reais a partir de quote/contract;
 - PF/PJ/KYC/KYB/PLD;
 - refund/chargeback/negative balance;
 - sandbox real;
-- callback provider-specific autenticado;
+- callback/provider-specific authentication comprovada;
 - binding de referência externa comprovado;
 - revisão contábil/tributária/jurídica brasileira.
 
@@ -78,7 +97,7 @@ Restam externamente:
 
 ### #220 Device/Pilot/Pentest — EXECUÇÃO PARADA EXTERNAMENTE
 
-Preparação interna agora inclui roteiro físico e escopo de pentest.
+Preparação interna inclui roteiro físico e escopo de pentest.
 
 Restam:
 - APK real em ambiente Android funcional quando runner/build estiver disponível;
@@ -95,30 +114,33 @@ Preparação interna concluída. Falta parecer/revisão externa de profissional 
 
 ### #224 WEB-ARCH — IMPLEMENTAÇÃO PARADA POR AMBIENTE
 
-Preparação interna avançada:
-- contrato funcional criado em `docs/evidencias/WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md`;
-- API/role mapping auditado para dashboard, analytics, planner, teams, replacements, talent pools, finance reconciliation e Safety admin;
+Preparação interna:
+- contrato funcional em `docs/evidencias/WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md`;
+- API/role mapping auditado;
 - critérios de auth/tenant, caching, acessibilidade, errors, build/CI/deploy e stop-the-line definidos.
 
-Rechecagem deste ambiente:
+Última rechecagem local:
 - DNS de `github.com` indisponível;
 - DNS de `registry.npmjs.org` indisponível;
 - probes HTTPS retornaram `000`.
 
-Portanto não criar Next dependencies nem fabricar `pnpm-lock.yaml`. Implementação `apps/web` deve retomar apenas com package resolution reproduzível e CI funcional.
+Não criar Next dependencies nem fabricar `pnpm-lock.yaml`. Implementação `apps/web` retoma apenas com package resolution reproduzível e CI funcional.
 
 ### #228 PROVIDER-DUE-DILIGENCE — PARADO EXTERNAMENTE
 
 Internamente concluído:
 - shortlist;
-- questionário;
+- questionnaire;
 - outreach packet;
-- matriz técnica;
-- pricing público indicativo;
-- fronteira financeira provider-reference;
-- fronteira Trust/KYC provider-reference.
+- technical fit matrix;
+- public pricing snapshot;
+- FIN/TRUST provider-reference boundaries;
+- provider adapter contract matrix;
+- unit economics model;
+- response evidence template.
 
 Restam externamente:
+- contato/outreach real;
 - confirmação comercial escrita;
 - preços/fees reais;
 - PF/PJ e compliance;
@@ -127,6 +149,8 @@ Restam externamente:
 - settlement/refund/chargeback/negative balance;
 - privacidade/retenção;
 - homologação/produção.
+
+Gmail foi descoberto como plugin disponível para viabilizar o envio dos outreach packets, mas não está conectado/instalado. A opção de conexão foi apresentada ao usuário; envio por e-mail permanece bloqueado até ação explícita de conexão/autorização.
 
 ## Requirements traceability atual
 
@@ -145,8 +169,9 @@ Restam externamente:
 7. registrar toda conversa do projeto;
 8. não usar TinyFish salvo instrução explícita futura;
 9. avisar claramente quando um gate estiver parado;
-10. continuar automaticamente por outro bloco interno quando apenas um gate estiver bloqueado.
+10. continuar automaticamente por outro bloco interno quando apenas um gate estiver bloqueado;
+11. quando todos os blocos internos seguros estiverem esgotados, declarar claramente que o projeto está parado nos gates externos e listar os gatilhos de retomada.
 
 ## Conclusão
 
-O produto **não é declarado Production-DONE nem Pilot-DONE**. Nesta rodada a preparação interna foi estendida a device/pentest e contrato funcional da web. Os gates principais restantes estão, neste ponto, dependentes de terceiros, provider/contrato/sandbox, aparelho físico, package-resolution/runner externo ou revisão profissional independente.
+O produto **não é declarado Production-DONE nem Pilot-DONE**. A preparação interna segura foi levada ao limite atual em CI/Production Truth preparation, FIN/PSP architecture and economics, Trust/KYC boundary, provider due diligence, device/pentest packet, web functional contract e legal review packet. Os próximos avanços materiais dependem agora de fatores externos: runner/package resolution, provider outreach/contract/sandbox, conexão de e-mail, aparelho físico/signing, revisão profissional brasileira e pentest independente.
