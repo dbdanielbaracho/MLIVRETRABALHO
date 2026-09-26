@@ -2,6 +2,9 @@ import { BadRequestException, Body, Controller, Headers, HttpException, Post, Un
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { DatabaseService } from './database.service';
 import { AuthService } from './auth.service';
+const MAX_EMAIL_LENGTH=320;
+const MAX_PASSWORD_LENGTH=128;
+const MAX_WORKSPACE_NAME_LENGTH=120;
 const encodePassword=(password:string)=>{const salt=randomBytes(16);const hash=scryptSync(password,salt,64);return 'scrypt$'+salt.toString('hex')+'$'+hash.toString('hex');};
 const verifyPassword=(password:string,encoded:string)=>{const [kind,saltHex,hashHex]=encoded.split('$');if(kind!=='scrypt'||!saltHex||!hashHex)return false;const supplied=scryptSync(password,Buffer.from(saltHex,'hex'),64);const stored=Buffer.from(hashHex,'hex');return supplied.length===stored.length&&timingSafeEqual(supplied,stored);};
 const tokenHash=(token:string)=>createHash('sha256').update(token).digest('hex');
@@ -11,17 +14,20 @@ const SIGNIN_MAX_FAILURES=8;
 const SIGNIN_WINDOW_MS=15*60*1000;
 const SIGNIN_LOCK_MINUTES=15;
 const MAX_ACTIVE_SESSIONS=10;
+const normalizedEmail=(value:string)=>value.trim().toLowerCase();
+const emailInputValid=(value:string)=>{const v=normalizedEmail(value);return v.length>=3&&v.length<=MAX_EMAIL_LENGTH&&v.includes('@')&&!/\s/.test(v);};
 @Controller('auth')
 export class AuthController {
  constructor(private readonly db:DatabaseService, private readonly auth:AuthService){}
  @Post('signup') async signup(@Body() body:{email?:string;password?:string;accountType?:'professional'|'company';workspaceName?:string}){
-  if(!body.email||!body.password||body.password.length<8) throw new UnauthorizedException('invalid_signup');
-  const email=body.email.trim().toLowerCase(); const accountType=body.accountType??'professional';
+  if(!body.email||!body.password||body.password.length<8||body.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(body.email)) throw new UnauthorizedException('invalid_signup');
+  const email=normalizedEmail(body.email); const accountType=body.accountType??'professional';
   if(accountType!=='professional'&&accountType!=='company')throw new BadRequestException('account_type_invalid');
   const passwordHash=encodePassword(body.password);
   try{
    if(accountType==='company'){
     const workspaceName=body.workspaceName?.trim();if(!workspaceName)throw new BadRequestException('workspace_name_required');
+    if(workspaceName.length>MAX_WORKSPACE_NAME_LENGTH)throw new BadRequestException('workspace_name_too_long');
     const slug=workspaceSlug(workspaceName);
     const r=await this.db.query<{id:string;email:string;tenantId:string;role:string}>(`WITH i AS (
       INSERT INTO identities(email,password_hash) VALUES($1,$2) RETURNING id,email
@@ -40,8 +46,8 @@ export class AuthController {
   }catch(e:any){if(e instanceof BadRequestException)throw e;if(e?.code==='23505')throw new UnauthorizedException('email_in_use');throw e;}
  }
  @Post('signin') async signin(@Body() body:{email?:string;password?:string}){
-  if(!body.email||!body.password)throw new UnauthorizedException();
-  const email=body.email.trim().toLowerCase();
+  if(!body.email||!body.password||body.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(body.email))throw new UnauthorizedException();
+  const email=normalizedEmail(body.email);
   const r=await this.db.query<{id:string;email:string;password_hash:string}>('SELECT id,email,password_hash FROM identities WHERE email=$1 AND deactivated_at IS NULL',[email]);
   const identity=r.rows[0];
   if(!identity){verifyPassword(body.password,DUMMY_PASSWORD_HASH);throw new UnauthorizedException();}
