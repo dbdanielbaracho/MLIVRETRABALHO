@@ -97,8 +97,8 @@ async function main(){
             AND NOT EXISTS (SELECT 1 FROM conversation_messages m WHERE m.conversation_id=c.id)
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=p.identity_id)`,[CHAT_DAYS]);
-        await pool.query('COMMIT');
         await pool.query("UPDATE privacy_retention_runs SET status='completed',completed_at=now() WHERE id=$1",[runId]);
+        await pool.query('COMMIT');
       }catch(error){
         await pool.query('ROLLBACK');
         await pool.query("UPDATE privacy_retention_runs SET status='failed',error_code=$2,completed_at=now() WHERE id=$1",[runId,errorCode(error)]).catch(()=>undefined);
