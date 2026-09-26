@@ -90,6 +90,7 @@ jobs:
           createdb -h localhost -U postgres mlivretrabalho_retention
           DATABASE_URL="$RETENTION_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
           DATABASE_URL="$RETENTION_TEST_URL" bash scripts/privacy-retention-e2e.sh
+          DATABASE_URL="$RETENTION_TEST_URL" bash scripts/privacy-legal-holds-e2e.sh
 
       - name: HTTP journey, readiness and Production Truth contract
         env:
