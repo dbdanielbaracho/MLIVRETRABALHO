@@ -2,6 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+MAINTENANCE_DB="${PRIVACY_MAINTENANCE_DATABASE_URL:-}"
 STAMP="$(date +%s)-$RANDOM"
 EMAIL="privacy-${STAMP}@example.test"
 PASSWORD="PrivacyPass123!"
@@ -39,14 +40,21 @@ CORRECTION_REQUEST_ID="$(printf '%s' "$CORRECTION" | json_field requestId)"
 PORTABILITY="$(request POST /v1/privacy/requests "$TOKEN" '{"requestType":"portability"}')"
 PORTABILITY_REQUEST_ID="$(printf '%s' "$PORTABILITY" | json_field requestId)"
 
-if node apps/api/dist/privacy-requests-ops.js list >/tmp/privacy-ops-no-maintenance.log 2>&1; then
+# Maintenance lifecycle must fail closed without an explicit privileged connection.
+if env -u PRIVACY_MAINTENANCE_DATABASE_URL node apps/api/dist/privacy-requests-ops.js list >/tmp/privacy-ops-no-maintenance.log 2>&1; then
   echo "FAIL: privacy ops accepted missing maintenance database" >&2
   exit 1
 fi
 grep -q 'PRIVACY_MAINTENANCE_DATABASE_URL_required' /tmp/privacy-ops-no-maintenance.log
+
+if [[ -z "$MAINTENANCE_DB" ]]; then
+  echo "FAIL: test harness requires PRIVACY_MAINTENANCE_DATABASE_URL for lifecycle proof" >&2
+  exit 1
+fi
+
 EVIDENCE_REF="test:privacy-correction-$STAMP"
-PRIVACY_MAINTENANCE_DATABASE_URL="$DATABASE_URL" node apps/api/dist/privacy-requests-ops.js start "$CORRECTION_REQUEST_ID" "$EVIDENCE_REF" >/tmp/privacy-ops-start.json
-PRIVACY_MAINTENANCE_DATABASE_URL="$DATABASE_URL" node apps/api/dist/privacy-requests-ops.js complete "$CORRECTION_REQUEST_ID" "correction_processed" "$EVIDENCE_REF" "Processed by E2E maintenance operator" >/tmp/privacy-ops-complete.json
+PRIVACY_MAINTENANCE_DATABASE_URL="$MAINTENANCE_DB" node apps/api/dist/privacy-requests-ops.js start "$CORRECTION_REQUEST_ID" "$EVIDENCE_REF" >/tmp/privacy-ops-start.json
+PRIVACY_MAINTENANCE_DATABASE_URL="$MAINTENANCE_DB" node apps/api/dist/privacy-requests-ops.js complete "$CORRECTION_REQUEST_ID" "correction_processed" "$EVIDENCE_REF" "Processed by E2E maintenance operator" >/tmp/privacy-ops-complete.json
 node -e '
 const fs=require("fs"); const x=JSON.parse(fs.readFileSync("/tmp/privacy-ops-complete.json","utf8"));
 if(x.status!=="completed"||x.resolutionCode!=="correction_processed"||x.evidenceRef!==process.argv[1])throw new Error("operator evidence lifecycle missing");
