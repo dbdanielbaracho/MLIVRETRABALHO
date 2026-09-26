@@ -1,5 +1,7 @@
 BEGIN;
-CREATE UNIQUE INDEX IF NOT EXISTS privacy_retention_single_running_uq
-  ON privacy_retention_runs ((1))
-  WHERE status='running';
+-- Concurrency is enforced with a PostgreSQL advisory lock held by the
+-- maintenance connection for the entire destructive run. A unique partial
+-- index on status='running' can deadlock future maintenance after a process
+-- crash leaves an audit row unfinished, so explicitly remove that strategy.
+DROP INDEX IF EXISTS privacy_retention_single_running_uq;
 COMMIT;
