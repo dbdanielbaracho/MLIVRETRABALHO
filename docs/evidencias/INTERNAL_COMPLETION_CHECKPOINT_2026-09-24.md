@@ -1,187 +1,147 @@
 # MLIVRETRABALHO — Internal Completion Checkpoint
 
-**Data:** 2026-09-25  
+**Atualizado:** 2026-09-26  
 **Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.13.md`  
 **Regra:** este checkpoint não declara Production-DONE nem Pilot-DONE.
 
 ## Objetivo
 Registrar o limite real alcançado pelo trabalho executável internamente e impedir regressão de status por perda de contexto.
 
-## Concluído internamente
+## Baseline já concluída/mesclada historicamente
+- monorepo/API/Postgres e Railway baseline;
+- multi-tenancy/RLS/runtime role;
+- jornadas profissional/empresa;
+- matching, ratings/reputation, teams/planner/replacement/chat/analytics;
+- Safety/Trust baseline, causality, appeals e audit trail;
+- finance security baseline: signed webhook, anti-replay, idempotência, recipient integrity e duplicate-payout stop-the-line;
+- Copilot provider-neutral e critical deny-by-default;
+- Android pilot distribution baseline;
+- provider reference boundaries FIN/TRUST;
+- legal best-practices baseline v1.12; #221 CLOSED internamente;
+- Documento da Verdade v1.13 + retention/DSAR/privacy notice/runbook.
 
-| Área | Estado interno | Evidência principal |
-|---|---|---|
-| Monorepo/API/Postgres | implementado e Railway deployado | Railway + Requirements Ledger |
-| Multi-tenancy/RLS/runtime role | baseline implementado | ADR-MT-001 + suites históricas |
-| Jornada profissional | implementada em código/mobile + HTTP E2E histórico | PRs #179–#200 |
-| Jornada empresa | jobs/candidatos/confirmação/teams/planner/replacement/analytics/chat | PRs #184–#212 |
-| Matching | sinais reais + ranking explicável | PR #212 |
-| Ratings/Reputation | bidirecional + reputação de empresa | PR #207–#210 |
-| Safety/Trust | reporting, causality, appeals e audit trail | PRs #209/#213/#217/#225/#226 |
-| Trust enforcement baseline | case-first, human-review, appeal/contraditório | ADR-TRUST-001 + evidências Trust |
-| Real-KYC/KYB provider boundary | provider não é autoridade sobre IDs internos/enforcement | PR #232 |
-| LGPD retention/DSAR/privacy baseline | política v1.13 + runbook + notice | evidências v1.13 |
-| Privacy/ownership runtime implementation | consolidado no PR de integração, ainda não provado/mesclado | PR #245 |
-| Finance security baseline | HMAC, anti-replay, idempotência, recipient integrity | PR #216/#218/#222 |
-| Finance pilot scope | split por PSP; guarantee/advance/credit fora do piloto | Documento da Verdade v1.13 |
-| Real-PSP trust boundary | provider não é autoridade sobre IDs internos | PR #231 |
-| PSP technical fit / adapter contract / unit economics | preparação concluída sem taxas inventadas | evidências FIN/PSP |
-| Provider outreach preparation | templates + canais concretos atuais | `PROVIDER_OUTREACH_PACKET_2026-09-24.md` |
-| Requirements traceability | ledger base + deltas v1.11/v1.12/v1.13 | `docs/requirements/` |
-| Copilot | provider-neutral, mobile-first, critical actions deny-by-default | PR #223 |
-| Android pilot distribution | package piloto, build script, metadata, rollback | PR #227 |
-| Alternate free APK route | EAS Free profile preparado, sem segredo/projectId falso | PR #245 + `EAS_FREE_PILOT_BUILD_ROUTE_2026-09-25.md` |
-| Pilot device execution prep | roteiro/evidence contract | `PILOT_DEVICE_E2E_EXECUTION_PACKET_2026-09-24.md` |
-| Independent pentest prep | escopo/evidence/stop-the-line | `INDEPENDENT_PENTEST_SCOPE_2026-09-24.md` |
-| Web functional architecture | contrato funcional + API/role mapping | `WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md` |
-| Legal best-practices baseline | revisão interna adotada; #221 CLOSED | `LEGAL_BEST_PRACTICES_REVIEW_v1.12.md` |
-| CI root-cause diagnosis | cross-OS hosted-runner failure isolated before steps | `GITHUB_ACTIONS_RUNNER_SUPPORT_PACKET_2026-09-25.md` |
-| Blocker governance | root-cause/unblock matrix formalizada | `BLOCKER_ROOT_CAUSE_MATRIX_2026-09-25.md` |
-| Production deploy v1.81 | Railway SUCCESS | `PRODUCTION_DEPLOY_2026-09-24_v1.81.md` |
-| Conversa/memória | continuidade persistida | Registro Integral Partes 1–6 |
+## PR #245 — integração final-state ainda NÃO mesclada
 
-## PR de integração #245 — Definition of Done ainda NÃO atingida
+**#245 — `feat(integration): privacy runtime, owner handoff and EAS pilot route`** é a única porta code/schema para o conjunto anteriormente empilhado em #233–#243.
 
-A antiga série empilhada #233–#243 foi consolidada no PR final-state:
+### Migrations preparadas no PR
+`0034` até `0045`, incluindo:
+- 0034 professional profile identity binding;
+- 0035 identity deactivation;
+- 0036 privacy legal holds;
+- 0037 privacy requests;
+- 0038 portability;
+- 0039 company member invitations;
+- 0040 DSAR details/evidence/operator notes;
+- 0041 DSAR `handled_by`;
+- 0042 legal-hold create/release accountability;
+- 0043 legal-hold review accountability;
+- 0044 `REVOKE DELETE` de `earnings_ledger` para `app_runtime`;
+- 0045 audit de execuções destrutivas de retention.
 
-**#245 — `feat(integration): privacy runtime, owner handoff and EAS pilot route`**, base `main`.
-
-Ele integra:
-- binding `professional_profiles.identity_id` + grants/teste DB;
-- DSAR/export tenant-safe/redacted;
+### Privacy/DSAR
+Preparado no #245:
+- export tenant-safe/redacted;
+- `request_id` persistente;
+- detalhes acionáveis para correction/restriction/objection/automated-decision review;
+- maintenance CLI `privacy-requests-ops.ts`;
+- mutações exigem `PRIVACY_MAINTENANCE_DATABASE_URL` + `PRIVACY_OPERATOR_ID`;
+- evidence/operator metadata permanecem internos;
+- mobile `Privacidade e dados` para profissional/empresa;
+- portabilidade/transparência;
 - account deactivation fail-closed + session revocation;
-- legal hold, profile anonymization, precise-geo expiry e chat retention;
-- persistent `privacy_requests`/request IDs;
-- mobile `Privacidade e dados`, portabilidade e transparência;
-- export ampliado/redacted do titular;
-- sole-owner guard;
-- convites de gestão + owner handoff;
-- EAS Free pilot APK profile;
-- CI/E2Es correspondentes.
+- sole-owner guard + advisory locks contra corrida de dois owners;
+- owner handoff por convite seguro.
 
-### Auditoria estática adicional do estado final
-Enquanto o runner permanece indisponível, o PR #245 foi revisado estaticamente e endurecido:
-- minificação acidental de `empresa-inicio.tsx` removida; delta funcional preservado apenas para `Membros` e `Privacidade e dados`;
-- chat retention agora preserva conversa quando o **profissional designado** possui identity legal hold mesmo sem ter enviado mensagem;
-- E2E de retention cobre esse caso;
-- invite acceptance não pode rebaixar owner nem sobrescrever silenciosamente papel existente; somente mesmo papel ou promoção `admin/manager → owner` é aceita;
-- E2E de company members prova que sole owner não consegue se auto-rebaixar via convite;
-- retention `--apply` exige `PRIVACY_MAINTENANCE_DATABASE_URL`; `DATABASE_URL` sozinho é rejeitado para operação destrutiva;
-- E2E de retention prova esse fail-closed.
+Evidência: `DSAR_RUNTIME_OPERATIONS_PR245_2026-09-25.md`.
 
-**Importante:** auditoria estática não é PASS de CI. #245 continua não mesclado.
+### Retention/legal hold
+Preparado no #245:
+- precise geo expiry = 30 dias;
+- profile anonymization pós-conta = 30 dias;
+- assignment chat = 730 dias;
+- legal hold bloqueia purge conforme scope;
+- legal hold CLI `list/create/review/release`;
+- create exige reason/evidence/future review date;
+- review registra reviewed_at/by/note + next review;
+- release registra released_at/by/reason;
+- mutations exigem maintenance DB + operator;
+- retention `--apply` exige maintenance DB + operator;
+- cada apply gera `privacy_retention_runs` com operator/status/candidate counts/timestamps;
+- purge usa `PoolClient` dedicado para garantir transação real;
+- status `completed` é gravado na mesma transação das mutações antes do COMMIT;
+- em erro, rollback + best-effort `failed/error_code`.
 
-Quando um ambiente real executar #245 green:
-1. revisar diff final vs `main`;
-2. merge #245;
-3. fechar #233–#243 como `superseded/integrated`, sem merges redundantes;
-4. deploy + smoke + Production Truth.
+Evidência: `LEGAL_HOLD_OPERATIONS_PR245_2026-09-26.md` + baseline v1.13.
 
-## #214 Production Truth / CI — CAUSA RAIZ ISOLADA ATÉ SETTINGS PRIVADOS
+### Finance integrity adicional
+- `earnings_ledger` não pode mais ser deletado por `app_runtime` (migration 0044);
+- teste dedicado prepara prova de que DELETE runtime falha e o fato permanece;
+- trust_events/payment_events/safety_cases já possuíam proteções equivalentes nas migrations históricas.
 
-Sintoma histórico: jobs encerram em segundos com `runner_id=0`, runner vazio e `steps=[]/null`.
+### KYC/KYB storage audit
+`verification_cases` armazena status/provider/provider_reference/reason_code/timestamps, sem campos default de documento ou biometria brutos. Isso permanece coerente com TRUST-KYC-DATA-001.
 
-Diagnóstico mínimo PR #244 removeu aplicação, pnpm, PostgreSQL e checkout. Falha foi reproduzida antes do primeiro step em:
-- `ubuntu-22.04`;
-- `ubuntu-24.04`;
-- `ubuntu-slim`;
-- `windows-latest`.
+### EAS pilot route
+`apps/mobile/eas.json` prepara APK interno via EAS sem token, senha, keystore ou projectId inventado. Não autorizar upgrade pago automaticamente.
 
-Run cross-OS: `36154183174`.
+## #214 — CI / Production Truth
+Root cause isolada até settings privados do GitHub:
+- workflows mínimos falham antes do primeiro step;
+- reproduzido em ubuntu-22.04, ubuntu-24.04, ubuntu-slim e windows-latest;
+- `runner_id=0`, runner vazio, `steps=null`;
+- application code/pnpm/Postgres/checkout não chegam a executar.
 
-Conclusão: o defeito está na camada de entitlement/provisionamento/configuração de GitHub-hosted runners, antes do workflow. PR #244 foi fechado sem merge após diagnóstico.
+Support packet: `GITHUB_ACTIONS_RUNNER_SUPPORT_PACKET_2026-09-25.md`.
 
-Evidência/suporte: `GITHUB_ACTIONS_RUNNER_SUPPORT_PACKET_2026-09-25.md`.
+Último head conhecido do #245 antes desta atualização documental: `57061590add1a267db0022c7c6f5807f5b06c26c`, run `36249069223`, job `108423573951`, `steps=null`. Novos commits de hardening posteriores também continuam sujeitos ao mesmo gate até revalidação.
 
-Ações restantes que o conector não consegue executar por serem settings privados:
+Ações externas remanescentes para #214:
 - Repo Settings → Actions → General;
 - Repo Settings → Actions → Runners;
-- Account Settings → Billing and licensing / Budgets;
-- se normais, GitHub Support com o pacote já preparado.
+- Account Settings → Billing/Budgets;
+- se normais, GitHub Support com support packet.
 
-Latest final-state #245 CI observado ainda falha antes dos steps: run `36160617457`, job `108155974501`, `steps=null`.
+Não mesclar #245 até CI/equivalente reproduzível executar typecheck/build/migrations/E2Es green.
 
-Railway continua SUCCESS e pending work zero. Probe HTTP atual continua inacessível a partir da ferramenta atual, sem ser interpretado como falha da API.
+## #215 / #228 — FIN-RISK + provider
+Internamente pronto: provider boundaries, technical-fit matrix, adapter contract, unit economics model, pricing público indicativo, questionnaires, response template e canais de outreach.
 
-## #215 / #228 FIN-RISK + Provider — LIMITE INTERNO ATINGIDO
+Externamente faltam: provider eligibility/contract/pricing real, PF/PJ/KYC/KYB/PLD, liabilities, sandbox/homologação e comportamento do produto contratado. Nenhum provider foi selecionado sem evidência.
 
-Concluído internamente: arquitetura split-by-PSP, provider boundaries, adapter contract, unit economics model, pricing público indicativo, questionnaires, response template e canais atuais.
-
-Canais revalidados incluem:
-- Asaas: `contato@asaas.com.br`, `0800 009 0037`;
-- Pagar.me: `comercial@pagar.me`;
-- Serpro/Datavalid: `comercial@serpro.gov.br`;
-- Mercado Pago: contato comercial/formulário obrigatório para produto marketplace/facilitator relevante.
-
-Restam fatos que pertencem ao provider: elegibilidade, contrato, pricing real, PF/PJ/KYC/KYB/PLD, liabilities, sandbox, homologação e comportamento exato do produto contratado.
-
-AgentMail foi disponibilizado como opção de caixa dedicada para outreach; conexão/autorização depende do usuário. Gmail também permanece não conectado. Nenhum e-mail foi falsamente marcado como enviado.
-
-## #219 TRUST-ARCH — PREPARAÇÃO INTERNA CONSOLIDADA / PROVAS EXTERNAS PENDENTES
-
-Baseline + runtime privacy/ownership estão consolidados no PR #245. Restam:
-- CI/equivalente green + merge #245;
-- provider real somente se PSP-native onboarding deixar gap;
-- callback/binding provider-specific em sandbox;
+## #219 — TRUST-ARCH
+Internamente consolidado no PR #245: privacy/DSAR/retention/legal-hold/owner controls. Externamente ainda faltam:
+- CI/equivalente green + merge/deploy;
+- provider-specific callback/binding quando houver provider real;
 - processor propagation quando aplicável;
 - pentest independente.
 
-## #220 Device/Pilot/Pentest — APK BLOCKER REDUZIDO
-
-Além do build script/GitHub workflow histórico, PR #245 prepara Expo EAS Free:
-- `apps/mobile/eas.json`;
-- `pilot` = internal distribution + APK;
-- URL pública da API somente;
-- nenhum token, keystore ou Expo projectId inventado.
-
-A documentação oficial atual do Expo informa plano Free de $0 com até 15 builds Android e 15 iOS por ciclo e suporte a APK internal. Política do projeto: não fazer upgrade pago automaticamente.
-
-Restam:
-- autenticar/vincular conta/projeto Expo real e executar build, ou restaurar GitHub runner;
+## #220 — Device/Pilot/Pentest
+Internamente: build script histórico + EAS Free route + device execution packet + pentest scope. Externamente:
+- autenticar/vincular conta Expo real ou restaurar runner;
+- gerar APK real;
 - aparelho Android físico e matrix E2E;
-- push credentials quando necessárias;
-- signing de release além do piloto fechado;
+- release signing/push credentials quando aplicável;
 - pentest/retest independente.
 
-## #224 WEB-ARCH — ROOT CAUSE PROVADA
+## #224 — WEB-ARCH
+Root cause provada:
+- lockfile sem importer `apps/web` e sem Next.js;
+- ambiente atual sem package resolution GitHub/npm;
+- GitHub Actions sem runner.
+Não fabricar lockfile. Retomar quando existir package environment reproduzível.
 
-Lockfile auditado:
-- sem importer `apps/web`;
-- sem pacote Next.js;
-- `react-dom` apenas transitivo do Expo Router.
-
-Ambiente atual:
-- não resolve `github.com`;
-- não resolve `registry.npmjs.org`;
-- sem checkout/cache pnpm local.
-
-GitHub Actions também não provisiona runner (#214). Logo não existe atualmente um ambiente reproduzível capaz de resolver a nova dependency graph. Não fabricar lockfile. Retomar quando #214 voltar ou outro ambiente autorizado com npm/GitHub for conectado.
-
-## #221 LEGAL-ARCH — CLOSED INTERNAMENTE
-Parecer externo removido como gate geral. Revisão interna contínua por fontes primárias e melhores práticas; reabrir pelos gatilhos v1.12.
-
-## Matriz causal de bloqueios
-Fonte vigente: `docs/evidencias/BLOCKER_ROOT_CAUSE_MATRIX_2026-09-25.md`.
-
-Prioridade de desbloqueio:
-1. hosted runner/settings GitHub #214;
-2. canal outbound para providers #228;
-3. conta/projeto Expo Free para APK #220;
-4. device físico;
-5. pentest independente após build estável;
-6. Web assim que existir package environment reproduzível.
-
-## Regra de continuação
-1. recuperar v1.13 + este checkpoint + Registro Integral Parte 6;
-2. para todo blocker: diagnosticar causa → tentar correção → revalidar → documentar;
-3. só chamar de externo quando ações internas estiverem esgotadas;
-4. continuar por outros blocos independentes;
-5. não fabricar teste/evidência;
+## Regras permanentes de continuação
+1. recuperar Documento v1.13 + este checkpoint + Registro Integral Parte 7;
+2. para qualquer blocker: sintoma → causa raiz → tentativa segura → revalidação → evidência;
+3. só classificar externo após esgotar ações internas razoáveis;
+4. continuar outros blocos independentes;
+5. não fabricar teste/evidência/provider/device/pentest;
 6. não usar TinyFish salvo instrução explícita;
 7. manter toda conversa no Registro Integral;
-8. não mesclar PR code/schema sem execução real de testes;
+8. não mesclar code/schema sem execução real green;
 9. não assumir custo/plano pago sem autorização explícita;
-10. usar #245 como PR de integração final-state; não voltar a planejar merges sequenciais #233–#243.
+10. #245 é a única integração final-state; #233–#243 serão fechados como superseded após #245 green/merged.
 
 ## Conclusão
-O trabalho interno foi levado além da preparação documental: root causes foram isoladas, a stack privacy/ownership foi consolidada e endurecida no PR #245, a rota gratuita EAS foi preparada e os canais provider foram concretizados. Os gates remanescentes dependem de settings/serviços/credenciais/hardware/independência externa identificados explicitamente; não há evidência de um bloco interno esquecido fora da matriz atual.
+O trabalho interno foi levado até hardenings adicionais de DSAR, legal hold, finance ledger integrity e retention-run accountability. O PR #245 continua PREPARADO, NÃO PROVADO e NÃO MESCLADO. Os blockers restantes estão explicitamente mapeados por causa e dependência externa; Production-DONE e Pilot-DONE permanecem abertos.
