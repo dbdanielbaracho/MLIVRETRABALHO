@@ -20,6 +20,12 @@ async function main(){
         FROM privacy_legal_holds WHERE released_at IS NULL ORDER BY COALESCE(review_at,'infinity'::timestamptz),created_at LIMIT 200`)).rows;
       process.stdout.write(JSON.stringify(rows,null,2)+'\n');return;
     }
+    if(command==='history'){
+      const holdId=uuid(args[0],'hold_id');
+      const rows=(await pool.query(`SELECT id,legal_hold_id AS "legalHoldId",reviewed_by AS "reviewedBy",review_note AS "reviewNote",previous_review_at AS "previousReviewAt",next_review_at AS "nextReviewAt",created_at AS "createdAt"
+        FROM privacy_legal_hold_reviews WHERE legal_hold_id=$1 ORDER BY created_at,id`,[holdId])).rows;
+      process.stdout.write(JSON.stringify(rows,null,2)+'\n');return;
+    }
     const handledBy=bounded(operatorId,'PRIVACY_OPERATOR_ID',200);
     if(command==='create'){
       const [scopeTypeRaw,scopeIdRaw,reasonRaw,evidenceRefRaw,reviewAtRaw]=args;
@@ -52,11 +58,19 @@ async function main(){
       const holdId=uuid(args[0],'hold_id');
       const reviewNote=bounded(args[1],'review_note',2000);
       const nextReviewAt=futureDate(args[2],'next_review_at');
-      const row=(await pool.query(`UPDATE privacy_legal_holds SET reviewed_at=now(),reviewed_by=$2,review_note=$3,review_at=$4
-        WHERE id=$1 AND released_at IS NULL
-        RETURNING id,reviewed_at AS "reviewedAt",reviewed_by AS "reviewedBy",review_note AS "reviewNote",review_at AS "reviewAt"`,[holdId,handledBy,reviewNote,nextReviewAt])).rows[0];
-      if(!row)throw new Error('legal_hold_not_reviewable');
-      process.stdout.write(JSON.stringify(row)+'\n');return;
+      const client=await pool.connect();
+      try{
+        await client.query('BEGIN');
+        const hold=(await client.query<{reviewAt:string|null}>(`SELECT review_at AS "reviewAt" FROM privacy_legal_holds WHERE id=$1 AND released_at IS NULL FOR UPDATE`,[holdId])).rows[0];
+        if(!hold)throw new Error('legal_hold_not_reviewable');
+        const history=(await client.query<{id:string}>(`INSERT INTO privacy_legal_hold_reviews(legal_hold_id,reviewed_by,review_note,previous_review_at,next_review_at)
+          VALUES($1,$2,$3,$4,$5) RETURNING id`,[holdId,handledBy,reviewNote,hold.reviewAt,nextReviewAt])).rows[0];
+        const row=(await client.query(`UPDATE privacy_legal_holds SET reviewed_at=now(),reviewed_by=$2,review_note=$3,review_at=$4
+          WHERE id=$1
+          RETURNING id,reviewed_at AS "reviewedAt",reviewed_by AS "reviewedBy",review_note AS "reviewNote",review_at AS "reviewAt"`,[holdId,handledBy,reviewNote,nextReviewAt])).rows[0];
+        await client.query('COMMIT');
+        process.stdout.write(JSON.stringify({...row,reviewHistoryId:history.id})+'\n');return;
+      }catch(error){await client.query('ROLLBACK').catch(()=>undefined);throw error;}finally{client.release();}
     }
     if(command==='release'){
       const holdId=uuid(args[0],'hold_id');
@@ -67,7 +81,7 @@ async function main(){
       if(!row)throw new Error('legal_hold_not_releasable');
       process.stdout.write(JSON.stringify(row)+'\n');return;
     }
-    throw new Error('usage: privacy-legal-holds-ops <list|create|review|release> ...');
+    throw new Error('usage: privacy-legal-holds-ops <list|history|create|review|release> ...');
   }finally{await pool.end();}
 }
 
