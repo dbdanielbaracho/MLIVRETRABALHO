@@ -111,3 +111,31 @@ ConTinuar
 - #246 está CLOSED, não mesclado e não deve ser usado.
 - DSAR lifecycle está mais coerente e o E2E agora usa o banco correto.
 - Production Truth permanece OPEN; não reinterpretar `steps=null` como PASS.
+
+## Assistente — accountability estruturada do operador DSAR
+- O runbook v1.13 exige registrar o `operador/capability responsável` quando houver intervenção humana.
+- Gap encontrado: `evidence_ref` e `operator_note` existiam, mas não havia um campo estruturado que identificasse quem executou a triagem/mutação.
+- Criada migration `0041_privacy_request_operator.sql` no PR #245:
+  - adiciona `handled_by`;
+  - limita a 1–200 caracteres;
+  - mantém `privacy_requests` revogada para `app_runtime`.
+- `privacy-requests-ops.ts` agora exige `PRIVACY_OPERATOR_ID` para `start`, `complete`, `partial` e `reject`.
+- `handled_by` é atualizado junto da transição operacional e permanece metadado interno, não retornado ao titular.
+- `list` continua possível com a conexão de manutenção sem exigir operador, pois é inspeção/triagem não mutante.
+
+## Assistente — E2E de accountability
+- `http-privacy-export-e2e.sh` foi reforçado novamente:
+  - prova falha sem `PRIVACY_MAINTENANCE_DATABASE_URL`;
+  - prova falha de mutação com maintenance DB mas sem `PRIVACY_OPERATOR_ID`;
+  - executa `start → complete` com operador explícito;
+  - valida `handledBy` na saída interna da ferramenta;
+  - valida que `handledBy`, `evidenceRef` e `operatorNote` não aparecem na API/export do titular.
+- Head final deste ciclo: `422a81330acb78f0cf4cedc67d69b67d5a52f873`.
+- CI run `36247166132`, foundation job `108418386089`, novamente `steps=null`.
+- Issue #214 recebeu comentário com o head/run e o novo hardening; o blocker de runner permanece externo e não é confundido com falha funcional.
+
+## Estado ativo ao fim deste ciclo
+- PR #245: OPEN, `mergeable=true`, NÃO MESCLADO.
+- Migrations preparadas no PR: 0034–0041.
+- DSAR runtime agora possui contexto acionável, lifecycle operacional, evidência e operador auditável, todos protegidos por conexão privilegiada explícita.
+- CI real ainda não executou nenhum step devido ao #214; não declarar PASS/Production-DONE.
