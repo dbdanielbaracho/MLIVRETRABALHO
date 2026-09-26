@@ -82,6 +82,17 @@ jobs:
           APPLIED="$(psql "$MIGRATION_TEST_URL" -tAc 'SELECT count(*) FROM schema_migrations' | tr -d ' ')"
           test "$APPLIED" = "$EXPECTED"
 
+      - name: Privacy retention and legal hold contract
+        env:
+          PGPASSWORD: postgres
+          RETENTION_TEST_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_retention
+        run: |
+          createdb -h localhost -U postgres mlivretrabalho_retention
+          DATABASE_URL="$RETENTION_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
+          DATABASE_URL="$RETENTION_TEST_URL" PRIVACY_OPERATOR_ID="ci:privacy-retention" bash scripts/privacy-retention-e2e.sh
+          DATABASE_URL="$RETENTION_TEST_URL" EXPECTED_OPERATOR="ci:privacy-retention" bash scripts/privacy-retention-audit-e2e.sh
+          DATABASE_URL="$RETENTION_TEST_URL" bash scripts/privacy-legal-holds-e2e.sh
+
       - name: HTTP journey, readiness and Production Truth contract
         env:
           PGPASSWORD: postgres
@@ -98,6 +109,7 @@ jobs:
             sleep 0.5
           done
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-company-onboarding-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
+          BASE_URL=http://127.0.0.1:3000 bash scripts/http-company-members-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 DATABASE_URL="$HTTP_TEST_URL" bash scripts/http-journey-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-recommendations-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-notifications-multi-company-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
@@ -110,5 +122,7 @@ jobs:
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-ratings-reputation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-finance-reconciliation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-copilot-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
+          BASE_URL=http://127.0.0.1:3000 PRIVACY_MAINTENANCE_DATABASE_URL="$HTTP_TEST_URL" bash scripts/http-privacy-export-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
+          BASE_URL=http://127.0.0.1:3000 bash scripts/http-account-deactivation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/smoke-api.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 EXPECTED_VERSION=0.1.0 bash scripts/production-truth-gate.sh || { cat /tmp/mlivre-api.log; exit 1; }

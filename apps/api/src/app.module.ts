@@ -30,6 +30,8 @@ import { SafetyAppealsAdminController, SafetyAppealsController } from './safety-
 import { CompanyJobCreateController } from './company-job-create.controller';
 import { VerificationController } from './verification.controller';
 import { CopilotController } from './copilot.controller';
+import { PrivacyController } from './privacy.controller';
+import { CompanyMembersController } from './company-members.controller';
 
 @Module({
   controllers: [
@@ -46,6 +48,7 @@ import { CopilotController } from './copilot.controller';
     CompanyJobCreateController,
     CompanyDashboardController,
     CompanyAnalyticsController,
+    CompanyMembersController,
     PlannerController,
     AvailabilityController,
     ReplacementController,
@@ -62,7 +65,8 @@ import { CopilotController } from './copilot.controller';
     SafetyAppealsController,
     SafetyAppealsAdminController,
     VerificationController,
-    CopilotController
+    CopilotController,
+    PrivacyController
   ],
   providers: [DatabaseService, AuthService]
 })
