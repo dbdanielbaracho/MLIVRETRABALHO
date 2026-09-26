@@ -10,3 +10,4 @@ test "$COMPLETED" = "1"
 for VALUE in "$EXPIRED" "$GEO" "$PROFILE" "$CHAT"; do [[ "$VALUE" =~ ^[0-9]+$ ]]; done
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q -c "DELETE FROM privacy_retention_runs WHERE operator_id='$EXPECTED_OPERATOR'"
 echo 'PASS: destructive retention execution is operator-audited and completed'
+DATABASE_URL="$DB_URL" bash scripts/privacy-retention-concurrency-e2e.sh
