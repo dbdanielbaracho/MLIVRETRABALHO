@@ -44,6 +44,7 @@ export class CompanyMembersController{
     const inviteCode=`${c.tenantId}.${secret}`;
     const tokenHash=createHash('sha256').update(inviteCode).digest('hex');
     return this.db.tenant(c.tenantId,async db=>{
+      await db.query(`SELECT pg_advisory_xact_lock(hashtextextended($1::text || ':' || lower($2::text),0))`,[c.tenantId,email]);
       await db.query(`UPDATE company_member_invitations SET revoked_at=now()
         WHERE tenant_id=$1 AND lower(email)=lower($2) AND accepted_at IS NULL AND revoked_at IS NULL`,[c.tenantId,email]);
       const row=(await db.query<{id:string;expiresAt:string}>(`INSERT INTO company_member_invitations(tenant_id,email,role,token_hash,invited_by_identity_id,expires_at)
