@@ -54,10 +54,11 @@ async function main(){
     if(APPLY){
       runId=(await pool.query<{id:string}>(`INSERT INTO privacy_retention_runs(operator_id,status,expired_sessions,geo_candidates,profile_candidates,chat_candidates)
         VALUES($1,'running',$2,$3,$4,$5) RETURNING id`,[operatorId,expiredSessions,geoCandidates,profileCandidates,chatCandidates])).rows[0].id;
-      await pool.query('BEGIN');
+      const client=await pool.connect();
       try{
-        await pool.query('DELETE FROM sessions WHERE expires_at<=now()');
-        await pool.query(`UPDATE work_assignments wa
+        await client.query('BEGIN');
+        await client.query('DELETE FROM sessions WHERE expires_at<=now()');
+        await client.query(`UPDATE work_assignments wa
           SET check_in_lat=NULL,check_in_lng=NULL,check_out_lat=NULL,check_out_lng=NULL
           FROM professional_profiles p
           WHERE p.id=wa.professional_id
@@ -66,14 +67,14 @@ async function main(){
             AND (wa.check_in_lat IS NOT NULL OR wa.check_in_lng IS NOT NULL OR wa.check_out_lat IS NOT NULL OR wa.check_out_lng IS NOT NULL)
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=p.identity_id)`,[GEO_DAYS]);
-        await pool.query(`UPDATE professional_profiles p
+        await client.query(`UPDATE professional_profiles p
           SET display_name='Deleted professional',home_city=NULL,primary_role=NULL,updated_at=now()
           FROM identities i
           WHERE i.id=p.identity_id
             AND i.deactivated_at IS NOT NULL
             AND i.deactivated_at < now()-($1::int * interval '1 day')
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=i.id)`,[PROFILE_DAYS]);
-        await pool.query(`DELETE FROM conversation_messages m
+        await client.query(`DELETE FROM conversation_messages m
           USING conversations c, work_assignments wa, professional_profiles p
           WHERE c.id=m.conversation_id
             AND wa.id=c.assignment_id
@@ -88,7 +89,7 @@ async function main(){
               JOIN privacy_legal_holds h ON h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=participant.sender_identity_id
               WHERE participant.conversation_id=c.id
             )`,[CHAT_DAYS]);
-        await pool.query(`DELETE FROM conversations c
+        await client.query(`DELETE FROM conversations c
           USING work_assignments wa, professional_profiles p
           WHERE wa.id=c.assignment_id
             AND p.id=wa.professional_id
@@ -97,12 +98,14 @@ async function main(){
             AND NOT EXISTS (SELECT 1 FROM conversation_messages m WHERE m.conversation_id=c.id)
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='assignment' AND h.scope_id=wa.id)
             AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=p.identity_id)`,[CHAT_DAYS]);
-        await pool.query("UPDATE privacy_retention_runs SET status='completed',completed_at=now() WHERE id=$1",[runId]);
-        await pool.query('COMMIT');
+        await client.query("UPDATE privacy_retention_runs SET status='completed',completed_at=now() WHERE id=$1",[runId]);
+        await client.query('COMMIT');
       }catch(error){
-        await pool.query('ROLLBACK');
+        await client.query('ROLLBACK').catch(()=>undefined);
         await pool.query("UPDATE privacy_retention_runs SET status='failed',error_code=$2,completed_at=now() WHERE id=$1",[runId,errorCode(error)]).catch(()=>undefined);
         throw error;
+      }finally{
+        client.release();
       }
     }
 
