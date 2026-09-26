@@ -71,3 +71,43 @@ continuar
 - PR #245: OPEN, `mergeable=true`, ainda NÃO MESCLADO.
 - CI: blocker externo de runner continua reproduzido.
 - Próxima continuação deve partir desta Parte 7, Documento da Verdade v1.13 e checkpoint, sem retornar à estratégia antiga de merges sequenciais #233–#243.
+
+## Usuário
+ConTinuar
+
+## Assistente — revalidação de mergeability e sincronização
+- PR #245 apareceu temporariamente como `mergeable=false` após o avanço de `main` com documentação.
+- Comparação mostrou branch #245 com 73 commits à frente e 17 atrás de `main`; os arquivos divergentes do sentido `main → branch` eram documentais.
+- Foi aberto PR temporário #246 apenas para avaliar sincronização de `main` para `feat/eas-pilot-build-route`.
+- Antes de qualquer merge, GitHub terminou o recálculo de mergeability e #245 voltou para `mergeable=true`.
+- Portanto #246 foi fechado **sem merge**, evitando histórico redundante e preservando #245 como único PR de integração.
+
+## Assistente — auditoria DSAR operacional
+- Migration `0040_privacy_request_details.sql` revisada: adiciona `request_details`, `evidence_ref`, `operator_note`, limites de tamanho e reforça `REVOKE ALL` de `privacy_requests` para `app_runtime`.
+- `privacy-requests-ops.ts` revisado: usa somente `PRIVACY_MAINTENANCE_DATABASE_URL`, valida UUID e limites, permite `list`, `start`, `complete`, `partial`, `reject`, e não cria endpoint HTTP administrativo global.
+- A ferramenta é fail-closed sem a conexão privilegiada explícita.
+
+## Assistente — bug real encontrado no E2E DSAR
+- `http-privacy-export-e2e.sh` criava o privacy request via API conectada ao banco `HTTP_TEST_URL`.
+- Porém a ferramenta `privacy-requests-ops.ts` era invocada com `PRIVACY_MAINTENANCE_DATABASE_URL="$DATABASE_URL"`, que no job apontava para o banco global `mlivretrabalho`, não para `mlivretrabalho_http`.
+- Se o runner voltasse, o lifecycle poderia falhar procurando o request no banco errado.
+- Correção aplicada:
+  - script captura `PRIVACY_MAINTENANCE_DATABASE_URL` como `MAINTENANCE_DB` e exige valor explícito para a prova operacional;
+  - teste fail-closed usa `env -u PRIVACY_MAINTENANCE_DATABASE_URL` para provar ausência de variável;
+  - comandos `start/complete` usam o `MAINTENANCE_DB` recebido, nunca `DATABASE_URL` implícito;
+  - workflow CI agora chama `http-privacy-export-e2e.sh` com `PRIVACY_MAINTENANCE_DATABASE_URL="$HTTP_TEST_URL"`.
+- Commits da correção no head #245: `f02447014026b7953a88026330e6f3f6fa7e1dcb` e `32c5d657cbb3e95fee5b205a7de7639b09a1ac3b`.
+
+## Assistente — revalidação do head atual
+- PR #245 permanece OPEN e `mergeable=true`.
+- Head atual: `32c5d657cbb3e95fee5b205a7de7639b09a1ac3b`.
+- CI atual: run `36247003597`.
+- Job foundation: `108417948008`.
+- Resultado: `failure` com `steps=null`, sem checkout ou qualquer step executado.
+- Portanto a correção do E2E não introduziu novo sintoma observável; o único bloqueio de execução continua sendo o hosted-runner provisioning de #214.
+
+## Estado após esta continuação
+- #245 é a única integração code/schema ativa e continua não mesclada até execução real green.
+- #246 está CLOSED, não mesclado e não deve ser usado.
+- DSAR lifecycle está mais coerente e o E2E agora usa o banco correto.
+- Production Truth permanece OPEN; não reinterpretar `steps=null` como PASS.
