@@ -8,10 +8,23 @@ EMAIL="signin-limit-${STAMP}@example.test"
 UNKNOWN_EMAIL="signin-limit-unknown-${STAMP}@example.test"
 PASSWORD="SigninLimitPass123!"
 WRONG_PASSWORD="DefinitelyWrongPass123!"
+LONG_PASSWORD="$(node -e 'process.stdout.write("x".repeat(129))')"
+LONG_EMAIL="$(node -e 'process.stdout.write("x".repeat(310)+"@example.test")')"
+LONG_WORKSPACE="$(node -e 'process.stdout.write("W".repeat(121))')"
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 status(){ local email="$1" password="$2" out="$3"; curl -sS -o "$out" -w '%{http_code}' -X POST "${BASE_URL%/}/v1/auth/signin" -H 'content-type: application/json' --data "{\"email\":\"$email\",\"password\":\"$password\"}"; }
+signup_status(){ local body="$1" out="$2"; curl -sS -o "$out" -w '%{http_code}' -X POST "${BASE_URL%/}/v1/auth/signup" -H 'content-type: application/json' --data "$body"; }
 login_token(){ curl -sS --fail-with-body -X POST "${BASE_URL%/}/v1/auth/signin" -H 'content-type: application/json' --data "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken; }
+
+# Input bounds must fail before expensive or persistent work.
+test "$(signup_status "{\"email\":\"bounds-pass-${STAMP}@example.test\",\"password\":\"$LONG_PASSWORD\",\"accountType\":\"professional\"}" /tmp/auth-bounds-password.json)" = "401"
+grep -q 'invalid_signup' /tmp/auth-bounds-password.json
+test "$(signup_status "{\"email\":\"$LONG_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" /tmp/auth-bounds-email.json)" = "401"
+grep -q 'invalid_signup' /tmp/auth-bounds-email.json
+test "$(signup_status "{\"email\":\"bounds-workspace-${STAMP}@example.test\",\"password\":\"$PASSWORD\",\"accountType\":\"company\",\"workspaceName\":\"$LONG_WORKSPACE\"}" /tmp/auth-bounds-workspace.json)" = "400"
+grep -q 'workspace_name_too_long' /tmp/auth-bounds-workspace.json
+test "$(status "$EMAIL" "$LONG_PASSWORD" /tmp/auth-bounds-signin-password.json)" = "401"
 
 curl -sS --fail-with-body -X POST "${BASE_URL%/}/v1/auth/signup" -H 'content-type: application/json' --data "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" >/dev/null
 IDENTITY_ID="$(psql "$DB_URL" -tAc "SELECT id FROM identities WHERE email='$EMAIL'")"
@@ -48,4 +61,4 @@ test "$(psql "$DB_URL" -tAc "SELECT count(*) FROM sessions WHERE identity_id='$I
 
 curl -sS --fail-with-body -X POST "${BASE_URL%/}/v1/auth/signout" -H "authorization: Bearer $LAST_TOKEN" -H 'content-type: application/json' --data '{}' >/dev/null
 
-echo 'PASS: signin brute force is limited, limiter resets on success, unknown emails create no limiter state, and active sessions are capped at 10'
+echo 'PASS: auth inputs are bounded, signin brute force is limited, limiter resets on success, unknown emails create no limiter state, and active sessions are capped at 10'
