@@ -139,3 +139,115 @@ ConTinuar
 - Migrations preparadas no PR: 0034–0041.
 - DSAR runtime agora possui contexto acionável, lifecycle operacional, evidência e operador auditável, todos protegidos por conexão privilegiada explícita.
 - CI real ainda não executou nenhum step devido ao #214; não declarar PASS/Production-DONE.
+
+## Usuário
+Continuar
+
+## Assistente — legal hold operacional controlado
+- Auditoria identificou que o purge respeitava `privacy_legal_holds`, mas o E2E criava holds por SQL direto e não existia ferramenta operacional controlada para criar/revisar/liberar holds.
+- Criada migration `0042_privacy_legal_hold_operations.sql`:
+  - `created_by`;
+  - `released_by`;
+  - `release_reason`;
+  - limites de tamanho;
+  - `REVOKE ALL` para `app_runtime`.
+- Criada CLI `apps/api/src/privacy-legal-holds-ops.ts`, sem endpoint HTTP administrativo público.
+- Operações: `list`, `create`, `review`, `release`.
+- Mutações exigem simultaneamente `PRIVACY_MAINTENANCE_DATABASE_URL` e `PRIVACY_OPERATOR_ID`.
+- Scopes válidos: `identity`, `assignment`, `safety_case`, `financial_record`.
+- Para assignment/Safety/financial, tenant é derivado server-side do objeto; não é aceito tenant arbitrário informado pelo operador.
+- Scope inexistente é rejeitado.
+
+## Assistente — revisão periódica de legal hold
+- O baseline v1.13 exige legal hold explícito, com responsável/capability, evidence_ref, gatilho/data de revisão e término.
+- Criada migration `0043_privacy_legal_hold_review.sql`:
+  - `reviewed_at`;
+  - `reviewed_by`;
+  - `review_note`.
+- `create` agora exige uma `review_at` futura.
+- `review` registra timestamp, operador, nota de revisão e próxima data futura de revisão.
+- `release` registra timestamp, operador e motivo.
+- Criado `scripts/privacy-legal-holds-e2e.sh` dedicado:
+  - falha sem maintenance DB;
+  - falha sem operador;
+  - falha sem data de revisão;
+  - prova criação auditada;
+  - prova revisão auditada;
+  - prova listagem do hold ativo;
+  - prova liberação auditada e fim do hold ativo.
+- CI preparado para executar o legal-hold E2E no banco isolado de retenção.
+- Evidência documental criada em `docs/evidencias/LEGAL_HOLD_OPERATIONS_PR245_2026-09-26.md`.
+
+## Assistente — requirements v1.13 reconciliados
+- `REQUIREMENTS_LEDGER_DELTA_v1.13.md` atualizado para parar de apontar para a antiga série #233–#240 como porta de integração.
+- #245 passa a ser a referência final-state única para runtime privacy/ownership.
+- `TRUST-RET-002` agora aponta para migrations 0036/0042/0043 + evidence doc de legal hold operacional.
+- `TRUST-REQUEST-AUDIT-001` aponta para 0037/0040/0041 + DSAR operations evidence.
+- Estado continua `IMPLEMENTAÇÃO PREPARADA / NÃO PROVADA / NÃO MESCLADA`.
+
+## Assistente — hardening de integridade financeira
+- Auditoria da migration 0007 encontrou `DELETE` concedido ao `app_runtime` em `earnings_ledger`.
+- Isso conflita com o baseline financeiro, no qual o ledger é a fonte canônica de obrigações/reconciliação.
+- Busca não encontrou fluxo legítimo que dependesse de deletar earnings ledger.
+- Confirmado que outras trilhas já estavam endurecidas:
+  - trust_events: migration 0031 revoga UPDATE/DELETE;
+  - payment_events: migration 0020 revoga UPDATE/DELETE;
+  - safety_cases: migration 0021 revoga DELETE.
+- Criada migration `0044_earnings_ledger_no_delete.sql` com `REVOKE DELETE ON earnings_ledger FROM app_runtime`.
+- Criado `packages/db/tests/finance-ledger-no-delete.sh`:
+  - cria fato de earning;
+  - entra em `SET LOCAL ROLE app_runtime` com tenant context;
+  - tenta DELETE e exige falha;
+  - confirma que o registro permanece.
+- Teste conectado ao package DB test chain.
+
+## Assistente — KYC/KYB storage audit
+- `verification_cases` revisada.
+- Schema guarda `provider`, `provider_reference`, `status`, `reason_code` e timestamps.
+- Não existem campos default para documento bruto ou biometria.
+- `app_runtime` possui SELECT/INSERT/UPDATE e DELETE já é revogado.
+- Isso permanece coerente com TRUST-KYC-DATA-001; provider-specific callback/binding continua dependente de provider/sandbox real.
+
+## Assistente — auditoria da execução destrutiva de retenção
+- Gap encontrado: `privacy-retention --apply` já exigia maintenance DB, mas ainda não registrava quem executou o purge nem uma evidência persistente da execução.
+- Criada migration `0045_privacy_retention_runs.sql` com tabela de auditoria contendo:
+  - `operator_id`;
+  - status `running/completed/failed`;
+  - contagens de sessions/geo/profile/chat candidatas;
+  - `error_code` limitado;
+  - started_at/completed_at;
+  - sem acesso para `app_runtime`.
+- `privacy-retention.ts` endurecido:
+  - `--apply` exige `PRIVACY_MAINTENANCE_DATABASE_URL`;
+  - `--apply` exige também `PRIVACY_OPERATOR_ID`;
+  - cria run `running` antes da mutação;
+  - após COMMIT marca `completed`;
+  - após ROLLBACK tenta registrar `failed` + error_code;
+  - output retorna `runId` e operator quando apply.
+- Dry-run continua não destrutivo e não exige operador.
+
+## Assistente — E2E de auditoria do purge
+- Criado `scripts/privacy-retention-audit-e2e.sh` para validar a última execução:
+  - operador esperado;
+  - status `completed`;
+  - completed_at presente;
+  - candidate counts válidos;
+  - cleanup do registro E2E.
+- CI alterado para executar o retention E2E com `PRIVACY_OPERATOR_ID="ci:privacy-retention"` e imediatamente validar o audit run antes do legal-hold E2E.
+- Isso também corrigiu a incompatibilidade criada quando `privacy-retention --apply` passou a exigir operador.
+
+## Assistente — revalidação do PR final-state
+- PR #245 permanece OPEN, `mergeable=true` e NÃO MESCLADO.
+- Head atual: `57061590add1a267db0022c7c6f5807f5b06c26c`.
+- Migrations preparadas no conjunto: 0034–0045.
+- CI run atual `36249069223`.
+- Foundation job `108423573951`.
+- Resultado permanece `failure` antes do primeiro step, `steps=null`.
+- Portanto nenhuma das novas mudanças foi executada pelo runner; auditoria estática/testes preparados não são tratados como PASS.
+- Body do PR #245 foi reconciliado com DSAR, legal hold, finance ledger no-delete e retention-run audit.
+
+## Estado ativo após esta continuação
+- Trabalho interno de privacy/retention/legal-hold/finance integrity foi aprofundado e materializado no PR #245.
+- O único gate de execução do conjunto continua #214: hosted runner não é provisionado.
+- #245 continua sendo a única porta code/schema; não mesclar até CI/equivalente green.
+- Dependências provider/device/pentest/Web continuam nas causas já documentadas e não devem ser substituídas por evidência inventada.
