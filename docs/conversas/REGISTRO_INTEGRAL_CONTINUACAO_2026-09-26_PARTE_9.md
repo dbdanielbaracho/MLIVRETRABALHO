@@ -84,21 +84,36 @@ Continuar e resolver qualquer tipo de bloqueio
   - exige exatamente 10 sessões ativas;
   - prova que o primeiro token foi removido pelo cap.
 
+## Auth — limites de entrada
+- Nova auditoria encontrou ausência de limites superiores em e-mail, senha e nome do workspace.
+- `AuthController` agora aplica:
+  - e-mail normalizado entre 3 e 320 caracteres, contendo `@` e sem whitespace;
+  - senha de signup entre 8 e 128 caracteres;
+  - senha de signin com máximo de 128 caracteres antes de qualquer scrypt;
+  - nome do workspace com máximo de 120 caracteres.
+- Objetivo: bloquear abuso de payload/custo criptográfico sem introduzir rate limiting por IP/proxy não confiável.
+- `http-auth-rate-limit-e2e.sh` ampliado para provar rejeição de password 129 chars, e-mail >320, workspace >120 e signin com password oversized.
+
 ## Validação complementar local
 - Ambiente local possui Node v22.16.0 e TypeScript 5.8.3 globais, mas não possui pnpm/dependency graph do repo.
 - Bash/TypeScript syntax checks complementares foram executados para novos arquivos onde possível.
 - Não tratar validação de sintaxe como build/typecheck/CI PASS.
 
 ## CI head atual
-- Head #245 observado: `e97bbf09d0825127faea73d75e00c98415f1bc11`.
-- Run: `36280261611`.
-- Foundation job: `108510619256`.
+- Head #245 atual: `084121cde6aae490111e2ab458ef64131918a1b6`.
+- Run: `36280437123`.
+- Foundation job: `108511097230`.
 - Resultado: `failure` antes do primeiro step, `steps=null`.
 - Nenhum checkout/install/typecheck/build/migration/E2E executou.
 - Portanto o hosted-runner provisioning continua o blocker de execução; não surgiu evidência de falha funcional dos novos commits.
 
+## Governança atualizada
+- PR #245 body reconciliado para migrations 0034–0050 e novos hardenings.
+- Issue #214 atualizado com CI head/run e evidência de custom-domain routing funcional no Railway.
+- Issue #219 atualizado com invitation integrity, legal-hold immutable review history, auth limiter e session cap.
+
 ## Estado ativo
-- PR #245 permanece OPEN, `mergeable=true`, NÃO MESCLADO.
-- Migrations preparadas no PR agora alcançam `0050`.
+- PR #245 permanece OPEN e NÃO MESCLADO; `mergeable` pode oscilar transitoriamente quando `main` recebe documentação, sem evidência de conflito code/schema.
+- Migrations preparadas no PR alcançam `0050`.
 - Production-DONE/Pilot-DONE continuam abertos.
-- Esta Parte 9 passa a ser o Registro Integral ativo para a próxima continuação.
+- Esta Parte 9 permanece o Registro Integral ativo para a próxima continuação.
