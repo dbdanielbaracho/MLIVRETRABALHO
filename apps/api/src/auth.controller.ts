@@ -10,6 +10,7 @@ const DUMMY_PASSWORD_HASH=encodePassword('mlivretrabalho-invalid-account');
 const SIGNIN_MAX_FAILURES=8;
 const SIGNIN_WINDOW_MS=15*60*1000;
 const SIGNIN_LOCK_MINUTES=15;
+const MAX_ACTIVE_SESSIONS=10;
 @Controller('auth')
 export class AuthController {
  constructor(private readonly db:DatabaseService, private readonly auth:AuthService){}
@@ -60,7 +61,11 @@ export class AuthController {
    }
    const token=randomBytes(32).toString('base64url');
    await db.query('DELETE FROM auth_signin_limits WHERE identity_id=$1',[identity.id]);
+   await db.query('DELETE FROM sessions WHERE identity_id=$1 AND expires_at<=now()',[identity.id]);
    await db.query("INSERT INTO sessions(identity_id,token_hash,expires_at) VALUES($1,$2,now()+interval '30 days')",[identity.id,tokenHash(token)]);
+   await db.query(`DELETE FROM sessions s USING (
+      SELECT id FROM sessions WHERE identity_id=$1 ORDER BY created_at DESC,id DESC OFFSET $2
+    ) old WHERE s.id=old.id`,[identity.id,MAX_ACTIVE_SESSIONS]);
    return {kind:'ok' as const,token};
   });
   if(result.kind==='locked')throw new HttpException('too_many_signin_attempts',429);
