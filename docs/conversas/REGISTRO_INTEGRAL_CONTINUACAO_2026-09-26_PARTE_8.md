@@ -64,6 +64,8 @@ Continuar
 - GitHub aceitou a reexecução, mas o novo foundation job `108429995114` terminou novamente `failure` com `steps=null`.
 - Portanto nenhum checkout/typecheck/build/migration/E2E executou e a reexecução manual não removeu o blocker.
 - O sintoma continua hosted-runner provisioning antes do workflow; não é tratado como falha funcional nem PASS.
+- Issue #214 atualizado com head/run/rerun e estado Railway atual.
+- Issue #219 atualizado com o hardening Trust/Data atual e o mesmo gate de CI.
 
 ## Divergência main x #245
 - `main` avançou para `a41e28311032880783a17a76a14dafbf77a11c6a` apenas com documentação/evidências.
@@ -76,8 +78,26 @@ Continuar
 - Deactivation revoga sessions, apaga disponibilidade e retira interesses abertos, preservando assignments/finance/Trust históricos.
 - Não foi identificado nesta rodada novo caminho operacional do PR que selecionasse profissional desativado sem filtro.
 
+## Railway production revalidation
+- Projeto `MLIVRETRABALHO`, environment production revalidado.
+- API `@mlivretrabalho/api`: deployment `849dd047-c70f-4a16-8624-9a3a01bd8098` = SUCCESS.
+- Postgres: deployment `b7718c66-745f-4027-889c-42b52f1c6a63` = SUCCESS.
+- `pendingWork=[]`.
+- Esta evidência confirma a saúde do deploy já existente, mas não substitui deploy/Production Truth do head #245 ainda não mesclado.
+- Probe público `https://mlivretrabalho.predibeacon.com/v1/health/ready` continuou inacessível pela ferramenta web atual; não interpretar isso como API failure.
+
+## WEB-ARCH revalidation
+- Probes locais repetidos em 2026-09-26:
+  - `https://github.com` -> HTTP 000 / `Could not resolve host: github.com`;
+  - `https://registry.npmjs.org` -> HTTP 000 / `Could not resolve host: registry.npmjs.org`.
+- Como o GitHub Actions também não provisiona runner, ainda não há ambiente reproduzível capaz de resolver a dependency graph web/Next.js e gerar lockfile real.
+- Issue #224 atualizado.
+- Não fabricar `pnpm-lock.yaml`; WEB-ARCH permanece PARADO POR AMBIENTE.
+
 ## Estado ativo
 - Migrations no PR #245 continuam numeradas até 0046, com 0046 agora removendo a estratégia de índice persistente incompatível com crash recovery.
 - #245 permanece OPEN e NÃO MESCLADO.
+- Railway produção existente permanece saudável.
 - CI continua bloqueado externamente antes do primeiro step mesmo após reexecução manual.
+- WEB-ARCH continua bloqueado por DNS/package resolution + ausência de runner.
 - Próxima continuação deve partir do Documento da Verdade v1.13 + checkpoint atualizado + esta Parte 8.
