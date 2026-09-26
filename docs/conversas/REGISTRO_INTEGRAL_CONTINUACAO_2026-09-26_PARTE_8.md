@@ -23,10 +23,23 @@ Continuar
 - O status `completed` do retention run é gravado dentro da mesma transação das mutações, antes do COMMIT, evitando purge concluído com audit run ainda `running` por falha posterior.
 - Em erro: ROLLBACK no client + best-effort update externo do run para `failed/error_code`.
 
-## Concorrência de retention runs
+## Concorrência de retention runs — primeira abordagem substituída
 - Risco identificado: dois `--apply` simultâneos poderiam executar purge em paralelo.
-- Solução escolhida no banco: migration `0046_privacy_retention_single_run.sql` cria índice único parcial sobre constante `(1)` quando `status='running'`.
-- Resultado: no máximo um retention run destrutivo pode ficar `running`; segunda execução falha no INSERT antes das mutações.
+- A primeira abordagem usou migration `0046_privacy_retention_single_run.sql` com índice único parcial para `status='running'`.
+- Nova auditoria encontrou falha nessa estratégia: crash do processo depois de criar o audit row poderia deixá-lo `running` indefinidamente e bloquear toda manutenção futura.
+- A migration 0046 foi corrigida para remover o índice parcial caso exista; a exclusão mútua deixou de depender de estado persistente incompleto.
+
+## Concorrência crash-safe — solução atual
+- `privacy-retention.ts` agora usa `pg_try_advisory_lock(hashtextextended('privacy-retention',0))` na conexão privilegiada dedicada.
+- Se outra execução estiver ativa, a segunda falha fechado com `privacy_retention_already_running` antes de qualquer mutação/audit run.
+- Advisory lock é liberado em `finally` e também desaparece automaticamente quando a conexão/processo morre.
+- Após adquirir o lock, uma nova execução válida marca audit rows `running` abandonados como `failed` com `abandoned_before_completion` antes de iniciar o novo run.
+- Mantida a transação real com um único `PoolClient` para purge + status `completed`.
+- Criado `scripts/privacy-retention-concurrency-e2e.sh`:
+  - segura o advisory lock em outra sessão e exige rejeição da segunda execução;
+  - simula audit row abandonado;
+  - prova que execução subsequente marca o stale row como failed e conclui normalmente.
+- `privacy-retention-audit-e2e.sh` encadeia automaticamente o novo concurrency/recovery E2E.
 
 ## Finance integrity
 - Migration `0044_earnings_ledger_no_delete.sql` revoga DELETE de `earnings_ledger` para `app_runtime`.
@@ -41,17 +54,30 @@ Continuar
 - E2E dedicado cobre fail-closed e lifecycle.
 
 ## Requirements/checkpoint
-- `REQUIREMENTS_LEDGER_DELTA_v1.13.md` reconciliado para #245 final-state e migrations 0034–0045; 0046 passa a complementar o single-run guard.
+- `REQUIREMENTS_LEDGER_DELTA_v1.13.md` reconciliado para #245 final-state e migrations 0034–0045; 0046 passa a complementar a política de concorrência do retention job sem persistir lock órfão.
 - `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` reescrito/reconciliado em 2026-09-26 para o estado atual, mantendo Production-DONE/Pilot-DONE abertos.
 
-## CI/root cause — revalidação
-- Head revalidado antes da migration 0046: `06b88bf6482bb2241801aa794a5273556db9cb32`.
-- Run `36249264276`, foundation job `108424112610`, `steps=null`.
-- Nenhum checkout/typecheck/build/migration/E2E executou.
-- Issue #214 e #219 receberam comentários com o novo hardening e o run atual.
-- O blocker continua hosted-runner provisioning antes do workflow; não é tratado como falha funcional nem PASS.
+## CI/root cause — revalidação e tentativa ativa de desbloqueio
+- Head após o concurrency E2E: `28f2f1c491b4c5f0b50b911374e12a76e5d3d739`.
+- Run `36251378411`, foundation job inicial `108429927581`, `steps=null`.
+- Foi executado manualmente `rerun failed jobs` para tentar remover hipótese de falha transitória.
+- GitHub aceitou a reexecução, mas o novo foundation job `108429995114` terminou novamente `failure` com `steps=null`.
+- Portanto nenhum checkout/typecheck/build/migration/E2E executou e a reexecução manual não removeu o blocker.
+- O sintoma continua hosted-runner provisioning antes do workflow; não é tratado como falha funcional nem PASS.
+
+## Divergência main x #245
+- `main` avançou para `a41e28311032880783a17a76a14dafbf77a11c6a` apenas com documentação/evidências.
+- Comparação `#245 head → main` mostrou arquivos do avanço de main todos em `docs/...`; nenhum arquivo code/schema/test do PR #245 foi sobreposto.
+- `mergeable=false` observado após o avanço de main voltou posteriormente para `mergeable=true`, confirmando recálculo transitório, não conflito de código.
+
+## Auditoria de conta desativada
+- Auth signin e session authorization bloqueiam identities com `deactivated_at`.
+- Candidate/recommendation, talent pools, replacement e team allocation filtram `identities.deactivated_at IS NULL`.
+- Deactivation revoga sessions, apaga disponibilidade e retira interesses abertos, preservando assignments/finance/Trust históricos.
+- Não foi identificado nesta rodada novo caminho operacional do PR que selecionasse profissional desativado sem filtro.
 
 ## Estado ativo
-- Migrations no PR #245 agora alcançam 0046.
-- #245 permanece NÃO MESCLADO.
+- Migrations no PR #245 continuam numeradas até 0046, com 0046 agora removendo a estratégia de índice persistente incompatível com crash recovery.
+- #245 permanece OPEN e NÃO MESCLADO.
+- CI continua bloqueado externamente antes do primeiro step mesmo após reexecução manual.
 - Próxima continuação deve partir do Documento da Verdade v1.13 + checkpoint atualizado + esta Parte 8.
