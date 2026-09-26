@@ -4,6 +4,7 @@ const APPLY=process.argv.includes('--apply');
 const GEO_DAYS=30;
 const PROFILE_DAYS=30;
 const CHAT_DAYS=730;
+const RETENTION_LOCK_KEY='privacy-retention';
 
 function errorCode(error:unknown){return (error instanceof Error?error.message:String(error)).slice(0,500);}
 
@@ -52,10 +53,19 @@ async function main(){
 
     let runId:string|null=null;
     if(APPLY){
-      runId=(await pool.query<{id:string}>(`INSERT INTO privacy_retention_runs(operator_id,status,expired_sessions,geo_candidates,profile_candidates,chat_candidates)
-        VALUES($1,'running',$2,$3,$4,$5) RETURNING id`,[operatorId,expiredSessions,geoCandidates,profileCandidates,chatCandidates])).rows[0].id;
       const client=await pool.connect();
+      let lockHeld=false;
       try{
+        const acquired=(await client.query<{acquired:boolean}>(`SELECT pg_try_advisory_lock(hashtextextended($1,0)) AS acquired`,[RETENTION_LOCK_KEY])).rows[0]?.acquired??false;
+        if(!acquired)throw new Error('privacy_retention_already_running');
+        lockHeld=true;
+
+        await client.query(`UPDATE privacy_retention_runs
+          SET status='failed',error_code='abandoned_before_completion',completed_at=now()
+          WHERE status='running'`);
+        runId=(await client.query<{id:string}>(`INSERT INTO privacy_retention_runs(operator_id,status,expired_sessions,geo_candidates,profile_candidates,chat_candidates)
+          VALUES($1,'running',$2,$3,$4,$5) RETURNING id`,[operatorId,expiredSessions,geoCandidates,profileCandidates,chatCandidates])).rows[0].id;
+
         await client.query('BEGIN');
         await client.query('DELETE FROM sessions WHERE expires_at<=now()');
         await client.query(`UPDATE work_assignments wa
@@ -102,9 +112,12 @@ async function main(){
         await client.query('COMMIT');
       }catch(error){
         await client.query('ROLLBACK').catch(()=>undefined);
-        await pool.query("UPDATE privacy_retention_runs SET status='failed',error_code=$2,completed_at=now() WHERE id=$1",[runId,errorCode(error)]).catch(()=>undefined);
+        if(runId){
+          await client.query("UPDATE privacy_retention_runs SET status='failed',error_code=$2,completed_at=now() WHERE id=$1",[runId,errorCode(error)]).catch(()=>undefined);
+        }
         throw error;
       }finally{
+        if(lockHeld){await client.query(`SELECT pg_advisory_unlock(hashtextextended($1,0))`,[RETENTION_LOCK_KEY]).catch(()=>undefined);}
         client.release();
       }
     }
