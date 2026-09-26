@@ -41,7 +41,20 @@ HOLD_ID="$(printf '%s' "$HOLD_JSON" | json_field id)"
 node -e 'const x=JSON.parse(process.argv[1]);if(x.scopeType!=="assignment"||!x.tenantId||x.createdBy!==process.argv[2]||!x.reviewAt)throw new Error("hold audit missing")' "$HOLD_JSON" "$OPERATOR_ID"
 
 REVIEW_JSON="$(PRIVACY_MAINTENANCE_DATABASE_URL="$DB_URL" PRIVACY_OPERATOR_ID="$OPERATOR_ID" node apps/api/dist/privacy-legal-holds-ops.js review "$HOLD_ID" 'E2E review completed; hold remains required' "$NEXT_REVIEW_AT")"
-node -e 'const x=JSON.parse(process.argv[1]);if(!x.reviewedAt||x.reviewedBy!==process.argv[2]||x.reviewNote.indexOf("hold remains required")<0||!x.reviewAt)throw new Error("review audit missing")' "$REVIEW_JSON" "$OPERATOR_ID"
+node -e 'const x=JSON.parse(process.argv[1]);if(!x.reviewedAt||x.reviewedBy!==process.argv[2]||x.reviewNote.indexOf("hold remains required")<0||!x.reviewAt||!x.reviewHistoryId)throw new Error("review audit missing")' "$REVIEW_JSON" "$OPERATOR_ID"
+
+HISTORY_JSON="$(PRIVACY_MAINTENANCE_DATABASE_URL="$DB_URL" node apps/api/dist/privacy-legal-holds-ops.js history "$HOLD_ID")"
+node -e '
+const rows=JSON.parse(process.argv[1]);
+if(rows.length!==1)throw new Error("expected one immutable review history row");
+const x=rows[0];
+if(x.reviewedBy!==process.argv[2]||x.reviewNote.indexOf("hold remains required")<0||!x.previousReviewAt||!x.nextReviewAt)throw new Error("review history incomplete");
+' "$HISTORY_JSON" "$OPERATOR_ID"
+
+if psql "$DB_URL" -v ON_ERROR_STOP=1 -c "UPDATE privacy_legal_hold_reviews SET review_note='tampered' WHERE legal_hold_id='$HOLD_ID'" >/tmp/legal-hold-tamper.log 2>&1; then
+  echo 'FAIL: append-only legal hold review accepted UPDATE' >&2; exit 1
+fi
+grep -q 'privacy_legal_hold_reviews_append_only' /tmp/legal-hold-tamper.log
 
 LIST_JSON="$(PRIVACY_MAINTENANCE_DATABASE_URL="$DB_URL" node apps/api/dist/privacy-legal-holds-ops.js list)"
 node -e 'const rows=JSON.parse(process.argv[1]);if(!rows.some(x=>x.id===process.argv[2]&&x.createdBy===process.argv[3]&&x.reviewedBy===process.argv[3]))throw new Error("reviewed active hold not listed")' "$LIST_JSON" "$HOLD_ID" "$OPERATOR_ID"
@@ -51,11 +64,7 @@ node -e 'const x=JSON.parse(process.argv[1]);if(!x.releasedAt||x.releasedBy!==pr
 
 ACTIVE="$(psql "$DB_URL" -tAc "SELECT count(*) FROM privacy_legal_holds WHERE id='$HOLD_ID' AND released_at IS NULL")"
 test "$ACTIVE" = "0"
+HISTORY_COUNT="$(psql "$DB_URL" -tAc "SELECT count(*) FROM privacy_legal_hold_reviews WHERE legal_hold_id='$HOLD_ID'")"
+test "$HISTORY_COUNT" = "1"
 
-psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
-DELETE FROM privacy_legal_holds WHERE id='$HOLD_ID';
-DELETE FROM identities WHERE id='$IDENTITY';
-DELETE FROM tenants WHERE id='$TENANT';
-SQL
-
-echo 'PASS: legal hold lifecycle is privileged, operator-audited, reviewable, listed, and releasable'
+echo 'PASS: legal hold lifecycle is privileged, operator-audited, review history is append-only, and release preserves evidence'
