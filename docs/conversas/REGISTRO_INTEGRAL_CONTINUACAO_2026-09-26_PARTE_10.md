@@ -179,3 +179,18 @@ E2E ampliado:
 - #245 permanece OPEN, `mergeable=true`, NÃO MESCLADO.
 - Pipeline agora realmente referencia todos os novos E2Es críticos identificados na auditoria.
 - Hosted runner continua único blocker de execução para o PR.
+
+---
+
+## Usuário
+continuar
+
+## Assistente — revalidação mais recente
+- PR #245 permaneceu OPEN/NÃO MESCLADO e voltou a `mergeable=true`.
+- Head atual: `f6c497d9e789fcf0b49910ce104a1b635bb43e62`.
+- CI atual: run `36287078238`, foundation job `108529742976`, `steps=null`; nenhum step executou.
+- A comparação do head anterior `24cf6238…` até o head atual mostrou sincronização documental e pequenos ajustes de código/teste, sem nova migration ou mudança de arquitetura.
+- Último commit: `fix(mobile): avoid unmount state update in privacy screen`; remove atualização de estado no cleanup do unmount da tela de privacidade.
+- Reauditoria de `AuthController`, `CompanyMembersController` e parser CORS não encontrou relaxamento de segurança: limiter/session cap continuam ativos, gestão de membros continua owner-only/tenant-scoped e CORS segue allowlist deny-by-default.
+- Issue #214 recebeu a revalidação do novo head/run.
+- Hosted runner permanece o único blocker de execução do PR #245; monitor horário permanece ativo.
