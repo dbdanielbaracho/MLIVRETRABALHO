@@ -15,6 +15,16 @@ OWNER_SIGNUP="$(request POST /v1/auth/signup '' '' "{\"email\":\"$OWNER_EMAIL\",
 TENANT_ID="$(printf '%s' "$OWNER_SIGNUP" | json_field tenantId)"
 OWNER_TOKEN="$(request POST /v1/auth/signin '' '' "{\"email\":\"$OWNER_EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken)"
 
+# Invitation endpoints reject oversized input before hashing/persisting it.
+LONG_EMAIL="$(node -e "process.stdout.write('a'.repeat(308)+'@example.test')")"
+LONG_EMAIL_STATUS="$(curl -sS -o /tmp/member-invite-long-email.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/company/members/invitations" -H "authorization: Bearer $OWNER_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data "{\"email\":\"$LONG_EMAIL\",\"role\":\"owner\"}")"
+test "$LONG_EMAIL_STATUS" = "400"
+grep -q 'invitation_email_invalid' /tmp/member-invite-long-email.json
+LONG_CODE="$(node -e "process.stdout.write('x'.repeat(257))")"
+LONG_CODE_STATUS="$(curl -sS -o /tmp/member-invite-long-code.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/company/members/invitations/accept" -H "authorization: Bearer $OWNER_TOKEN" -H 'content-type: application/json' --data "{\"inviteCode\":\"$LONG_CODE\"}")"
+test "$LONG_CODE_STATUS" = "400"
+grep -q 'invitation_invalid' /tmp/member-invite-long-code.json
+
 # A sole owner must not be able to demote itself through invitation acceptance.
 SELF_INVITE="$(request POST /v1/company/members/invitations "$OWNER_TOKEN" "$TENANT_ID" "{\"email\":\"$OWNER_EMAIL\",\"role\":\"manager\"}")"
 SELF_CODE="$(printf '%s' "$SELF_INVITE" | json_field inviteCode)"
@@ -97,4 +107,4 @@ printf '%s' "$ACTIVE_OWNER_ME" | grep -q 'owner'
 request POST /v1/auth/signout "$ACTIVE_OWNER_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$WRONG_TOKEN" '' '{}' >/dev/null
 
-echo "PASS: invitations are email-bound/single-use, role changes are safe, and concurrent owner deactivation cannot orphan the tenant"
+echo "PASS: invitations are bounded/email-bound/single-use, role changes are safe, and concurrent owner deactivation cannot orphan the tenant"
