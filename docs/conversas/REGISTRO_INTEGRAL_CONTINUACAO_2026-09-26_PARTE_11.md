@@ -1,0 +1,45 @@
+# Registro Integral da Conversa — Continuação — 2026-09-26 — Parte 11
+
+> Continuação sequencial de `REGISTRO_INTEGRAL_CONTINUACAO_2026-09-26_PARTE_10.md`. As Partes 1–10 permanecem preservadas integralmente. Esta Parte 11 torna-se o arquivo ativo do Registro Integral a partir deste ponto.
+
+## Usuário
+continuar
+
+## Assistente — continuação executada
+- Retomada do projeto a partir do PR #245 + Registro Integral Parte 10 + monitor horário de runner.
+- PR #245 revalidado: OPEN, NÃO MESCLADO, `mergeable=true`.
+- Head atual: `f6c497d9e789fcf0b49910ce104a1b635bb43e62`.
+- CI correspondente: run `36287078238`, foundation job `108529742976`, `steps=null`; nenhum step executou.
+- Hosted runner provisioning/account entitlement continua o blocker de execução.
+
+## Auditoria do avanço de head
+- Comparação do head anterior `24cf6238dfad987ab57bd492bb3724884d249cb4` ao atual mostrou 45 commits de avanço, majoritariamente sincronização documental/governança e pequenos hardenings/test wiring.
+- Último commit: `fix(mobile): avoid unmount state update in privacy screen`; remove atualização de estado no cleanup do unmount da tela de privacidade.
+- Reauditoria de `AuthController` confirmou limiter de brute force, dummy scrypt para identidade inexistente/bloqueada, limpeza/cap de sessões e bounds de input preservados.
+- Reauditoria de `CompanyMembersController` confirmou gestão owner-only, tenant-scoped, bounds de email/inviteCode, token hash, single-use, role-change guard e serialização de criação por tenant+email.
+- Reauditoria de `cors.ts` confirmou allowlist deny-by-default, wildcard proibido e apenas origens HTTP/HTTPS origin-only.
+- Não foi identificado relaxamento de segurança material nesses ajustes.
+
+## Governança
+- Issue #214 recebeu comentário com o head/run mais recente e a revalidação.
+- O monitor horário de GitHub Actions permanece ativo; só deve notificar em mudança significativa/execução real de steps.
+- PR #245 continua PREPARADO, NÃO PROVADO e NÃO MESCLADO.
+
+## Provider outreach / plugins
+- Plugin directory revalidado.
+- AgentMail: disponível, `installed=false`.
+- Gmail: disponível, `installed=false`.
+- Ambos já foram sugeridos recentemente; não repetir sugestão dentro da janela definida.
+- Nenhum provider outreach foi marcado como enviado sem conexão/autorização real.
+
+## Estado dos blockers
+- #214 CI/Production Truth: externo — hosted runner/account entitlement/provisioning.
+- #215/#228 FIN/provider: externo — outbound channel + provider response/contract/sandbox.
+- #219 Trust/KYC: externo no provider-specific callback/sandbox e pentest; runtime interno está no #245 aguardando CI real.
+- #220 Pilot/device/pentest: externo — Expo auth/build ou runner, aparelho físico e pentest independente.
+- #224 Web: externo por package/build environment; não fabricar lockfile.
+
+## Conclusão desta rodada
+- Nenhum novo blocker interno de alto impacto foi encontrado após as reauditorias.
+- Todo trabalho interno seguro disponível nesta rodada foi executado/documentado.
+- Production-DONE e Pilot-DONE permanecem abertos porque os gates externos acima não podem ser fabricados/substituídos por evidência interna.
