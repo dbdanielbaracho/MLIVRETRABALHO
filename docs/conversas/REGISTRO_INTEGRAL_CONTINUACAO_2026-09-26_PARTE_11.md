@@ -80,3 +80,19 @@ continuar até o final do projeto
 - #228 revalidado: pesquisa, questionário, outreach packet, matrizes e modelos estão prontos; respostas comerciais e sandbox dos providers são o trabalho externo bloqueante.
 - Produção atual segue saudável, mas o novo estado integrado permanece PREPARADO/NÃO PROVADO/NÃO MESCLADO.
 - Nenhum gate externo foi falsamente marcado como concluído.
+
+---
+
+## Usuário
+continuar
+
+## Assistente — continuação após sincronização documental
+- PR #248 de sincronização documental foi mesclado na branch de integração sem alterar código/schema.
+- PR #245 voltou a `mergeable=true` com novo head `9b46181e5098096cc4a137da88f5fd7472d69f83`.
+- O novo head disparou CI run `36289721664`.
+- Foundation job `108537355286` terminou `failure` com `steps=null`; novamente nenhum step foi executado.
+- Isso reproduz o mesmo blocker externo de hosted runner/provisioning/entitlement e não revela nova falha de aplicação.
+- Issue #214 foi atualizada com o novo head/run/job e o gate permanece aberto.
+- Tentativa de probe HTTP canônico por navegador externo desta sessão não conseguiu acessar o domínio; isso não foi interpretado como falha da API.
+- Provider outreach packet revalidado: contatos e mensagens de Asaas, Pagar.me, Mercado Pago e Datavalid/Serpro continuam preparados; envio real ainda requer canal outbound autorizado e resposta externa.
+- Gate preservado: não mesclar #245, não implantar migrations 0034–0052 e não declarar Production-DONE/Pilot-DONE sem execução real green e evidências externas obrigatórias.
