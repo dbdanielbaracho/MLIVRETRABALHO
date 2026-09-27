@@ -117,3 +117,64 @@ Continuar e resolver qualquer tipo de bloqueio
 - Migrations preparadas no PR alcançam `0050`.
 - Production-DONE/Pilot-DONE continuam abertos.
 - Esta Parte 9 permanece o Registro Integral ativo para a próxima continuação.
+
+---
+
+## Usuário
+continuar e so parar quando terminar tudo
+
+## Assistente — continuação executada
+- Regra de continuidade mantida: avançar até esgotar trabalho interno seguro, sem marcar blocker externo sem investigação.
+- Issues #214/#215/#219/#220/#224/#228 rechecados; blockers externos continuam explicitamente separados de gaps internos.
+
+### CI — evidência cross-repository
+- MLIVRETRABALHO continuou falhando antes do primeiro step.
+- MARKETPULSE, outro repositório da mesma conta, reproduziu o mesmo padrão no mesmo dia: `runner_id=0`, runner vazio e `steps=[]`.
+- GROWTH-OS teve hosted-runner CI normal em 2026-09-21.
+- Isso reduz fortemente a hipótese de bug específico de workflow/código do MLIVRETRABALHO e aponta para entitlement/billing/policy da conta ou incidente parcial de provisionamento do GitHub após 21/09.
+- Support packet #214 foi atualizado com essa evidência cross-repo.
+
+### Auth — invariantes adicionais de banco
+- Migration `0051_identity_session_invariants.sql` criada.
+- PostgreSQL passa a validar forma/tamanho básico de e-mail e coerência temporal de sessão independentemente do controller.
+- Novo `scripts/auth-db-invariants-e2e.sh` adicionado ao CI.
+
+### Web readiness — CORS restritivo
+- Backend preparado para futuro Web App sem wildcard.
+- Novo `apps/api/src/cors.ts` + teste unitário.
+- `CORS_ORIGINS` aceita somente origens HTTP/HTTPS explícitas sem path/query/hash; `*` é rejeitado.
+- Ausência da variável mantém CORS desligado.
+- Como autenticação usa Bearer token e não cookie, `credentials:true` foi removido por least privilege.
+- Ambiente local ainda retorna HTTP 000 para GitHub/npm; `apps/web`/Next continuam sem package environment reproduzível, portanto lockfile não é fabricado.
+
+### NETWORK_SHARED — correção de risco cross-tenant
+- Auditoria detectou que migration 0026 concedia escrita ampla em `marketplace_interests` e `professional_availability_network` para `app_runtime`.
+- Profissional escreve esses dados pela conexão global autenticada; o runtime tenant não precisa de escrita direta.
+- Empresa precisava atualizar interesse para `confirmed`, o que mantinha grant amplo.
+- Migration `0052_network_shared_write_boundary.sql` criada:
+  - revoga INSERT/UPDATE/DELETE de `app_runtime` em `marketplace_interests`;
+  - revoga INSERT/UPDATE/DELETE de `app_runtime` em `professional_availability_network`;
+  - mantém SELECT necessário aos fluxos da empresa;
+  - cria `confirm_marketplace_interest(job,professional)` `SECURITY DEFINER`, com `search_path` fixo, não pública, executável apenas por `app_runtime`;
+  - função exige `app.tenant_id` e só confirma interesse cuja projeção de vaga pertence ao tenant atual.
+- `CompanyJobsController.confirm` agora usa essa função server-controlled em vez de UPDATE direto.
+- Novo `scripts/network-shared-write-boundary-e2e.sh` prova: escrita direta runtime bloqueada, confirmação same-tenant permitida e confirmação cross-tenant rejeitada.
+- E2E conectado ao workflow.
+
+### CI após migration 0052
+- Head `27278c14bd2eae8d140257703d946863fbf4e461` → run `36283553659`, job `108519897133`, `steps=null`.
+- Nenhum step executou; blocker permanece antes do workflow.
+
+### Mergeability / divergência
+- PR #245 oscilou novamente para `mergeable=false` depois que `main` recebeu commits documentais.
+- Comparação atual: branch 127 commits à frente e 30 atrás de `main`; não apareceu sobreposição code/schema relevante nos commits de `main` que explique conflito funcional.
+- Não criar sync PR nem rebase destrutivo sem evidência concreta de conflito de conteúdo.
+
+## Usuário
+continuar o que voce estava fazendo no projeto
+
+## Assistente — retomada após mensagem enviada por engano
+- A mensagem musical enviada por engano foi ignorada para fins de projeto, conforme instrução do usuário.
+- Retomada feita exatamente do PR #245 + Registro Integral Parte 9.
+- Auditoria da migration 0052 confirmou: `SECURITY DEFINER` com `search_path=public,pg_temp`, função não pública, `app.tenant_id` obrigatório e update limitado à vaga do tenant atual.
+- Estado atual do PR #245 permanece OPEN/NÃO MESCLADO; migrations preparadas agora vão de `0034` a `0052`.
