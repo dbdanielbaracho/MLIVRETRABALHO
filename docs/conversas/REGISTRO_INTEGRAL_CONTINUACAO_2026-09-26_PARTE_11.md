@@ -123,3 +123,19 @@ continuar
 - Este conteúdo reconcilia integralmente as duas linhas de histórico: a atualização que estava em `main` e a atualização posterior registrada na branch de integração.
 - Próximo passo técnico desta mesma rodada: criar merge commit documental com dois pais (`branch head` + `main`) para que a branch incorpore formalmente a ancestralidade de `main` e remover o blocker secundário de divergência.
 - Gate de produto permanece inalterado: PR #245 não deve ser mesclado sem execução real green do CI/equivalente reproduzível.
+
+---
+
+## Usuário
+continuar
+
+## Assistente — atualização da fonte de verdade e revalidação dos gates externos
+- A reconciliação documental foi concluída com merge commit `16ce11aa088e618b262ace32f49dd4bd36e48a62`, incorporando `main` como ancestral formal da branch de integração.
+- Comparação contra `main` confirmou `ahead_by=140` e `behind_by=0`; PR #245 voltou a `mergeable=true`.
+- Esse head disparou CI run `36293553144`; foundation job `108548074122` terminou `failure` com `steps=null`, sem executar qualquer step.
+- Issue #214 foi atualizada no próprio corpo para substituir o head/run/job antigos por `16ce11aa...` / `36293553144` / `108548074122`, mantendo a conclusão correta de falha pré-step.
+- Issue #220 revalidada: não há etapa interna adicional escondida; os itens restantes são Expo account/project auth/link, primeiro EAS build, instalação/teste em Android físico, push/deep links quando aplicável e pentest independente.
+- Issue #228 revalidada: preparação interna está completa; faltam outreach autorizado, respostas comerciais e sandbox real dos providers.
+- Nenhum provider foi selecionado e nenhum real-money flow foi liberado sem evidência externa.
+- Esta atualização permanece apenas na branch do PR #245 para evitar nova divergência documental em `main`.
+- Gate permanece: não mesclar #245 sem CI/equivalente reproduzível green; não declarar Production-DONE/Pilot-DONE sem as evidências externas obrigatórias.
