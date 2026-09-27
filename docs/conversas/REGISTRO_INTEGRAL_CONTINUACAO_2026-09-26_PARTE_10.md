@@ -85,3 +85,40 @@ Nenhum novo bloco interno de produto foi identificado fora do final-state #245. 
 - Production-DONE: aberto.
 - Pilot-DONE: aberto.
 - Registro Integral ativo passa a ser esta Parte 10.
+
+---
+
+## Usuário
+continuar
+
+## Assistente — auditoria adversarial adicional do PR #245
+- O usuário pediu continuação; nenhuma etapa anterior foi repetida.
+- PR #245 reaberto para auditoria focada em riscos que ainda possam ser resolvidos sem hosted runner.
+
+### Company member invitations — input bounds
+Gap encontrado e corrigido:
+- `CompanyMembersController.invite` aceitava e-mail sem limite superior e sem bloqueio explícito de whitespace;
+- `CompanyMembersController.accept` calculava SHA-256 de `inviteCode` sem limite superior de tamanho.
+
+Correção aplicada na branch `feat/eas-pilot-build-route`:
+- e-mail de convite exige 3–320 caracteres, `@` e ausência de whitespace;
+- `inviteCode` é rejeitado se vazio ou maior que 256 caracteres antes de parsing/hash;
+- commit de controller: `9c2aa41c8811b544959dfef2a5b68d2f4fccbe7e`.
+
+E2E ampliado:
+- `scripts/http-company-members-e2e.sh` agora prova rejeição de e-mail >320;
+- prova rejeição de `inviteCode` >256;
+- mantém as provas anteriores de email-binding, single-use, sole-owner self-demotion guard e race de desativação de dois owners;
+- commit de teste: `a2dcbb026038940f0a449cfb0dd00240de7c1cc7`.
+
+### CI do novo head
+- Head atual após o hardening: `a2dcbb026038940f0a449cfb0dd00240de7c1cc7`.
+- Run: `36286234431`.
+- Foundation job: `108527432973`.
+- Resultado continua `failure` antes do primeiro step, `steps=null`.
+- Nenhum checkout/install/typecheck/build/migration/E2E executou.
+- Portanto o hardening novo está PREPARADO, mas NÃO PROVADO pelo CI; o blocker externo permanece exatamente o mesmo.
+
+### Próxima regra
+- Continuar procurando somente gaps de alto impacto e bugs reais; evitar hardening infinito sem relação com Definition of Done.
+- Não mesclar #245 até execução real green.
