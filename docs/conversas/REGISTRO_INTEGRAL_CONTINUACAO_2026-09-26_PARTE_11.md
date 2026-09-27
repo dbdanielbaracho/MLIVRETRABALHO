@@ -80,3 +80,17 @@ continuar até o final do projeto
 - #228 revalidado: pesquisa, questionário, outreach packet, matrizes e modelos estão prontos; respostas comerciais e sandbox dos providers são o trabalho externo bloqueante.
 - Produção atual segue saudável, mas o novo estado integrado permanece PREPARADO/NÃO PROVADO/NÃO MESCLADO.
 - Nenhum gate externo foi falsamente marcado como concluído.
+
+---
+
+## Usuário
+continuar
+
+## Assistente — continuação no próprio PR de integração
+- PR #245 revalidado como OPEN, NÃO MESCLADO e `mergeable=true` antes desta atualização.
+- Head revalidado: `9b46181e5098096cc4a137da88f5fd7472d69f83`.
+- CI correspondente: run `36289721664`, conclusion `failure`, novamente antes de qualquer step executável.
+- Busca completa dos issues abertos confirmou que os únicos gates remanescentes são #214, #215, #219, #220, #224 e #228; não apareceu novo bloco interno oculto.
+- Decisão de governança: novas atualizações do Registro Integral durante esta fase serão gravadas preferencialmente na branch `feat/eas-pilot-build-route`, evitando nova divergência documental artificial em `main` antes do merge final.
+- Este commit serve também para produzir um novo head do PR #245 e, portanto, uma nova tentativa automática de CI sem alterar código de produto, schema ou migrations.
+- Gate permanece: não mesclar #245 até haver CI/equivalente reproduzível green.
