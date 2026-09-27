@@ -1,6 +1,7 @@
 # MLIVRETRABALHO — Provider Outreach Packet
 
-**Data:** 2026-09-24  
+**Data-base:** 2026-09-24  
+**Canais revalidados:** 2026-09-25  
 **Issue:** #228  
 **Objetivo:** padronizar o primeiro contato comercial/técnico com PSP/KYC candidatos.
 
@@ -55,6 +56,14 @@ MLIVRETRABALHO
 
 # Asaas
 
+## Canal oficial atual
+
+- e-mail publicado pelo Asaas: `contato@asaas.com.br`;
+- telefone/WhatsApp publicado: `0800 009 0037`;
+- página de API possui fluxo "Fale com um especialista".
+
+Usar o e-mail como primeiro contato documentável; se necessário, usar WhatsApp/telefone para encaminhamento ao time comercial/API marketplace.
+
 ## Motivo do contato
 
 A documentação pública atual indica:
@@ -82,10 +91,16 @@ Referências oficiais internas da pesquisa:
 - `PROVIDER_SHORTLIST_RESEARCH_2026-09-24.md`
 - https://docs.asaas.com/docs/criacao-de-subcontas
 - https://docs.asaas.com/reference/criar-subconta
+- https://materiais.asaas.com/asaas-para-e-commerces
 
 ---
 
 # Pagar.me
+
+## Canal oficial atual
+
+- comercial para não clientes: `comercial@pagar.me`;
+- documentação atual também orienta contato comercial para funcionalidades/modelo PSP.
 
 ## Motivo do contato
 
@@ -100,15 +115,25 @@ A documentação v5 mostra split com múltiplos recebedores e flags explícitas 
 5. Qual é a política real de chargeback/refund/negative balance?
 6. Sandbox permite simular recipient approval, split, chargeback e payout?
 7. Quais fees/mínimos comerciais se aplicam ao piloto?
+8. Qual é o mecanismo atual de autenticação de webhook para o produto v5/PSP contratado?
 
 Referências:
 
 - https://docs.pagar.me/docs/pedidos-com-split
 - https://docs.pagar.me/reference/split-1
+- https://docs.pagar.me/docs/overview-principal
 
 ---
 
 # Mercado Pago
+
+## Canal oficial atual
+
+- para quem ainda não é cliente, o próprio Mercado Pago orienta usar o **formulário de Contato comercial** no site;
+- os produtos `Payment Facilitators`/marketplace informam explicitamente que exigem contato comercial e contrato específico;
+- Split 1:N permanece restrito a vendedores de carteira assessorada em contato com equipe comercial.
+
+Não presumir elegibilidade 1:N até resposta comercial escrita.
 
 ## Motivo do contato
 
@@ -135,9 +160,15 @@ Referências:
 
 # Datavalid / Serpro
 
+## Canal oficial atual
+
+- comercial Datavalid/Serpro: `comercial@serpro.gov.br`;
+- página de contato do Serpro também disponibiliza formulário comercial/Loja Serpro;
+- suporte do produto Datavalid é separado do canal de contratação.
+
 ## Assunto padrão
 
-`MLIVRETRABALHO — avaliação Datavalid v5 para validação de identidade no Brasil`
+`MLIVRETRABALHO — avaliação Datavalid para validação de identidade no Brasil`
 
 ## Mensagem padrão
 
@@ -149,9 +180,9 @@ A necessidade inicial é validar identidade de profissionais e, quando necessár
 
 Gostaríamos de confirmar:
 
-1. elegibilidade do nosso caso de uso no Datavalid v5;
-2. processo atual de credenciamento SENATRAN/Credencia;
-3. necessidade de contrato com Serpro e GCC;
+1. elegibilidade do nosso caso de uso na versão atualmente comercializada do Datavalid;
+2. processo atual de credenciamento/contratação aplicável;
+3. necessidade de autorizações/termos adicionais conforme as bases consultadas;
 4. opções de sandbox/demonstração;
 5. validações biográficas, biometria facial e prova de vida disponíveis;
 6. modelo de consentimento/ciência aplicável;
@@ -166,8 +197,9 @@ MLIVRETRABALHO
 
 Referências:
 
+- https://www.serpro.gov.br/en/our-services/datavalid
+- https://www.serpro.gov.br/menu/contato/cliente/
 - https://centraldeajuda.serpro.gov.br/duvidas/pt/avisos/datavalidsenatran/
-- https://www7.serpro.gov.br/menu/noticias/noticias-2026/datavalid-v5
 
 ---
 
@@ -185,4 +217,4 @@ Cada resposta recebida deve ser registrada em `docs/evidencias/provider-response
 - pontos ainda não respondidos;
 - `evidence_ref` no Issue #228.
 
-Nenhuma resposta comercial isolada fecha FIN-RISK/TRUST-ARCH sem sandbox e revisão externa aplicável.
+Nenhuma resposta comercial isolada fecha FIN-RISK/TRUST-ARCH sem sandbox e evidência do produto contratado.
