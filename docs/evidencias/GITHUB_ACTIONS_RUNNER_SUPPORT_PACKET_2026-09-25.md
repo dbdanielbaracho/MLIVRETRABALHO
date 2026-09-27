@@ -18,12 +18,17 @@ Observed signature:
 - no checkout/install/build/test step starts
 - no usable job log is produced
 
-## Product CI example
+## Product CI examples
 PR #243 / branch `feat/company-member-invitations`:
 - workflow run: `36096510698`
 - job `foundation`: `107949791300`
 - label: `ubuntu-latest`
 - result: failure before steps
+
+PR #245 current integration state, after auth/session hardening:
+- workflow run: `36280437123`
+- job `foundation`: `108511097230`
+- result: failure before steps (`steps=null`)
 
 ## Minimal isolated reproduction
 Diagnostic PR #244. The workflow intentionally removed all application dependencies and contained only one shell/PowerShell step per job.
@@ -61,37 +66,62 @@ This rules out:
 
 The failure boundary is before GitHub provides a functioning hosted runner to the workflow.
 
+## Cross-repository evidence — important narrowing
+The failure is not specific to MLIVRETRABALHO code or workflow syntax.
+
+### Same account worked previously
+`dbdanielbaracho/GROWTH-OS` had normal GitHub-hosted execution on 2026-09-21:
+- CI run `35558675913` on commit `4d111b6b4df1e3fbc13252c8619d1ef262a6ffc9`;
+- conclusion: `success`.
+
+This proves the account historically had functioning GitHub-hosted runner access.
+
+### Same account fails now in another repository
+`dbdanielbaracho/MARKETPULSE` scheduled workflow on 2026-09-26 reproduced the same signature:
+- run `36272180476` (`Production quality gate`);
+- job `production-audit`: `108488110231`;
+- `labels=["ubuntu-latest"]`;
+- `runner_id=0`;
+- `runner_name=""`;
+- `steps=[]`;
+- failure in roughly 2 seconds before execution.
+
+Therefore the current failure is cross-repository on the same GitHub account. This materially narrows root cause to an account-level hosted-runner entitlement/billing/policy condition or an unreported/partial GitHub Actions provisioning incident, rather than MLIVRETRABALHO repository code.
+
+GitHub public Status currently reports Actions operational, so an account-level entitlement/billing/policy condition must be explicitly ruled out even though the repository is public.
+
 ## Repository-side investigation already performed
 1. Workflow syntax inspected; normal `runs-on` labels and steps are present.
 2. Reproduction created from current `main` with a new workflow file.
 3. Standard GitHub-hosted runner labels across Linux VM, Linux slim/container and Windows tested.
 4. Repository confirmed public.
 5. GitHub official documentation states standard hosted runners are free/unlimited for public repositories; ordinary minute quota therefore does not explain the observed public-repo behavior.
-6. GitHub public Status on 2026-09-25 reported Actions operational.
-7. Similar current GitHub Community reports exist with the same `runner_id=0` / empty steps / no logs signature.
-8. Local alternative execution environment was checked but currently cannot resolve `github.com` or `registry.npmjs.org` and has no cached repo/dependency store, so it cannot provide equivalent reproducible CI.
+6. GitHub public Status reports Actions operational.
+7. Similar current GitHub reports exist with runner-less jobs / empty steps signatures.
+8. Local alternative execution environment was checked but cannot resolve `github.com` or `registry.npmjs.org` and has no cached repo/dependency store, so it cannot provide equivalent reproducible CI.
+9. Cross-repository control now proves same-account MARKETPULSE is affected while GROWTH-OS worked normally five days earlier.
 
-## Account/repository settings to verify in UI
-The connected GitHub API surface available to the project does not expose these private settings. Verify:
+## Account settings to verify in UI
+The connected GitHub API surface does not expose these private account settings. Verify:
 
-1. Repository → **Settings → Actions → General**
+1. Account → **Settings → Billing and licensing / Budgets**
+   - no Actions budget with `Stop usage when budget limit is reached`;
+   - no payment/account restriction affecting Actions hosted runners.
+
+2. Repository → **Settings → Actions → General**
    - Actions enabled;
    - allowed actions/workflows not disabled by policy.
 
-2. Repository → **Settings → Actions → Runners**
-   - GitHub-hosted runner availability is not restricted.
+3. Repository → **Settings → Actions → Runners**
+   - no unusual runner restriction.
 
-3. Account → **Settings → Billing and licensing / Budgets**
-   - no Actions budget with `Stop usage when budget limit is reached`;
-   - no account-level restriction/suspension affecting hosted runners.
-
-For this public repository, ordinary Actions minute quota is not the expected limiting factor, but account policy/restriction still must be ruled out.
+Because MARKETPULSE reproduces the same failure, account-level billing/entitlement is now higher priority than repository-specific settings.
 
 ## Support request text
-> GitHub-hosted Actions jobs in public repository `dbdanielbaracho/MLIVRETRABALHO` fail before runner allocation. Production CI and a new minimal one-step diagnostic workflow reproduce `runner_id=0`, empty runner name, and no steps/logs. Reproduction is cross-OS and cross-runner: `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-slim`, and `windows-latest` all fail before the first step. Run `36154183174`, jobs `108134575426`, `108134575685`, `108134575775`, `108134575893`. Earlier run `36153551313` reproduced the same Linux/slim behavior. A normal product CI example is run `36096510698`, job `107949791300`. Please inspect Actions hosted-runner entitlement/provisioning/configuration for this repository/account because no workflow code reaches execution.
+> GitHub-hosted Actions jobs fail before runner allocation across at least two public repositories on the same account. In `dbdanielbaracho/MLIVRETRABALHO`, production CI and a minimal diagnostic workflow reproduce `runner_id=0`, empty runner name and no steps/logs across `ubuntu-22.04`, `ubuntu-24.04`, `ubuntu-slim`, and `windows-latest` (run `36154183174`, jobs `108134575426`, `108134575685`, `108134575775`, `108134575893`). Current MLIVRETRABALHO run `36280437123`, job `108511097230`, also has `steps=null`. Cross-repository control: `dbdanielbaracho/MARKETPULSE` run `36272180476`, job `108488110231`, failed on `ubuntu-latest` with `runner_id=0`, empty runner name and `steps=[]` before execution on 2026-09-26. The same account successfully ran `dbdanielbaracho/GROWTH-OS` CI run `35558675913` on 2026-09-21. GitHub Status reports Actions operational. Please inspect account-level Actions hosted-runner entitlement/billing/policy/provisioning because no workflow code reaches execution.
 
 ## Closure criterion
-This incident is resolved only when a fresh minimal hosted-runner job receives a functioning runner and executes its first step, followed by the full MLIVRETRABALHO CI completing successfully.
+This incident is resolved only when a fresh hosted-runner job receives a functioning runner and executes its first step, followed by the full MLIVRETRABALHO CI completing successfully.
 
 ## Related project gate
 Issue #214 — Production Truth Gate.
