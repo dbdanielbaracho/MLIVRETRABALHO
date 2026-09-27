@@ -119,6 +119,30 @@ E2E ampliado:
 - Nenhum checkout/install/typecheck/build/migration/E2E executou.
 - Portanto o hardening novo está PREPARADO, mas NÃO PROVADO pelo CI; o blocker externo permanece exatamente o mesmo.
 
+### Auth timing hardening
+- Auditoria de `AuthController.signin` encontrou um fast path: uma identidade já bloqueada retornava 429 antes de executar scrypt, enquanto e-mail inexistente executava dummy scrypt.
+- Isso criava uma diferença temporal observável desnecessária.
+- Correção aplicada: identidade já bloqueada executa `verifyPassword(body.password,DUMMY_PASSWORD_HASH)` antes de retornar `locked`.
+- Commit: `0f9f41d7265787771736d6d5fbdbb9213b2a046e`.
+- `AuthService` foi re-auditado: sessão exige token válido/não expirado e identidade não desativada; signout remove o token; não foi encontrado novo defeito material nessa superfície.
+
+### Retention/DSAR privileged operations re-audit
+- `privacy-retention --apply` continua exigindo maintenance DB + operator, usando PoolClient dedicado, transação real, advisory lock crash-safe, audit run e legal-hold checks.
+- `privacy-requests-ops.ts` exige maintenance DB e exige operador para mutações start/complete/partial/reject; não foi identificado novo bypass destrutivo de alto impacto.
+- Não foi adicionada complexidade nova sem requisito/Definition of Done.
+
+### CI do head mais novo
+- Head: `0f9f41d7265787771736d6d5fbdbb9213b2a046e`.
+- Run: `36286329771`.
+- Foundation job: `108527694354`.
+- Resultado: `failure` antes do primeiro step, `steps=null`, sem logs.
+- Nenhum teste real foi executado; blocker hosted-runner permanece inalterado.
+
+### Governança
+- #214 atualizado com o head/run atual e o hardening adicional.
+- #219 atualizado com invitation input bounds + auth timing hardening.
+- PR #245 recebeu comentário de auditoria final-state.
+
 ### Próxima regra
 - Continuar procurando somente gaps de alto impacto e bugs reais; evitar hardening infinito sem relação com Definition of Done.
 - Não mesclar #245 até execução real green.
