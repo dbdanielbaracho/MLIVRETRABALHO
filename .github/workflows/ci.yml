@@ -101,6 +101,7 @@ jobs:
         run: |
           createdb -h localhost -U postgres mlivretrabalho_http
           DATABASE_URL="$HTTP_TEST_URL" pnpm --filter @mlivretrabalho/api migrate
+          DATABASE_URL="$HTTP_TEST_URL" bash scripts/auth-db-invariants-e2e.sh
           DATABASE_URL="$HTTP_TEST_URL" pnpm --filter @mlivretrabalho/api start > /tmp/mlivre-api.log 2>&1 &
           API_PID=$!
           trap 'kill "$API_PID" 2>/dev/null || true' EXIT
