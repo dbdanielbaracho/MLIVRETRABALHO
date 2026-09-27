@@ -43,3 +43,20 @@ continuar
 - Nenhum novo blocker interno de alto impacto foi encontrado após as reauditorias.
 - Todo trabalho interno seguro disponível nesta rodada foi executado/documentado.
 - Production-DONE e Pilot-DONE permanecem abertos porque os gates externos acima não podem ser fabricados/substituídos por evidência interna.
+
+---
+
+## Usuário
+continuar o projeto mlivretrabalho
+
+## Assistente — retomada e nova validação
+- Repositório oficial confirmado: `dbdanielbaracho/MLIVRETRABALHO`, branch padrão `main`.
+- PR de integração #245 permanece OPEN e NÃO MESCLADO.
+- Head atual do PR #245: `f6c497d9e789fcf0b49910ce104a1b635bb43e62`.
+- O PR segue concentrando privacy runtime, owner handoff, auth hardening, NETWORK_SHARED boundary, EAS pilot route e migrations 0034–0052.
+- Run associado ao head: `36287078238`.
+- Primeira leitura do job `foundation` retornou `completed/failure` com `steps=null`, novamente sem execução de qualquer step.
+- Foi executado `rerun failed jobs` do run `36287078238` para testar se o hosted runner havia voltado.
+- O rerun gerou o job `108536528629`, inicialmente `queued`, depois `completed/failure` também com `steps=null`.
+- Portanto o rerun reproduziu exatamente o mesmo defeito externo de runner/provisioning/entitlement e não revelou falha de aplicação.
+- Gate preservado: NÃO mesclar #245 enquanto não houver CI real/equivalente reproduzível green.
