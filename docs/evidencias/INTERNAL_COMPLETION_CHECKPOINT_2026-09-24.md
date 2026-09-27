@@ -98,6 +98,7 @@ Auditoria encontrou escrita direta excessiva de `app_runtime` em sinais comparti
 - `app_runtime` mantém SELECT, mas perde INSERT/UPDATE/DELETE diretos em `marketplace_interests` e `professional_availability_network`;
 - empresa confirma interesse por `confirm_marketplace_interest(job,professional)` SECURITY DEFINER;
 - função exige `app.tenant_id` e só confirma interesse cujo `marketplace_jobs.tenant_id` coincide com o tenant atual;
+- função usa `search_path=public,pg_temp`, não é pública e só concede EXECUTE ao `app_runtime`;
 - E2E adversarial com dois tenants prova escrita direta negada, confirmação own-tenant permitida e cross-tenant rejeitada.
 
 ### API/Web boundary
@@ -128,7 +129,7 @@ Conclusão de causa: não é código/YAML específico do MLIVRETRABALHO. A front
 
 Support packet: `GITHUB_ACTIONS_RUNNER_SUPPORT_PACKET_2026-09-25.md`.
 
-Último run validado nesta atualização: head #245 `27278c14bd2eae8d140257703d946863fbf4e461`, run `36283553659`, foundation job `108519897133`, `steps=null`.
+Último run validado nesta atualização: head #245 `24cf6238dfad987ab57bd492bb3724884d249cb4`, run `36283645603`, foundation job `108520157402`, `steps=null`.
 
 Ações externas remanescentes para #214:
 - Account Settings → Billing/Budgets / Actions entitlement;
