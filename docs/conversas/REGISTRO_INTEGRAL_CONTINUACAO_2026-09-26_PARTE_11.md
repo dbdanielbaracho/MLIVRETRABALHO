@@ -60,3 +60,23 @@ continuar o projeto mlivretrabalho
 - O rerun gerou o job `108536528629`, inicialmente `queued`, depois `completed/failure` também com `steps=null`.
 - Portanto o rerun reproduziu exatamente o mesmo defeito externo de runner/provisioning/entitlement e não revelou falha de aplicação.
 - Gate preservado: NÃO mesclar #245 enquanto não houver CI real/equivalente reproduzível green.
+
+---
+
+## Usuário
+continuar até o final do projeto
+
+## Assistente — avanço até os gates externos reais
+- Revalidado o CI do head `f6c497d9e789fcf0b49910ce104a1b635bb43e62`: run `36287078238` permanece `completed/failure`; runner continua sem executar steps.
+- Railway revalidado via integração oficial: projeto `MLIVRETRABALHO`, environment `production`.
+- Serviço `@mlivretrabalho/api`: latest deployment `849dd047-c70f-4a16-8624-9a3a01bd8098`, status `SUCCESS`, criado em 2026-09-24T16:59:46.736Z.
+- Serviço `Postgres`: latest deployment `b7718c66-745f-4027-889c-42b52f1c6a63`, status `SUCCESS`.
+- Não foi feito deploy do PR #245 porque o gate de CI/equivalente reproduzível real permanece aberto.
+- #214 revalidado: fechamento exige restaurar executor, rodar pipeline completo green, revisar/mesclar #245, deploy e Production Truth gate.
+- #215 revalidado: baseline interno FIN está completo; fechamento depende de elegibilidade/contrato/preço/KYC-KYB/PLD/sandbox e responsabilidades do PSP.
+- #219 revalidado: runtime de privacidade/trust está consolidado no #245, mas ainda precisa CI real, provider sandbox/callback e pentest independente.
+- #220 revalidado: piloto ainda precisa primeiro EAS build autenticado ou runner funcional, instalação/testes em Android físico, push/deep links e pentest independente.
+- #224 revalidado: Web Next.js continua sem ambiente reproduzível para resolver dependências e gerar lockfile; não fabricar `pnpm-lock.yaml`.
+- #228 revalidado: pesquisa, questionário, outreach packet, matrizes e modelos estão prontos; respostas comerciais e sandbox dos providers são o trabalho externo bloqueante.
+- Produção atual segue saudável, mas o novo estado integrado permanece PREPARADO/NÃO PROVADO/NÃO MESCLADO.
+- Nenhum gate externo foi falsamente marcado como concluído.
