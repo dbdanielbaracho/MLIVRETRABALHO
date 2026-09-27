@@ -146,3 +146,36 @@ E2E ampliado:
 ### Próxima regra
 - Continuar procurando somente gaps de alto impacto e bugs reais; evitar hardening infinito sem relação com Definition of Done.
 - Não mesclar #245 até execução real green.
+
+### Branch sync / secondary blocker removed
+- PR #247 `chore(sync): bring current main governance into integration branch` foi criado com head `main` e base `feat/eas-pilot-build-route`.
+- Auditoria confirmou que o PR #247 continha somente 14 arquivos de documentação/evidências/requirements, sem código/schema.
+- Após recálculo GitHub, #247 ficou `mergeable=true` e foi mesclado usando a exceção documental já estabelecida para o cenário de runner zero-step.
+- Merge commit na branch #245: `a4bd59b43cfcec34af8f845a8e955da5ea34f681`.
+- PR #245 voltou a `mergeable=true`; portanto a divergência/mergeability deixou de ser blocker secundário.
+- CI do head sincronizado: run `36286518047`, foundation job `108528208652`, `steps=null`.
+
+### Railway como CI alternativo — descartado sem custo
+- Railway agent foi consultado em modo diagnóstico somente, sem mutação.
+- Confirmou que o projeto não oferece runner efêmero/one-off zero-cost para validar branch arbitrária sem serviço persistente/PR environment.
+- Produção atual permanece API + Postgres online/SUCCESS.
+- Não foi criado serviço temporário nem assumido custo.
+
+### CI coverage audit — retention concurrency
+- Gap encontrado: `scripts/privacy-retention-concurrency-e2e.sh` existia e era citado na documentação, mas não era invocado pelo workflow.
+- `.github/workflows/ci.yml` corrigido para executar o E2E de concorrência/recovery no banco de retention.
+- Commit: `02d166236df249c4bb116b61dbc6693e37123ef8`.
+- CI correspondente: run `36286686623`, job `108528672616`, ainda `steps=null`.
+
+### CORS test runner / wiring
+- Gap encontrado: `cors.test.ts` usava Vitest embora o projeto não tenha dependência `vitest`; além disso, o comando oficial `apps/api/package.json:test` usa lista explícita de arquivos e não incluía CORS.
+- `cors.test.ts` convertido para `node:test` + `node:assert/strict`, sem dependência nova.
+- Commit do teste: `ec25cd730c17799118ea78748c61bfa8f657f638`.
+- `apps/api/package.json` atualizado para compilar/executar `src/cors.ts` + `src/cors.test.ts` no `pnpm test` oficial.
+- Commit de wiring: `81828be8849342bf24760c740a2f291a1fde83f5`.
+- CI correspondente: run `36286789939`, foundation job `108528953280`, ainda `steps=null`.
+
+### Estado após esta rodada
+- #245 permanece OPEN, `mergeable=true`, NÃO MESCLADO.
+- Pipeline agora realmente referencia todos os novos E2Es críticos identificados na auditoria.
+- Hosted runner continua único blocker de execução para o PR.
