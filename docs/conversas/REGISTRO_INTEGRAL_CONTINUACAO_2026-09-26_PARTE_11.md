@@ -86,6 +86,22 @@ continuar até o final do projeto
 ## Usuário
 continuar
 
+## Assistente — continuação após sincronização documental
+- PR #248 de sincronização documental foi mesclado na branch de integração sem alterar código/schema.
+- PR #245 voltou a `mergeable=true` com novo head `9b46181e5098096cc4a137da88f5fd7472d69f83`.
+- O novo head disparou CI run `36289721664`.
+- Foundation job `108537355286` terminou `failure` com `steps=null`; novamente nenhum step foi executado.
+- Isso reproduz o mesmo blocker externo de hosted runner/provisioning/entitlement e não revela nova falha de aplicação.
+- Issue #214 foi atualizada com o novo head/run/job e o gate permanece aberto.
+- Tentativa de probe HTTP canônico por navegador externo desta sessão não conseguiu acessar o domínio; isso não foi interpretado como falha da API.
+- Provider outreach packet revalidado: contatos e mensagens de Asaas, Pagar.me, Mercado Pago e Datavalid/Serpro continuam preparados; envio real ainda requer canal outbound autorizado e resposta externa.
+- Gate preservado: não mesclar #245, não implantar migrations 0034–0052 e não declarar Production-DONE/Pilot-DONE sem execução real green e evidências externas obrigatórias.
+
+---
+
+## Usuário
+continuar
+
 ## Assistente — continuação no próprio PR de integração
 - PR #245 revalidado como OPEN, NÃO MESCLADO e `mergeable=true` antes desta atualização.
 - Head revalidado: `9b46181e5098096cc4a137da88f5fd7472d69f83`.
@@ -94,3 +110,16 @@ continuar
 - Decisão de governança: novas atualizações do Registro Integral durante esta fase serão gravadas preferencialmente na branch `feat/eas-pilot-build-route`, evitando nova divergência documental artificial em `main` antes do merge final.
 - Este commit serve também para produzir um novo head do PR #245 e, portanto, uma nova tentativa automática de CI sem alterar código de produto, schema ou migrations.
 - Gate permanece: não mesclar #245 até haver CI/equivalente reproduzível green.
+
+---
+
+## Usuário
+continuar
+
+## Assistente — reconciliação documental e remoção de divergência
+- Novo head `16b2fce15e208a918996aed86171d22e15ee23b1` foi revalidado; até a consulta desta rodada nenhum workflow run estava associado a ele.
+- `main` foi identificado no commit `19d43982d0944141ba31b27b665634b257074247`, contendo a atualização documental imediatamente anterior.
+- O `mergeable=false` do PR #245 foi isolado como conflito documental no mesmo arquivo de Registro Integral, não conflito de código, schema ou migrations.
+- Este conteúdo reconcilia integralmente as duas linhas de histórico: a atualização que estava em `main` e a atualização posterior registrada na branch de integração.
+- Próximo passo técnico desta mesma rodada: criar merge commit documental com dois pais (`branch head` + `main`) para que a branch incorpore formalmente a ancestralidade de `main` e remover o blocker secundário de divergência.
+- Gate de produto permanece inalterado: PR #245 não deve ser mesclado sem execução real green do CI/equivalente reproduzível.
