@@ -38,7 +38,7 @@ export class CompanyMembersController{
     const c=await this.ownerContext(authorization,tenantId);
     const email=String(body?.email??'').trim().toLowerCase();
     const role=String(body?.role??'');
-    if(!email||!email.includes('@'))throw new BadRequestException('invitation_email_invalid');
+    if(email.length<3||email.length>320||!email.includes('@')||/\s/.test(email))throw new BadRequestException('invitation_email_invalid');
     if(!MANAGEMENT_ROLES.has(role))throw new BadRequestException('invitation_role_invalid');
     const secret=randomBytes(32).toString('base64url');
     const inviteCode=`${c.tenantId}.${secret}`;
@@ -68,6 +68,7 @@ export class CompanyMembersController{
   async accept(@Body() body:{inviteCode?:string},@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
     const inviteCode=String(body?.inviteCode??'').trim();
+    if(inviteCode.length<1||inviteCode.length>256)throw new BadRequestException('invitation_invalid');
     const dot=inviteCode.indexOf('.');
     if(dot<1)throw new BadRequestException('invitation_invalid');
     const tenantId=inviteCode.slice(0,dot);
