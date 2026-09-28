@@ -63,8 +63,10 @@ async function main(){
         await client.query(`UPDATE privacy_retention_runs
           SET status='failed',error_code='abandoned_before_completion',completed_at=now()
           WHERE status='running'`);
-        runId=(await client.query<{id:string}>(`INSERT INTO privacy_retention_runs(operator_id,status,expired_sessions,geo_candidates,profile_candidates,chat_candidates)
-          VALUES($1,'running',$2,$3,$4,$5) RETURNING id`,[operatorId,expiredSessions,geoCandidates,profileCandidates,chatCandidates])).rows[0].id;
+        const run=(await client.query<{id:string}>(`INSERT INTO privacy_retention_runs(operator_id,status,expired_sessions,geo_candidates,profile_candidates,chat_candidates)
+          VALUES($1,'running',$2,$3,$4,$5) RETURNING id`,[operatorId,expiredSessions,geoCandidates,profileCandidates,chatCandidates])).rows[0];
+        if(!run)throw new Error('privacy_retention_run_missing');
+        runId=run.id;
 
         await client.query('BEGIN');
         await client.query('DELETE FROM sessions WHERE expires_at<=now()');
