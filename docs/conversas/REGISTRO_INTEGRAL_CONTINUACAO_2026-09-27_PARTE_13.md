@@ -71,3 +71,16 @@ CONTINUAR
 - Deployment Railway terminou `SUCCESS`; build TypeScript passou, pre-deploy migrations foram executadas e o healthcheck `/v1/health/ready` passou na primeira tentativa.
 - PRs empilhados #234–#243 foram comentados como integrated/superseded por #245 e fechados; #233 já havia sido fechado automaticamente.
 - Nenhum TinyFish, plano pago, preview environment ou infraestrutura metered adicional foi usado.
+
+
+---
+
+## Usuário
+CONTINUAR E SEGUIR NOSSAS REGRAS DE SO PARAR QUANDO TERMINAR NÃO ESQUECER DE REGISTRAR NOSSA CONVERSA NO GITHUB E ME AVISAR SE PARAR
+
+## Assistente — regra de continuidade reafirmada
+- Continuar o projeto MLIVRETRABALHO a partir do estado pós-merge/deploy do PR #245.
+- Seguir execução contínua até o fechamento dos gates restantes que possam ser executados com segurança.
+- Registrar no GitHub esta instrução e as decisões/execuções subsequentes.
+- Se surgir bloqueio externo, ação humana obrigatória ou risco/custo que impeça continuação segura, avisar explicitamente o usuário antes de parar.
+- Permanecem os guardrails: GitHub + Railway; não usar TinyFish; não acionar custo novo, plano pago ou infraestrutura metered adicional sem autorização explícita.
