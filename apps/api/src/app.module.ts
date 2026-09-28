@@ -33,6 +33,8 @@ import { CopilotController } from './copilot.controller';
 import { PrivacyController } from './privacy.controller';
 import { CompanyMembersController } from './company-members.controller';
 import { TermsController } from './terms.controller';
+import { TaxonomyController } from './taxonomy.controller';
+import { WorkGraphController } from './work-graph.controller';
 
 @Module({
   controllers: [
@@ -68,7 +70,9 @@ import { TermsController } from './terms.controller';
     VerificationController,
     CopilotController,
     PrivacyController,
-    TermsController
+    TermsController,
+    TaxonomyController,
+    WorkGraphController
   ],
   providers: [DatabaseService, AuthService]
 })
