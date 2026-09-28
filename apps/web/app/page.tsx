@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { isAdminRole, isCompanyRole, tenantHeaders } from './web-contract';
+import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders } from './web-contract';
 
 type Membership={tenantId:string;role:string;displayName?:string;slug?:string};
 type Session={accessToken:string;identity:{id:string;email:string};memberships:Membership[]};
@@ -93,7 +93,7 @@ export default function Home(){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
     const fd=new FormData(e.currentTarget);
     try{
-      await mutate('/v1/company/jobs',session,tenantId,{title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:fd.get('startsAt'),endsAt:fd.get('endsAt'),payCents:Math.round(Number(fd.get('payReais')||0)*100)});
+      await mutate('/v1/company/jobs',session,tenantId,{title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))});
       e.currentTarget.reset();setRevision(x=>x+1);
     }catch(err){setError(err instanceof Error?err.message:'Falha ao criar vaga');}finally{setLoading(false);}
   }
