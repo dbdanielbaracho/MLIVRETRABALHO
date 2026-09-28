@@ -32,6 +32,7 @@ import { VerificationController } from './verification.controller';
 import { CopilotController } from './copilot.controller';
 import { PrivacyController } from './privacy.controller';
 import { CompanyMembersController } from './company-members.controller';
+import { TermsController } from './terms.controller';
 
 @Module({
   controllers: [
@@ -66,7 +67,8 @@ import { CompanyMembersController } from './company-members.controller';
     SafetyAppealsAdminController,
     VerificationController,
     CopilotController,
-    PrivacyController
+    PrivacyController,
+    TermsController
   ],
   providers: [DatabaseService, AuthService]
 })
