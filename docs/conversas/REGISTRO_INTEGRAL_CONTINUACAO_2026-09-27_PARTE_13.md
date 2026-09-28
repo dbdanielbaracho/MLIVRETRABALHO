@@ -193,3 +193,18 @@ Continuar
 - CI #867 / run `36429299269` / job `108951033811` passou integralmente: typecheck, build, Android export, tests, migration runner, privacy/legal hold e HTTP/Production Truth contract.
 - PR #254 mesclado somente após green; merge `62336cd70ad5e554958c1ae83c24fc6b5ec40eb3`.
 - Nenhum recurso pago criado; nenhum gate externo marcado concluído sem evidência.
+
+
+## Usuário
+continuar
+
+## Execução autônoma — reconciliação de checkpoint/README
+- Auditado o inventário documental completo do repositório.
+- Detectado que README e `INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md` ainda apontavam v1.13 e estado histórico pré-CI/#245, conflitante com v1.14 e evidência real.
+- README atualizado para v1.14, CI ativo/#214 closed e TRUST runtime interno provado.
+- Checkpoint interno reescrito como estado atual, preservando distinção entre provas internas e gates externos.
+- #220 corrigido: hosted runner/APK já não são blocker; EAS é fallback opcional.
+- #224 teve seções históricas de package/runner blocker substituídas pelo estado runtime atual; deploy Web separado continua cost-gated.
+- PR #255 passou CI #870 / run `36440193447` / job `108988381817` integralmente.
+- PR #255 mesclado após green; merge `8111a1136ec6c9dde444ad1e7e878ec5d98774e0`.
+- Nenhum gate externo foi fechado por inferência e nenhum recurso metered foi criado.
