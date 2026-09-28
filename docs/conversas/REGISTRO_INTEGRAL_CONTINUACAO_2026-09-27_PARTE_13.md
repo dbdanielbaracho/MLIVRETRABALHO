@@ -262,3 +262,17 @@ continuar
 - PR #264 passou CI #895 / run 36457819663 / job 109048549924 integralmente.
 - PR #264 mesclado após green; merge f44fdcfba63173a9d08519e516e8bfb1ca2b1396.
 - Nenhum custo, contato externo, aparelho físico ou pentest foi inventado/executado sem autorização/capacidade.
+
+
+## Usuário
+CONTINUAR
+
+## Execução autônoma — preparação final Web pública sem custo
+- Reauditados todos os issues abertos: permanecem somente #215, #219, #220, #224 e #228.
+- Identificado trabalho interno ainda útil antes do cost gate de #224: preparar um gate público executável sem provisionar serviço.
+- PR #265 adicionou `scripts/web-public-smoke.sh`: valida Web root, API readiness e presença de CORS para a origem Web.
+- Adicionado `WEB_PUBLIC_DEPLOY_RUNBOOK_2026-09-28.md` com build/start Railway, watch scope, CORS exato, smoke e checklist autenticado tenant/role.
+- Nenhum serviço Railway foi criado e nenhum custo foi iniciado.
+- CI #898 / run `36485477415` / job `109141225894` passou integralmente.
+- PR #265 mesclado após green; merge `719baac124b73044c3c37494a0d6427a9d13f517`.
+- #224 atualizado com a evidência de preparação; provisioning/public smoke permanece corretamente OPEN e cost-gated.
