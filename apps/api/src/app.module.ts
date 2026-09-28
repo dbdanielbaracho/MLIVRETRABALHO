@@ -35,6 +35,7 @@ import { CompanyMembersController } from './company-members.controller';
 import { TermsController } from './terms.controller';
 import { TaxonomyController } from './taxonomy.controller';
 import { WorkGraphController } from './work-graph.controller';
+import { CareerConversionController } from './career-conversion.controller';
 
 @Module({
   controllers: [
@@ -72,7 +73,8 @@ import { WorkGraphController } from './work-graph.controller';
     PrivacyController,
     TermsController,
     TaxonomyController,
-    WorkGraphController
+    WorkGraphController,
+    CareerConversionController
   ],
   providers: [DatabaseService, AuthService]
 })
