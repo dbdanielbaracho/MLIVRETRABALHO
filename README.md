@@ -10,7 +10,7 @@ Uma rede inteligente de trabalho que conecta profissionais, empresas e oportunid
 ## Fonte da verdade
 A documentação é mantida em `docs/`.
 
-- **Documento da Verdade vigente:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.13.md`.
+- **Documento da Verdade vigente:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.14.md`.
 - `docs/conversas/` — registro integral recuperável das conversas do projeto.
 - `docs/adr/` — decisões de arquitetura.
 - `docs/evidencias/` — evidências e pesquisas.
@@ -23,14 +23,14 @@ A documentação é mantida em `docs/`.
 - Banco: PostgreSQL + PostGIS
 - Cache/filas: Redis + BullMQ
 - Otimização: Python + OR-Tools quando o problema real e os gates aplicáveis justificarem
-- CI/CD: GitHub Actions (pipeline definido; indisponibilidade atual de runner rastreada no Issue #214)
+- CI/CD: GitHub Actions (pipeline ativo; Production Truth/CI #214 concluído)
 - Deploy: Railway
 
 ## Financeiro do piloto
 Baseline: split por PSP/provider contratado, provider-neutral no domínio. Escrow, pagamento off-platform, PIX manual por conta operacional e guarantee/advance/credit não são o padrão inicial. PSP real não é autoridade sobre IDs internos; referências externas devem ser resolvidas por binding controlado pelo backend antes de entrar no contexto tenant/RLS. FIN-RISK continua OPEN até provider/contrato/sandbox/compliance e unit economics reais.
 
 ## Trust/KYC + LGPD baseline
-Provider externo de KYC/KYB é autoridade apenas sobre fatos/referências próprios. Callback não pode impor IDs internos ou enforcement. O baseline operacional de minimização/retenção está em `TRUST_DATA_RETENTION_OPERATIONAL_BASELINE_v1.13.md`; o fluxo de direitos do titular está em `DSAR_RUNBOOK_v1.13.md`; transparência em `PRIVACY_NOTICE_BASELINE_v1.13.md`. TRUST-ARCH permanece OPEN até provider real/sandbox, implementação runtime dos controles aplicáveis e pentest.
+Provider externo de KYC/KYB é autoridade apenas sobre fatos/referências próprios. Callback não pode impor IDs internos ou enforcement. O baseline operacional de minimização/retenção está em `TRUST_DATA_RETENTION_OPERATIONAL_BASELINE_v1.13.md`; o fluxo de direitos do titular está em `DSAR_RUNBOOK_v1.13.md`; transparência em `PRIVACY_NOTICE_BASELINE_v1.13.md`. TRUST-ARCH permanece OPEN para evidência provider-specific/sandbox e pentest independente; os controles runtime internos aplicáveis foram provados em CI/produção conforme v1.14.
 
 ## Legal baseline
 O projeto segue revisão jurídica interna contínua baseada em fontes primárias, legislação, jurisprudência e melhores práticas. `LEGAL_BEST_PRACTICES_REVIEW_v1.12.md` é o baseline. Parecer jurídico externo não é gate obrigatório geral.
