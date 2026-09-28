@@ -1,0 +1,21 @@
+name: Production Truth Evidence
+
+on:
+  push:
+    branches:
+      - ops/production-truth-evidence
+
+permissions:
+  contents: read
+
+jobs:
+  production-truth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Canonical public Production Truth Gate
+        env:
+          BASE_URL: https://mlivretrabalho.predibeacon.com
+          EXPECTED_VERSION: 0.1.0
+        run: bash scripts/production-truth-gate.sh
