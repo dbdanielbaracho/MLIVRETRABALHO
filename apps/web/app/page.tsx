@@ -19,6 +19,12 @@ type SafetyCase={id:string;status:string;createdAt?:string;category?:string};
 type SafetyAppeal={id:string;safetyCaseId:string;status:string;createdAt?:string};
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
 
+async function mutate<T>(path:string,session:Session,tenantId:string,body:unknown):Promise<T>{
+  const r=await fetch(`${API}${path}`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return r.json() as Promise<T>;
+}
+
 async function api<T>(path:string,session:Session,tenantId?:string):Promise<T>{
   const headers=tenantHeaders(session.accessToken,tenantId);
   const r=await fetch(`${API}${path}`,{headers,cache:'no-store'});
@@ -43,6 +49,7 @@ export default function Home(){
   const [safetyAppeals,setSafetyAppeals]=useState<SafetyAppeal[]>([]);
   const [error,setError]=useState('');
   const [loading,setLoading]=useState(false);
+  const [revision,setRevision]=useState(0);
 
   useEffect(()=>{const raw=sessionStorage.getItem('mlivre:web:session');if(raw){try{const s=JSON.parse(raw) as Session;setSession(s);setTenantId(s.memberships[0]?.tenantId||'');}catch{sessionStorage.removeItem('mlivre:web:session');}}},[]);
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
@@ -65,7 +72,7 @@ export default function Home(){
       admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
     ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
-  },[session,tenantId,membership?.role]);
+  },[session,tenantId,membership?.role,revision]);
 
   async function signin(e:FormEvent<HTMLFormElement>){
     e.preventDefault();setLoading(true);setError('');
@@ -80,6 +87,22 @@ export default function Home(){
       sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));
       setSession(normalized);setTenantId(companyMemberships[0].tenantId);
     }catch(e){setError(e instanceof Error?e.message:'Falha no login');}finally{setLoading(false);}
+  }
+
+  async function createJob(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
+    const fd=new FormData(e.currentTarget);
+    try{
+      await mutate('/v1/company/jobs',session,tenantId,{title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:fd.get('startsAt'),endsAt:fd.get('endsAt'),payCents:Math.round(Number(fd.get('payReais')||0)*100)});
+      e.currentTarget.reset();setRevision(x=>x+1);
+    }catch(err){setError(err instanceof Error?err.message:'Falha ao criar vaga');}finally{setLoading(false);}
+  }
+
+  async function createTeam(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
+    const fd=new FormData(e.currentTarget);
+    try{await mutate('/v1/company/teams',session,tenantId,{name:fd.get('name')});e.currentTarget.reset();setRevision(x=>x+1);}
+    catch(err){setError(err instanceof Error?err.message:'Falha ao criar equipe');}finally{setLoading(false);}
   }
 
   async function signout(){
@@ -107,6 +130,10 @@ export default function Home(){
       <article className="card"><h2>Talent pools</h2><p>Registros: <b>{talentPools.length}</b></p><p>Preferência operacional não é classificação empregatícia ou punição.</p></article>
       <article className="card"><h2>Financeiro</h2><p>Eventos de reconciliação: <b>{payments.length}</b></p><p>Somente leitura enquanto FIN-RISK estiver aberto. Nenhuma ação de dinheiro é criada pela Web.</p></article>
       <article className="card"><h2>Trust & Safety</h2><p>Casos autorizados visíveis: <b>{safetyCases.length}</b> · Recursos: <b>{safetyAppeals.length}</b></p><p>Casos e recursos permanecem sujeitos à autorização da API e revisão humana; nenhuma punição automática é aplicada pela interface.</p></article>
+    </section>
+    <section className="grid">
+      <article className="card"><h2>Nova vaga</h2><form onSubmit={createJob}><label>Título<input name="title" required maxLength={120}/></label><label>Função<input name="requiredRole" maxLength={120}/></label><label>Local<input name="location" maxLength={200}/></label><label>Cidade<input name="workCity" maxLength={120}/></label><label>Início<input name="startsAt" type="datetime-local" required/></label><label>Fim<input name="endsAt" type="datetime-local" required/></label><label>Valor (R$)<input name="payReais" type="number" min="0" step="0.01" required/></label><button disabled={loading}>Criar vaga</button></form></article>
+      <article className="card"><h2>Nova equipe</h2><form onSubmit={createTeam}><label>Nome<input name="name" required maxLength={120}/></label><button disabled={loading}>Criar equipe</button></form><p className="muted">Membros continuam validados pela API e pelo tenant ativo.</p></article>
     </section>
     <section className="card tableCard"><h2>Vagas</h2>{jobs.length===0?<p className="muted">Nenhuma vaga cadastrada.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Local</th><th>Início</th><th>Valor</th></tr></thead><tbody>{jobs.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.status}</td><td>{x.location||x.workCity||'—'}</td><td>{x.startsAt?new Date(x.startsAt).toLocaleString('pt-BR'):'—'}</td><td>{x.payCents==null?'—':(x.payCents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td></tr>)}</tbody></table></div>}</section>
     <section className="card tableCard"><h2>Assignments ativos</h2>{assignments.length===0?<p className="muted">Nenhum assignment ativo.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Status</th><th>Substituição</th></tr></thead><tbody>{assignments.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.status}</td><td>{x.replacementOpen?'Aberta':'—'}</td></tr>)}</tbody></table></div>}</section>
