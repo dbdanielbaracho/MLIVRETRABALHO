@@ -1,0 +1,1 @@
+export const ENGAGEMENT_MODALITIES=['gig','freelance','temporary','recurring','temp_to_hire','permanent','staffing','internal'] as const;export type EngagementModality=typeof ENGAGEMENT_MODALITIES[number];export function isEngagementModality(v:string):v is EngagementModality{return (ENGAGEMENT_MODALITIES as readonly string[]).includes(v)}
