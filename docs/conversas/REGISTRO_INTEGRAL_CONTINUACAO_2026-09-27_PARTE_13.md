@@ -181,3 +181,15 @@ continuar
 - CI #864 / run `36375283346` / job `108779745047` passou integralmente: typecheck, build, Android export, tests, migration runner, privacy/legal hold e HTTP/Production Truth contract.
 - PR #253 mesclado somente após green; merge `433c9a3d09788bebefc9a8e94a6c68d7588ef6c7`.
 - #224 atualizado com a prova dos testes Web críticos.
+
+
+## Usuário
+Continuar
+
+## Execução autônoma — tenant/session isolation hardening
+- Reauditados todos os issues abertos (#215, #219, #220, #224, #228) para separar bloqueios externos de pendências internas.
+- Encontrado defeito residual em `apps/web/app/page.tsx`: reset duplicado de Safety Appeals no caminho sem sessão/tenant e ausência de reset de Safety Appeals no signout.
+- Criado PR #254; adicionada limpeza completa de estado tenant-scoped no signout e teste deny-by-default para role ausente.
+- CI #867 / run `36429299269` / job `108951033811` passou integralmente: typecheck, build, Android export, tests, migration runner, privacy/legal hold e HTTP/Production Truth contract.
+- PR #254 mesclado somente após green; merge `62336cd70ad5e554958c1ae83c24fc6b5ec40eb3`.
+- Nenhum recurso pago criado; nenhum gate externo marcado concluído sem evidência.
