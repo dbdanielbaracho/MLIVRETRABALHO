@@ -20,7 +20,8 @@ wait "$LOCK_PID"
 # Simulate a process crash that left an audit row as running. Because the
 # concurrency guard is connection-scoped, stale audit rows must not brick
 # future maintenance; the next valid run marks them failed and proceeds.
-STALE_ID="$(psql "$DB_URL" -Atc "INSERT INTO privacy_retention_runs(operator_id,status) VALUES('e2e:abandoned','running') RETURNING id")"
+STALE_ID="$(psql "$DB_URL" -qAtc "INSERT INTO privacy_retention_runs(operator_id,status) VALUES('e2e:abandoned','running') RETURNING id")"
+test -n "$STALE_ID"
 DATABASE_URL="$DB_URL" PRIVACY_MAINTENANCE_DATABASE_URL="$DB_URL" PRIVACY_OPERATOR_ID="$OPERATOR" node apps/api/dist/privacy-retention.js --apply >/tmp/privacy-retention-recovery.json
 STALE_STATE="$(psql "$DB_URL" -AtF '|' -c "SELECT status,error_code,(completed_at IS NOT NULL)::int FROM privacy_retention_runs WHERE id='$STALE_ID'")"
 test "$STALE_STATE" = 'failed|abandoned_before_completion|1'
