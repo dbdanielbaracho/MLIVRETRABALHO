@@ -95,3 +95,16 @@ ok continuar o projeto e so parar quando terminar não esquecer de tudo que for 
 - Guardar a continuação da conversa no GitHub, mantendo o Registro Integral separado do Documento da Verdade.
 - Não fabricar conclusão de gates que dependem de CI real, credenciais, provider, aparelho físico, contrato ou pentest externo.
 - Continuar executando todo trabalho interno e externo autorizado que for possível a partir desta sessão.
+
+## Assistente — nova execução após a instrução
+- Criada esta Parte 12 do Registro Integral no commit `a3e03709428b487378f5e69680f43adaa1bf9900`.
+- O commit disparou o CI run `36364743027` (CI #813).
+- O run apareceu inicialmente `queued`, mas o foundation job `108748801213` terminou `failure` com `steps=null`; nenhum workflow step executou.
+- Pela primeira vez foi inspecionada diretamente a UI do GitHub para esse problema.
+- O próprio job exibe a anotação: `The job was not started because your account is locked due to a billing issue.`
+- Portanto a causa do bloqueio do GitHub Actions foi elevada de hipótese de entitlement/provisioning para **billing lock explicitamente confirmado pelo GitHub**.
+- Uma segunda inspeção tentou abrir `https://github.com/settings/billing` apenas em modo leitura, sem comprar, alterar cartão, plano, budget ou spending limit.
+- Essa tela privada não pôde ser acessada porque o navegador disponível não possui sessão autenticada/vault para a conta GitHub.
+- Assim, o subtipo exato do billing lock ainda não foi afirmado: pode ser limite incluído, falha/pêndencia de pagamento, budget/spending ou outra condição de billing; não inventar qual é sem evidência.
+- Issue #214 foi reescrita para registrar a causa confirmada e os dois caminhos legítimos de resolução: remover o billing lock sem violar o guardrail de custo, ou disponibilizar executor reproduzível equivalente/self-hosted.
+- Nenhum pagamento, upgrade ou mudança de billing foi feito.
