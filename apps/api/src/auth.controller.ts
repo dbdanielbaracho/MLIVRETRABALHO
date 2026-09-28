@@ -64,7 +64,7 @@ export class AuthController {
    }
    if(!verifyPassword(password,identity.password_hash)){
     const next=limit.failedCount+1;
-    await db.query(`UPDATE auth_signin_limits SET failed_count=$2,locked_until=CASE WHEN $2>=$3 THEN now()+($4::int * interval '1 minute') ELSE NULL END,updated_at=now() WHERE identity_id=$1`,[identity.id,next,SIGNIN_MAX_FAILURES,SIGNIN_LOCK_MINUTES]);
+    await db.query(`UPDATE auth_signin_limits SET failed_count=$2::int,locked_until=CASE WHEN $2::int >= $3::int THEN now()+($4::int * interval '1 minute') ELSE NULL END,updated_at=now() WHERE identity_id=$1`,[identity.id,next,SIGNIN_MAX_FAILURES,SIGNIN_LOCK_MINUTES]);
     return {kind:(next>=SIGNIN_MAX_FAILURES?'locked':'invalid') as 'locked'|'invalid'};
    }
    const token=randomBytes(32).toString('base64url');
