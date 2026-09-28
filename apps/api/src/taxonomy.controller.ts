@@ -1,0 +1,1 @@
+import {Controller,Get,Query} from '@nestjs/common';import {taxonomySearch} from './taxonomy';@Controller('taxonomy') export class TaxonomyController{@Get('roles') roles(@Query('q') q?:string){return taxonomySearch(q)}}

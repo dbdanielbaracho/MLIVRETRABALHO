@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {taxonomySearch} from './taxonomy';test('taxonomy is governed and searchable',()=>{const r=taxonomySearch('bartender');assert.equal(r.length,1);assert.equal(r[0]?.vertical,'hospitality');assert.ok(r[0]?.skills.includes('drink_preparation'))});
