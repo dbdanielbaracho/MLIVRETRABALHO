@@ -135,3 +135,15 @@ continuar
 - Manter gates: implementação → testes/CI real → revisão → merge → deploy/Production Truth quando aplicável.
 - Registrar execução e decisões no GitHub.
 - Interromper somente por ação humana obrigatória, custo, risco irreversível ou bloqueio externo.
+
+
+## Usuário
+continuar
+
+## Execução autônoma — 2026-09-28 (hardening Web)
+- Auditadas rotas reais de Teams, Replacements, Talent Pools, Payment Events/Reconciliation, Safety Cases e Safety Appeals.
+- Confirmado que Finance e Safety admin são owner/admin; Web anterior mascarava respostas de autorização esperadas com fallback vazio.
+- Criado PR #251 para tornar as leituras administrativas role-aware, incluir recursos Safety e alinhar tipos de reconciliação ao contrato real.
+- CI #855 / run `36372749444` / job `108772270697` passou integralmente: install, typecheck, build, Android export, testes, migration runner, privacy/legal hold e HTTP/Production Truth contract.
+- PR #251 mesclado após green; merge commit `252135e2d2fd3c42d9660b02b13ff6541be4305d`.
+- Nenhum serviço metered novo criado; nenhum gate externo declarado concluído sem evidência.
