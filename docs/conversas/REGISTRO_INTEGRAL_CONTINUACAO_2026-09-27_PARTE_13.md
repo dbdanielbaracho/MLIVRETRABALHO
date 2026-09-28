@@ -105,3 +105,7 @@ CONTINUAR E SEGUIR NOSSAS REGRAS DE SO PARAR QUANDO TERMINAR NÃO ESQUECER DE RE
 - #219 atualizado: runtime/privacy/network-shared já têm prova real; restam provider callback/propagation e pentest.
 - #224 atualizado: implementação Web iniciou e está mergeada/green; expansão completa e deploy Web separado permanecem.
 - #215/#228 continuam bloqueados por fatos externos de PSP/KYC: elegibilidade comercial, contrato/preço, sandbox exato e responsabilidades.
+
+- O canonical public Production Truth Gate também foi executado externamente via GitHub hosted runner contra `https://mlivretrabalho.predibeacon.com`.
+- Workflow `Production Truth Evidence` run `36372097656`, head `f72152d7bdc14a6a0414c298a9f41053a77eb3df`: SUCCESS.
+- Com CI real, merge/deploy Railway e public Production Truth todos provados, Issue #214 foi fechada como completed.
