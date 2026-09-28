@@ -123,3 +123,15 @@ continuar
 - CI #851 / run `36372195122` / job `108770676357` passou integralmente: install, typecheck, build, Android export, testes, migration runner, privacy/legal hold e HTTP/Production Truth contract.
 - PR #250 mesclado somente após green; merge commit `365667775d31de5933a181c2be0b657789a31a49`.
 - Continuam externos: aparelho físico, pentest independente e respostas/contrato/sandbox dos provedores. Deploy de serviço Web separado no Railway continua exigindo autorização de custo metered.
+
+
+## Usuário — regra permanente de execução autônoma
+“Continue autonomamente o MLIVRETRABALHO em cada rodada pelo máximo possível. Não pare para me pedir confirmação em decisões técnicas reversíveis e sem custo. Teste, corrija, faça CI, merge e deploy conforme nossos gates. Registre tudo no GitHub. Só me interrompa quando houver ação humana obrigatória, custo, risco irreversível ou bloqueio externo.”
+
+## Assistente
+- Regra aceita como governança operacional desta conversa/projeto.
+- Em cada rodada, maximizar execução autônoma segura.
+- Não solicitar confirmação para decisões técnicas reversíveis e sem custo.
+- Manter gates: implementação → testes/CI real → revisão → merge → deploy/Production Truth quando aplicável.
+- Registrar execução e decisões no GitHub.
+- Interromper somente por ação humana obrigatória, custo, risco irreversível ou bloqueio externo.
