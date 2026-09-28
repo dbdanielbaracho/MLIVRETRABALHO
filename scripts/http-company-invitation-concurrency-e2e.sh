@@ -26,8 +26,10 @@ invite_parallel(){
 invite_parallel /tmp/invite-race-a.json /tmp/invite-race-a.status & P1=$!
 invite_parallel /tmp/invite-race-b.json /tmp/invite-race-b.status & P2=$!
 wait "$P1"; wait "$P2"
-test "$(cat /tmp/invite-race-a.status)" = "200"
-test "$(cat /tmp/invite-race-b.status)" = "200"
+# POST create uses Nest's standard 201 Created response. Both requests may
+# succeed serially; the later transaction revokes the prior active invite.
+test "$(cat /tmp/invite-race-a.status)" = "201"
+test "$(cat /tmp/invite-race-b.status)" = "201"
 
 CODE_A="$(cat /tmp/invite-race-a.json | json_field inviteCode)"
 CODE_B="$(cat /tmp/invite-race-b.json | json_field inviteCode)"
@@ -51,7 +53,7 @@ STATUS_A="$(accept_status "$CODE_A" /tmp/invite-race-accept-a.json)"
 STATUS_B="$(accept_status "$CODE_B" /tmp/invite-race-accept-b.json)"
 SUCCESS=0; REJECTED=0
 for s in "$STATUS_A" "$STATUS_B"; do
-  [[ "$s" = "200" ]] && SUCCESS=$((SUCCESS+1))
+  [[ "$s" = "201" ]] && SUCCESS=$((SUCCESS+1))
   [[ "$s" = "400" ]] && REJECTED=$((REJECTED+1))
 done
 test "$SUCCESS" = "1"
