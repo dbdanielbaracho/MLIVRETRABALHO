@@ -8,6 +8,8 @@ type Session={accessToken:string;identity:{id:string;email:string};memberships:M
 type Dashboard={openJobs:number;confirmedWorkers:number;activeWorkers:number;completedAssignments:number};
 type Analytics={jobsCreated:number;openJobs:number;jobsWithInterest:number;jobsWithConfirmation:number;completedAssignments:number;cancelledAssignments:number;interestToConfirmationRate:number|null;assignmentCompletionRate:number|null};
 type Job={id:string;title:string;status:string;location?:string|null;workCity?:string|null;startsAt?:string|null;endsAt?:string|null;payCents?:number|null};
+type Candidate={professionalId:string;displayName:string;homeCity?:string|null;primaryRole?:string|null;status?:string};
+type Recommendation={professionalId:string;score:number;reasons?:string[]};
 type Assignment={id:string;status:string;professionalId:string;professionalName:string;title:string;location?:string|null;startsAt?:string|null;endsAt?:string|null;replacementOpen?:boolean};
 type CompletedAssignment={id:string;professionalId:string;professionalName:string;title:string;location?:string|null;completedAt?:string|null;ratingScore?:number|null;ratingComment?:string|null};
 type PlannerRow={id:string;title:string;jobStatus:string;workCity?:string|null;startsAt?:string|null;interestCount:number;confirmedCount:number;activeCount:number;completedCount:number;cancelledCount:number};
@@ -47,6 +49,9 @@ export default function Home(){
   const [planner,setPlanner]=useState<PlannerRow[]>([]);
   const [jobs,setJobs]=useState<Job[]>([]);
   const [assignments,setAssignments]=useState<Assignment[]>([]);
+  const [selectedJobId,setSelectedJobId]=useState('');
+  const [candidates,setCandidates]=useState<Candidate[]>([]);
+  const [recommendations,setRecommendations]=useState<Recommendation[]>([]);
   const [completed,setCompleted]=useState<CompletedAssignment[]>([]);
   const [teams,setTeams]=useState<Team[]>([]);
   const [selectedTeamId,setSelectedTeamId]=useState('');
@@ -84,6 +89,11 @@ export default function Home(){
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
     ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
   },[session,tenantId,membership?.role,revision]);
+
+  useEffect(()=>{
+    if(!session||!tenantId||!selectedJobId){setCandidates([]);setRecommendations([]);return;}
+    Promise.all([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(([cs,rs])=>{setCandidates(cs);setRecommendations(rs);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar candidatos'));
+  },[session,tenantId,selectedJobId,revision]);
 
   useEffect(()=>{
     if(!session||!tenantId||!selectedTeamId){setTeamMembers([]);return;}
@@ -134,6 +144,10 @@ export default function Home(){
     if(!session||!tenantId||!selectedReplacementId){setReplacementCandidates([]);return;}
     api<ReplacementCandidate[]>(`/v1/company/replacements/${selectedReplacementId}/candidates`,session,tenantId).then(setReplacementCandidates).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar candidatos'));
   },[session,tenantId,selectedReplacementId,revision]);
+
+  async function confirmCandidate(professionalId:string){
+    if(!session||!tenantId||!selectedJobId)return;setLoading(true);setError('');try{await mutate(`/v1/company/jobs/${selectedJobId}/confirm`,session,tenantId,{professionalId});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao confirmar profissional');}finally{setLoading(false);}
+  }
 
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const fd=new FormData(e.currentTarget);const id=String(fd.get('caseId')||'');if(!id)return;
@@ -191,6 +205,7 @@ export default function Home(){
       <article className="card"><h2>Nova vaga</h2><form onSubmit={createJob}><label>Título<input name="title" required maxLength={120}/></label><label>Função<input name="requiredRole" maxLength={120}/></label><label>Local<input name="location" maxLength={200}/></label><label>Cidade<input name="workCity" maxLength={120}/></label><label>Início<input name="startsAt" type="datetime-local" required/></label><label>Fim<input name="endsAt" type="datetime-local" required/></label><label>Valor (R$)<input name="payReais" type="number" min="0" step="0.01" required/></label><button disabled={loading}>Criar vaga</button></form></article>
       <article className="card"><h2>Nova equipe</h2><form onSubmit={createTeam}><label>Nome<input name="name" required maxLength={120}/></label><button disabled={loading}>Criar equipe</button></form><p className="muted">Membros continuam validados pela API e pelo tenant ativo.</p></article>
     </section>
+    <section className="card tableCard"><h2>Candidatos e recomendações</h2><label>Vaga<select value={selectedJobId} onChange={e=>setSelectedJobId(e.target.value)}><option value="">Selecione</option>{jobs.filter(j=>j.status==='open').map(j=><option key={j.id} value={j.id}>{j.title}</option>)}</select></label>{selectedJobId&&<div className="tableWrap"><table><thead><tr><th>Profissional</th><th>Função</th><th>Cidade</th><th>Score backend</th><th>Ação humana</th></tr></thead><tbody>{candidates.map(x=>{const r=recommendations.find(y=>y.professionalId===x.professionalId);return <tr key={x.professionalId}><td>{x.displayName}</td><td>{x.primaryRole||'—'}</td><td>{x.homeCity||'—'}</td><td>{r?.score??'—'}</td><td><button onClick={()=>confirmCandidate(x.professionalId)} disabled={loading}>Confirmar</button></td></tr>})}</tbody></table></div>}</section>
     <section className="grid">
       <article className="card"><h2>Equipe ativa</h2><label>Equipe<select value={selectedTeamId} onChange={e=>setSelectedTeamId(e.target.value)}><option value="">Selecione</option>{teams.map(t=><option key={t.id} value={t.id}>{t.name||t.displayName||t.id}</option>)}</select></label>{selectedTeamId&&<><form onSubmit={addTeamMember}><label>Profissional<select name="professionalId" required><option value="">Selecione</option>{Array.from(new Map(assignments.map(a=>[a.professionalId,a.professionalName])).entries()).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><button disabled={loading}>Adicionar membro</button></form><ul>{teamMembers.map(m=><li key={m.professionalId}>{m.displayName} {m.primaryRole?` · ${m.primaryRole}`:''} <button className="secondary" onClick={()=>removeTeamMember(m.professionalId)} disabled={loading}>Remover</button></li>)}</ul></>}</article>
       <article className="card"><h2>Talent pools</h2><form onSubmit={addTalentPool}><label>Profissional<select name="professionalId" required><option value="">Selecione</option>{Array.from(new Map(assignments.map(a=>[a.professionalId,a.professionalName])).entries()).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label>Pool<select name="pool"><option value="preferred">Preferidos</option><option value="network">Rede</option><option value="open">Aberto</option></select></label><button disabled={loading}>Adicionar ao pool</button></form><ul>{talentPools.map(x=><li key={`${x.pool}:${x.professionalId}`}>{x.professionalName||x.professionalId} · {x.pool} <button className="secondary" onClick={()=>x.professionalId&&removeTalentPool(x.pool,x.professionalId)} disabled={loading}>Remover</button></li>)}</ul></article>
