@@ -109,3 +109,17 @@ CONTINUAR E SEGUIR NOSSAS REGRAS DE SO PARAR QUANDO TERMINAR NÃO ESQUECER DE RE
 - O canonical public Production Truth Gate também foi executado externamente via GitHub hosted runner contra `https://mlivretrabalho.predibeacon.com`.
 - Workflow `Production Truth Evidence` run `36372097656`, head `f72152d7bdc14a6a0414c298a9f41053a77eb3df`: SUCCESS.
 - Com CI real, merge/deploy Railway e public Production Truth todos provados, Issue #214 foi fechada como completed.
+
+
+## Usuário
+continuar
+
+## Assistente — continuação 2026-09-28
+- Retomado exatamente do checkpoint anterior, mantendo GitHub + Railway, sem TinyFish e sem custo novo automático.
+- Revalidados #215, #219, #220, #224 e #228.
+- Checklists #220/#224 corrigidos para remover estado histórico já superado pelo retorno dos hosted runners.
+- Criado PR #250 `feat(web): expand enterprise operational surfaces`.
+- Web ampliada com leituras tenant-scoped de equipes, substituições, talent pools, reconciliação financeira e casos Safety, preservando autorização da API, FIN-RISK read-only e Trust/Safety human-review.
+- CI #851 / run `36372195122` / job `108770676357` passou integralmente: install, typecheck, build, Android export, testes, migration runner, privacy/legal hold e HTTP/Production Truth contract.
+- PR #250 mesclado somente após green; merge commit `365667775d31de5933a181c2be0b657789a31a49`.
+- Continuam externos: aparelho físico, pentest independente e respostas/contrato/sandbox dos provedores. Deploy de serviço Web separado no Railway continua exigindo autorização de custo metered.
