@@ -13,7 +13,8 @@ type CompletedAssignment={id:string;professionalId:string;professionalName:strin
 type PlannerRow={id:string;title:string;jobStatus:string;workCity?:string|null;startsAt?:string|null;interestCount:number;confirmedCount:number;activeCount:number;completedCount:number;cancelledCount:number};
 type Team={id:string;name?:string;displayName?:string;memberCount?:number};
 type TeamMember={professionalId:string;displayName:string;primaryRole?:string|null;homeCity?:string|null};
-type Replacement={id:string;status:string;assignmentId?:string;createdAt?:string};
+type Replacement={id:string;status:string;assignmentId?:string;reason?:string|null;createdAt?:string};
+type ReplacementCandidate={professionalId:string;displayName:string;score:number;reasons?:string[]};
 type TalentPool={pool:string;professionalId?:string;professionalName?:string};
 type PaymentEvent={assignmentId:string;title:string;professionalName:string;payableCents:number|null;earningStatus:string|null;capturedCents:number;refundedCents:number;paidOutCents:number;reconciliationStatus:string};
 type SafetyCase={id:string;status:string;createdAt?:string;category?:string};
@@ -51,6 +52,8 @@ export default function Home(){
   const [selectedTeamId,setSelectedTeamId]=useState('');
   const [teamMembers,setTeamMembers]=useState<TeamMember[]>([]);
   const [replacements,setReplacements]=useState<Replacement[]>([]);
+  const [selectedReplacementId,setSelectedReplacementId]=useState('');
+  const [replacementCandidates,setReplacementCandidates]=useState<ReplacementCandidate[]>([]);
   const [talentPools,setTalentPools]=useState<TalentPool[]>([]);
   const [payments,setPayments]=useState<PaymentEvent[]>([]);
   const [safetyCases,setSafetyCases]=useState<SafetyCase[]>([]);
@@ -127,6 +130,19 @@ export default function Home(){
     if(!session||!tenantId||!selectedTeamId)return;setLoading(true);setError('');try{await remove(`/v1/company/teams/${selectedTeamId}/members/${encodeURIComponent(professionalId)}`,session,tenantId);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao remover membro');}finally{setLoading(false);}
   }
 
+  useEffect(()=>{
+    if(!session||!tenantId||!selectedReplacementId){setReplacementCandidates([]);return;}
+    api<ReplacementCandidate[]>(`/v1/company/replacements/${selectedReplacementId}/candidates`,session,tenantId).then(setReplacementCandidates).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar candidatos'));
+  },[session,tenantId,selectedReplacementId,revision]);
+
+  async function requestReplacement(assignmentId:string){
+    if(!session||!tenantId)return;setLoading(true);setError('');try{const r=await mutate<Replacement>(`/v1/company/replacements/${assignmentId}`,session,tenantId,{reason:'Solicitação operacional via console Web'});setSelectedReplacementId(r.id);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao abrir substituição');}finally{setLoading(false);}
+  }
+
+  async function selectReplacement(professionalId:string){
+    if(!session||!tenantId||!selectedReplacementId)return;setLoading(true);setError('');try{await mutate(`/v1/company/replacements/${selectedReplacementId}/select`,session,tenantId,{professionalId});setSelectedReplacementId('');setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao confirmar substituto');}finally{setLoading(false);}
+  }
+
   async function addTalentPool(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId)return;const fd=new FormData(e.currentTarget);setLoading(true);setError('');try{await mutate('/v1/company/talent-pools',session,tenantId,{professionalId:fd.get('professionalId'),pool:fd.get('pool')});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao atualizar talent pool');}finally{setLoading(false);}
   }
@@ -170,7 +186,8 @@ export default function Home(){
       <article className="card"><h2>Talent pools</h2><form onSubmit={addTalentPool}><label>Profissional<select name="professionalId" required><option value="">Selecione</option>{Array.from(new Map(assignments.map(a=>[a.professionalId,a.professionalName])).entries()).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label>Pool<select name="pool"><option value="preferred">Preferidos</option><option value="network">Rede</option><option value="open">Aberto</option></select></label><button disabled={loading}>Adicionar ao pool</button></form><ul>{talentPools.map(x=><li key={`${x.pool}:${x.professionalId}`}>{x.professionalName||x.professionalId} · {x.pool} <button className="secondary" onClick={()=>x.professionalId&&removeTalentPool(x.pool,x.professionalId)} disabled={loading}>Remover</button></li>)}</ul></article>
     </section>
     <section className="card tableCard"><h2>Vagas</h2>{jobs.length===0?<p className="muted">Nenhuma vaga cadastrada.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Local</th><th>Início</th><th>Valor</th></tr></thead><tbody>{jobs.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.status}</td><td>{x.location||x.workCity||'—'}</td><td>{x.startsAt?new Date(x.startsAt).toLocaleString('pt-BR'):'—'}</td><td>{x.payCents==null?'—':(x.payCents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td></tr>)}</tbody></table></div>}</section>
-    <section className="card tableCard"><h2>Assignments ativos</h2>{assignments.length===0?<p className="muted">Nenhum assignment ativo.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Status</th><th>Substituição</th></tr></thead><tbody>{assignments.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.status}</td><td>{x.replacementOpen?'Aberta':'—'}</td></tr>)}</tbody></table></div>}</section>
+    <section className="card tableCard"><h2>Assignments ativos</h2>{assignments.length===0?<p className="muted">Nenhum assignment ativo.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Status</th><th>Substituição</th></tr></thead><tbody>{assignments.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.status}</td><td>{x.replacementOpen?'Aberta':<button className="secondary" onClick={()=>requestReplacement(x.id)} disabled={loading}>Solicitar</button>}</td></tr>)}</tbody></table></div>}</section>
+    <section className="card tableCard"><h2>Substituições</h2>{replacements.length===0?<p className="muted">Nenhuma solicitação.</p>:<><label>Solicitação<select value={selectedReplacementId} onChange={e=>setSelectedReplacementId(e.target.value)}><option value="">Selecione</option>{replacements.filter(r=>r.status==='open').map(r=><option key={r.id} value={r.id}>{r.reason||r.assignmentId||r.id}</option>)}</select></label>{selectedReplacementId&&<div className="tableWrap"><table><thead><tr><th>Candidato</th><th>Score</th><th>Ação humana</th></tr></thead><tbody>{replacementCandidates.map(x=><tr key={x.professionalId}><td>{x.displayName}</td><td>{x.score}</td><td><button onClick={()=>selectReplacement(x.professionalId)} disabled={loading}>Confirmar substituto</button></td></tr>)}</tbody></table></div>}</>}</section>
     <section className="card tableCard"><h2>Concluídos recentes</h2>{completed.length===0?<p className="muted">Nenhum trabalho concluído.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Conclusão</th><th>Avaliação</th></tr></thead><tbody>{completed.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.completedAt?new Date(x.completedAt).toLocaleString('pt-BR'):'—'}</td><td>{x.ratingScore??'Pendente'}</td></tr>)}</tbody></table></div>}</section>
     <section className="card tableCard"><h2>Planner</h2>{planner.length===0?<p className="muted">Nenhuma vaga no planner.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Cidade</th><th>Interesse</th><th>Confirmados</th><th>Ativos</th><th>Concluídos</th></tr></thead><tbody>{planner.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.jobStatus}</td><td>{x.workCity||'—'}</td><td>{x.interestCount}</td><td>{x.confirmedCount}</td><td>{x.activeCount}</td><td>{x.completedCount}</td></tr>)}</tbody></table></div>}</section>
   </main>;
