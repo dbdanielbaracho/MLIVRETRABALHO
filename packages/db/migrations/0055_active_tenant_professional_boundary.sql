@@ -34,7 +34,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 STABLE
 SET search_path=public,pg_temp
-AS $
+AS $$
 DECLARE
   v_tenant_id uuid := NULLIF(current_setting('app.tenant_id',true),'')::uuid;
   v_identity_id uuid;
@@ -49,7 +49,7 @@ BEGIN
   LIMIT 1;
   RETURN v_identity_id;
 END;
-$;
+$$;
 
 REVOKE ALL ON FUNCTION active_tenant_professional(uuid) FROM PUBLIC;
 REVOKE ALL ON FUNCTION active_tenant_professional_identity(uuid) FROM PUBLIC;
