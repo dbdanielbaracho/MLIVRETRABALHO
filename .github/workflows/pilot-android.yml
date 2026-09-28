@@ -2,6 +2,9 @@ name: Pilot Android APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - ops/pilot-apk-evidence
 
 permissions:
   contents: read
