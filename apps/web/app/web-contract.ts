@@ -8,3 +8,6 @@ export function tenantHeaders(accessToken:string,tenantId?:string){
  return headers;
 }
 export function clearTenantData<T>(empty:T):T{return empty;}
+
+export function reaisToCents(value:FormDataEntryValue|null){const n=Number(value??0);return Number.isFinite(n)?Math.round(n*100):NaN;}
+export function localDateTimeToIso(value:FormDataEntryValue|null){const d=new Date(String(value??''));return Number.isNaN(d.getTime())?'':d.toISOString();}
