@@ -6,7 +6,9 @@ STAMP="$(date +%s)-$RANDOM"
 EMAIL="profile-${STAMP}@example.test"
 PASSWORD_HASH="test-only-hash-${STAMP}"
 
-IDENTITY_ID="$(psql "$DB_URL" -v ON_ERROR_STOP=1 -tAc "INSERT INTO identities(email,password_hash) VALUES ('$EMAIL','$PASSWORD_HASH') RETURNING id")"
+IDENTITY_ID="$(psql "$DB_URL" -v ON_ERROR_STOP=1 -qAtc "INSERT INTO identities(email,password_hash) VALUES ('$EMAIL','$PASSWORD_HASH') RETURNING id")"
+
+test -n "$IDENTITY_ID"
 
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 INSERT INTO professional_profiles(subject_id,identity_id,display_name,home_city,primary_role)
