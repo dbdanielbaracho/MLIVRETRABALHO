@@ -21,9 +21,7 @@ export class CompanyMembersController{
   @Get()
   async list(@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){
     const c=await this.ownerContext(authorization,tenantId);
-    return this.db.tenant(c.tenantId,async db=>(await db.query(`SELECT m.identity_id AS "identityId",i.email,m.role,m.created_at AS "createdAt",i.deactivated_at AS "deactivatedAt"
-      FROM tenant_memberships m JOIN identities i ON i.id=m.identity_id
-      WHERE m.tenant_id=$1 ORDER BY m.created_at`,[c.tenantId])).rows);
+    return this.db.tenant(c.tenantId,async db=>(await db.query(`SELECT identity_id AS "identityId",email,role,created_at AS "createdAt",deactivated_at AS "deactivatedAt" FROM list_company_members()`)).rows);
   }
 
   @Get('invitations')
