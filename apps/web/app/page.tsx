@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { isAdminRole, isCompanyRole, tenantHeaders } from './web-contract';
 
 type Membership={tenantId:string;role:string;displayName?:string;slug?:string};
 type Session={accessToken:string;identity:{id:string;email:string};memberships:Membership[]};
@@ -16,8 +17,7 @@ type SafetyAppeal={id:string;safetyCaseId:string;status:string;createdAt?:string
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
 
 async function api<T>(path:string,session:Session,tenantId?:string):Promise<T>{
-  const headers:Record<string,string>={Authorization:`Bearer ${session.accessToken}`};
-  if(tenantId)headers['x-tenant-id']=tenantId;
+  const headers=tenantHeaders(session.accessToken,tenantId);
   const r=await fetch(`${API}${path}`,{headers,cache:'no-store'});
   if(!r.ok)throw new Error(`HTTP ${r.status}`);
   return r.json() as Promise<T>;
@@ -44,7 +44,7 @@ export default function Home(){
   useEffect(()=>{
     if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);setSafetyAppeals([]);return;}
     setLoading(true);setError('');
-    const admin=['owner','admin'].includes(membership?.role||'');
+    const admin=isAdminRole(membership?.role);
     Promise.all([
       api<Dashboard>('/v1/company/dashboard',session,tenantId),
       api<Analytics>('/v1/company/analytics',session,tenantId),
@@ -65,7 +65,7 @@ export default function Home(){
       const r=await fetch(`${API}/v1/auth/signin`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:fd.get('email'),password:fd.get('password')})});
       if(!r.ok)throw new Error(r.status===429?'Muitas tentativas. Tente novamente mais tarde.':'E-mail ou senha inválidos.');
       const s=await r.json() as Session;
-      const companyMemberships=s.memberships.filter(m=>['owner','admin','manager','company'].includes(m.role));
+      const companyMemberships=s.memberships.filter(m=>isCompanyRole(m.role));
       if(!companyMemberships.length)throw new Error('Esta conta não possui acesso empresarial.');
       const normalized={...s,memberships:companyMemberships};
       sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));
