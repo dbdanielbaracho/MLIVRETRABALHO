@@ -10,8 +10,9 @@ type PlannerRow={id:string;title:string;jobStatus:string;workCity?:string|null;s
 type Team={id:string;name?:string;displayName?:string;memberCount?:number};
 type Replacement={id:string;status:string;assignmentId?:string;createdAt?:string};
 type TalentPool={pool:string;professionalId?:string;professionalName?:string};
-type PaymentEvent={id:string;eventType?:string;providerReference?:string;amountCents?:number;reconciliationState?:string};
+type PaymentEvent={assignmentId:string;title:string;professionalName:string;payableCents:number|null;earningStatus:string|null;capturedCents:number;refundedCents:number;paidOutCents:number;reconciliationStatus:string};
 type SafetyCase={id:string;status:string;createdAt?:string;category?:string};
+type SafetyAppeal={id:string;safetyCaseId:string;status:string;createdAt?:string};
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
 
 async function api<T>(path:string,session:Session,tenantId?:string):Promise<T>{
@@ -33,6 +34,7 @@ export default function Home(){
   const [talentPools,setTalentPools]=useState<TalentPool[]>([]);
   const [payments,setPayments]=useState<PaymentEvent[]>([]);
   const [safetyCases,setSafetyCases]=useState<SafetyCase[]>([]);
+  const [safetyAppeals,setSafetyAppeals]=useState<SafetyAppeal[]>([]);
   const [error,setError]=useState('');
   const [loading,setLoading]=useState(false);
 
@@ -40,8 +42,9 @@ export default function Home(){
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
 
   useEffect(()=>{
-    if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);return;}
+    if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);setSafetyAppeals([]);return;}
     setLoading(true);setError('');
+    const admin=['owner','admin'].includes(membership?.role||'');
     Promise.all([
       api<Dashboard>('/v1/company/dashboard',session,tenantId),
       api<Analytics>('/v1/company/analytics',session,tenantId),
@@ -49,10 +52,11 @@ export default function Home(){
       api<Team[]>('/v1/company/teams',session,tenantId),
       api<Replacement[]>('/v1/company/replacements',session,tenantId),
       api<TalentPool[]>('/v1/company/talent-pools',session,tenantId),
-      api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId).catch(()=>[]),
-      api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId).catch(()=>[])
-    ]).then(([d,a,p,t,r,tp,pe,sc])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
-  },[session,tenantId]);
+      admin?api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId):Promise.resolve([]),
+      admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
+      admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
+    ]).then(([d,a,p,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
+  },[session,tenantId,membership?.role]);
 
   async function signin(e:FormEvent<HTMLFormElement>){
     e.preventDefault();setLoading(true);setError('');
@@ -93,7 +97,7 @@ export default function Home(){
       <article className="card"><h2>Substituições</h2><p>Solicitações: <b>{replacements.length}</b></p><p>A seleção continua uma ação humana explícita.</p></article>
       <article className="card"><h2>Talent pools</h2><p>Registros: <b>{talentPools.length}</b></p><p>Preferência operacional não é classificação empregatícia ou punição.</p></article>
       <article className="card"><h2>Financeiro</h2><p>Eventos de reconciliação: <b>{payments.length}</b></p><p>Somente leitura enquanto FIN-RISK estiver aberto. Nenhuma ação de dinheiro é criada pela Web.</p></article>
-      <article className="card"><h2>Trust & Safety</h2><p>Casos autorizados visíveis: <b>{safetyCases.length}</b></p><p>Casos e recursos permanecem sujeitos à autorização da API e revisão humana; nenhuma punição automática é aplicada pela interface.</p></article>
+      <article className="card"><h2>Trust & Safety</h2><p>Casos autorizados visíveis: <b>{safetyCases.length}</b> · Recursos: <b>{safetyAppeals.length}</b></p><p>Casos e recursos permanecem sujeitos à autorização da API e revisão humana; nenhuma punição automática é aplicada pela interface.</p></article>
     </section>
     <section className="card tableCard"><h2>Planner</h2>{planner.length===0?<p className="muted">Nenhuma vaga no planner.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Cidade</th><th>Interesse</th><th>Confirmados</th><th>Ativos</th><th>Concluídos</th></tr></thead><tbody>{planner.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.jobStatus}</td><td>{x.workCity||'—'}</td><td>{x.interestCount}</td><td>{x.confirmedCount}</td><td>{x.activeCount}</td><td>{x.completedCount}</td></tr>)}</tbody></table></div>}</section>
   </main>;
