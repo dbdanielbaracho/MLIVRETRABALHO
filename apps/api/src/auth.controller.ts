@@ -55,6 +55,7 @@ export class AuthController {
   const result=await this.db.transaction(async db=>{
    await db.query('INSERT INTO auth_signin_limits(identity_id) VALUES($1) ON CONFLICT(identity_id) DO NOTHING',[identity.id]);
    let limit=(await db.query<{failedCount:number;windowStartedAt:string;locked:boolean}>(`SELECT failed_count AS "failedCount",window_started_at AS "windowStartedAt",(locked_until IS NOT NULL AND locked_until>now()) AS locked FROM auth_signin_limits WHERE identity_id=$1 FOR UPDATE`,[identity.id])).rows[0];
+   if(!limit)throw new Error('auth_signin_limit_missing');
    if(limit.locked){verifyPassword(body.password,DUMMY_PASSWORD_HASH);return {kind:'locked' as const};}
    if(new Date(limit.windowStartedAt).getTime()<=Date.now()-SIGNIN_WINDOW_MS){
     await db.query('UPDATE auth_signin_limits SET failed_count=0,window_started_at=now(),locked_until=NULL,updated_at=now() WHERE identity_id=$1',[identity.id]);
