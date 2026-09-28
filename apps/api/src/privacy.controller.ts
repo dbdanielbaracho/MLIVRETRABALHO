@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Headers, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
@@ -96,6 +96,7 @@ export class PrivacyController {
   }
 
   @Post('deactivate')
+  @HttpCode(200)
   async deactivate(@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
     const requestId=await this.createRequest(identity.id,'deactivation');
