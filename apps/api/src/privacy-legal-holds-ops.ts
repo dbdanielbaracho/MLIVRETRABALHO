@@ -65,6 +65,7 @@ async function main(){
         if(!hold)throw new Error('legal_hold_not_reviewable');
         const history=(await client.query<{id:string}>(`INSERT INTO privacy_legal_hold_reviews(legal_hold_id,reviewed_by,review_note,previous_review_at,next_review_at)
           VALUES($1,$2,$3,$4,$5) RETURNING id`,[holdId,handledBy,reviewNote,hold.reviewAt,nextReviewAt])).rows[0];
+        if(!history)throw new Error('legal_hold_review_history_missing');
         const row=(await client.query(`UPDATE privacy_legal_holds SET reviewed_at=now(),reviewed_by=$2,review_note=$3,review_at=$4
           WHERE id=$1
           RETURNING id,reviewed_at AS "reviewedAt",reviewed_by AS "reviewedBy",review_note AS "reviewNote",review_at AS "reviewAt"`,[holdId,handledBy,reviewNote,nextReviewAt])).rows[0];
