@@ -7,6 +7,9 @@ type Membership={tenantId:string;role:string;displayName?:string;slug?:string};
 type Session={accessToken:string;identity:{id:string;email:string};memberships:Membership[]};
 type Dashboard={openJobs:number;confirmedWorkers:number;activeWorkers:number;completedAssignments:number};
 type Analytics={jobsCreated:number;openJobs:number;jobsWithInterest:number;jobsWithConfirmation:number;completedAssignments:number;cancelledAssignments:number;interestToConfirmationRate:number|null;assignmentCompletionRate:number|null};
+type Job={id:string;title:string;status:string;location?:string|null;workCity?:string|null;startsAt?:string|null;endsAt?:string|null;payCents?:number|null};
+type Assignment={id:string;status:string;professionalId:string;professionalName:string;title:string;location?:string|null;startsAt?:string|null;endsAt?:string|null;replacementOpen?:boolean};
+type CompletedAssignment={id:string;professionalId:string;professionalName:string;title:string;location?:string|null;completedAt?:string|null;ratingScore?:number|null;ratingComment?:string|null};
 type PlannerRow={id:string;title:string;jobStatus:string;workCity?:string|null;startsAt?:string|null;interestCount:number;confirmedCount:number;activeCount:number;completedCount:number;cancelledCount:number};
 type Team={id:string;name?:string;displayName?:string;memberCount?:number};
 type Replacement={id:string;status:string;assignmentId?:string;createdAt?:string};
@@ -29,6 +32,9 @@ export default function Home(){
   const [dashboard,setDashboard]=useState<Dashboard|null>(null);
   const [analytics,setAnalytics]=useState<Analytics|null>(null);
   const [planner,setPlanner]=useState<PlannerRow[]>([]);
+  const [jobs,setJobs]=useState<Job[]>([]);
+  const [assignments,setAssignments]=useState<Assignment[]>([]);
+  const [completed,setCompleted]=useState<CompletedAssignment[]>([]);
   const [teams,setTeams]=useState<Team[]>([]);
   const [replacements,setReplacements]=useState<Replacement[]>([]);
   const [talentPools,setTalentPools]=useState<TalentPool[]>([]);
@@ -42,20 +48,23 @@ export default function Home(){
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
 
   useEffect(()=>{
-    if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);return;}
+    if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);return;}
     setLoading(true);setError('');
     const admin=isAdminRole(membership?.role);
     Promise.all([
       api<Dashboard>('/v1/company/dashboard',session,tenantId),
       api<Analytics>('/v1/company/analytics',session,tenantId),
       api<PlannerRow[]>('/v1/company/planner',session,tenantId),
+      api<Job[]>('/v1/company/jobs',session,tenantId),
+      api<Assignment[]>('/v1/company/dashboard/assignments',session,tenantId),
+      api<CompletedAssignment[]>('/v1/company/dashboard/completed',session,tenantId),
       api<Team[]>('/v1/company/teams',session,tenantId),
       api<Replacement[]>('/v1/company/replacements',session,tenantId),
       api<TalentPool[]>('/v1/company/talent-pools',session,tenantId),
       admin?api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId):Promise.resolve([]),
       admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
-    ]).then(([d,a,p,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
+    ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
   },[session,tenantId,membership?.role]);
 
   async function signin(e:FormEvent<HTMLFormElement>){
@@ -75,7 +84,7 @@ export default function Home(){
 
   async function signout(){
     if(session){await fetch(`${API}/v1/auth/signout`,{method:'POST',headers:{Authorization:`Bearer ${session.accessToken}`}}).catch(()=>undefined);}
-    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);
+    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);
   }
 
   if(!session)return <main className="shell auth"><section className="login card"><h1>MLIVRETRABALHO</h1><p>Console empresarial complementar</p><form onSubmit={signin}><label>E-mail<input name="email" type="email" required autoComplete="username"/></label><label>Senha<input name="password" type="password" required minLength={8} autoComplete="current-password"/></label><button disabled={loading}>{loading?'Entrando…':'Entrar'}</button></form>{error&&<p role="alert" className="error">{error}</p>}<p className="muted">A sessão fica apenas nesta aba do navegador. A API continua sendo a autoridade de autenticação e autorização.</p></section></main>;
@@ -99,6 +108,9 @@ export default function Home(){
       <article className="card"><h2>Financeiro</h2><p>Eventos de reconciliação: <b>{payments.length}</b></p><p>Somente leitura enquanto FIN-RISK estiver aberto. Nenhuma ação de dinheiro é criada pela Web.</p></article>
       <article className="card"><h2>Trust & Safety</h2><p>Casos autorizados visíveis: <b>{safetyCases.length}</b> · Recursos: <b>{safetyAppeals.length}</b></p><p>Casos e recursos permanecem sujeitos à autorização da API e revisão humana; nenhuma punição automática é aplicada pela interface.</p></article>
     </section>
+    <section className="card tableCard"><h2>Vagas</h2>{jobs.length===0?<p className="muted">Nenhuma vaga cadastrada.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Local</th><th>Início</th><th>Valor</th></tr></thead><tbody>{jobs.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.status}</td><td>{x.location||x.workCity||'—'}</td><td>{x.startsAt?new Date(x.startsAt).toLocaleString('pt-BR'):'—'}</td><td>{x.payCents==null?'—':(x.payCents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td></tr>)}</tbody></table></div>}</section>
+    <section className="card tableCard"><h2>Assignments ativos</h2>{assignments.length===0?<p className="muted">Nenhum assignment ativo.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Status</th><th>Substituição</th></tr></thead><tbody>{assignments.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.status}</td><td>{x.replacementOpen?'Aberta':'—'}</td></tr>)}</tbody></table></div>}</section>
+    <section className="card tableCard"><h2>Concluídos recentes</h2>{completed.length===0?<p className="muted">Nenhum trabalho concluído.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Conclusão</th><th>Avaliação</th></tr></thead><tbody>{completed.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.completedAt?new Date(x.completedAt).toLocaleString('pt-BR'):'—'}</td><td>{x.ratingScore??'Pendente'}</td></tr>)}</tbody></table></div>}</section>
     <section className="card tableCard"><h2>Planner</h2>{planner.length===0?<p className="muted">Nenhuma vaga no planner.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Cidade</th><th>Interesse</th><th>Confirmados</th><th>Ativos</th><th>Concluídos</th></tr></thead><tbody>{planner.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.jobStatus}</td><td>{x.workCity||'—'}</td><td>{x.interestCount}</td><td>{x.confirmedCount}</td><td>{x.activeCount}</td><td>{x.completedCount}</td></tr>)}</tbody></table></div>}</section>
   </main>;
 }
