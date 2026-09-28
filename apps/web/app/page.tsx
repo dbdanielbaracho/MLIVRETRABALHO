@@ -12,12 +12,18 @@ type Assignment={id:string;status:string;professionalId:string;professionalName:
 type CompletedAssignment={id:string;professionalId:string;professionalName:string;title:string;location?:string|null;completedAt?:string|null;ratingScore?:number|null;ratingComment?:string|null};
 type PlannerRow={id:string;title:string;jobStatus:string;workCity?:string|null;startsAt?:string|null;interestCount:number;confirmedCount:number;activeCount:number;completedCount:number;cancelledCount:number};
 type Team={id:string;name?:string;displayName?:string;memberCount?:number};
+type TeamMember={professionalId:string;displayName:string;primaryRole?:string|null;homeCity?:string|null};
 type Replacement={id:string;status:string;assignmentId?:string;createdAt?:string};
 type TalentPool={pool:string;professionalId?:string;professionalName?:string};
 type PaymentEvent={assignmentId:string;title:string;professionalName:string;payableCents:number|null;earningStatus:string|null;capturedCents:number;refundedCents:number;paidOutCents:number;reconciliationStatus:string};
 type SafetyCase={id:string;status:string;createdAt?:string;category?:string};
 type SafetyAppeal={id:string;safetyCaseId:string;status:string;createdAt?:string};
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
+
+async function remove(path:string,session:Session,tenantId:string):Promise<void>{
+  const r=await fetch(`${API}${path}`,{method:'DELETE',headers:tenantHeaders(session.accessToken,tenantId)});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+}
 
 async function mutate<T>(path:string,session:Session,tenantId:string,body:unknown):Promise<T>{
   const r=await fetch(`${API}${path}`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)});
@@ -42,6 +48,8 @@ export default function Home(){
   const [assignments,setAssignments]=useState<Assignment[]>([]);
   const [completed,setCompleted]=useState<CompletedAssignment[]>([]);
   const [teams,setTeams]=useState<Team[]>([]);
+  const [selectedTeamId,setSelectedTeamId]=useState('');
+  const [teamMembers,setTeamMembers]=useState<TeamMember[]>([]);
   const [replacements,setReplacements]=useState<Replacement[]>([]);
   const [talentPools,setTalentPools]=useState<TalentPool[]>([]);
   const [payments,setPayments]=useState<PaymentEvent[]>([]);
@@ -74,6 +82,11 @@ export default function Home(){
     ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
   },[session,tenantId,membership?.role,revision]);
 
+  useEffect(()=>{
+    if(!session||!tenantId||!selectedTeamId){setTeamMembers([]);return;}
+    api<TeamMember[]>(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId).then(setTeamMembers).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar membros'));
+  },[session,tenantId,selectedTeamId,revision]);
+
   async function signin(e:FormEvent<HTMLFormElement>){
     e.preventDefault();setLoading(true);setError('');
     const fd=new FormData(e.currentTarget);
@@ -105,6 +118,23 @@ export default function Home(){
     catch(err){setError(err instanceof Error?err.message:'Falha ao criar equipe');}finally{setLoading(false);}
   }
 
+  async function addTeamMember(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();if(!session||!tenantId||!selectedTeamId)return;const fd=new FormData(e.currentTarget);const professionalId=String(fd.get('professionalId')||'');if(!professionalId)return;
+    setLoading(true);setError('');try{await mutate(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId,{professionalId});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao adicionar membro');}finally{setLoading(false);}
+  }
+
+  async function removeTeamMember(professionalId:string){
+    if(!session||!tenantId||!selectedTeamId)return;setLoading(true);setError('');try{await remove(`/v1/company/teams/${selectedTeamId}/members/${encodeURIComponent(professionalId)}`,session,tenantId);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao remover membro');}finally{setLoading(false);}
+  }
+
+  async function addTalentPool(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();if(!session||!tenantId)return;const fd=new FormData(e.currentTarget);setLoading(true);setError('');try{await mutate('/v1/company/talent-pools',session,tenantId,{professionalId:fd.get('professionalId'),pool:fd.get('pool')});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao atualizar talent pool');}finally{setLoading(false);}
+  }
+
+  async function removeTalentPool(pool:string,professionalId:string){
+    if(!session||!tenantId)return;setLoading(true);setError('');try{await remove(`/v1/company/talent-pools/${encodeURIComponent(pool)}/${encodeURIComponent(professionalId)}`,session,tenantId);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao remover talent pool');}finally{setLoading(false);}
+  }
+
   async function signout(){
     if(session){await fetch(`${API}/v1/auth/signout`,{method:'POST',headers:{Authorization:`Bearer ${session.accessToken}`}}).catch(()=>undefined);}
     sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);
@@ -134,6 +164,10 @@ export default function Home(){
     <section className="grid">
       <article className="card"><h2>Nova vaga</h2><form onSubmit={createJob}><label>Título<input name="title" required maxLength={120}/></label><label>Função<input name="requiredRole" maxLength={120}/></label><label>Local<input name="location" maxLength={200}/></label><label>Cidade<input name="workCity" maxLength={120}/></label><label>Início<input name="startsAt" type="datetime-local" required/></label><label>Fim<input name="endsAt" type="datetime-local" required/></label><label>Valor (R$)<input name="payReais" type="number" min="0" step="0.01" required/></label><button disabled={loading}>Criar vaga</button></form></article>
       <article className="card"><h2>Nova equipe</h2><form onSubmit={createTeam}><label>Nome<input name="name" required maxLength={120}/></label><button disabled={loading}>Criar equipe</button></form><p className="muted">Membros continuam validados pela API e pelo tenant ativo.</p></article>
+    </section>
+    <section className="grid">
+      <article className="card"><h2>Equipe ativa</h2><label>Equipe<select value={selectedTeamId} onChange={e=>setSelectedTeamId(e.target.value)}><option value="">Selecione</option>{teams.map(t=><option key={t.id} value={t.id}>{t.name||t.displayName||t.id}</option>)}</select></label>{selectedTeamId&&<><form onSubmit={addTeamMember}><label>Profissional<select name="professionalId" required><option value="">Selecione</option>{Array.from(new Map(assignments.map(a=>[a.professionalId,a.professionalName])).entries()).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><button disabled={loading}>Adicionar membro</button></form><ul>{teamMembers.map(m=><li key={m.professionalId}>{m.displayName} {m.primaryRole?· ${m.primaryRole}:''} <button className="secondary" onClick={()=>removeTeamMember(m.professionalId)} disabled={loading}>Remover</button></li>)}</ul></>}</article>
+      <article className="card"><h2>Talent pools</h2><form onSubmit={addTalentPool}><label>Profissional<select name="professionalId" required><option value="">Selecione</option>{Array.from(new Map(assignments.map(a=>[a.professionalId,a.professionalName])).entries()).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label>Pool<select name="pool"><option value="preferred">Preferidos</option><option value="network">Rede</option><option value="open">Aberto</option></select></label><button disabled={loading}>Adicionar ao pool</button></form><ul>{talentPools.map(x=><li key={`${x.pool}:${x.professionalId}`}>{x.professionalName||x.professionalId} · {x.pool} <button className="secondary" onClick={()=>x.professionalId&&removeTalentPool(x.pool,x.professionalId)} disabled={loading}>Remover</button></li>)}</ul></article>
     </section>
     <section className="card tableCard"><h2>Vagas</h2>{jobs.length===0?<p className="muted">Nenhuma vaga cadastrada.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Local</th><th>Início</th><th>Valor</th></tr></thead><tbody>{jobs.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.status}</td><td>{x.location||x.workCity||'—'}</td><td>{x.startsAt?new Date(x.startsAt).toLocaleString('pt-BR'):'—'}</td><td>{x.payCents==null?'—':(x.payCents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td></tr>)}</tbody></table></div>}</section>
     <section className="card tableCard"><h2>Assignments ativos</h2>{assignments.length===0?<p className="muted">Nenhum assignment ativo.</p>:<div className="tableWrap"><table><thead><tr><th>Trabalho</th><th>Profissional</th><th>Status</th><th>Substituição</th></tr></thead><tbody>{assignments.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.professionalName}</td><td>{x.status}</td><td>{x.replacementOpen?'Aberta':'—'}</td></tr>)}</tbody></table></div>}</section>
