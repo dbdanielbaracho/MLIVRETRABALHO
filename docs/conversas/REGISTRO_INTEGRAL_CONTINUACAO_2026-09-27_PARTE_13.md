@@ -208,3 +208,16 @@ continuar
 - PR #255 passou CI #870 / run `36440193447` / job `108988381817` integralmente.
 - PR #255 mesclado após green; merge `8111a1136ec6c9dde444ad1e7e878ec5d98774e0`.
 - Nenhum gate externo foi fechado por inferência e nenhum recurso metered foi criado.
+
+
+## Usuário
+continuar
+
+## Execução autônoma — external gates/root-cause reconciliation
+- Reauditados ADR-FIN-001, ADR-TRUST-001, EXTERNAL_GATES e BLOCKER_ROOT_CAUSE_MATRIX.
+- Detectado que os dois documentos de blockers ainda tratavam #214, PR #245, APK generation e Web package/build como pendências, apesar das provas posteriores.
+- `EXTERNAL_GATES_2026-09-24.md` reconciliado para 2026-09-28: separa gates já resolvidos dos realmente externos.
+- `BLOCKER_ROOT_CAUSE_MATRIX_2026-09-25.md` reconciliado: #214/#245/APK generation/Web code-build marcados CLOSED com evidência; provider/device/pentest/Web public deploy permanecem OPEN conforme natureza real.
+- PR #256 passou CI #873 / run `36442360422` / job `108995823504` integralmente.
+- PR #256 mesclado após green; merge `f88a3568475ffc2557052304b8ab235e24adb421`.
+- Nenhum provider, pentest, device ou custo foi inferido/falsamente fechado.
