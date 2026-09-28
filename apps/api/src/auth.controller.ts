@@ -48,20 +48,21 @@ export class AuthController {
  @Post('signin') async signin(@Body() body:{email?:string;password?:string}){
   if(!body.email||!body.password||body.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(body.email))throw new UnauthorizedException();
   const email=normalizedEmail(body.email);
+  const password=body.password;
   const r=await this.db.query<{id:string;email:string;password_hash:string}>('SELECT id,email,password_hash FROM identities WHERE email=$1 AND deactivated_at IS NULL',[email]);
   const identity=r.rows[0];
-  if(!identity){verifyPassword(body.password,DUMMY_PASSWORD_HASH);throw new UnauthorizedException();}
+  if(!identity){verifyPassword(password,DUMMY_PASSWORD_HASH);throw new UnauthorizedException();}
 
   const result=await this.db.transaction(async db=>{
    await db.query('INSERT INTO auth_signin_limits(identity_id) VALUES($1) ON CONFLICT(identity_id) DO NOTHING',[identity.id]);
    let limit=(await db.query<{failedCount:number;windowStartedAt:string;locked:boolean}>(`SELECT failed_count AS "failedCount",window_started_at AS "windowStartedAt",(locked_until IS NOT NULL AND locked_until>now()) AS locked FROM auth_signin_limits WHERE identity_id=$1 FOR UPDATE`,[identity.id])).rows[0];
    if(!limit)throw new Error('auth_signin_limit_missing');
-   if(limit.locked){verifyPassword(body.password,DUMMY_PASSWORD_HASH);return {kind:'locked' as const};}
+   if(limit.locked){verifyPassword(password,DUMMY_PASSWORD_HASH);return {kind:'locked' as const};}
    if(new Date(limit.windowStartedAt).getTime()<=Date.now()-SIGNIN_WINDOW_MS){
     await db.query('UPDATE auth_signin_limits SET failed_count=0,window_started_at=now(),locked_until=NULL,updated_at=now() WHERE identity_id=$1',[identity.id]);
     limit={...limit,failedCount:0,windowStartedAt:new Date().toISOString(),locked:false};
    }
-   if(!verifyPassword(body.password,identity.password_hash)){
+   if(!verifyPassword(password,identity.password_hash)){
     const next=limit.failedCount+1;
     await db.query(`UPDATE auth_signin_limits SET failed_count=$2,locked_until=CASE WHEN $2>=$3 THEN now()+($4::int * interval '1 minute') ELSE NULL END,updated_at=now() WHERE identity_id=$1`,[identity.id,next,SIGNIN_MAX_FAILURES,SIGNIN_LOCK_MINUTES]);
     return {kind:(next>=SIGNIN_MAX_FAILURES?'locked':'invalid') as 'locked'|'invalid'};
