@@ -289,3 +289,17 @@ CONTINUAR ATÉ O FINAL
 - PR #266 passou CI #901 / run 36488526142 / job 109151220814 integralmente e foi mesclado; merge 89e99a9a7f93da55561dd166c8755490d857179a.
 - A ausência de marcadores não foi tratada como prova absoluta de ausência de defeitos; apenas como evidência complementar de que não há implementação marcada como inacabada.
 - Nenhuma evidência externa foi simulada e nenhum custo foi criado.
+
+
+## Usuário
+O que falta consultar todas as conversas do projeto e todos os documetos do github
+
+## Reconciliação de escopo completo
+- Consultado o histórico recuperável do projeto MLIVRETRABALHO/AI Workforce Network e reconciliado com todos os caminhos de docs no GitHub, Documento da Verdade v1.4–v1.15, ledgers, Plano Mestre, Evidence Registry, evidências e árvore atual de API/mobile/web.
+- Foi encontrado um erro de semântica de conclusão: v1.15/INTERNAL_EXHAUSTION_PROOF descreviam corretamente o esgotamento do baseline piloto implementado, mas não o escopo original completo do produto.
+- O escopo histórico original inclui capacidades ainda internas: taxonomia dinâmica/skills/certifications, modalidades de engajamento, Allocation/Score/Planner mais completos, Work/Team Graph, Career/Direct Hire, leakage/anti-bypass, terms acceptance, support/disputes, Vertical Packs, Copilot tool orchestration e, depois de dados suficientes, forecast/no-show ML.
+- Criado FULL_SCOPE_RECONCILIATION_2026-09-28.md.
+- Criado Documento da Verdade v1.16, que prevalece sobre v1.15 na afirmação de que nada interno resta.
+- README atualizado para v1.16.
+- PR #267 passou CI #904 / run 36495119444 / job 109172778944 integralmente e foi mesclado; merge 381c48d332c7b61f57f9f46c2364b7c4f330e433.
+- Gates externos #215/#228/#219/#220/#224 permanecem reais e separados.
