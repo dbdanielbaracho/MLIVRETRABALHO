@@ -239,3 +239,14 @@ continuar até o final do projeto já passei para voce as instruções para eu n
 - Checkpoint interno alinhado para v1.15.
 - Nenhum novo recurso metered foi criado.
 - Limite atual: provider/contrato/sandbox; Android físico; pentest independente; e serviço Web público separado sujeito ao guardrail de custo. Nenhum gate externo foi fechado sem evidência.
+
+
+## Usuário
+*continuar*
+
+## Continuação autônoma
+- Reauditados os gates abertos #215, #219, #220, #224 e #228 contra a v1.15.
+- #224 ainda continha no topo texto histórico dizendo que apps/web não existia. O corpo foi reconciliado diretamente: apps/web e lockfile/CI já são realidade; breadth interno está completo até #262.
+- Confirmado que o único item de #224 restante é provisionar serviço Web público separado no Railway e executar public smoke; o guardrail de novo recurso metered impede criação automática.
+- #215/#228 continuam dependentes de resposta/contrato/sandbox real de provider; #219 depende dessas evidências quando aplicáveis e pentest independente; #220 depende de Android físico e pentest/retest.
+- Nenhum gate externo foi marcado como concluído e nenhum custo/contato externo foi iniciado sem autorização.
