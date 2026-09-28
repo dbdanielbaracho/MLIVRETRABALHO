@@ -84,3 +84,24 @@ CONTINUAR E SEGUIR NOSSAS REGRAS DE SO PARAR QUANDO TERMINAR NÃO ESQUECER DE RE
 - Registrar no GitHub esta instrução e as decisões/execuções subsequentes.
 - Se surgir bloqueio externo, ação humana obrigatória ou risco/custo que impeça continuação segura, avisar explicitamente o usuário antes de parar.
 - Permanecem os guardrails: GitHub + Railway; não usar TinyFish; não acionar custo novo, plano pago ou infraestrutura metered adicional sem autorização explícita.
+
+
+## Assistente — continuação pós-PR245
+- Reavaliados os gates #214, #215, #219, #220, #224 e #228.
+- Confirmado que o retorno do GitHub hosted runner removeu o antigo bloqueio interno de resolução de dependências do WEB-ARCH.
+- Criada branch `feat/web-enterprise-baseline`.
+- Implementado `apps/web` real com Next.js + React + TypeScript.
+- Criado workflow temporário de bootstrap de lockfile; run `36370949307` executou `pnpm install --lockfile-only` e commitou o lockfile de forma reproduzível.
+- Criado PR #249 `feat(web): enterprise console baseline`.
+- A Web foi ampliada para usar autenticação real da API, sessão apenas na aba via sessionStorage, memberships empresariais, tenant switch com limpeza/reload tenant-scoped, dashboard, analytics e planner.
+- Financeiro permanece explicitamente sem ação de dinheiro enquanto FIN-RISK está aberto; Trust/Safety permanece human-review.
+- CI #847 / run `36371219468` / job `108767816628` passou integralmente: frozen install, typecheck, build, Android export, tests, migrations, privacy/legal hold e HTTP/Production Truth contract.
+- PR #249 mesclado somente após green. Merge commit: `d3e780d3b350acee55db528bffff6031a09cf453`.
+- O deploy Web separado no Railway não foi criado porque novo service é infraestrutura metered e o guardrail atual proíbe custo novo sem autorização.
+- Para avançar #220 sem EAS pago, criada branch operacional `ops/pilot-apk-evidence` apenas para disparar o workflow de APK já existente via hosted runner.
+- Pilot APK workflow run `36371402054`, job `108768367247`, head `a37f8742db0ce60177e25704cbfe59f55c582d4a`: SUCCESS.
+- Artifact `mlivretrabalho-pilot-apk`: id `10949985331`, tamanho 44,714,642 bytes, digest `sha256:ab726632c942ffe9e9ff62e7cf5bc80f06e6c88f292a4ac088c42be77572d81c`, expira em 2026-10-12.
+- #220 atualizado: geração do APK agora tem evidência real; instalação/E2E em aparelho físico e pentest independente continuam externos.
+- #219 atualizado: runtime/privacy/network-shared já têm prova real; restam provider callback/propagation e pentest.
+- #224 atualizado: implementação Web iniciou e está mergeada/green; expansão completa e deploy Web separado permanecem.
+- #215/#228 continuam bloqueados por fatos externos de PSP/KYC: elegibilidade comercial, contrato/preço, sandbox exato e responsabilidades.
