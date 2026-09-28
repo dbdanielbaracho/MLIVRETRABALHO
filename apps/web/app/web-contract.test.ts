@@ -11,3 +11,8 @@ test('tenant context is explicit and cannot survive by inference',()=>{
  assert.deepEqual(tenantHeaders('token','tenant-b'),{Authorization:'Bearer token','x-tenant-id':'tenant-b'});
  assert.deepEqual(tenantHeaders('token'),{Authorization:'Bearer token'});
 });
+
+test('admin visibility remains deny-by-default for missing role',()=>{
+ assert.equal(isAdminRole(undefined),false);
+ assert.equal(isAdminRole(''),false);
+});
