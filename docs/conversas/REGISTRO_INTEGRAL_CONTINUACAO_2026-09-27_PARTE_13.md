@@ -250,3 +250,15 @@ continuar até o final do projeto já passei para voce as instruções para eu n
 - Confirmado que o único item de #224 restante é provisionar serviço Web público separado no Railway e executar public smoke; o guardrail de novo recurso metered impede criação automática.
 - #215/#228 continuam dependentes de resposta/contrato/sandbox real de provider; #219 depende dessas evidências quando aplicáveis e pentest independente; #220 depende de Android físico e pentest/retest.
 - Nenhum gate externo foi marcado como concluído e nenhum custo/contato externo foi iniciado sem autorização.
+
+
+## Usuário
+continuar
+
+## Execução autônoma — handoff final dos gates externos
+- Verificado Railway: último deployment API SUCCESS permanece f2914f8b-57f9-41b3-b7cd-43a741edec7f; merges posteriores Web/docs são SKIPPED pelo serviço API conforme scope.
+- Tentativa de leitura pública direta do health endpoint por ferramenta Web não teve acesso; isso não foi convertido em falha de produção nem em nova evidência.
+- Criado docs/evidencias/EXTERNAL_CLOSURE_HANDOFF_2026-09-28.md consolidando a sequência executável de fechamento para provider/FIN-RISK, TRUST provider-specific, Android físico, pentest independente e Web pública cost-gated.
+- PR #264 passou CI #895 / run 36457819663 / job 109048549924 integralmente.
+- PR #264 mesclado após green; merge f44fdcfba63173a9d08519e516e8bfb1ca2b1396.
+- Nenhum custo, contato externo, aparelho físico ou pentest foi inventado/executado sem autorização/capacidade.
