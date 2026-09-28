@@ -49,6 +49,7 @@ export class CompanyMembersController{
         WHERE tenant_id=$1 AND lower(email)=lower($2) AND accepted_at IS NULL AND revoked_at IS NULL`,[c.tenantId,email]);
       const row=(await db.query<{id:string;expiresAt:string}>(`INSERT INTO company_member_invitations(tenant_id,email,role,token_hash,invited_by_identity_id,expires_at)
         VALUES($1,$2,$3,$4,$5,now()+interval '7 days') RETURNING id,expires_at AS "expiresAt"`,[c.tenantId,email,role,tokenHash,c.identity.id])).rows[0];
+      if(!row)throw new Error('invitation_insert_missing');
       return {invitationId:row.id,email,role,expiresAt:row.expiresAt,inviteCode};
     });
   }
