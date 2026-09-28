@@ -7,6 +7,11 @@ type Session={accessToken:string;identity:{id:string;email:string};memberships:M
 type Dashboard={openJobs:number;confirmedWorkers:number;activeWorkers:number;completedAssignments:number};
 type Analytics={jobsCreated:number;openJobs:number;jobsWithInterest:number;jobsWithConfirmation:number;completedAssignments:number;cancelledAssignments:number;interestToConfirmationRate:number|null;assignmentCompletionRate:number|null};
 type PlannerRow={id:string;title:string;jobStatus:string;workCity?:string|null;startsAt?:string|null;interestCount:number;confirmedCount:number;activeCount:number;completedCount:number;cancelledCount:number};
+type Team={id:string;name?:string;displayName?:string;memberCount?:number};
+type Replacement={id:string;status:string;assignmentId?:string;createdAt?:string};
+type TalentPool={pool:string;professionalId?:string;professionalName?:string};
+type PaymentEvent={id:string;eventType?:string;providerReference?:string;amountCents?:number;reconciliationState?:string};
+type SafetyCase={id:string;status:string;createdAt?:string;category?:string};
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
 
 async function api<T>(path:string,session:Session,tenantId?:string):Promise<T>{
@@ -23,6 +28,11 @@ export default function Home(){
   const [dashboard,setDashboard]=useState<Dashboard|null>(null);
   const [analytics,setAnalytics]=useState<Analytics|null>(null);
   const [planner,setPlanner]=useState<PlannerRow[]>([]);
+  const [teams,setTeams]=useState<Team[]>([]);
+  const [replacements,setReplacements]=useState<Replacement[]>([]);
+  const [talentPools,setTalentPools]=useState<TalentPool[]>([]);
+  const [payments,setPayments]=useState<PaymentEvent[]>([]);
+  const [safetyCases,setSafetyCases]=useState<SafetyCase[]>([]);
   const [error,setError]=useState('');
   const [loading,setLoading]=useState(false);
 
@@ -30,13 +40,18 @@ export default function Home(){
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
 
   useEffect(()=>{
-    if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);return;}
+    if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);return;}
     setLoading(true);setError('');
     Promise.all([
       api<Dashboard>('/v1/company/dashboard',session,tenantId),
       api<Analytics>('/v1/company/analytics',session,tenantId),
-      api<PlannerRow[]>('/v1/company/planner',session,tenantId)
-    ]).then(([d,a,p])=>{setDashboard(d);setAnalytics(a);setPlanner(p);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
+      api<PlannerRow[]>('/v1/company/planner',session,tenantId),
+      api<Team[]>('/v1/company/teams',session,tenantId),
+      api<Replacement[]>('/v1/company/replacements',session,tenantId),
+      api<TalentPool[]>('/v1/company/talent-pools',session,tenantId),
+      api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId).catch(()=>[]),
+      api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId).catch(()=>[])
+    ]).then(([d,a,p,t,r,tp,pe,sc])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
   },[session,tenantId]);
 
   async function signin(e:FormEvent<HTMLFormElement>){
@@ -56,7 +71,7 @@ export default function Home(){
 
   async function signout(){
     if(session){await fetch(`${API}/v1/auth/signout`,{method:'POST',headers:{Authorization:`Bearer ${session.accessToken}`}}).catch(()=>undefined);}
-    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);
+    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);
   }
 
   if(!session)return <main className="shell auth"><section className="login card"><h1>MLIVRETRABALHO</h1><p>Console empresarial complementar</p><form onSubmit={signin}><label>E-mail<input name="email" type="email" required autoComplete="username"/></label><label>Senha<input name="password" type="password" required minLength={8} autoComplete="current-password"/></label><button disabled={loading}>{loading?'Entrando…':'Entrar'}</button></form>{error&&<p role="alert" className="error">{error}</p>}<p className="muted">A sessão fica apenas nesta aba do navegador. A API continua sendo a autoridade de autenticação e autorização.</p></section></main>;
@@ -74,8 +89,11 @@ export default function Home(){
     <section className="grid">
       <article className="card"><h2>Conversão operacional</h2><p>Vagas com interesse: <b>{analytics?.jobsWithInterest??'—'}</b></p><p>Com confirmação: <b>{analytics?.jobsWithConfirmation??'—'}</b></p><p>Interesse → confirmação: <b>{analytics?.interestToConfirmationRate==null?'Sem denominador':analytics.interestToConfirmationRate+'%'}</b></p></article>
       <article className="card"><h2>Conclusão</h2><p>Assignments concluídos: <b>{analytics?.completedAssignments??'—'}</b></p><p>Cancelados: <b>{analytics?.cancelledAssignments??'—'}</b></p><p>Taxa de conclusão: <b>{analytics?.assignmentCompletionRate==null?'Sem denominador':analytics.assignmentCompletionRate+'%'}</b></p></article>
-      <article className="card"><h2>Financeiro</h2><p>Reconciliação permanece somente leitura enquanto FIN-RISK estiver aberto. Nenhuma ação de dinheiro é criada pela Web.</p></article>
-      <article className="card"><h2>Trust & Safety</h2><p>Casos e recursos permanecem sujeitos à autorização da API e revisão humana; nenhuma punição automática é aplicada pela interface.</p></article>
+      <article className="card"><h2>Equipes</h2><p>Equipes visíveis: <b>{teams.length}</b></p><p>Gestão continua autorizada pela API; a Web não amplia papéis.</p></article>
+      <article className="card"><h2>Substituições</h2><p>Solicitações: <b>{replacements.length}</b></p><p>A seleção continua uma ação humana explícita.</p></article>
+      <article className="card"><h2>Talent pools</h2><p>Registros: <b>{talentPools.length}</b></p><p>Preferência operacional não é classificação empregatícia ou punição.</p></article>
+      <article className="card"><h2>Financeiro</h2><p>Eventos de reconciliação: <b>{payments.length}</b></p><p>Somente leitura enquanto FIN-RISK estiver aberto. Nenhuma ação de dinheiro é criada pela Web.</p></article>
+      <article className="card"><h2>Trust & Safety</h2><p>Casos autorizados visíveis: <b>{safetyCases.length}</b></p><p>Casos e recursos permanecem sujeitos à autorização da API e revisão humana; nenhuma punição automática é aplicada pela interface.</p></article>
     </section>
     <section className="card tableCard"><h2>Planner</h2>{planner.length===0?<p className="muted">Nenhuma vaga no planner.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Cidade</th><th>Interesse</th><th>Confirmados</th><th>Ativos</th><th>Concluídos</th></tr></thead><tbody>{planner.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.jobStatus}</td><td>{x.workCity||'—'}</td><td>{x.interestCount}</td><td>{x.confirmedCount}</td><td>{x.activeCount}</td><td>{x.completedCount}</td></tr>)}</tbody></table></div>}</section>
   </main>;
