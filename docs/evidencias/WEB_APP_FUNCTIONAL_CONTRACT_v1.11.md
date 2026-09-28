@@ -1,24 +1,16 @@
 # MLIVRETRABALHO — Web App Functional Contract v1.11
 
 **Data:** 2026-09-24  
-**Status:** internal architecture contract; implementation remains blocked by reproducible dependency resolution / lockfile generation.  
+**Status:** IMPLEMENTED BASELINE / CI-PROVEN; public separate-service deploy remains cost-gated.  
 **Authority:** Documento da Verdade v1.11 + existing API/domain behavior.  
 
 ## 1. Purpose
 
 The web application is a complementary enterprise/admin surface. The mobile app remains the primary operational product. The web app must consume existing API/domain rules and must not create a second source of business logic.
 
-## 2. Implementation gate
+## 2. Implementation state
 
-Do not add Next.js/React dependencies or hand-edit `pnpm-lock.yaml` while package resolution is unavailable. `apps/web` implementation resumes only in an environment that can resolve dependencies and generate a reproducible lockfile under the monorepo frozen-install discipline.
-
-Latest environment recheck in this work session:
-- `github.com` DNS/HTTPS unavailable from the execution container;
-- `registry.npmjs.org` DNS/HTTPS unavailable;
-- HTTPS probes returned `000`;
-- GitHub Actions also remains blocked before steps under Issue #214.
-
-This is an environment blocker, not evidence that Next.js or repository code is broken.
+The historical dependency-resolution/hosted-runner gate is resolved. `apps/web` exists with reproducible lockfile, build and dedicated critical tests. PRs #249–#254 established the baseline and role/tenant isolation. The remaining infrastructure gate is a separate public Railway Web service, which is metered and therefore requires explicit cost authorization.
 
 ## 3. Web information architecture
 
@@ -254,4 +246,4 @@ Do not merge/deploy the web implementation if any of the following is true:
 
 ## 12. Current conclusion
 
-The functional/API contract for WEB-ARCH is internally prepared. Actual `apps/web` code remains **PARADO by environment dependency resolution** until GitHub/npm package access or a functioning CI runner becomes available. This preparation reduces future implementation ambiguity without violating frozen-lockfile discipline.
+The functional/API contract is now implemented as a complementary enterprise baseline. Overview, analytics, planner, jobs, active/completed assignments, teams, replacements, talent pools, read-only finance reconciliation and role-aware Safety/Appeals consume the existing API. Dedicated critical tests cover role visibility and tenant context. Public Web deployment remains cost-gated; mobile remains the primary operational product.
