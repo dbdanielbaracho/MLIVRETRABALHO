@@ -243,9 +243,10 @@ export class SafetyAppealsAdminController {
     if (note && note.length > 2000) throw new BadRequestException('safety_appeal_note_invalid');
 
     return this.db.tenant(context.tenantId, async db => {
+      await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [id]);
       const appeal = (
         await db.query<{ id: string }>(
-          'SELECT id FROM safety_case_appeals WHERE id=$1 AND tenant_id=$2 FOR UPDATE',
+          'SELECT id FROM safety_case_appeals WHERE id=$1 AND tenant_id=$2',
           [id, context.tenantId]
         )
       ).rows[0];

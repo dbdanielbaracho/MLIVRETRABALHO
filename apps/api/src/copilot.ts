@@ -53,7 +53,7 @@ export function interpretCopilotIntent(text: string, accountType?: string): Omit
   if (includesAny(input, ['ganho', 'recebi', 'receber', 'pagamento', 'quanto vou ganhar'])) {
     return { intent: 'show_earnings', confidence: 0.88, reasons: ['pedido sobre ganhos/pagamentos'], suggestedRoute: '/ganhos' };
   }
-  if (includesAny(input, ['agenda', 'proximo trabalho', 'meu turno', 'meus turnos'])) {
+  if (includesAny(input, ['agenda', 'proximo trabalho', 'proximo turno', 'meu turno', 'meus turnos'])) {
     return { intent: 'show_schedule', confidence: 0.88, reasons: ['pedido sobre agenda/turnos'], suggestedRoute: '/agenda' };
   }
   if (includesAny(input, ['notificacao', 'aviso', 'mensagem nova'])) {

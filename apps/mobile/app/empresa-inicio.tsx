@@ -113,8 +113,10 @@ export default function EmpresaInicio() {
           <Link href="/substituicoes" style={s.action}>Substituições</Link>
           <Link href="/equipes" style={s.action}>Equipes</Link>
           <Link href="/talentos" style={s.action}>Talentos</Link>
+          <Link href="/membros" style={s.action}>Membros</Link>
           <Link href="/pagamentos" style={s.action}>Pagamentos</Link>
           <Link href="/casos-seguranca" style={s.action}>Segurança</Link>
+          <Link href="/privacidade" style={s.action}>Privacidade e dados</Link>
         </View>
 
         {[
