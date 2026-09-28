@@ -221,3 +221,21 @@ continuar
 - PR #256 passou CI #873 / run `36442360422` / job `108995823504` integralmente.
 - PR #256 mesclado após green; merge `f88a3568475ffc2557052304b8ab235e24adb421`.
 - Nenhum provider, pentest, device ou custo foi inferido/falsamente fechado.
+
+
+## Usuário
+continuar até o final do projeto já passei para voce as instruções para eu nao ficar a toda hora dizendo para continuar
+
+## Execução autônoma — fechamento interno do baseline
+- A instrução foi aplicada sem solicitar novo comando de continuação.
+- PR #257: Jobs + assignments ativos/concluídos; CI #876 green; merge a2f934057d34d5c26b97dab08def89718cc79ebb.
+- PR #258: criação de vaga/equipe + transforms ISO/cents testados; CI #878 green; merge afb2fa79859289ff8e779e35ab63fa6dd14bc7cf.
+- PR #259: membros de equipe + talent pools sem UUID manual. CI #880 encontrou erro TypeScript e bloqueou merge; corrigido; CI #881 green; merge af47d6b6c45b9ba46c42f946bdc5781d5de3096b.
+- PR #260: replacement request/candidatos/seleção humana; CI #883 green; merge 5f6b05b5886d801dc4398db57c1102a864b51079.
+- PR #261: Safety cases/appeals com revisão humana owner/admin e nota; CI #885 green; merge 6ffc252b75299638acffcd5e7858becfa034b0b1.
+- PR #262: candidatos/recomendações por vaga + confirmação humana; CI #887 green; merge 307c776c5eefba3564be356252d8bc48337b390b.
+- Railway API registrou SKIPPED para merges Web/docs-only; não foi forçado redeploy sem alteração de backend.
+- PR #263 criou Documento da Verdade v1.15 + Requirements Ledger v1.15 e atualizou README/#224. CI #889 / run 36447882172 / job 109014779498 green; merge 24ca9a611e20256f4d3f0422920ebe4fc33be708.
+- Checkpoint interno alinhado para v1.15.
+- Nenhum novo recurso metered foi criado.
+- Limite atual: provider/contrato/sandbox; Android físico; pentest independente; e serviço Web público separado sujeito ao guardrail de custo. Nenhum gate externo foi fechado sem evidência.
