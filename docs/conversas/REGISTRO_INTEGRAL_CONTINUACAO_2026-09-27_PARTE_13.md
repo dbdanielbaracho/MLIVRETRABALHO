@@ -276,3 +276,16 @@ CONTINUAR
 - CI #898 / run `36485477415` / job `109141225894` passou integralmente.
 - PR #265 mesclado após green; merge `719baac124b73044c3c37494a0d6427a9d13f517`.
 - #224 atualizado com a evidência de preparação; provisioning/public smoke permanece corretamente OPEN e cost-gated.
+
+
+## Usuário
+CONTINUAR ATÉ O FINAL
+
+## Execução autônoma — prova de exaustão interna
+- Revarrido o default branch por marcadores TODO, FIXME, "not implemented" e "throw new Error": nenhum resultado indexado.
+- Confirmado que não havia PR aberto no ponto da varredura.
+- Confirmados como únicos gates abertos: #215, #219, #220, #224 e #228.
+- Criado `docs/evidencias/INTERNAL_EXHAUSTION_PROOF_2026-09-28.md` com classificação de cada gate, regra de integridade e gatilhos objetivos para retomada.
+- PR #266 passou CI #901 / run 36488526142 / job 109151220814 integralmente e foi mesclado; merge 89e99a9a7f93da55561dd166c8755490d857179a.
+- A ausência de marcadores não foi tratada como prova absoluta de ausência de defeitos; apenas como evidência complementar de que não há implementação marcada como inacabada.
+- Nenhuma evidência externa foi simulada e nenhum custo foi criado.
