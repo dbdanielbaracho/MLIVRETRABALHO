@@ -11,7 +11,9 @@ export class PrivacyController {
   constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
 
   private async createRequest(identityId:string,requestType:string,details?:string|null){
-    return (await this.db.query<{id:string}>('INSERT INTO privacy_requests(identity_id,request_type,status,request_details) VALUES($1,$2,$3,$4) RETURNING id',[identityId,requestType,'submitted',details?.trim()||null])).rows[0].id;
+    const row=(await this.db.query<{id:string}>('INSERT INTO privacy_requests(identity_id,request_type,status,request_details) VALUES($1,$2,$3,$4) RETURNING id',[identityId,requestType,'submitted',details?.trim()||null])).rows[0];
+    if(!row)throw new Error('privacy_request_insert_missing');
+    return row.id;
   }
   private async finishRequest(requestId:string,status:'completed'|'partially_completed'|'rejected',resolutionCode?:string){
     await this.db.query('UPDATE privacy_requests SET status=$2,resolution_code=$3,updated_at=now(),completed_at=now() WHERE id=$1',[requestId,status,resolutionCode??null]);
