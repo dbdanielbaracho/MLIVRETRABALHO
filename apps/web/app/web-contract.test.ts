@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {isAdminRole,isCompanyRole,tenantHeaders} from './web-contract.ts';
+import {isAdminRole,isCompanyRole,tenantHeaders} from './web-contract';
 
 test('company role visibility does not broaden admin access',()=>{
  for(const role of ['owner','admin']){assert.equal(isCompanyRole(role),true);assert.equal(isAdminRole(role),true);}
