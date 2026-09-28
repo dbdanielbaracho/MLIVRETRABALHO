@@ -159,3 +159,25 @@ continuar
 - PR #252 passou CI #858 / run `36373187064` integralmente green e foi mesclado.
 - Merge commit: `6c5222dddcf8b2a29795d955c6c303200f996bc4`.
 - #224 atualizado para referenciar v1.14 e separar implementação provada de deploy público Web sujeito a custo.
+
+
+## Usuário
+não precisa ficar me passando o status na tela so depois de executar tudo até o final e não esqueça de gravar no arquivo do github
+
+## Assistente
+Entendido. Execução silenciosa durante a rodada; relatório apenas ao final ou quando ação humana/custo/irreversibilidade/bloqueio externo for indispensável. Registro no GitHub permanece obrigatório.
+
+## Usuário
+continuar
+
+## Execução autônoma — Web critical tests / checklist reconciliation
+- #219 atualizado: removeu estado histórico incorreto de PR #245 não provado/não mesclado; registrou CI #841, merge e Production Truth real; provider/pentest continuam abertos.
+- #224 atualizado para marcar as superfícies Web já entregues por #250/#251.
+- Auditado contrato `WEB_APP_FUNCTIONAL_CONTRACT_v1.11.md`; encontrado item de aceitação ainda não satisfeito explicitamente: testes Web dedicados de role visibility/tenant context.
+- Criado PR #253 com helper de contrato consumido pela UI e testes dedicados sem dependência nova.
+- CI #861 encontrou erro real de resolução do teste; não mesclado.
+- CI #862 encontrou conflito entre import TS explícito e typecheck; corrigido; não mesclado.
+- CI #863 confirmou que resolução extensionless ainda falhava no Node test runner; corrigido.
+- CI #864 / run `36375283346` / job `108779745047` passou integralmente: typecheck, build, Android export, tests, migration runner, privacy/legal hold e HTTP/Production Truth contract.
+- PR #253 mesclado somente após green; merge `433c9a3d09788bebefc9a8e94a6c68d7588ef6c7`.
+- #224 atualizado com a prova dos testes Web críticos.
