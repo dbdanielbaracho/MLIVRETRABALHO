@@ -43,3 +43,31 @@ continuar o projeto e so parar quando terminar não precisa mostrar na tela apen
 - Não usar produção como ambiente de teste da branch de integração.
 - Não criar infraestrutura temporária metered sob o atual guardrail de custo.
 - Assim que existir executor reproduzível sem novo custo, executar integralmente typecheck/build/migrations/E2Es do PR #245, corrigir qualquer falha real e prosseguir para merge/deploy/Production Truth.
+
+
+---
+
+## Usuário
+Check the MLIVRETRABALHO GitHub Actions state for PR #245. If a hosted runner is finally allocated and workflow steps begin executing, continue the project from the current source of truth: inspect the real CI steps/logs, fix any actual code/test failure, rerun until green where safe, then proceed with final diff review, merge #245 only after real green evidence, deploy, run Production Truth, and update GitHub issues/checkpoint/Registro Integral. If the runner still fails before the first step with runner_id=0/steps=null, do not notify me unless there is a meaningful change in cause/status or a concrete action I need to take; continue no other unsafe/paid action automatically.
+
+## Assistente
+O runner hospedado voltou a executar steps reais. A primeira execução real expôs erros de TypeScript; esses guards foram corrigidos antes da continuação registrada abaixo.
+
+## Usuário
+CONTINUAR
+
+## Assistente — execução até CI green, merge e produção
+- PR #245 foi retomado a partir do source of truth real.
+- CI #832 executou runner real; typecheck/build/mobile/tests/migrations/privacy passaram, e o HTTP journey revelou falta de privilégio direto em `identities` no talent-pool.
+- A correção preservou least privilege: foi criada a migration `0055_active_tenant_professional_boundary.sql` com funções tenant-bound `SECURITY DEFINER`, em vez de devolver SELECT direto de `identities` ao runtime.
+- Talent pools, replacement e team allocation passaram a usar a boundary tenant-safe para excluir identidades desativadas.
+- O CI revelou em seguida `SELECT ... FOR UPDATE` em `safety_case_appeals` incompatível com a revogação intencional de UPDATE; a serialização foi alterada para advisory transaction lock, preservando a imutabilidade da tabela.
+- O HTTP E2E do Copilot revelou uma lacuna determinística: “qual é meu próximo turno?” não casava com a intenção `show_schedule`; foi adicionada a expressão normalizada `proximo turno`.
+- CI #841, run `36370113823`, foundation job `108764463747`, head `eb9d88a71d90cab22800e3cd922240e8a067fee8`: SUCCESS real.
+- Evidência green: setup, PostgreSQL, checkout, Node, pnpm, dependencies, typecheck, build, Android export, DB tests, production migration runner, privacy/legal-hold contract e HTTP journey/readiness/Production Truth contract concluíram `success`.
+- Diff final vs main revisado: branch estava 170 commits à frente, 0 atrás, 64 arquivos alterados; PR permanecia mergeable.
+- PR #245 foi mesclado somente após o green real. Merge commit: `979ed248bc79eeb7b9f6129b347778396d84a2cd`.
+- Railway detectou automaticamente o merge em `main` e executou deployment `ad77707b-0078-4281-86d0-693bf5df1972`.
+- Deployment Railway terminou `SUCCESS`; build TypeScript passou, pre-deploy migrations foram executadas e o healthcheck `/v1/health/ready` passou na primeira tentativa.
+- PRs empilhados #234–#243 foram comentados como integrated/superseded por #245 e fechados; #233 já havia sido fechado automaticamente.
+- Nenhum TinyFish, plano pago, preview environment ou infraestrutura metered adicional foi usado.
