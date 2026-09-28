@@ -1,14 +1,14 @@
 # MLIVRETRABALHO — Internal Completion Checkpoint
 
 **Atualizado:** 2026-09-28  
-**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.14.md`  
+**Documento normativo vigente:** `DOCUMENTO_DA_VERDADE_v1.15.md`  
 **Regra:** este checkpoint não declara Pilot-DONE enquanto gates externos permanecerem abertos.
 
 ## Estado interno comprovado
 - PR #245 mesclado após CI #841 green; merge `979ed248bc79eeb7b9f6129b347778396d84a2cd`.
 - Railway production deploy concluído; Production Truth público passou no run `36372097656`; #214 CLOSED.
 - Privacy/DSAR/retention/legal hold/owner handoff/auth/session/NETWORK_SHARED/CORS/finance-ledger hardening do #245 possuem prova automatizada interna.
-- Web complementar implementada por #249/#250/#251, testes críticos por #253 e isolamento de sessão/tenant endurecido por #254.
+- Web complementar implementada e ampliada por #249–#254 e #257–#262: operações, candidatos/confirmação, equipes/pools, replacement e Safety human-review; CI-proven.
 - APK Android piloto gerado no hosted runner: run `36371402054`, artifact `10949985331`, digest `sha256:ab726632c942ffe9e9ff62e7cf5bc80f06e6c88f292a4ac088c42be77572d81c`.
 - Documento da Verdade/Requirements Ledger reconciliados na v1.14.
 
