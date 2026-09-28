@@ -147,3 +147,15 @@ continuar
 - CI #855 / run `36372749444` / job `108772270697` passou integralmente: install, typecheck, build, Android export, testes, migration runner, privacy/legal hold e HTTP/Production Truth contract.
 - PR #251 mesclado após green; merge commit `252135e2d2fd3c42d9660b02b13ff6541be4305d`.
 - Nenhum serviço metered novo criado; nenhum gate externo declarado concluído sem evidência.
+
+
+## Usuário
+continuar
+
+## Execução autônoma — reconciliação da verdade v1.14
+- Auditorados issues abertos e Documento da Verdade v1.13/Requirements Ledger v1.13.
+- Detectada divergência: documentos normativos ainda marcavam #214/PR #245/Web como bloqueados apesar das provas posteriores.
+- Criados `DOCUMENTO_DA_VERDADE_v1.14.md` e `REQUIREMENTS_LEDGER_DELTA_v1.14.md`, preservando histórico e atualizando somente estados comprovados.
+- PR #252 passou CI #858 / run `36373187064` integralmente green e foi mesclado.
+- Merge commit: `6c5222dddcf8b2a29795d955c6c303200f996bc4`.
+- #224 atualizado para referenciar v1.14 e separar implementação provada de deploy público Web sujeito a custo.
