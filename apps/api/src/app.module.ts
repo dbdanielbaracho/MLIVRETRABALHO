@@ -42,6 +42,7 @@ import { IntegrityController } from './integrity.controller';
 import { SupportController } from './support.controller';
 import { CareerController } from './career.controller';
 import { VerticalPacksController } from './vertical-packs.controller';
+import { CancellationController } from './cancellation.controller';
 
 @Module({
   controllers: [
@@ -86,7 +87,8 @@ import { VerticalPacksController } from './vertical-packs.controller';
     IntegrityController,
     SupportController,
     CareerController,
-    VerticalPacksController
+    VerticalPacksController,
+    CancellationController
   ],
   providers: [DatabaseService, AuthService]
 })
