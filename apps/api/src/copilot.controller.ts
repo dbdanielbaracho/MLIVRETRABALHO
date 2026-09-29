@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CopilotMode, copilotPolicy } from './copilot';
+import { allowedCopilotTools, requestedCopilotTool } from './copilot-tools';
 
 const modes = new Set<CopilotMode>(['manual', 'assisted', 'automatic']);
 const companyRoles = new Set(['owner', 'admin', 'manager', 'company']);
@@ -20,13 +21,16 @@ export class CopilotController {
     if (body.mode && !modes.has(body.mode)) throw new BadRequestException('copilot_mode_invalid');
 
     const memberships = await this.auth.memberships(identity.id);
-    const accountType = memberships.some(m => companyRoles.has(m.role)) ? 'company' : 'professional';
+    const accountType: 'company'|'professional' = memberships.some(m => companyRoles.has(m.role)) ? 'company' : 'professional';
 
     return {
       ...copilotPolicy({ text, accountType, mode: body.mode ?? 'assisted' }),
       accountType,
       provider: 'deterministic_baseline',
       providerConfigured: false,
+      allowedTools: allowedCopilotTools(accountType),
+      suggestedTool: requestedCopilotTool(text,accountType),
+      toolExecution: 'read_only_explicit',
       disclaimer: 'Sugestão assistida. Nenhuma ação crítica é executada automaticamente.'
     };
   }
