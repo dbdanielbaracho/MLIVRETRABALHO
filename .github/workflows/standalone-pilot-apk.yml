@@ -1,0 +1,51 @@
+name: Standalone Pilot APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/mobile/**'
+      - 'scripts/build-android-pilot.sh'
+      - '.github/workflows/standalone-pilot-apk.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-standalone-pilot-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.15.1 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build and verify standalone APK
+        env:
+          EXPO_PUBLIC_API_URL: https://mlivretrabalho.predibeacon.com/v1
+        run: bash scripts/build-android-pilot.sh
+      - name: Upload standalone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MLivreTrabalho-standalone-apk
+          path: artifacts/android-pilot/
+          if-no-files-found: error
+          retention-days: 14
