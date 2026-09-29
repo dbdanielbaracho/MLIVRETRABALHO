@@ -39,6 +39,7 @@ import { CareerConversionController } from './career-conversion.controller';
 import { ProfessionalPlannerController } from './professional-planner.controller';
 import { ProfessionalCapabilitiesController } from './professional-capabilities.controller';
 import { IntegrityController } from './integrity.controller';
+import { SupportController } from './support.controller';
 
 @Module({
   controllers: [
@@ -80,7 +81,8 @@ import { IntegrityController } from './integrity.controller';
     CareerConversionController,
     ProfessionalPlannerController,
     ProfessionalCapabilitiesController,
-    IntegrityController
+    IntegrityController,
+    SupportController
   ],
   providers: [DatabaseService, AuthService]
 })
