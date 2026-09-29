@@ -41,6 +41,7 @@ import { ProfessionalCapabilitiesController } from './professional-capabilities.
 import { IntegrityController } from './integrity.controller';
 import { SupportController } from './support.controller';
 import { CareerController } from './career.controller';
+import { VerticalPacksController } from './vertical-packs.controller';
 
 @Module({
   controllers: [
@@ -84,7 +85,8 @@ import { CareerController } from './career.controller';
     ProfessionalCapabilitiesController,
     IntegrityController,
     SupportController,
-    CareerController
+    CareerController,
+    VerticalPacksController
   ],
   providers: [DatabaseService, AuthService]
 })

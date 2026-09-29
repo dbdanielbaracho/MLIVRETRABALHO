@@ -1,0 +1,1 @@
+import{Controller,Get}from'@nestjs/common';import{VERTICAL_PACKS}from'./vertical-packs';@Controller('vertical-packs')export class VerticalPacksController{@Get()list(){return Object.entries(VERTICAL_PACKS).map(([id,config])=>({id,...config}))}}
