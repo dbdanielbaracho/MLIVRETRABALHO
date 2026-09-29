@@ -38,6 +38,7 @@ import { WorkGraphController } from './work-graph.controller';
 import { CareerConversionController } from './career-conversion.controller';
 import { ProfessionalPlannerController } from './professional-planner.controller';
 import { ProfessionalCapabilitiesController } from './professional-capabilities.controller';
+import { IntegrityController } from './integrity.controller';
 
 @Module({
   controllers: [
@@ -78,7 +79,8 @@ import { ProfessionalCapabilitiesController } from './professional-capabilities.
     WorkGraphController,
     CareerConversionController,
     ProfessionalPlannerController,
-    ProfessionalCapabilitiesController
+    ProfessionalCapabilitiesController,
+    IntegrityController
   ],
   providers: [DatabaseService, AuthService]
 })
