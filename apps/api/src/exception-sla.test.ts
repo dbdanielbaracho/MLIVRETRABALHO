@@ -1,0 +1,1 @@
+import test from'node:test';import assert from'node:assert/strict';import{exceptionSla}from'./exception-sla';test('marks overdue exception deterministically',()=>{const x=exceptionSla({id:'1',type:'support',priority:'urgent',status:'open',createdAt:'2026-01-01T00:00:00Z'},Date.parse('2026-01-01T00:20:00Z'));assert.equal(x.overdue,true);assert.equal(x.targetMinutes,15)})
