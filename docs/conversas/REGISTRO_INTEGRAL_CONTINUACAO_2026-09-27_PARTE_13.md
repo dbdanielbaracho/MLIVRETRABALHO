@@ -315,3 +315,17 @@ Terminar o que falta
 - PR #274 criou Documento da Verdade v1.17 e atualizou README; CI #920 green; merge 59034307b9f5f6ef15415ffa8e5176605462ce6f.
 - Ainda internos: integrar scores em todas as superfícies, company planner completo, policy de terms, support/dispute/exception queue, integrity/leakage com revisão humana, aprofundar Vertical Packs, Copilot tool orchestration e Career Engine além de conversion. Forecast/no-show ML permanece data-gated.
 - Externos permanecem #215/#228, #219, #220 e #224.
+
+
+## Usuário
+Fazer tUdo que depende de voce e ir até o final
+
+## Fechamento da fronteira interna executável
+- Reauditado o código atual; havia trabalho de rodadas intermediárias já incorporado em main (career, integrity, support, terms policy, cancellation, planner e Copilot).
+- PR #281: fila de exceções ganhou SLA/overdue/escalation determinísticos; ranking de replacement passou a usar Professional Score contextual. CI #937 green. Merge 5d0000d5b6847a9b8a6fe6aa068b4e84345d3259.
+- PR #282: Vertical Packs aprofundados com checklists e templates de equipe. CI #939 green. Merge 23e0a9f1e52eb5ba9ef7203c98d9f254fdf25b55.
+- PR #283: Copilot read-only expandido para dashboard/planner/exceptions e week/support/career. CI #941 green. Merge 0d6eb1324ee4876f9d10f6ab0f9b43d817d617b5.
+- Railway API deployment 00ef8b89-e2e8-4c85-a008-b5af58871b85 SUCCESS para #283.
+- PR #284: Documento da Verdade v1.18 congela a fronteira interna executável. CI #943 green. Merge 8203aabec1543e72d7e3df90095b24955232f484; deploy docs-only SKIPPED esperado.
+- Itens restantes não são honestamente concluíveis só por código interno: ML forecast/no-show depende de dados reais; PSP/KYC/KYB e pagamentos dependem de contrato/sandbox; provider trust/pentest são externos; Android físico exige device; Web pública exige autorização de novo serviço medido; enterprise-specific exige alvo definido.
+- Regra: novos commits internos a partir daqui somente por defeito, requisito novo ou evidência externa que desbloqueie gate. Não criar busywork.
