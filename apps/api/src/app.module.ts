@@ -37,6 +37,7 @@ import { TaxonomyController } from './taxonomy.controller';
 import { WorkGraphController } from './work-graph.controller';
 import { CareerConversionController } from './career-conversion.controller';
 import { ProfessionalPlannerController } from './professional-planner.controller';
+import { ProfessionalCapabilitiesController } from './professional-capabilities.controller';
 
 @Module({
   controllers: [
@@ -76,7 +77,8 @@ import { ProfessionalPlannerController } from './professional-planner.controller
     TaxonomyController,
     WorkGraphController,
     CareerConversionController,
-    ProfessionalPlannerController
+    ProfessionalPlannerController,
+    ProfessionalCapabilitiesController
   ],
   providers: [DatabaseService, AuthService]
 })
