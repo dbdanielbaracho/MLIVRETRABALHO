@@ -1,0 +1,1 @@
+import test from'node:test';import assert from'node:assert/strict';import{missingTerms}from'./terms-policy';test('terms policy is version explicit',()=>{assert.equal(missingTerms([],'professional').length,2);assert.deepEqual(missingTerms([{termsKey:'platform_terms',version:'1.0'}],'professional').map(x=>x.key),['privacy_notice'])});
