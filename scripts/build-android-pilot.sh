@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 export CI=1
+# This script is the canonical standalone Android pilot build entrypoint.
 export NODE_ENV=production
 export EXPO_PUBLIC_API_URL="${EXPO_PUBLIC_API_URL:-https://mlivretrabalho.predibeacon.com/v1}"
 
