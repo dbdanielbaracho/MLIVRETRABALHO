@@ -1,0 +1,1 @@
+import test from'node:test';import assert from'node:assert/strict';import{verticalPack}from'./vertical-packs';test('active vertical packs include operating checklist and team template',()=>{const p=verticalPack('events');assert.equal(p?.active,true);assert.ok((p?.checklist.length??0)>0);assert.ok((p?.defaultTeam.length??0)>0)});
