@@ -303,3 +303,15 @@ O que falta consultar todas as conversas do projeto e todos os documetos do gith
 - README atualizado para v1.16.
 - PR #267 passou CI #904 / run 36495119444 / job 109172778944 integralmente e foi mesclado; merge 381c48d332c7b61f57f9f46c2364b7c4f330e433.
 - Gates externos #215/#228/#219/#220/#224 permanecem reais e separados.
+
+
+## Usuário
+Terminar o que falta
+
+## Execução autônoma — escopo completo
+- PRs #268–#273 implementaram: Score Engine contextual, team optimizer, modalidades de trabalho persistidas, aceite versionado de termos, taxonomia governada e capabilities, Work/Team Graph, Direct Hire/Conversion com decisão humana, planner profissional “Monte minha semana” e Vertical Packs iniciais.
+- Todos foram mesclados somente após CI completo green (#908, #910, #912, #914, #916, #918). O CI #907 falhou por harness de teste incompatível e foi corrigido antes do merge.
+- Railway API deployment ef80e28d-39f7-491a-b1e0-9aebbd0d4774: SUCCESS para o merge #273.
+- PR #274 criou Documento da Verdade v1.17 e atualizou README; CI #920 green; merge 59034307b9f5f6ef15415ffa8e5176605462ce6f.
+- Ainda internos: integrar scores em todas as superfícies, company planner completo, policy de terms, support/dispute/exception queue, integrity/leakage com revisão humana, aprofundar Vertical Packs, Copilot tool orchestration e Career Engine além de conversion. Forecast/no-show ML permanece data-gated.
+- Externos permanecem #215/#228, #219, #220 e #224.
