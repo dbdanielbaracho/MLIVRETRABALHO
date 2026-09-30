@@ -82,10 +82,7 @@ jobs:
             test -s /tmp/app.pid
             adb shell dumpsys activity activities | grep -F "com.predibeacon.mlivretrabalho.pilot"
             adb logcat -d > /tmp/mlivretrabalho-logcat.txt
-            if grep -E "FATAL EXCEPTION|AndroidRuntime.*FATAL|ReactNativeJS:.*(Error|TypeError|ReferenceError)|Unable to load script" /tmp/mlivretrabalho-logcat.txt; then
-              echo "ERROR: MLivreTrabalho crashed during standalone device smoke test." >&2
-              exit 1
-            fi
+            ! grep -E "FATAL EXCEPTION|AndroidRuntime.*FATAL|ReactNativeJS:.*(Error|TypeError|ReferenceError)|Unable to load script" /tmp/mlivretrabalho-logcat.txt
             echo "DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
 
       - name: Upload crash log on failure
