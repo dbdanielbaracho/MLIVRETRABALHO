@@ -72,10 +72,7 @@ jobs:
             adb kill-server || true
             adb start-server
             adb wait-for-device
-            for i in $(seq 1 30); do
-              if adb shell getprop sys.boot_completed 2>/dev/null | grep -q 1; then break; fi
-              sleep 2
-            done
+            adb shell getprop sys.boot_completed
             test "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1"
             adb logcat -c
             adb install -r "$APK"
