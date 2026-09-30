@@ -27,7 +27,7 @@ permissions:
 jobs:
   build-standalone-pilot-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,14 +60,23 @@ jobs:
           api-level: 35
           arch: x86_64
           profile: pixel_6
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
           script: |
             set -eu
             APK="$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
             PACKAGE="com.predibeacon.mlivretrabalho.pilot"
+            # The runner action already waits for Android to boot. Give Android
+            # services a short settling period, then reconnect ADB before install.
+            sleep 10
+            adb kill-server || true
+            adb start-server
             adb wait-for-device
-            until adb shell getprop sys.boot_completed | grep -q 1; do sleep 2; done
+            for i in $(seq 1 30); do
+              if adb shell getprop sys.boot_completed 2>/dev/null | grep -q 1; then break; fi
+              sleep 2
+            done
+            test "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1"
             adb logcat -c
             adb install -r "$APK"
             adb shell am force-stop "$PACKAGE"
