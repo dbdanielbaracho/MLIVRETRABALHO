@@ -2,6 +2,14 @@ name: Standalone Pilot APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/mobile/**'
+      - 'scripts/build-android-pilot.sh'
+      - '.github/workflows/standalone-pilot-apk.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
   push:
     branches:
       - main
@@ -19,7 +27,7 @@ permissions:
 jobs:
   build-standalone-pilot-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,11 +46,55 @@ jobs:
           corepack prepare pnpm@10.15.1 --activate
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build and verify standalone APK
+      - name: Build standalone APK
         env:
           EXPO_PUBLIC_API_URL: https://mlivretrabalho.predibeacon.com/v1
         run: bash scripts/build-android-pilot.sh
-      - name: Upload standalone APK
+
+      # Do not publish an APK merely because Gradle compiled it. Boot a clean
+      # Android emulator, install the exact artifact, launch it with Metro absent,
+      # and fail on native/React Native fatal crashes.
+      - name: Device smoke test — install and launch without Metro
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
+          script: |
+            set -eu
+            # The runner action already waits for Android to boot. Give Android
+            # services a short settling period, then reconnect ADB before install.
+            sleep 10
+            adb kill-server || true
+            adb start-server
+            adb wait-for-device
+            adb shell getprop sys.boot_completed
+            test "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1"
+            adb logcat -c
+            test -f "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
+            adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
+            adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
+            adb shell monkey -p "com.predibeacon.mlivretrabalho.pilot" -c android.intent.category.LAUNCHER 1
+            sleep 12
+            adb shell pidof "com.predibeacon.mlivretrabalho.pilot" | tee /tmp/app.pid
+            test -s /tmp/app.pid
+            adb shell dumpsys activity activities | grep -F "com.predibeacon.mlivretrabalho.pilot"
+            adb logcat -d > /tmp/mlivretrabalho-logcat.txt
+            ! grep -E "FATAL EXCEPTION|AndroidRuntime.*FATAL|ReactNativeJS:.*(Error|TypeError|ReferenceError)|Unable to load script" /tmp/mlivretrabalho-logcat.txt
+            echo "DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+
+      - name: Upload crash log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MLivreTrabalho-device-smoke-logs
+          path: /tmp/mlivretrabalho-logcat.txt
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload validated standalone APK
         uses: actions/upload-artifact@v4
         with:
           name: MLivreTrabalho-standalone-apk
