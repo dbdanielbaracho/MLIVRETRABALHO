@@ -1,0 +1,43 @@
+name: Mobile lockfile bootstrap
+
+on:
+  push:
+    branches:
+      - fix/mobile-samsung-startup-crash
+    paths:
+      - 'apps/mobile/package.json'
+      - '.github/workflows/mobile-lockfile-bootstrap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  lockfile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/mobile-samsung-startup-crash
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.15.1 --activate
+      - name: Resolve mobile dependency graph
+        run: pnpm install --lockfile-only
+      - name: Verify Samsung crash dependency alignment
+        run: |
+          test "$(node -p "require('./apps/mobile/package.json').dependencies.react")" = "19.1.4"
+          test "$(node -p "require('./apps/mobile/package.json').dependencies['react-native']")" = "0.81.6"
+      - name: Commit reproducible lockfile
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then exit 0; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add pnpm-lock.yaml
+          git commit -m "chore(mobile): regenerate lockfile for React 19.1.4"
+          git push
