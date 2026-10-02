@@ -41,15 +41,15 @@ export default function ProfissionalInicio() {
 }
 
 const s=StyleSheet.create({
-  screen:{flex:1,backgroundColor:'#fff'},
+  screen:{flex:1,backgroundColor:'#F7F6FB'},
   content:{padding:24,gap:16},
-  eyebrow:{fontSize:13,fontWeight:'800',marginTop:4},
-  title:{fontSize:32,fontWeight:'800'},
-  heading:{fontSize:22,fontWeight:'800',marginTop:4},
-  body:{fontSize:16,lineHeight:23},
-  primaryCard:{padding:20,borderWidth:2,borderRadius:18,gap:10},
-  card:{padding:18,borderWidth:1,borderRadius:16,gap:9},
-  cardTitle:{fontSize:20,fontWeight:'800'},
-  primaryAction:{fontSize:18,fontWeight:'800',paddingVertical:10},
-  action:{fontSize:16,fontWeight:'800',paddingVertical:8}
+  eyebrow:{fontSize:13,fontWeight:'800',marginTop:4,color:'#5B35D5'},
+  title:{fontSize:32,fontWeight:'800',color:'#20202A'},
+  heading:{fontSize:22,fontWeight:'800',marginTop:4,color:'#20202A'},
+  body:{fontSize:16,lineHeight:23,color:'#62616B'},
+  primaryCard:{padding:20,borderWidth:1,borderColor:'#5B35D5',backgroundColor:'#F0EBFF',borderRadius:18,gap:10},
+  card:{padding:18,borderWidth:1,borderColor:'#E9E6F2',backgroundColor:'#FFFFFF',borderRadius:16,gap:9},
+  cardTitle:{fontSize:20,fontWeight:'800',color:'#20202A'},
+  primaryAction:{fontSize:18,fontWeight:'800',paddingVertical:10,color:'#5B35D5'},
+  action:{fontSize:16,fontWeight:'800',paddingVertical:8,color:'#5B35D5'}
 });
