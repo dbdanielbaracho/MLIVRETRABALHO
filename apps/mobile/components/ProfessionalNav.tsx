@@ -4,18 +4,15 @@ import { StyleSheet, View } from 'react-native';
 export function ProfessionalNav() {
   return (
     <View style={s.row}>
+      <Link href="/profissional-inicio" style={s.item}>Início</Link>
       <Link href="/trabalhos" style={s.item}>Trabalhos</Link>
-      <Link href="/agenda" style={s.item}>Agenda</Link>
-      <Link href="/disponibilidade" style={s.item}>Disponibilidade</Link>
       <Link href="/ganhos" style={s.item}>Ganhos</Link>
-      <Link href="/notificacoes" style={s.item}>Notificações</Link>
-      <Link href="/seguranca" style={s.item}>Segurança</Link>
       <Link href="/perfil" style={s.item}>Perfil</Link>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  item: { borderWidth: 1, borderRadius: 10, paddingVertical: 9, paddingHorizontal: 11, fontWeight: '700' }
+  row: { flexDirection: 'row', gap: 8 },
+  item: { flex: 1, borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 6, textAlign: 'center', fontWeight: '700' }
 });

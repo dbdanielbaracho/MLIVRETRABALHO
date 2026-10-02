@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import { CompanyNav } from '../components/CompanyNav';
 
 type Team = { id: string; name: string; memberCount: number };
 type KnownProfessional = { professionalId: string; professionalName: string };
@@ -140,7 +141,8 @@ export default function Equipes() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <Text style={s.title}>Equipes</Text>
+        <CompanyNav />
+        <Text style={s.title}>Equipe</Text>
         <Text>Monte grupos com profissionais que já trabalharam ou estão confirmados com sua empresa. Sem IDs técnicos.</Text>
 
         <View style={s.row}>

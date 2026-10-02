@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { authenticatedTenantHeaders, clearSession, clearTenant, getTenant } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import { CompanyNav } from '../components/CompanyNav';
 
 type Dashboard = {
   openJobs: number;
@@ -103,7 +104,8 @@ export default function EmpresaInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <Text style={s.title}>Operação</Text>
+        <CompanyNav />
+        <Text style={s.title}>Início</Text>
         <View style={s.actions}>
           <Link href="/copilot" style={s.action}>Assistente</Link>
           <Link href="/empresa" style={s.action}>+ Publicar trabalho</Link>
