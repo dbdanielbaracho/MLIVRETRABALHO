@@ -14,7 +14,7 @@ export default function Home() {
       if (token) {
         const tenantId = await getTenant();
         if (!active) return;
-        router.replace(tenantId ? '/empresa-inicio' : '/trabalhos');
+        router.replace(tenantId ? '/empresa-inicio' : '/profissional-inicio');
         return;
       }
       setChecking(false);
