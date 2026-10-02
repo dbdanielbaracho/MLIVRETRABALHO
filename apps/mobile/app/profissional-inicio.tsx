@@ -12,8 +12,8 @@ export default function ProfissionalInicio() {
         <Text style={s.body}>O essencial para trabalhar agora, sem menus desnecessários.</Text>
 
         <View style={s.primaryCard}>
-          <Text style={s.cardTitle}>Oportunidades para você</Text>
-          <Text style={s.body}>Veja trabalhos compatíveis e demonstre interesse em uma ação.</Text>
+          <Text style={s.primaryCardTitle}>Oportunidades para você</Text>
+          <Text style={s.primaryBody}>Veja trabalhos compatíveis e demonstre interesse em uma ação.</Text>
           <Link href="/trabalhos" style={s.primaryAction}>Ver trabalhos</Link>
         </View>
 
@@ -50,6 +50,8 @@ const s=StyleSheet.create({
   primaryCard:{padding:20,borderRadius:20,gap:10,backgroundColor:'#5B35D5'},
   card:{padding:18,borderWidth:1,borderColor:'#E9E6F2',borderRadius:18,gap:9,backgroundColor:'#FFFFFF'},
   cardTitle:{fontSize:20,fontWeight:'800',color:'#20202A'},
+  primaryCardTitle:{fontSize:20,fontWeight:'800',color:'#FFFFFF'},
+  primaryBody:{fontSize:16,lineHeight:23,color:'#FFFFFF'},
   primaryAction:{fontSize:18,fontWeight:'800',paddingVertical:12,paddingHorizontal:14,borderRadius:12,backgroundColor:'#FFFFFF',color:'#5B35D5',textAlign:'center'},
   action:{fontSize:16,fontWeight:'800',paddingVertical:8,color:'#5B35D5'}
 });
