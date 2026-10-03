@@ -177,18 +177,18 @@ export default function EmpresaInicio() {
 }
 
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#fff' },
+  screen: { flex: 1, backgroundColor: '#F7F6FB' },
   content: { padding: 24, gap: 12 },
-  title: { fontSize: 30, fontWeight: '800' },
+  title: { fontSize: 30, fontWeight: '800', color: '#20202A' },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4 },
-  action: { borderWidth: 1, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
-  heading: { fontSize: 22, fontWeight: '800', marginTop: 10 },
-  card: { borderWidth: 1, borderRadius: 14, padding: 18, gap: 6 },
-  value: { fontSize: 28, fontWeight: '800' },
+  action: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
+  heading: { fontSize: 22, fontWeight: '800', marginTop: 10, color: '#20202A' },
+  card: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 18, gap: 6 },
+  value: { fontSize: 28, fontWeight: '800', color: '#5B35D5' },
   bold: { fontWeight: '800' },
-  inlineButton: { borderWidth: 1, borderRadius: 10, padding: 10, alignItems: 'center', marginTop: 4 },
+  inlineButton: { backgroundColor: '#F0EBFF', borderRadius: 10, padding: 10, alignItems: 'center', marginTop: 4 },
   ratingRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
   ratingButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 10 },
-  preferredButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' },
+  preferredButton: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' },
   signout: { padding: 14, alignItems: 'center', marginTop: 10 }
 });
