@@ -106,19 +106,11 @@ export default function EmpresaInicio() {
       <ScrollView contentContainerStyle={s.content}>
         <CompanyNav />
         <Text style={s.title}>Início</Text>
-        <View style={s.actions}>
-          <Link href="/copilot" style={s.action}>Assistente</Link>
-          <Link href="/empresa" style={s.action}>+ Publicar trabalho</Link>
-          <Link href="/planejamento" style={s.action}>Planejamento</Link>
-          <Link href="/analytics" style={s.action}>Indicadores</Link>
-          <Link href="/candidatos" style={s.action}>Ver interessados</Link>
-          <Link href="/substituicoes" style={s.action}>Substituições</Link>
-          <Link href="/equipes" style={s.action}>Equipes</Link>
-          <Link href="/talentos" style={s.action}>Talentos</Link>
-          <Link href="/membros" style={s.action}>Membros</Link>
-          <Link href="/pagamentos" style={s.action}>Pagamentos</Link>
-          <Link href="/casos-seguranca" style={s.action}>Segurança</Link>
-          <Link href="/privacidade" style={s.action}>Privacidade e dados</Link>
+        <Text style={s.subtitle}>Visão geral do que importa agora.</Text>
+        <View style={s.primaryActions}>
+          <Link href="/empresa" style={s.primaryAction}>+ Publicar trabalho</Link>
+          <Link href="/candidatos" style={s.secondaryAction}>Ver interessados</Link>
+          <Link href="/copilot" style={s.secondaryAction}>Assistente</Link>
         </View>
 
         {[
@@ -180,8 +172,10 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F7F6FB' },
   content: { padding: 24, gap: 12 },
   title: { fontSize: 30, fontWeight: '800', color: '#20202A' },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4 },
-  action: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
+  subtitle: { fontSize: 16, lineHeight: 23, color: '#62616B' },
+  primaryActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4 },
+  primaryAction: { backgroundColor: '#5B35D5', color: '#FFFFFF', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
+  secondaryAction: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
   heading: { fontSize: 22, fontWeight: '800', marginTop: 10, color: '#20202A' },
   card: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 18, gap: 6 },
   value: { fontSize: 28, fontWeight: '800', color: '#5B35D5' },
