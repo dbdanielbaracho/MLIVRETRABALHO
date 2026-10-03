@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'expo-router';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
@@ -144,6 +145,7 @@ export default function Equipes() {
         <CompanyNav />
         <Text style={s.title}>Equipe</Text>
         <Text>Monte grupos com profissionais que já trabalharam ou estão confirmados com sua empresa. Sem IDs técnicos.</Text>
+        <View style={s.contextActions}><Link href="/talentos" style={s.contextAction}>Talentos</Link><Link href="/substituicoes" style={s.contextAction}>Substituições</Link></View>
 
         <View style={s.row}>
           <TextInput style={[s.input, s.flex]} placeholder="Nome da nova equipe" value={teamName} onChangeText={setTeamName} />
@@ -218,5 +220,7 @@ const s = StyleSheet.create({
   selected: { borderWidth: 2, borderColor: '#5B35D5', backgroundColor: '#F0EBFF' },
   name: { fontSize: 18, fontWeight: '800' },
   bold: { fontWeight: '800' },
-  action: { fontWeight: '800', marginTop: 4, color: '#5B35D5' }
+  action: { fontWeight: '800', marginTop: 4, color: '#5B35D5' },
+  contextActions: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
+  contextAction: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14, fontWeight: '800' }
 });
