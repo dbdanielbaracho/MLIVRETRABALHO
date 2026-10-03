@@ -19,4 +19,4 @@ export default function EmpresaConta(){
     <Pressable style={s.signout} onPress={()=>void signout()}><Text style={s.bold}>Sair da conta</Text></Pressable>
   </ScrollView></SafeAreaView>;
 }
-const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#fff'},content:{padding:24,gap:16},title:{fontSize:30,fontWeight:'800'},body:{fontSize:16,lineHeight:23},card:{borderWidth:1,borderRadius:16,padding:18,gap:12},heading:{fontSize:20,fontWeight:'800'},action:{fontSize:16,fontWeight:'800',paddingVertical:8},signout:{padding:15,alignItems:'center'},bold:{fontWeight:'800'}});
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#F7F6FB'},content:{padding:24,gap:16},title:{fontSize:30,fontWeight:'800',color:'#20202A'},body:{fontSize:16,lineHeight:23,color:'#62616B'},card:{borderWidth:1,borderColor:'#E9E6F2',backgroundColor:'#FFFFFF',borderRadius:16,padding:18,gap:12},heading:{fontSize:20,fontWeight:'800',color:'#20202A'},action:{fontSize:16,fontWeight:'800',paddingVertical:8,color:'#5B35D5'},signout:{padding:15,alignItems:'center'},bold:{fontWeight:'800'}});
