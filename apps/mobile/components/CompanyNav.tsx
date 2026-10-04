@@ -37,17 +37,13 @@ export function CompanyNav() {
 const s = StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    marginTop: 'auto',
     gap: 4,
     padding: 6,
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 18,
     backgroundColor: SURFACE,
-    shadowColor: '#000000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3
+    marginTop: 12
   },
   item: {
     flex: 1,
