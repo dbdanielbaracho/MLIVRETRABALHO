@@ -6,7 +6,6 @@ export default function ProfissionalInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <ProfessionalNav />
         <Text style={s.eyebrow}>MLIVRETRABALHO</Text>
         <Text style={s.title}>Seu próximo trabalho</Text>
         <Text style={s.body}>O essencial para trabalhar agora, sem menus desnecessários.</Text>
@@ -35,6 +34,7 @@ export default function ProfissionalInicio() {
           <Text style={s.body}>Notificações levam diretamente ao que precisa da sua atenção.</Text>
           <Link href="/notificacoes" style={s.action}>Ver avisos</Link>
         </View>
+        <ProfessionalNav />
       </ScrollView>
     </SafeAreaView>
   );
