@@ -163,7 +163,7 @@ export default function EmpresaInicio() {
         <Pressable style={s.signout} onPress={() => void signout()}>
           <Text style={s.bold}>Sair da conta</Text>
         </Pressable>
-      </ScrollView>
+      </ScrollView><ProfessionalNav/>
     </SafeAreaView>
   );
 }
