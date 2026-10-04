@@ -43,7 +43,8 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 18,
-    backgroundColor: SURFACE
+    backgroundColor: SURFACE,
+    marginTop: 12
   },
   item: {
     flex: 1,
