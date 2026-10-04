@@ -35,7 +35,7 @@ export default function ProfissionalInicio() {
           <Text style={s.body}>Notificações levam diretamente ao que precisa da sua atenção.</Text>
           <Link href="/notificacoes" style={s.action}>Ver avisos</Link>
         </View>
-      </ScrollView>
+      </ScrollView><ProfessionalNav/>
     </SafeAreaView>
   );
 }
