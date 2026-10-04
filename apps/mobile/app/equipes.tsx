@@ -201,7 +201,7 @@ export default function Equipes() {
         ) : null}
 
         {message ? <Text>{message}</Text> : null}
-      </ScrollView><ProfessionalNav/>
+      </ScrollView><CompanyNav/>
     </SafeAreaView>
   );
 }
