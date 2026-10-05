@@ -104,7 +104,6 @@ export default function EmpresaInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <CompanyNav />
         <Text style={s.title}>Início</Text>
         <Text style={s.subtitle}>Visão geral do que importa agora.</Text>
         <View style={s.primaryActions}>
