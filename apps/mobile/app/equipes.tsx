@@ -142,7 +142,6 @@ export default function Equipes() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <CompanyNav />
         <Text style={s.title}>Equipe</Text>
         <Text>Monte grupos com profissionais que já trabalharam ou estão confirmados com sua empresa. Sem IDs técnicos.</Text>
         <View style={s.contextActions}><Link href="/talentos" style={s.contextAction}>Talentos</Link><Link href="/substituicoes" style={s.contextAction}>Substituições</Link></View>
