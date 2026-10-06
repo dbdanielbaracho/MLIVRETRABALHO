@@ -1,21 +1,3 @@
-import { router } from 'expo-router';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { CompanyNav } from '../components/CompanyNav';
-import { authenticatedTenantHeaders, clearSession, clearTenant } from '../lib/session';
-import { apiUrl } from '../lib/api';
-
-export default function EmpresaConta(){
-  async function signout(){
-    const headers=await authenticatedTenantHeaders();
-    try{await fetch(apiUrl('/auth/signout'),{method:'POST',headers});}
-    finally{await Promise.all([clearSession(),clearTenant()]);router.replace('/');}
-  }
-  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
-    <Text style={s.title}>Conta</Text>
-    <Text style={s.body}>Configurações e administração ficam organizadas aqui, sem aumentar a navegação principal.</Text>
-    <View style={s.card}><Text style={s.heading}>Empresa</Text><Pressable onPress={()=>router.push('/membros')}><Text style={s.action}>Membros e convites</Text></Pressable><Pressable onPress={()=>router.push('/pagamentos')}><Text style={s.action}>Pagamentos e faturas</Text></Pressable><Pressable onPress={()=>router.push('/planejamento')}><Text style={s.action}>Planejamento</Text></Pressable><Pressable onPress={()=>router.push('/analytics')}><Text style={s.action}>Indicadores</Text></Pressable></View>
-    <View style={s.card}><Text style={s.heading}>Proteção</Text><Pressable onPress={()=>router.push('/casos-seguranca')}><Text style={s.action}>Segurança</Text></Pressable><Pressable onPress={()=>router.push('/privacidade')}><Text style={s.action}>Privacidade e dados</Text></Pressable></View>
-    <Pressable style={s.signout} onPress={()=>void signout()}><Text style={s.bold}>Sair da conta</Text></Pressable>
-  </ScrollView><CompanyNav/></SafeAreaView>;
-}
-const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#F7F6FB'},content:{padding:24,gap:16},title:{fontSize:30,fontWeight:'800',color:'#20202A'},body:{fontSize:16,lineHeight:23,color:'#62616B'},card:{borderWidth:1,borderColor:'#E9E6F2',backgroundColor:'#FFFFFF',borderRadius:16,padding:18,gap:12},heading:{fontSize:20,fontWeight:'800',color:'#20202A'},action:{fontSize:16,fontWeight:'800',paddingVertical:8,color:'#5B35D5'},signout:{padding:15,alignItems:'center'},bold:{fontWeight:'800'}});
+import { router } from 'expo-router'; import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-native'; import { CompanyNav } from '../components/CompanyNav'; import { authenticatedTenantHeaders,clearSession,clearTenant } from '../lib/session'; import { apiUrl } from '../lib/api';
+export default function EmpresaConta(){async function signout(){const headers=await authenticatedTenantHeaders();try{await fetch(apiUrl('/auth/signout'),{method:'POST',headers})}finally{await Promise.all([clearSession(),clearTenant()]);router.replace('/')}}const row=(label:string,path:string)=><Pressable style={s.row} onPress={()=>router.push(path as never)}><Text style={s.icon}>○</Text><Text style={s.label}>{label}</Text><Text style={s.chev}>›</Text></Pressable>;return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Text style={s.title}>Conta</Text><View style={s.company}><View style={s.logo}><Text style={s.logoText}>EC</Text></View><View><Text style={s.companyName}>Empresa Central</Text><Text style={s.meta}>Conta empresarial</Text></View></View><Text style={s.section}>Empresa</Text><View style={s.card}>{row('Dados da empresa','/membros')}{row('Pagamentos e faturas','/pagamentos')}{row('Notificações','/planejamento')}</View><Text style={s.section}>Suporte</Text><View style={s.card}>{row('Central de ajuda','/casos-seguranca')}{row('Termos e privacidade','/privacidade')}</View><Pressable style={s.signout} onPress={()=>void signout()}><Text style={s.signoutText}>Sair da conta</Text></Pressable></ScrollView><CompanyNav/></SafeAreaView>}
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,gap:10,paddingBottom:24},title:{fontSize:27,fontWeight:'900',color:'#111A35'},company:{flexDirection:'row',alignItems:'center',gap:12,paddingVertical:8},logo:{width:48,height:48,borderRadius:24,backgroundColor:'#E8F0FA',alignItems:'center',justifyContent:'center'},logoText:{fontWeight:'900',color:'#064A9B'},companyName:{fontSize:17,fontWeight:'900',color:'#111A35'},meta:{fontSize:12,color:'#788399'},section:{fontSize:13,fontWeight:'900',color:'#111A35',marginTop:8},card:{borderWidth:1,borderColor:'#E7EAF0',borderRadius:12,overflow:'hidden'},row:{minHeight:48,flexDirection:'row',alignItems:'center',paddingHorizontal:13,borderBottomWidth:1,borderBottomColor:'#EEF0F4'},icon:{width:25,color:'#064A9B',fontSize:18},label:{flex:1,fontSize:13,color:'#26344D',fontWeight:'700'},chev:{fontSize:22,color:'#7A8495'},signout:{marginTop:8,padding:14,alignItems:'center'},signoutText:{color:'#D83434',fontWeight:'800'}});
