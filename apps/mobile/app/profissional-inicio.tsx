@@ -1,78 +1,12 @@
 import { Link } from 'expo-router';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { ProfessionalNav } from '../components/ProfessionalNav';
-
-export default function ProfissionalInicio() {
-  return (
-    <SafeAreaView style={s.screen}>
-      <ScrollView contentContainerStyle={s.content}>
-        <View style={s.header}>
-          <View>
-            <Text style={s.greeting}>Olá, José! 👋</Text>
-            <Text style={s.subtitle}>Quarta, 25 de setembro</Text>
-          </View>
-          <View style={s.avatar}><Text style={s.avatarText}>J</Text></View>
-        </View>
-
-        <Text style={s.sectionLabel}>PRÓXIMO TRABALHO</Text>
-        <View style={s.nextCard}>
-          <Text style={s.nextRole}>Garçom</Text>
-          <Text style={s.nextPlace}>Hotel Blue Star</Text>
-          <View style={s.metaRow}><Text style={s.meta}>Quarta · 18:00</Text><Text style={s.meta}>R$ 200</Text></View>
-          <Link href="/agenda" style={s.primaryButton}>VER DETALHES</Link>
-        </View>
-
-        <View style={s.statsRow}>
-          <View style={s.statCard}><Text style={s.statLabel}>Trabalhos este mês</Text><Text style={s.statValue}>—</Text></View>
-          <View style={s.statCard}><Text style={s.statLabel}>Ganhos no mês</Text><Text style={s.statValue}>—</Text></View>
-        </View>
-
-        <View style={s.earningsCard}>
-          <View>
-            <Text style={s.earningsLabel}>Ganhos este mês</Text>
-            <Text style={s.earningsValue}>Veja seus ganhos</Text>
-          </View>
-          <Link href="/ganhos" style={s.earningsLink}>ABRIR</Link>
-        </View>
-
-        <Text style={s.heading}>Oportunidades para você</Text>
-        <View style={s.card}>
-          <Text style={s.cardTitle}>Encontre seu próximo trabalho</Text>
-          <Text style={s.body}>Veja oportunidades compatíveis e demonstre interesse em uma ação.</Text>
-          <Link href="/trabalhos" style={s.action}>VER TRABALHOS</Link>
-        </View>
-      </ScrollView>
-      <ProfessionalNav />
-    </SafeAreaView>
-  );
-}
-
-const s=StyleSheet.create({
-  screen:{flex:1,backgroundColor:'#F7F6FB'},
-  content:{padding:20,gap:16,paddingBottom:24},
-  header:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
-  greeting:{fontSize:26,fontWeight:'800',color:'#20202A'},
-  subtitle:{fontSize:14,color:'#77727F',marginTop:4},
-  avatar:{width:42,height:42,borderRadius:21,backgroundColor:'#E9E2FF',alignItems:'center',justifyContent:'center'},
-  avatarText:{fontSize:18,fontWeight:'800',color:'#5B35D5'},
-  sectionLabel:{fontSize:12,fontWeight:'800',color:'#77727F',letterSpacing:.7,marginTop:4},
-  nextCard:{padding:20,borderRadius:18,backgroundColor:'#FFFFFF',borderWidth:1,borderColor:'#E9E6F2',gap:7},
-  nextRole:{fontSize:23,fontWeight:'800',color:'#20202A'},
-  nextPlace:{fontSize:16,fontWeight:'700',color:'#5B35D5'},
-  metaRow:{flexDirection:'row',justifyContent:'space-between',marginVertical:4},
-  meta:{fontSize:15,color:'#62616B'},
-  primaryButton:{backgroundColor:'#5B35D5',color:'#FFFFFF',borderRadius:12,paddingVertical:13,textAlign:'center',fontWeight:'800',marginTop:6},
-  statsRow:{flexDirection:'row',gap:12},
-  statCard:{flex:1,padding:16,borderRadius:16,backgroundColor:'#FFFFFF',borderWidth:1,borderColor:'#E9E6F2',gap:6},
-  statLabel:{fontSize:13,color:'#77727F'},
-  statValue:{fontSize:25,fontWeight:'800',color:'#20202A'},
-  earningsCard:{padding:18,borderRadius:18,backgroundColor:'#5B35D5',flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
-  earningsLabel:{fontSize:13,fontWeight:'700',color:'#EDE8FF'},
-  earningsValue:{fontSize:20,fontWeight:'800',color:'#FFFFFF',marginTop:3},
-  earningsLink:{color:'#FFFFFF',fontWeight:'800',padding:8},
-  heading:{fontSize:21,fontWeight:'800',color:'#20202A',marginTop:2},
-  card:{padding:18,borderWidth:1,borderColor:'#E9E6F2',backgroundColor:'#FFFFFF',borderRadius:16,gap:9},
-  cardTitle:{fontSize:19,fontWeight:'800',color:'#20202A'},
-  body:{fontSize:15,lineHeight:22,color:'#62616B'},
-  action:{fontSize:16,fontWeight:'800',paddingVertical:8,color:'#5B35D5'}
-});
+export default function ProfissionalInicio(){return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
+<View style={s.brandRow}><Text style={s.brand}>MLIVRE<Text style={s.purple}>TRABALHO</Text></Text><Text style={s.bell}>♧</Text></View>
+<Text style={s.greeting}>Olá, Ana!</Text><Text style={s.subtitle}>Pronta para novos trabalhos?</Text>
+<View style={s.stats}><View style={s.stat}><Text style={s.statLabel}>Hoje</Text><Text style={s.statValue}>2</Text><Text style={s.small}>trabalhos</Text></View><View style={s.stat}><Text style={s.statLabel}>Ganhos</Text><Text style={s.statValue}>R$ 120,00</Text></View></View>
+<Link href="/trabalhos" style={s.primary}>VER TRABALHOS  →</Link>
+<Text style={s.heading}>Próximo trabalho</Text><Link href="/agenda" style={s.card}><Text style={s.cardTitle}>Atendente de Eventos</Text><Text style={s.meta}>◷ Hoje · 14:00 – 20:00</Text><Text style={s.meta}>⌾ Espaço Central · 2,3 km</Text><Text style={s.chevron}>›</Text></Link>
+<Text style={s.heading}>Sua disponibilidade</Text><Link href="/disponibilidade" style={s.availability}><Text style={s.green}>●</Text><Text style={s.availText}>Disponível para novos trabalhos</Text><Text style={s.chev}>›</Text></Link>
+</ScrollView><ProfessionalNav/></SafeAreaView>}
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,gap:9,paddingBottom:24},brandRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},brand:{fontSize:19,fontWeight:'900',color:'#111A35'},purple:{color:'#651FFF'},bell:{fontSize:24,color:'#651FFF'},greeting:{fontSize:25,fontWeight:'900',color:'#111A35',marginTop:5},subtitle:{fontSize:14,color:'#65708A',marginBottom:8},stats:{flexDirection:'row',gap:10},stat:{flex:1,minHeight:88,padding:14,borderWidth:1,borderColor:'#EEF0F5',borderRadius:12,backgroundColor:'#FFF'},statLabel:{fontSize:13,color:'#111A35'},statValue:{fontSize:22,fontWeight:'900',color:'#111A35',marginTop:4},small:{fontSize:12,color:'#65708A'},primary:{backgroundColor:'#651FFF',color:'#FFF',fontWeight:'900',fontSize:15,textAlign:'center',paddingVertical:15,borderRadius:10,marginVertical:5},heading:{fontSize:15,fontWeight:'800',color:'#111A35',marginTop:8},card:{position:'relative',padding:16,borderWidth:1,borderColor:'#E7EAF0',borderRadius:12,backgroundColor:'#FFF'},cardTitle:{fontSize:17,fontWeight:'900',color:'#111A35',marginBottom:6},meta:{fontSize:13,color:'#53617A',marginTop:3},chevron:{position:'absolute',right:14,top:30,fontSize:28,color:'#111A35'},availability:{flexDirection:'row',alignItems:'center',padding:15,borderWidth:1,borderColor:'#E7EAF0',borderRadius:12},green:{color:'#19C763',fontSize:15,marginRight:8},availText:{flex:1,color:'#53617A',fontSize:13},chev:{fontSize:24,color:'#111A35'}});
