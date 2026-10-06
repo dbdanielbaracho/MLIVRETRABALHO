@@ -104,25 +104,25 @@ export default function EmpresaInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
+        <Text style={s.eyebrow}>VISÃO GERAL</Text>
         <Text style={s.title}>Início</Text>
-        <Text style={s.subtitle}>Visão geral do que importa agora.</Text>
+        <Text style={s.subtitle}>Acompanhe sua operação e resolva o que importa agora.</Text>
+        <View style={s.summaryCard}>
+          <Text style={s.summaryLabel}>TRABALHOS ABERTOS</Text>
+          <Text style={s.summaryValue}>{dashboard?.openJobs ?? '—'}</Text>
+          <Text style={s.summaryText}>{dashboard ? `${dashboard.confirmedWorkers} confirmados · ${dashboard.activeWorkers} trabalhando agora` : 'Carregando sua operação...'}</Text>
+        </View>
         <View style={s.primaryActions}>
           <Link href="/empresa" style={s.primaryAction}>+ Publicar trabalho</Link>
           <Link href="/candidatos" style={s.secondaryAction}>Ver interessados</Link>
           <Link href="/copilot" style={s.secondaryAction}>Assistente</Link>
         </View>
 
-        {[
-          ['Trabalhos abertos', dashboard?.openJobs],
-          ['Confirmados', dashboard?.confirmedWorkers],
-          ['Trabalhando agora', dashboard?.activeWorkers],
-          ['Concluídos', dashboard?.completedAssignments]
-        ].map(([label, value]) => (
-          <View key={String(label)} style={s.card}>
-            <Text style={s.value}>{value ?? '—'}</Text>
-            <Text>{label}</Text>
-          </View>
-        ))}
+        <View style={s.metricsRow}>
+          <View style={s.metricCard}><Text style={s.metricValue}>{dashboard?.confirmedWorkers ?? '—'}</Text><Text style={s.metricLabel}>Confirmados</Text></View>
+          <View style={s.metricCard}><Text style={s.metricValue}>{dashboard?.activeWorkers ?? '—'}</Text><Text style={s.metricLabel}>Agora</Text></View>
+          <View style={s.metricCard}><Text style={s.metricValue}>{dashboard?.completedAssignments ?? '—'}</Text><Text style={s.metricLabel}>Concluídos</Text></View>
+        </View>
 
         <Text style={s.heading}>Trabalhos ativos</Text>
         {active.length === 0 ? <Text>Nenhum profissional confirmado ou trabalhando agora.</Text> : active.map(item => (
@@ -170,8 +170,17 @@ export default function EmpresaInicio() {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F7F6FB' },
   content: { padding: 24, gap: 12 },
+  eyebrow: { fontSize: 13, fontWeight: '800', color: '#5B35D5', letterSpacing: 0.8 },
   title: { fontSize: 30, fontWeight: '800', color: '#20202A' },
   subtitle: { fontSize: 16, lineHeight: 23, color: '#62616B' },
+  summaryCard: { backgroundColor: '#5B35D5', borderRadius: 20, padding: 20, gap: 6, marginVertical: 4 },
+  summaryLabel: { color: '#DDD4FF', fontSize: 12, fontWeight: '800', letterSpacing: 0.7 },
+  summaryValue: { color: '#FFFFFF', fontSize: 38, fontWeight: '800' },
+  summaryText: { color: '#FFFFFF', fontSize: 15, lineHeight: 21 },
+  metricsRow: { flexDirection: 'row', gap: 10 },
+  metricCard: { flex: 1, borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, gap: 4 },
+  metricValue: { fontSize: 24, fontWeight: '800', color: '#5B35D5' },
+  metricLabel: { fontSize: 12, color: '#62616B' },
   primaryActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4 },
   primaryAction: { backgroundColor: '#5B35D5', color: '#FFFFFF', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
   secondaryAction: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
