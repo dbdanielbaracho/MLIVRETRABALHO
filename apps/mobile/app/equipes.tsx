@@ -206,20 +206,20 @@ export default function Equipes() {
 }
 
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F7F6FB' },
-  content: { padding: 24, gap: 12 },
-  title: { fontSize: 30, fontWeight: '800', color: '#20202A' },
-  heading: { fontSize: 21, fontWeight: '800', marginTop: 8, color: '#20202A' },
+  screen: { flex: 1, backgroundColor: '#FFFFFF' },
+  content: { padding: 20, gap: 12, paddingBottom: 24 },
+  title: { fontSize: 27, fontWeight: '900', color: '#111A35' },
+  heading: { fontSize: 21, fontWeight: '800', marginTop: 8, color: '#111A35' },
   row: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   flex: { flex: 1 },
   input: { borderWidth: 1, borderColor: '#DCD8E8', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 13, fontSize: 16 },
-  button: { backgroundColor: '#5B35D5', borderRadius: 12, padding: 14 },
+  button: { backgroundColor: '#064A9B', borderRadius: 12, padding: 14 },
   card: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, gap: 5 },
   jobCard: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, gap: 5 },
-  selected: { borderWidth: 2, borderColor: '#5B35D5', backgroundColor: '#F0EBFF' },
+  selected: { borderWidth: 2, borderColor: '#064A9B', backgroundColor: '#EEF5FC' },
   name: { fontSize: 18, fontWeight: '800' },
   bold: { fontWeight: '800' },
-  action: { fontWeight: '800', marginTop: 4, color: '#5B35D5' },
+  action: { fontWeight: '800', marginTop: 4, color: '#064A9B' },
   contextActions: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  contextAction: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14, fontWeight: '800' }
+  contextAction: { borderWidth: 1, borderColor: '#C9DDF3', backgroundColor: '#EEF5FC', color: '#064A9B', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14, fontWeight: '800' }
 });

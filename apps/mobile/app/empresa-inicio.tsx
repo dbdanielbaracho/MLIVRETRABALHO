@@ -104,9 +104,7 @@ export default function EmpresaInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <Text style={s.eyebrow}>VISÃO GERAL</Text>
-        <Text style={s.title}>Início</Text>
-        <Text style={s.subtitle}>Acompanhe sua operação e resolva o que importa agora.</Text>
+        <Text style={s.brand}>MLIVRE<Text style={s.blue}>TRABALHO</Text></Text><Text style={s.title}>Olá, Carlos!</Text><Text style={s.subtitle}>Resumo da sua operação hoje</Text>
         <View style={s.summaryCard}>
           <Text style={s.summaryLabel}>TRABALHOS ABERTOS</Text>
           <Text style={s.summaryValue}>{dashboard?.openJobs ?? '—'}</Text>
@@ -168,29 +166,29 @@ export default function EmpresaInicio() {
 }
 
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F7F6FB' },
-  content: { padding: 24, gap: 12 },
-  eyebrow: { fontSize: 13, fontWeight: '800', color: '#5B35D5', letterSpacing: 0.8 },
-  title: { fontSize: 30, fontWeight: '800', color: '#20202A' },
+  screen: { flex: 1, backgroundColor: '#FFFFFF' },
+  content: { padding: 20, gap: 12, paddingBottom: 24 },
+  eyebrow: { fontSize: 13, fontWeight: '800', color: '#064A9B', letterSpacing: 0.8 }, brand:{fontSize:19,fontWeight:'900',color:'#111A35'},blue:{color:'#064A9B'},
+  title: { fontSize: 30, fontWeight: '800', color: '#111A35' },
   subtitle: { fontSize: 16, lineHeight: 23, color: '#62616B' },
-  summaryCard: { backgroundColor: '#5B35D5', borderRadius: 20, padding: 20, gap: 6, marginVertical: 4 },
-  summaryLabel: { color: '#DDD4FF', fontSize: 12, fontWeight: '800', letterSpacing: 0.7 },
+  summaryCard: { backgroundColor: '#064A9B', borderRadius: 20, padding: 20, gap: 6, marginVertical: 4 },
+  summaryLabel: { color: '#DCEBFA', fontSize: 12, fontWeight: '800', letterSpacing: 0.7 },
   summaryValue: { color: '#FFFFFF', fontSize: 38, fontWeight: '800' },
   summaryText: { color: '#FFFFFF', fontSize: 15, lineHeight: 21 },
   metricsRow: { flexDirection: 'row', gap: 10 },
   metricCard: { flex: 1, borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, gap: 4 },
-  metricValue: { fontSize: 24, fontWeight: '800', color: '#5B35D5' },
+  metricValue: { fontSize: 24, fontWeight: '800', color: '#064A9B' },
   metricLabel: { fontSize: 12, color: '#62616B' },
   primaryActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 4 },
-  primaryAction: { backgroundColor: '#5B35D5', color: '#FFFFFF', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
-  secondaryAction: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', color: '#5B35D5', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
-  heading: { fontSize: 22, fontWeight: '800', marginTop: 10, color: '#20202A' },
+  primaryAction: { backgroundColor: '#064A9B', color: '#FFFFFF', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
+  secondaryAction: { borderWidth: 1, borderColor: '#C9DDF3', backgroundColor: '#EEF5FC', color: '#064A9B', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, fontSize: 16, fontWeight: '800' },
+  heading: { fontSize: 22, fontWeight: '800', marginTop: 10, color: '#111A35' },
   card: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 18, gap: 6 },
-  value: { fontSize: 28, fontWeight: '800', color: '#5B35D5' },
+  value: { fontSize: 28, fontWeight: '800', color: '#064A9B' },
   bold: { fontWeight: '800' },
-  inlineButton: { backgroundColor: '#F0EBFF', borderRadius: 10, padding: 10, alignItems: 'center', marginTop: 4 },
+  inlineButton: { backgroundColor: '#EEF5FC', borderRadius: 10, padding: 10, alignItems: 'center', marginTop: 4 },
   ratingRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
   ratingButton: { borderWidth: 1, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 10 },
-  preferredButton: { borderWidth: 1, borderColor: '#D9CEFF', backgroundColor: '#F0EBFF', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' },
+  preferredButton: { borderWidth: 1, borderColor: '#C9DDF3', backgroundColor: '#EEF5FC', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginTop: 6, alignItems: 'center' },
   signout: { padding: 14, alignItems: 'center', marginTop: 10 }
 });
