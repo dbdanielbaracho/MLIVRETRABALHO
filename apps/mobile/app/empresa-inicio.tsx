@@ -51,18 +51,28 @@ export default function EmpresaInicio() {
 
   async function load() {
     setLoadError(false);
-    const headers = await authenticatedTenantHeaders();
-    const currentTenant = await getTenant();
-    if (currentTenant) setTenantId(currentTenant);
-    const [dashboardResponse, activeResponse, completedResponse] = await Promise.all([
-      fetch(apiUrl('/company/dashboard'), { headers }),
-      fetch(apiUrl('/company/dashboard/assignments'), { headers }),
-      fetch(apiUrl('/company/dashboard/completed'), { headers })
-    ]);
-    if (dashboardResponse.ok) setDashboard(await dashboardResponse.json());
-    if (activeResponse.ok) setActive(await activeResponse.json());
-    if (completedResponse.ok) setCompleted(await completedResponse.json());
-    if (!dashboardResponse.ok || !activeResponse.ok || !completedResponse.ok) setLoadError(true);
+    try {
+      const headers = await authenticatedTenantHeaders();
+      const currentTenant = await getTenant();
+      if (currentTenant) setTenantId(currentTenant);
+      const [dashboardResponse, activeResponse, completedResponse] = await Promise.all([
+        fetch(apiUrl('/company/dashboard'), { headers }),
+        fetch(apiUrl('/company/dashboard/assignments'), { headers }),
+        fetch(apiUrl('/company/dashboard/completed'), { headers })
+      ]);
+      if (dashboardResponse.ok) setDashboard(await dashboardResponse.json());
+      else setDashboard(null);
+      if (activeResponse.ok) setActive(await activeResponse.json());
+      else setActive([]);
+      if (completedResponse.ok) setCompleted(await completedResponse.json());
+      else setCompleted([]);
+      if (!dashboardResponse.ok || !activeResponse.ok || !completedResponse.ok) setLoadError(true);
+    } catch {
+      setDashboard(null);
+      setActive([]);
+      setCompleted([]);
+      setLoadError(true);
+    }
   }
 
   async function rate(assignmentId: string, score: number) {
