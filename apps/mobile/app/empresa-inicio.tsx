@@ -104,7 +104,7 @@ export default function EmpresaInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <Text style={s.brand}>MLIVRE<Text style={s.blue}>TRABALHO</Text></Text><Text style={s.title}>Olá, Carlos!</Text><Text style={s.subtitle}>Resumo da sua operação hoje</Text>
+        <Text style={s.brand}>MLIVRE<Text style={s.blue}>TRABALHO</Text></Text><Text style={s.title}>Painel da empresa</Text><Text style={s.subtitle}>Resumo da sua operação hoje</Text>
         <View style={s.summaryCard}>
           <Text style={s.summaryLabel}>TRABALHOS ABERTOS</Text>
           <Text style={s.summaryValue}>{dashboard?.openJobs ?? '—'}</Text>
