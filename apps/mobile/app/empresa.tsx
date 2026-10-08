@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
@@ -19,15 +19,24 @@ function shiftWindow(dateText:string,startText:string,endText:string){
 
 export default function Empresa(){
  const [title,setTitle]=useState(''),[location,setLocation]=useState(''),[workCity,setWorkCity]=useState(''),[date,setDate]=useState(''),[startTime,setStartTime]=useState(''),[endTime,setEndTime]=useState(''),[pay,setPay]=useState(''),[message,setMessage]=useState('');
+ const submittingRef=useRef(false);
+ const [submitting,setSubmitting]=useState(false);
  async function create(){
+  if(submittingRef.current)return;
   const window=shiftWindow(date,startTime,endTime);
   if(!title.trim()||!workCity.trim()||!window){setMessage('Informe função, cidade, data e horários válidos.');return;}
   const amount=Number(pay.replace(',','.'));
   if(!Number.isFinite(amount)||amount<0){setMessage('Informe um valor válido.');return;}
-  const headers=await authenticatedTenantHeaders();
-  const r=await fetch(apiUrl('/company/jobs'),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({title,location,workCity,...window,payCents:Math.round(amount*100)})});
-  setMessage(r.ok?'Trabalho publicado.':'Não foi possível publicar.');
-  if(r.ok){setTitle('');setLocation('');setWorkCity('');setDate('');setStartTime('');setEndTime('');setPay('');}
+  submittingRef.current=true;
+  setSubmitting(true);
+  setMessage('');
+  try {
+   const headers=await authenticatedTenantHeaders();
+   const r=await fetch(apiUrl('/company/jobs'),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({title,location,workCity,...window,payCents:Math.round(amount*100)})});
+   setMessage(r.ok?'Trabalho publicado.':'Não foi possível publicar.');
+   if(r.ok){setTitle('');setLocation('');setWorkCity('');setDate('');setStartTime('');setEndTime('');setPay('');}
+  } catch {setMessage('Falha de conexão. Confira seus trabalhos antes de tentar novamente.');}
+  finally {submittingRef.current=false;setSubmitting(false);}
  }
- return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Pressable accessibilityRole="button" accessibilityLabel="Voltar" onPress={()=>router.back()}><Text style={s.back}>‹ Voltar</Text></Pressable><Text style={s.title}>Criar novo trabalho</Text><TextInput style={s.input} placeholder="Título do trabalho" value={title} onChangeText={setTitle}/><TextInput style={s.input} placeholder="Categoria / cidade" value={workCity} onChangeText={setWorkCity}/><TextInput style={s.input} placeholder="Local" value={location} onChangeText={setLocation}/><TextInput style={s.input} placeholder="Data — DD/MM/AAAA" keyboardType="number-pad" value={date} onChangeText={setDate}/><TextInput style={s.input} placeholder="Início — HH:MM" keyboardType="numbers-and-punctuation" value={startTime} onChangeText={setStartTime}/><TextInput style={s.input} placeholder="Fim — HH:MM" keyboardType="numbers-and-punctuation" value={endTime} onChangeText={setEndTime}/><Text style={s.hint}>Se o horário final for menor que o inicial, o turno termina no dia seguinte.</Text><TextInput style={s.input} placeholder="Valor em R$ / número de profissionais" keyboardType="decimal-pad" value={pay} onChangeText={setPay}/><Pressable style={s.button} onPress={()=>void create()}><Text style={s.buttonText}>PUBLICAR TRABALHO</Text></Pressable><Text>{message}</Text></ScrollView></SafeAreaView>}
+ return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Pressable accessibilityRole="button" accessibilityLabel="Voltar" onPress={()=>router.back()}><Text style={s.back}>‹ Voltar</Text></Pressable><Text style={s.title}>Criar novo trabalho</Text><TextInput style={s.input} placeholder="Título do trabalho" value={title} onChangeText={setTitle}/><TextInput style={s.input} placeholder="Categoria / cidade" value={workCity} onChangeText={setWorkCity}/><TextInput style={s.input} placeholder="Local" value={location} onChangeText={setLocation}/><TextInput style={s.input} placeholder="Data — DD/MM/AAAA" keyboardType="number-pad" value={date} onChangeText={setDate}/><TextInput style={s.input} placeholder="Início — HH:MM" keyboardType="numbers-and-punctuation" value={startTime} onChangeText={setStartTime}/><TextInput style={s.input} placeholder="Fim — HH:MM" keyboardType="numbers-and-punctuation" value={endTime} onChangeText={setEndTime}/><Text style={s.hint}>Se o horário final for menor que o inicial, o turno termina no dia seguinte.</Text><TextInput style={s.input} placeholder="Valor em R$ / número de profissionais" keyboardType="decimal-pad" value={pay} onChangeText={setPay}/><Pressable style={s.button} disabled={submitting} accessibilityRole="button" accessibilityState={{disabled:submitting,busy:submitting}} onPress={()=>void create()}><Text style={s.buttonText}>{submitting?'PUBLICANDO...':'PUBLICAR TRABALHO'}</Text></Pressable><Text>{message}</Text></ScrollView></SafeAreaView>}
 const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,gap:13,paddingBottom:24},back:{fontSize:30,color:'#111A35'},title:{fontSize:26,fontWeight:'900',color:'#111A35'},heading:{fontSize:22,fontWeight:'800',color:'#111A35'},input:{borderWidth:1,borderColor:'#DCD8E8',backgroundColor:'#FFFFFF',borderRadius:12,padding:14,fontSize:17},hint:{fontSize:13,color:'#62616B'},button:{padding:16,backgroundColor:'#064A9B',borderRadius:14,alignItems:'center'},buttonText:{fontSize:18,fontWeight:'800',color:'#FFFFFF'}});
