@@ -45,10 +45,12 @@ export default function EmpresaInicio() {
   const [completed, setCompleted] = useState<CompletedAssignment[]>([]);
   const [tenantId, setTenantId] = useState('');
   const [message, setMessage] = useState('');
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => { void load(); }, []);
 
   async function load() {
+    setLoadError(false);
     const headers = await authenticatedTenantHeaders();
     const currentTenant = await getTenant();
     if (currentTenant) setTenantId(currentTenant);
@@ -60,6 +62,7 @@ export default function EmpresaInicio() {
     if (dashboardResponse.ok) setDashboard(await dashboardResponse.json());
     if (activeResponse.ok) setActive(await activeResponse.json());
     if (completedResponse.ok) setCompleted(await completedResponse.json());
+    if (!dashboardResponse.ok || !activeResponse.ok || !completedResponse.ok) setLoadError(true);
   }
 
   async function rate(assignmentId: string, score: number) {
@@ -105,6 +108,7 @@ export default function EmpresaInicio() {
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
         <Text style={s.brand}>MLIVRE<Text style={s.blue}>TRABALHO</Text></Text><Text style={s.title}>Painel da empresa</Text><Text style={s.subtitle}>Resumo da sua operação hoje</Text>
+        {loadError ? <Pressable accessibilityRole="button" onPress={() => void load()}><Text>Falha ao carregar dados. Tocar para tentar novamente.</Text></Pressable> : null}
         <View style={s.summaryCard}>
           <Text style={s.summaryLabel}>TRABALHOS ABERTOS</Text>
           <Text style={s.summaryValue}>{dashboard?.openJobs ?? '—'}</Text>
