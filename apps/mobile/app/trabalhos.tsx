@@ -1,4 +1,3 @@
-import { Link } from 'expo-router';
 import { useEffect,useState } from 'react';
 import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { ProfessionalNav } from '../components/ProfessionalNav';
