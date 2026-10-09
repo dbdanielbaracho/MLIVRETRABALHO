@@ -26,7 +26,7 @@ export default function Empresa(){
   const window=shiftWindow(date,startTime,endTime);
   if(!title.trim()||!workCity.trim()||!window){setMessage('Informe função, cidade, data e horários válidos.');return;}
   const amount=Number(pay.replace(',','.'));
-  if(!Number.isFinite(amount)||amount<0){setMessage('Informe um valor válido.');return;}
+  if(!pay.trim()||!Number.isFinite(amount)||amount<0||!Number.isSafeInteger(Math.round(amount*100))){setMessage('Informe um valor válido.');return;}
   submittingRef.current=true;
   setSubmitting(true);
   setMessage('');
