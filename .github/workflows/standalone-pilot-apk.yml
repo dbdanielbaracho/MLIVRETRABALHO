@@ -72,6 +72,17 @@ jobs:
             adb wait-for-device
             adb shell getprop sys.boot_completed
             test "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1"
+            # Android can report boot_completed before PackageManager is ready,
+            # especially after restarting ADB on a cold hosted emulator. Wait for
+            # the package service before attempting APK installation.
+            for i in $(seq 1 60); do
+              if adb shell service check package 2>/dev/null | grep -Fq "found" && adb shell cmd package list packages >/dev/null 2>&1; then
+                break
+              fi
+              sleep 2
+            done
+            adb shell service check package 2>/dev/null | grep -Fq "found"
+            adb shell cmd package list packages >/dev/null
             adb logcat -c
             test -f "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
             adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
