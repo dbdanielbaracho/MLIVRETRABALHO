@@ -204,3 +204,22 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 
 **Governança:** Documento da Verdade v1.27 e evidência `MOBILE_VISUAL_AUDIT_GANHOS_v1.27.md` registram o resultado. O Visual Truth Gate global permanece aberto para as demais telas e estados. Continuam externos e separados: navegação/inspeção física quando aplicável, pentest independente, PSP/KYC/sandbox, WEB-ARCH e decisões com custo.
 
+---
+
+## 2026-10-09 — Identidade roxa das áreas da Empresa, PR #335
+
+**Referência consultada:** os Documentos da Verdade v1.20 e v1.23 exigem identidade roxa para a navegação e para as quatro áreas canônicas da Empresa. A v1.27 preservava essas decisões.
+
+**Divergência encontrada:** `empresa-inicio.tsx`, `empresa.tsx`, `equipes.tsx`, `empresa-conta.tsx` e `CompanyNav.tsx` ainda usavam azul `#064A9B` e superfícies azuladas em navegação ativa, CTAs, métricas, seleção e ícones.
+
+**Correção:** PR #335 reconciliou somente a paleta com o roxo canônico (`#651FFF` nas telas e `#5B21F3` na navegação ativa), preservando funções, rotas, API, autenticação, contratos, regras de negócio, estados e dependências.
+
+**Gates:**
+- CI/foundation, run `37978237083`: sucesso;
+- Standalone Pilot APK, run `37978237199`: sucesso;
+- APK instalado e aberto sem Metro; artefato validado publicado.
+
+**Integração:** PR #335 integrado por squash em `460bd1fbaa1bc284848caf5c609fb916ebab5ee7`.
+
+**Governança:** Documento da Verdade v1.28 e evidência `MOBILE_VISUAL_AUDIT_EMPRESA_IDENTIDADE_v1.28.md` registram o fechamento desta divergência. O Visual Truth Gate global continua aberto para telas, estados e fluxos restantes; os gates externos permanecem separados.
+
