@@ -165,3 +165,15 @@ Ao final de nova decisão material do MLIVRETRABALHO:
 **Regra de pós-merge:** o merge não é considerado concluído até que os workflows da nova `main` terminem com sucesso. Em seguida, a próxima tarefa interna segura é executar o Visual Truth Gate das 11 telas, comparando Documento da Verdade, referência canônica, implementação, estados, rolagem, navegação e evidências. CI/APK verdes não substituem a auditoria visual.
 
 **Atualização da automação:** a automação horária deve sempre consultar o estado atual da `main`, PRs, CI e Standalone Pilot APK; não deve fixar PR antigo; deve atualizar código e documentos/memória no mesmo ciclo; deve continuar enquanto houver trabalho interno seguro; e deve parar somente por bloqueio externo real, custo, risco ou aprovação necessária.
+
+
+---
+
+## 2026-10-09 — Pós-merge: CI da main aprovado
+
+Após os merges dos PRs #330 e #331, a nova `main` `fb920d043a7e6d8c6c7837ef01ea0bcd4a27f8eb` foi verificada.
+
+- Workflow **CI/foundation**: concluído com sucesso.
+- Workflow **Standalone Pilot APK**: ainda em execução nesta verificação.
+- A integração só será considerada totalmente validada quando o APK Standalone também terminar com sucesso.
+- O Visual Truth Gate das 11 telas permanece como próxima tarefa interna após a confirmação do APK.
