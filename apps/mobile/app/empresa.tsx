@@ -25,8 +25,10 @@ export default function Empresa(){
   if(submittingRef.current)return;
   const window=shiftWindow(date,startTime,endTime);
   if(!title.trim()||!workCity.trim()||!window){setMessage('Informe função, cidade, data e horários válidos.');return;}
-  const amount=Number(pay.replace(',','.'));
-  if(!pay.trim()||!Number.isFinite(amount)||amount<0||!Number.isSafeInteger(Math.round(amount*100))){setMessage('Informe um valor válido.');return;}
+  const payText=pay.trim();
+  if(!/^\d+(?:[,.]\d{1,2})?$/.test(payText)){setMessage('Informe um valor em reais com até duas casas decimais.');return;}
+  const amount=Number(payText.replace(',','.'));
+  if(!Number.isFinite(amount)||amount<0||!Number.isSafeInteger(Math.round(amount*100))){setMessage('Informe um valor válido.');return;}
   submittingRef.current=true;
   setSubmitting(true);
   setMessage('');
