@@ -213,13 +213,13 @@ const s = StyleSheet.create({
   row: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   flex: { flex: 1 },
   input: { borderWidth: 1, borderColor: '#DCD8E8', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 13, fontSize: 16 },
-  button: { backgroundColor: '#064A9B', borderRadius: 12, padding: 14 },
+  button: { backgroundColor: '#651FFF', borderRadius: 12, padding: 14 },
   card: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, gap: 5 },
   jobCard: { borderWidth: 1, borderColor: '#E9E6F2', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, gap: 5 },
-  selected: { borderWidth: 2, borderColor: '#064A9B', backgroundColor: '#EEF5FC' },
+  selected: { borderWidth: 2, borderColor: '#651FFF', backgroundColor: '#F6F3FF' },
   name: { fontSize: 18, fontWeight: '800' },
   bold: { fontWeight: '800' },
-  action: { fontWeight: '800', marginTop: 4, color: '#064A9B' },
+  action: { fontWeight: '800', marginTop: 4, color: '#651FFF' },
   contextActions: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  contextAction: { borderWidth: 1, borderColor: '#C9DDF3', backgroundColor: '#EEF5FC', color: '#064A9B', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14, fontWeight: '800' }
+  contextAction: { borderWidth: 1, borderColor: '#D8CCFF', backgroundColor: '#F6F3FF', color: '#651FFF', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14, fontWeight: '800' }
 });
