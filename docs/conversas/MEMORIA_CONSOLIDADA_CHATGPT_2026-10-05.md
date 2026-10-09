@@ -144,3 +144,24 @@ Ao final de nova decisão material do MLIVRETRABALHO:
 5. nunca misturar outros projetos;
 6. nunca substituir o layout canônico aprovado por interpretação nova;
 7. nunca considerar fidelidade visual concluída sem Visual Truth Gate.
+
+
+---
+
+## 2026-10-09 — Continuação autônoma, PRs #330/#331 e regra de gates pós-merge
+
+**Contexto:** o usuário solicitou continuar o MLIVRETRABALHO sem precisar digitar “continuar”. A automação horária permanece restrita a este projeto. O repositório oficial continua sendo `dbdanielbaracho/MLIVRETRABALHO`, branch `main`.
+
+**Estado verificado antes da integração:**
+- `main` estava em `a4c1676e689cf591f2e59746219c2afd8c2ec441`, após o PR #329;
+- PR #330 — `fix(mobile): handle earnings loading and network errors`: CI foundation e Standalone Pilot APK concluídos com sucesso;
+- PR #331 — `fix(mobile): clear local session when signout is offline`: CI foundation e Standalone Pilot APK concluídos com sucesso;
+- ambos estavam abertos, mergeáveis e com `mergeable_state=clean`.
+
+**Ação executada:**
+- PR #330 integrado por squash, resultado `6c26d7440f705c8b00f779443c944ac252e91064`;
+- PR #331 integrado por squash, resultado atual da `main` `fb920d043a7e6d8c6c7837ef01ea0bcd4a27f8eb`.
+
+**Regra de pós-merge:** o merge não é considerado concluído até que os workflows da nova `main` terminem com sucesso. Em seguida, a próxima tarefa interna segura é executar o Visual Truth Gate das 11 telas, comparando Documento da Verdade, referência canônica, implementação, estados, rolagem, navegação e evidências. CI/APK verdes não substituem a auditoria visual.
+
+**Atualização da automação:** a automação horária deve sempre consultar o estado atual da `main`, PRs, CI e Standalone Pilot APK; não deve fixar PR antigo; deve atualizar código e documentos/memória no mesmo ciclo; deve continuar enquanto houver trabalho interno seguro; e deve parar somente por bloqueio externo real, custo, risco ou aprovação necessária.
