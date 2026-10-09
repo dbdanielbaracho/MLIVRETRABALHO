@@ -270,3 +270,19 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 > O QUE DEVE SER FEITO PARA VOCE NÃO PARAR MAIS , PORQUE TODA HORA VOCE ME DA UM MOTIVO QUE PAROU, EU QUERO SABER COMO FAZER PARA VOCE NÃO PARAR MAIS
 
 **Persistência:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.30.md` e `docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md`. Atualizar checkpoint em cada nova rodada com resultados reais, próximas ações e blockers específicos.
+
+
+---
+
+## 2026-10-09 — Retomada: dados reais no Início Profissional e navegação Empresa
+
+**Registro literal disponível — usuário:**
+> continuar
+
+**Base:** main `169cd0c9f83930af7d16569f95fb3073e4ca4f9d`, após #340; CI PR `38005345097` e CI main `38005572486` aprovados. Leitura do Documento v1.30, checkpoint, memória, código e contratos das APIs.
+
+**Execução:** branch `fix/real-professional-home-and-company-nav` substitui todos os dados fictícios do Início Profissional por quatro GETs autenticados existentes, erros independentes, vazio, retry, cancelamento/timeout e recarga ao retornar. Contagens por calendário local, ganhos explicitamente semanais, agenda/horários/locais reais e disponibilidade por janela; sem distância inventada. Confronto de CompanyNav com v1.26 confirmou /empresa como rota canônica Trabalhos e justificou barra inferior fora da rolagem.
+
+**Validação local:** oito testes aprovados em UTC e America/Sao_Paulo. Script mobile test incorpora testes, sem dependências novas, React/RN/lockfile preservados. CI/APK/merge ainda pendentes nesta atualização inicial; devem ser acompanhados e registrados, sem afirmar aprovação antecipada.
+
+**Documentação:** Documento v1.31, evidência MOBILE_REAL_HOME_AND_COMPANY_NAV_v1.31, Evidence Registry e checkpoint no mesmo ciclo. Visual Truth Gate OPEN; próxima ação é concluir gates e seguir comparação das telas/estados com referência original. Uma rotina permanece ativa; não encerrar projeto por fim de rodada ou ausência de PRs.
