@@ -20,7 +20,7 @@ O PR #337:
 - preservou autenticação, endpoints, payloads, redirecionamentos e regras de negócio;
 - substituiu somente o `any` local do payload de cadastro por um tipo equivalente.
 
-## Matriz do conjunto de 11 telas
+## Matriz histórica do conjunto de 11 telas — conclusão supersedida pela v1.30
 
 | Grupo | Telas/áreas | Resultado estático |
 |---|---|---|
@@ -28,7 +28,7 @@ O PR #337:
 | Empresa | Início, Trabalhos, Equipe, Conta | Reconciliadas |
 | Entrada/autenticação | Abertura, Entrar, Criar conta | Reconciliadas no PR #337 |
 
-**Conclusão:** o conjunto estático de 11 telas-alvo está reconciliado. Isso não é aceite visual em aparelho físico; navegação real e observação de pixels, teclado, densidade e estados continuam como gate físico/piloto.
+**Correção em 2026-10-09 / v1.30:** a conclusão integral anterior foi prematura. A tabela acima registra a avaliação histórica, não aprovação atual das 11 telas. A main ainda contém dados fictícios em Início Profissional e ausência de CompanyNav em empresa.tsx a reconciliar. O Visual Truth Gate permanece OPEN; as correções específicas do PR #337 e provas CI/APK abaixo continuam válidas. A cobertura integral exige desenho original, requisitos, código, dados/estados reais e inspeção navegada.
 
 ## Gate Android
 O primeiro run do APK do PR revelou uma condição de inicialização do Android hospedado: `PackageManagerInternal.freeStorage` ainda indisponível durante `adb install`. O workflow passou a repetir a instalação, com limite de seis tentativas/um minuto e saída preservada. Falhas persistentes continuam bloqueando o job.
