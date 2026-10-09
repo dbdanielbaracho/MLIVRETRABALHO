@@ -26,7 +26,7 @@ export default function ProfissionalInicio(){
  const failed=Object.values(data).some(section=>section.status==='error');
  const money=(cents:number)=>'R$ '+(cents/100).toFixed(2).replace('.',',');
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
- <View style={s.brandRow}><Text style={s.brand}>MLIVRE<Text style={s.purple}>TRABALHO</Text></Text></View>
+ <View style={s.brandRow}><Text style={s.brand}>MLIVRE<Text style={s.purple}>TRABALHO</Text></Text><Text style={s.bell}>♧</Text></View>
  <Text style={s.greeting}>{name?'Olá, '+name+'!':'Olá!'}</Text><Text style={s.subtitle}>Pronta para novos trabalhos?</Text>
  {data.profile.status==='loading'&&<Text style={s.small}>Carregando perfil…</Text>}
  {data.profile.status==='error'&&<Text style={s.error}>Não foi possível carregar seu perfil.</Text>}
