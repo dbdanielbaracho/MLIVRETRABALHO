@@ -2,36 +2,28 @@
 
 **Atualização:** 2026-10-09  
 **Escopo:** somente dbdanielbaracho/MLIVRETRABALHO, main  
-**Normativo:** Documento da Verdade vigente apontado no README; v1.30 corrige a conclusão prematura da v1.29.
+**Normativo:** Documento da Verdade vigente apontado no README; v1.31 preserva a continuidade da v1.30.
 
 ## Último estado verificado
-- main: `7a5023e2634a66a84d1743629589829896885c8f`.
-- CI desse SHA: run `37994603045`, sucesso.
-- Último APK de código mobile: run `37991615638`, SHA `2bb27ea09e7233f2b4c93a70c02d0e7fbf2c0962`, sucesso.
-- PRs #337–#339 integrados; ausência de PRs não significa ausência de trabalho.
-- Uma rotina de continuidade reativada e corrigida; a duplicada permanece desativada.
+- main fonte: `169cd0c9f83930af7d16569f95fb3073e4ca4f9d`, PR #340 integrado.
+- CI de #340: `38005345097`, sucesso. CI dessa main: `38005572486`, sucesso.
+- Último APK previamente verificado: `37991615638`, SHA `2bb27ea09e7233f2b4c93a70c02d0e7fbf2c0962`, sucesso; não é prova do código novo.
+- Nenhum PR aberto na consulta inicial. Implementação atual na branch `fix/real-professional-home-and-company-nav`, ainda aguardando PR/gates/merge.
+- Uma rotina de continuidade ativa; a duplicada permanece desativada.
 
-Revalidar esses dados antes de retomar. Não reutilizar este SHA como se fosse automaticamente atual.
+## Entrega em validação
+Início Profissional carrega Perfil/Agenda/Ganhos/Disponibilidade reais, com erros independentes, vazio, retry e atualização ao retornar. Empresa recebe navegação inferior canônica. Oito testes locais aprovados em UTC e America/Sao_Paulo. React 19.1.4/RN 0.81.6/lockfile preservados.
 
 ## Fila concreta
 
 | Item | Evidência | Estado | Próxima ação |
 |---|---|---|---|
-| Início Profissional sem dados reais | profissional-inicio.tsx tem Olá, Ana!, 2 trabalhos, R$ 120,00 e oportunidade/disponibilidade fixas | PENDENTE INTERNO | Mapear APIs já usadas por Perfil/Agenda/Ganhos/Disponibilidade, carregar dados reais e estados loading/erro/vazio, sem inventar nome/valor/distância |
-| Navegação Empresa | empresa.tsx sem import/render de CompanyNav | PENDENTE DE RECONCILIAÇÃO | Ler CompanyNav e rotas, confrontar v1.26; aplicar navegação fixa no contexto canônico comprovado |
-| Visual Truth Gate | v1.29 declarou fechamento sem excluir os itens acima e sem prova integral do desenho original | OPEN | Recomparar referência aprovada, requisito, implementação, dados/estados e evidência; corrigir divergências comprovadas |
-| Documentação de continuidade | v1.30 e este checkpoint | REGISTRO DESTA RODADA | Verificar PR/CI/merge; adicionar SHA e runs em próxima atualização material |
+| Dados reais do Início Profissional | APIs existentes e testes de calendário/status/erro | IMPLEMENTADO, GATES PENDENTES | Verificar CI/APK do PR, integrar somente com sucesso e verificar pós-merge |
+| Navegação Empresa | CompanyNav aponta /empresa; v1.26 exige barra fora da rolagem | IMPLEMENTADO, GATES PENDENTES | Mesmos gates; comparação visual navegada permanece separada |
+| Visual Truth Gate | v1.30 revogou fechamento prematuro | OPEN | Recomparar referência aprovada, requisito, implementação, dados/estados e evidência; corrigir divergências comprovadas |
 
 ## Dependências externas
-#220: aparelho físico/piloto e pentest; #228/#215/#219: elegibilidade comercial, provider, contrato e sandbox; #224: serviço Web e autorização de custo. Bloqueiam seus itens específicos. Não bloqueiam a fila interna acima.
+#220: aparelho físico/piloto e pentest; #228/#215/#219: elegibilidade comercial, provider, contrato e sandbox; #224: serviço Web e autorização de custo. Bloqueiam seus itens específicos. Não bloqueiam tarefas internas independentes.
 
 ## Contrato de retomada
-Ao finalizar cada rodada, atualizar somente com fatos verificados:
-- SHA fonte consultado e SHA entregue;
-- item executado, branch/PR e status;
-- IDs de CI/APK/pós-merge e resultado real;
-- pendências restantes e próxima ação concreta;
-- blocker por item, evidência e ação requerida;
-- alterações de documentação/memória.
-
-Quando só houver processos em andamento, acompanhar os runs existentes. Quando todos os itens estiverem impedidos, registrar as alternativas verificadas e manter a rotina ativa para reavaliação, sem mensagens idênticas. Não desativar por fim de rodada ou avaliação superficial. Não fabricar progresso.
+Revalidar main/PRs/runs antes de retomar. Atualizar com SHA fonte/entregue, PR, CI/APK/pós-merge, resultados reais, pendências e blocker por item. Run em andamento deve ser acompanhado; não é conclusão nem bloqueio definitivo. Manter uma única rotina ativa até conclusão integral comprovada ou ordem explícita. Não fabricar progresso.
