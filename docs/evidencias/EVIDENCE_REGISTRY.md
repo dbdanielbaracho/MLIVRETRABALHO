@@ -37,3 +37,9 @@ Este registro acompanha o Documento da Verdade. Claims temporais devem ser reval
 Cada evidência material futura deve registrar: Evidence ID, concorrente/fonte, tópico, URL/fonte primária, data verificada, fato, confidence/status, transferibilidade ao Brasil e decisão do MLIVRETRABALHO.
 
 **COMP-EVIDENCE bloqueia decisão material baseada em claim não verificado.**
+
+## Implementação em validação — v1.31
+
+| Evidence ID | Fonte | Fato | Estado | Decisão |
+|---|---|---|---|---|
+| UI-MOBILE-REAL-HOME-001 | Código/contratos e MOBILE_REAL_HOME_AND_COMPANY_NAV_v1.31.md, 09/10/2026 | Dados fictícios substituídos por quatro APIs; oito testes locais aprovados em UTC/São Paulo; navegação de /empresa reconciliada com v1.26 | IMPLEMENTADO; CI/APK/merge pendentes no registro inicial | Acompanhar gates e registrar SHA/runs no checkpoint; Visual Truth Gate OPEN |
