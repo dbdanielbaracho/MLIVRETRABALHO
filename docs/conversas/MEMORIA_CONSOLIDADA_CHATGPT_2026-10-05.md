@@ -223,3 +223,30 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 
 **Governança:** Documento da Verdade v1.28 e evidência `MOBILE_VISUAL_AUDIT_EMPRESA_IDENTIDADE_v1.28.md` registram o fechamento desta divergência. O Visual Truth Gate global continua aberto para telas, estados e fluxos restantes; os gates externos permanecem separados.
 
+---
+
+## 2026-10-09 — Fechamento estático das 11 telas, PR #337, e resiliência do CI, PR #338
+
+**Referência consultada:** Documento da Verdade v1.28, decisões visuais preservadas desde v1.20/v1.23 e regra do Visual Truth Gate registrada nesta memória.
+
+**Último grupo visual:** abertura, entrada e criação de conta ainda apresentavam layout genérico preto/branco. O PR #337 aplicou marca, hierarquia, roxo canônico `#651FFF`, superfícies/bordas coerentes, seleção acessível de tipo de conta, rolagem para dispositivos menores e rótulos/papéis de acessibilidade. Endpoints, autenticação, payloads, redirecionamentos e regras de negócio foram preservados; o `any` local do cadastro foi apenas substituído por tipagem explícita equivalente.
+
+**Escopo estático reconciliado:** quatro áreas do Profissional, quatro áreas da Empresa e três telas de entrada/autenticação, totalizando as 11 telas-alvo. Esse fechamento é de código/estrutura/identidade/estados/rolagem. Ele não substitui inspeção visual navegada em aparelho físico nem aceite do piloto.
+
+**Android hospedado:** o primeiro APK da PR #337 encontrou `PackageManagerInternal.freeStorage` indisponível durante a instalação, apesar de PackageManager e Settings já responderem. O workflow passou a repetir a instalação do mesmo APK por até seis tentativas durante no máximo um minuto, registrando a saída e falhando se o erro persistir.
+
+**Gates e integração do PR #337:**
+- CI/foundation `37988712992`: sucesso;
+- Standalone Pilot APK `37988712988`: sucesso;
+- merge squash `2bb27ea09e7233f2b4c93a70c02d0e7fbf2c0962`;
+- APK pós-merge `37991615638`: sucesso, com instalação e abertura standalone sem Metro.
+
+**Falha externa pós-merge e correção:** o CI `37991615787` falhou em duas tentativas antes do checkout porque o Docker Hub retornou `toomanyrequests` ao runner anônimo para `postgres:17`. Não houve execução nem falha de código do projeto. O PR #338 passou a usar o espelho público da mesma Docker Official Image em `public.ecr.aws/docker/library/postgres:17`, sem alterar versão, banco, healthcheck ou testes.
+
+**Gates e integração do PR #338:**
+- CI `37991825498`: sucesso;
+- merge squash `74cfa372b8f824adee3e99394556450eec24d9c3`;
+- CI pós-merge `37992084863`: sucesso.
+
+**Governança:** Documento da Verdade v1.29, evidência `MOBILE_VISUAL_AUDIT_ENTRADA_v1.29.md` e Evidence Registry registram o resultado. Permanecem externos e separados: inspeção física/piloto, pentest independente, PSP/KYC/KYB/PLD/sandbox/contratos, FIN-RISK, TRUST-ARCH provider-specific, WEB-ARCH e decisões de custo/deploy.
+
