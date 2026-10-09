@@ -177,3 +177,30 @@ Após os merges dos PRs #330 e #331, a nova `main` `fb920d043a7e6d8c6c7837ef01ea
 - Workflow **Standalone Pilot APK**: ainda em execução nesta verificação.
 - A integração só será considerada totalmente validada quando o APK Standalone também terminar com sucesso.
 - O Visual Truth Gate das 11 telas permanece como próxima tarefa interna após a confirmação do APK.
+
+---
+
+## 2026-10-09 — Visual Truth Gate de Ganhos, gate Android e PR #333
+
+**Estado inicial verificado:** a `main` estava em `f14b905065999a9f9e4316fbaa839c00bc65d8a2`, o Documento da Verdade vigente era a v1.26 e não havia outro PR aberto concorrente.
+
+**Divergência visual corrigida:** na tela `apps/mobile/app/ganhos.tsx`, as etiquetas dos dias do gráfico semanal usavam `#EDE8FF` sobre fundo branco e ficavam praticamente ilegíveis. O PR #333 alterou somente essa cor para `#65708A`, sem mudar rotas, API, autenticação, regra de negócio, estado, React, React Native ou lockfile.
+
+**Endurecimento do gate Android:** a validação revelou condições de corrida do emulador hospedado:
+- PackageManager ainda indisponível após `sys.boot_completed`;
+- script multilinha incompatível com a execução linha a linha do action;
+- sondagens ADB sem limite de tempo;
+- provedor `settings` ainda não instalado;
+- falha transitória interna do executor com `Broken pipe` antes do script do projeto.
+
+O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consulta real do PackageManager, aguardar o provedor de configurações e limitar as sondagens com `timeout`. A falha interna transitória foi repetida de forma controlada.
+
+**Gates do PR:**
+- CI/foundation, run `37972636600`: sucesso;
+- Standalone Pilot APK, run `37972636568`, tentativa 2: sucesso;
+- APK instalado e aberto sem Metro; processo e atividade detectados; artefato validado publicado.
+
+**Integração:** PR #333 integrado por squash. Nova `main`: `cb7b689983976255798af661ca2e59a2d4c738c0`.
+
+**Governança:** Documento da Verdade v1.27 e evidência `MOBILE_VISUAL_AUDIT_GANHOS_v1.27.md` registram o resultado. O Visual Truth Gate global permanece aberto para as demais telas e estados. Continuam externos e separados: navegação/inspeção física quando aplicável, pentest independente, PSP/KYC/sandbox, WEB-ARCH e decisões com custo.
+
