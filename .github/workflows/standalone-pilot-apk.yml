@@ -81,7 +81,10 @@ jobs:
             timeout 10s adb shell settings get global device_provisioned >/dev/null
             adb logcat -c
             test -f "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
-            adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
+            # Some hosted emulators expose PackageManager before the backing
+            # storage service is ready. Retry the exact install for at most one
+            # minute; persistent app/package failures still fail with full output.
+            install_log=/tmp/mlivretrabalho-install.txt; install_ok=false; for i in $(seq 1 6); do if adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk" >"$install_log" 2>&1; then install_ok=true; break; fi; cat "$install_log"; sleep 10; done; cat "$install_log"; test "$install_ok" = true
             adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
             adb shell monkey -p "com.predibeacon.mlivretrabalho.pilot" -c android.intent.category.LAUNCHER 1
             sleep 12
