@@ -250,3 +250,23 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 
 **Governança:** Documento da Verdade v1.29, evidência `MOBILE_VISUAL_AUDIT_ENTRADA_v1.29.md` e Evidence Registry registram o resultado. Permanecem externos e separados: inspeção física/piloto, pentest independente, PSP/KYC/KYB/PLD/sandbox/contratos, FIN-RISK, TRUST-ARCH provider-specific, WEB-ARCH e decisões de custo/deploy.
 
+---
+
+## 2026-10-09 — Correção de pausa prematura e regra de continuidade
+
+**Fatos:** após integrar #339, o agente concluiu indevidamente que somente gates externos restavam e desativou as duas rotinas. A consulta dos PRs/issues não excluía pendências no código/checkpoints. A inspeção posterior confirmou dados fictícios em `profissional-inicio.tsx` e ausência de `CompanyNav` em `empresa.tsx`, cuja aplicação deve ser reconciliada com a rota/refêrencia canônicas.
+
+**Correção de autoridade:** o fechamento estático integral registrado na v1.29 e no trecho histórico anterior desta memória foi prematuro. v1.30 o revoga; Visual Truth Gate permanece OPEN. As alterações específicas e resultados CI/APK continuam válidos. Esta correção não entrega ainda as mudanças funcionais pendentes.
+
+**Ação:** uma única rotina foi reativada e recebeu regra de continuidade por tarefa, checkpoint persistente, fila de dados reais/navegação/auditoria, proibição de parar apenas por ausência de PR e reavaliação quando houver dependências externas. A rotina duplicada permanece desativada.
+
+**Regra de prevenção:** bloqueios parciais não encerram desenvolvimento; CI em andamento deve ser acompanhado. Antes de afirmar que não há trabalho interno, revisar requisitos, desenho, código, dados/estados reais e checkpoint. Fim de rodada não é fim de projeto. A rotina permanece ativa até conclusão integral comprovada ou ordem explícita de parada, sem promessa de execução ininterrupta. Custos, risco, credenciais e rejeições limitam as operações correspondentes; não autorizam contornar controles.
+
+**Registro literal disponível — usuário:**
+> O QUE VOCE ESTÁ FAZENDO AGORA
+
+> PORQUE PAROU ME EXPLICA
+
+> O QUE DEVE SER FEITO PARA VOCE NÃO PARAR MAIS , PORQUE TODA HORA VOCE ME DA UM MOTIVO QUE PAROU, EU QUERO SABER COMO FAZER PARA VOCE NÃO PARAR MAIS
+
+**Persistência:** `docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.30.md` e `docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md`. Atualizar checkpoint em cada nova rodada com resultados reais, próximas ações e blockers específicos.
