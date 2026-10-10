@@ -215,3 +215,9 @@ Head original 1c1756fd20ae369a6df6855f79b873ce07ca0967; predecessor reconciliado
 | Evidence ID | Fonte | Fato | Estado |
 |---|---|---|---|
 | UI-MOBILE-ANALYTICS-STATES-001 | MOBILE_ANALYTICS_STATES_v1.51.md | 6 testes novos/107 locais; GET/estados/null/taxa real | Branch/gates pendentes; Visual Truth OPEN |
+
+## Assistente — v1.52
+
+| Evidence ID | Fonte | Fato | Estado |
+|---|---|---|---|
+| UI-MOBILE-COPILOT-STATES-001 | MOBILE_COPILOT_STATES_v1.52.md |6 novos testes/113 locais; sugestão schema/rota/ação crítica/manual; rede/guard | Branch; CI/APK/taps pendentes; Visual Truth OPEN |

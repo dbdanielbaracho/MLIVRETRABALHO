@@ -457,3 +457,17 @@ Fonte primária: apps/api/src/company-analytics.controller.ts e apps/mobile/app/
 6 testes novos, 107/107 em UTC/São Paulo. Zero somente após resposta válida; null distinto de0%, taxa de confirmação200% preservada conforme universos do controlador; contagens/rates inválidas e HTTP403/rede/JSON não viram vazio; explicit retry pode recuperar. Foco/generation/abort15s revisados, unidade não comprova UI nativa. Novo CI/APK exato/merge/pós-merge pendentes, Visual Truth OPEN.
 
 Fila e prova #350 atualizadas no checkpoint nesta alteração. #351–#360 código byte-idêntico às respectivas branches originais, documentos main/#361 preservados e ancestrais reconciliados; gates obrigatórios em novos SHAs. Nenhum custo, fornecedor de IA, dinheiro, mensagem real, política financeira ou enforcement habilitado.
+
+## 2026-10-10 — Assistente limitado a sugestão factual, v1.52
+
+# Assistente: sugestão validada e rede limitada — v1.52
+
+**Data:** 2026-10-10. **Base:** #362 cb5b39a19d89593cafc9ca6bbd44c1528a9253f0.
+
+CopilotController/copilotPolicy/copilot-tools.ts reconsultados. Interpret usa POST deterministic_baseline, mode assisted, providerConfigured false no backend atual. Não foi feita chamada real ao Assistente pelo agente nem habilitado fornecedor pago. UI anterior rejeitava promessa de rede sem catch, não validava result.reasons/rota e permitia envio simultâneo.
+
+Correção mantém pedido manual em mode assisted, texto até2000, guard síncrono/campos disabled/15s/cancelamento de blur/geração e estado de erro. Texto preservado em falha; só resposta validada cria sugestão. Rotas correspondem aos intents existentes do backend, sem navegação arbitrária. executionAllowed deve ser false, modo assisted e facts/reasons/disclaimer devem ser válidos; sinal requiresHumanConfirmation retornado permanece. Editar texto invalida sugestão anterior; abrir próximo passo verifica mesma sessão e versão da sugestão. Nenhuma tool é executada automaticamente; rota abre jornada já existente, sem confirmar/pagar/bloquear/punir.
+
+6 novos testes;113/113 locais UTC e America/Sao_Paulo, incluindo suíte anterior107. Cobrem limite sem request, payload assisted/chamada única, rota desconhecida/incompatível, ação automática/modo inválido, confirmação humana, facts/schema/HTTP/JSON/rede sem retry. Revisão estática de guard/draft/epoch/session, sem alegar taps/aparelho/Visual Truth. Styles/APIs/backend/policies/RLS/React19.1.4/RN0.81.6/lockfile preservados. CI/APK head exato/merge/pós-merge ainda pendentes; cadeia após#362. Visual Truth OPEN.
+
+Próxima ação: acompanhar gates #351–#360/#362 e deste item, integrar em ordem com revisão e pós-merge. Revalidar Privacidade/onboarding e comportamento company/professional das sugestões contra requisitos; não inferir cobertura total por essas correções.

@@ -1,5 +1,12 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+## Atualização da preparação — Assistente v1.52
+
+#362 Indicadores headcb5b39a19d89593cafc9ca6bbd44c1528a9253f0, CI38020467694/APK38020467686 em execução;113 testes locais com6 novos do Assistente. Branch fix/copilot-verified-suggestions-and-network-states preparada sobre#362; PR/gates próprios ainda não criados neste snapshot, consultar GitHub pelo nome. #351–#360 novos CIs aprovados; APKs em acompanhamento. #351 CI38020116345 sucesso/APK38020116350 em execução. #345 APK38017162774 tentativa2 em execução após diagnóstico input Broken pipe224. Nenhum merge afirmado antecipadamente. Próxima ação: acompanhar/integrar #351 na main, retarget352 e sequência; Assistente só após#362 e gates próprios exatos. Visual Truth OPEN.
+
+
+## Snapshot anterior
+
 **Snapshot:** 2026-10-10 03:24 UTC. Reconsultar GitHub antes de agir. Escopo exclusivo dbdanielbaracho/MLIVRETRABALHO.
 
 ## Main comprovada
