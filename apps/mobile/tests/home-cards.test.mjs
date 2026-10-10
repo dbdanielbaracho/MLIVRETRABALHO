@@ -33,3 +33,13 @@ test('next-work pay is an actual validated API field; missing value stays missin
  const missing=await loadProfessionalHome(request([{id:'missing',title:'Work',status:'confirmed'}]));assert.equal(missing.assignments.data[0].payCents,undefined);
  const invalid=await loadProfessionalHome(request([{...item,payCents:'280'}]));assert.equal(invalid.assignments.status,'error');
 });
+
+test('home opportunity malformed identities/title/timestamps stay errors while real reputation and optional nulls remain intact',async()=>{
+ const passport={completedWorkCount:0,ratingCount:0,averageRating:null},job={id:'opaque:job',title:'Actual',startsAt:null,endsAt:null,location:null,workCity:null,payCents:0};
+ const request=rows=>async path=>({ok:true,json:async()=>path==='/jobs'?rows:passport});
+ for(const patch of [{id:''},{id:' '},{title:''},{startsAt:'bad-date'},{endsAt:''},{startsAt:42}]){
+  const result=await loadHomeCards(request([{...job,...patch}]));assert.deepEqual(result.opportunities,{status:'error'});assert.deepEqual(result.passport,{status:'ready',data:passport});
+ }
+ const jobs=[{...job,startsAt:'2026-10-10T12:00:00-03:00',endsAt:'2026-10-11T01:00:00Z'}];
+ assert.deepEqual((await loadHomeCards(request(jobs))).opportunities,{status:'ready',data:jobs});
+});

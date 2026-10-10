@@ -55,3 +55,36 @@ test('a retry replaces failed states with actual results; malformed items never 
  const broken=await loadProfessionalHome(async()=>({ok:true,json:async()=>{throw new Error('invalid json');}}));
  assert.ok(Object.values(broken).every(section=>section.status==='error'));
 });
+
+const homeResponse=overrides=>async path=>({ok:true,json:async()=>overrides[path]??(path==='/professional-profile'?null:[])});
+test('home malformed assignment references and dates are an error rather than a zero count or absent next work',async()=>{
+ const work=assignment('real',10);
+ for(const patch of [{id:''},{title:' '},{status:''},{startsAt:'bad-date'},{endsAt:''}]){
+  const data=await loadProfessionalHome(homeResponse({'/assignments/mine':[{...work,...patch}]}));
+  assert.equal(data.assignments.status,'error');assert.equal(data.earnings.status,'ready');assert.equal(data.availability.status,'ready');
+ }
+});
+test('home malformed earnings timestamps or blank status cannot appear as verified zero earnings',async()=>{
+ const entry={amountCents:12000,status:'payable',createdAt:iso(9)};
+ for(const patch of [{status:' '},{createdAt:'invalid'},{createdAt:''},{createdAt:null}]){
+  const data=await loadProfessionalHome(homeResponse({'/earnings/mine':[{...entry,...patch}]}));
+  assert.equal(data.earnings.status,'error');assert.equal(data.assignments.status,'ready');
+ }
+});
+test('home rejects malformed or reversed actual availability ranges without reporting no availability',async()=>{
+ for(const value of [{startsAt:'bad-date',endsAt:iso(10)},{startsAt:iso(10),endsAt:iso(9)},{startsAt:iso(10),endsAt:iso(10)},{startsAt:'',endsAt:null}]){
+  const data=await loadProfessionalHome(homeResponse({'/availability/mine':[value]}));
+  assert.equal(data.availability.status,'error');assert.equal(data.earnings.status,'ready');
+ }
+});
+test('home blank provided name is malformed while genuine profile absence and names remain literal',async()=>{
+ for(const displayName of ['',' ',42])assert.equal((await loadProfessionalHome(homeResponse({'/professional-profile':{displayName}}))).profile.status,'error');
+ const data=await loadProfessionalHome(homeResponse({'/professional-profile':{displayName:' Name '}}));assert.deepEqual(data.profile,{status:'ready',data:{displayName:' Name '}});
+});
+test('home preserves valid opaque references, future statuses, optional hours and real signed cents across independent sections',async()=>{
+ const work={id:'opaque:work',title:'Actual',status:'future_state',startsAt:null,endsAt:null,payCents:0};
+ const earning={amountCents:-25,status:'future_state',createdAt:'2026-10-10T12:00:00-03:00'};
+ const window={startsAt:'2026-10-10T12:00:00-03:00',endsAt:'2026-10-11T01:00:00Z'};
+ const data=await loadProfessionalHome(homeResponse({'/assignments/mine':[work],'/earnings/mine':[earning],'/availability/mine':[window]}));
+ assert.deepEqual(data.assignments,{status:'ready',data:[work]});assert.deepEqual(data.earnings,{status:'ready',data:[earning]});assert.deepEqual(data.availability,{status:'ready',data:[window]});
+});

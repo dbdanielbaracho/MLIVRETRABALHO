@@ -7,11 +7,14 @@ export type HomeData = { profile: Section<Profile | null>; assignments: Section<
 export const loadingHome = (): HomeData => ({ profile: {status:'loading'}, assignments: {status:'loading'}, earnings: {status:'loading'}, availability: {status:'loading'} });
 type Request = (path: string) => Promise<{ ok: boolean; json(): Promise<unknown> }>;
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
+const nonempty = (value: unknown): value is string => typeof value === 'string' && !!value.trim();
+const validDate = (value: unknown): value is string => typeof value === 'string' && Number.isFinite(new Date(value).getTime());
+const optionalDate = (value: unknown) => value == null || validDate(value);
 const optionalText = (value: unknown) => value == null || typeof value === 'string';
-const validProfile = (value: unknown): value is Profile | null => value === null || (record(value) && optionalText(value.displayName));
-const validAssignment = (value: unknown): value is Assignment => record(value) && typeof value.id === 'string' && typeof value.title === 'string' && typeof value.status === 'string' && optionalText(value.startsAt) && optionalText(value.endsAt) && optionalText(value.location) && (value.payCents == null || Number.isSafeInteger(value.payCents));
-const validEarning = (value: unknown): value is Earning => record(value) && Number.isSafeInteger(value.amountCents) && typeof value.status === 'string' && typeof value.createdAt === 'string';
-const validAvailability = (value: unknown): value is Availability => record(value) && typeof value.startsAt === 'string' && typeof value.endsAt === 'string';
+const validProfile = (value: unknown): value is Profile | null => value === null || (record(value) && (value.displayName == null || nonempty(value.displayName)));
+const validAssignment = (value: unknown): value is Assignment => record(value) && nonempty(value.id) && nonempty(value.title) && nonempty(value.status) && optionalDate(value.startsAt) && optionalDate(value.endsAt) && optionalText(value.location) && (value.payCents == null || Number.isSafeInteger(value.payCents));
+const validEarning = (value: unknown): value is Earning => record(value) && Number.isSafeInteger(value.amountCents) && nonempty(value.status) && validDate(value.createdAt);
+const validAvailability = (value: unknown): value is Availability => record(value) && validDate(value.startsAt) && validDate(value.endsAt) && new Date(value.endsAt) > new Date(value.startsAt);
 const listOf = <T>(validate: (value: unknown) => value is T) => (value: unknown): value is T[] => Array.isArray(value) && value.every(validate);
 
 // Each API has an independent result: a failed request must never become an empty list or zero.
