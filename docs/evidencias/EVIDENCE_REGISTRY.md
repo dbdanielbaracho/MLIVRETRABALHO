@@ -759,3 +759,9 @@ CAPABILITY_INPUT_SHAPE_v1.94.md: TypeError antigo reproduzido em fixtures;9teste
 ## 2026-10-10 1836Z —v1.95
 
 CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51localAPI e bash-n aprovados, parsers/profissional/tenant/completed/proposed preservados. CI131API/377mobile/HTTPnegativos pendentes; APK próprioN/A condicionado paths/tree. #405CI38076148645/job114283385677 aprovado377/119/4/3/HTTPshape400/cadastro intacto; mobiletree39e121e416614fa92ce16775d19e65648492d9f3 igual404, APK N/A. Natives401/403/404/pós400 continuam execução. Preferências/autoridade sem membership/VisualTruth físico seguem abertos. Checkpoint/journal1836Z.
+
+
+## 2026-10-10 — v1.96
+
+- [TEAM_PLAN_INPUT_v1.96.md](TEAM_PLAN_INPUT_v1.96.md): TypeError do método anterior reproduzido em fixtures, parser/bind corrigidos e PASS62 local explícito; novo CI/HTTP próprio pendentes.
+- [EXECUCAO_VERIFICADA_2026-10-10_1847Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1847Z.md): CI próprio406 comprovado377mobile/131API, APKs próprios403/404 comprovados com instalação/sem Metro/digests; native401 e pós400 em execução. Visual Truth físico segue aberto.

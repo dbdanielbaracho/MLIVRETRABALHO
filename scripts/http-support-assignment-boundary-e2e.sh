@@ -177,6 +177,20 @@ request GET /v1/company/conversions "$TOKEN_A" "$TENANT_A" | assert_count 0
 request GET /v1/company/conversions "$TOKEN_B" "$TENANT_B" | assert_count 0
 echo 'PASS: malformed direct-hire proposal/response, noncompleted and cross-tenant references cannot create a conversion'
 
+# Planner validates hostile JSON before querying; a valid request still ranks only real tenant candidates.
+PLANNER_BEFORE="$(request GET /v1/company/planner "$TOKEN_A" "$TENANT_A")"
+for invalid in 'null' '[]' '{"requirements":1}' '{"requirements":[null]}' '{"requirements":[{"role":1,"count":1}]}' '{"requirements":[{"role":"Bartender","count":"1"}]}'; do
+ expect_status planner-shape 400 POST "/v1/company/planner/$JOB_A/team-plan" "$TOKEN_A" "$TENANT_A" "$invalid"
+done
+expect_status planner-auth 401 POST "/v1/company/planner/$JOB_A/team-plan" invalid-token "$TENANT_A" 'null'
+expect_status planner-company-role 403 POST "/v1/company/planner/$JOB_A/team-plan" "$TOKEN_P" "$TENANT_A" 'null'
+PLAN_BODY='{"requirements":[{"role":" Bartender ","count":1}]}'
+expect_status planner-cross-tenant 400 POST "/v1/company/planner/$JOB_A/team-plan" "$TOKEN_B" "$TENANT_B" "$PLAN_BODY"
+request POST "/v1/company/planner/$JOB_A/team-plan" "$TOKEN_A" "$TENANT_A" "$PLAN_BODY" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!Array.isArray(x.selected)||x.selected.length!==0||JSON.stringify(x.unfilled)!==JSON.stringify([{role:"Bartender",count:1}])||x.score!==0)throw Error("planner_no_availability_contract");'
+PLANNER_AFTER="$(request GET /v1/company/planner "$TOKEN_A" "$TENANT_A")"
+node -e 'const a=JSON.parse(process.argv[1]),b=JSON.parse(process.argv[2]);if(JSON.stringify(a)!==JSON.stringify(b))throw Error("planner_changed_work_state");' -- "$PLANNER_BEFORE" "$PLANNER_AFTER"
+echo 'PASS: team-plan malformed inputs/auth/role/cross-tenant rejected; valid real-job plan preserves unfilled and work state'
+
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
 expect_status contexts-revoked 401 GET /v1/me/support-contexts "$TOKEN_P" '' ''
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'
