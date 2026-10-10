@@ -4,6 +4,7 @@ import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View } from
 import { ProfessionalNav } from '../components/ProfessionalNav';
 import {SupportHistory} from '../components/SupportHistory';
 import {GeneralSupport} from '../components/GeneralSupport';
+import {DeclaredCapabilities} from '../components/DeclaredCapabilities';
 import { authHeaders,clearSessionForAuthorization } from '../lib/session';
 import { apiUrl } from '../lib/api';
 import {passportHistory,completionDate} from '../lib/passport-history';
@@ -102,7 +103,7 @@ export default function Perfil(){
  </View>:expanded==='Experiência profissional'?<View style={{gap:10}}>
  <Text style={s.panelText}>{passport.status==='loading'?'Carregando histórico…':passport.status==='error'?'Não foi possível carregar seu histórico. Tente novamente acima.':!p?'Complete seus dados para criar seu passaporte.':p.completedWorkCount===0?'Nenhum trabalho concluído registrado no passaporte profissional.':p.completedWorkCount+' trabalhos concluídos registrados no passaporte profissional.'}</Text>
  {history.status==='unavailable'?<Text style={s.panelText}>Histórico detalhado não fornecido nesta resposta.</Text>:history.status==='empty'?<Text style={s.panelText}>Nenhum registro disponível no histórico verificado.</Text>:history.status==='ready'?<View style={{gap:12}}><Text style={s.panelText}>Histórico verificado recente</Text>{history.data.map(work=><View key={work.tenantId+':'+work.id} style={{gap:4}}><Text style={s.panelTitle}>{work.title}</Text><Text style={s.panelText}>{work.location?.trim()?work.location:'Local não informado'}</Text><Text style={s.panelText}>{completionDate(work.completedAt)}</Text></View>)}</View>:null}
- </View>:expanded==='Ajuda e suporte'?<View style={{gap:16}}><GeneralSupport/><SupportHistory/></View>:<Text style={s.panelText}>Esta área ainda não está disponível nesta versão do aplicativo.</Text>}
+ <DeclaredCapabilities/></View>:expanded==='Ajuda e suporte'?<View style={{gap:16}}><GeneralSupport/><SupportHistory/></View>:<Text style={s.panelText}>Esta área ainda não está disponível nesta versão do aplicativo.</Text>}
  <Pressable accessibilityRole="button" onPress={()=>setExpanded(null)}><Text style={s.close}>Fechar</Text></Pressable></View>:null}
  </ScrollView><ProfessionalNav/></SafeAreaView>;
 }
