@@ -15,14 +15,15 @@
 - #346 head ea36faf73c22a533cb5461cb561c248412d9a0b0: Painel Empresa, 27 testes locais. CI 38013571739 sucesso/APK 38013571804 em andamento. Base #345.
 - #347 head a6a78dd3623fa75800d72e67e271f727e534a5c8: Agenda real, 31 testes locais, CI 38013852204 sucesso/APK 38013852251 em andamento. Base #346.
 - #348 head corrigido 4b1cb40d093acc578da1629388c260889bedb0f7: CI 38014454751/APK 38014454871 em execução; falha TS18048 no head anterior 38014176712 resolvida. Base #347.
-- Branch fix/jobs-focus-and-interest-timeout sobre #348 corrigido: catálogo no foco/retry/schema/timeout e ack de interesse, 40 testes; PR/gates próprios a abrir e acompanhar.
+- #349 head edfdfb569aa232e82b34834548e4cc77b5408a39: Trabalhos foco/schema/timeout/ack, 40 testes; CI 38014598006/APK 38014598041 em acompanhamento. Base #348 corrigido.
+- Branch fix/candidates-selection-and-network-states após #349: Interessados estados/seleção/contexto/ack, 45 testes; PR/gates próprios a abrir e acompanhar.
 - Uma rotina de continuidade ativa; não desativar por fim de rodada, bloqueio parcial ou espera de CI/APK.
 
 ## Próxima ação concreta
 1. Acompanhar pós-merge #342 e APK #343; revisar heads/árvores/diffs/gates exatos e integrar #343, com pós-merge.
-2. #344 retarget após #343; revisar/exigir CI/APK head exato e pós-merge. #345 retarget após #344, mesmos gates no head corrigido. #346 retarget após #345; #347 retarget após #346; #348 corrigido retarget e integrar após #347, depois Trabalhos.
+2. #344 retarget após #343; revisar/exigir CI/APK head exato e pós-merge. #345 retarget após #344, mesmos gates no head corrigido. #346 retarget após #345; #347 retarget após #346; #348 corrigido retarget e integrar após #347, depois #349 Trabalhos e Interessados.
 3. Cards do Início implementados a partir da referência intacta. Executar auditoria visual em docs/referencias; capturas/jornadas reais, loading/erro/vazio e fricção. Gate OPEN. Não copiar nomes/valores/promessas ilustrativos.
-4. Próximos itens verificados por leitura: Trabalhos corrigido na branch, validar gates; Equipe e Interessados sem loading/catch/guard e seleção concorrente pode receber resposta antiga. Revalidar contratos antes de corrigir; capturas/jornadas reais contra desenho. Sem criar atividade artificial ou supor conclusão por ausência de PR.
+4. Próximos itens verificados por leitura: Trabalhos corrigido na branch, validar gates; Interessados corrigidos na branch; Equipe ainda sem loading/catch/guard e seleção concorrente pode receber resposta antiga. Revalidar contratos antes de corrigir; capturas/jornadas reais contra desenho. Sem criar atividade artificial ou supor conclusão por ausência de PR.
 
 ## Dependências por item
 #220 aparelho/piloto/pentest; #228/#215/#219 provider/comercial/contrato/sandbox; #224 WEB-ARCH/custo. Não habilitar dinheiro real, custos ou deploy pago. Essas dependências não bloqueiam correções internas independentes.
