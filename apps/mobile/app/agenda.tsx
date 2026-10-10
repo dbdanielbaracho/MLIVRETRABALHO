@@ -5,7 +5,7 @@ import * as Location from 'expo-location';
 import { ProfessionalNav } from '../components/ProfessionalNav';
 import { authHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
-import {loadAgenda,assignmentState,type Assignment} from '../lib/agenda';
+import {loadAgenda,assignmentState,submitAgendaAction,type Assignment} from '../lib/agenda';
 import {assignmentSchedule,type Section} from '../lib/professional-home';
 type Coordinates={lat:number;lng:number};
 async function optionalCoordinates():Promise<Coordinates|null>{
@@ -19,35 +19,46 @@ async function optionalCoordinates():Promise<Coordinates|null>{
 }
 export default function Agenda(){
  const[data,setData]=useState<Section<Assignment[]>>({status:'loading'}),[message,setMessage]=useState('');
- const requestId=useRef(0),pendingActions=useRef(new Set<string>()),[pending,setPending]=useState<string[]>([]);
- const load=useCallback(async(focusSignal?:AbortSignal)=>{
-  const id=++requestId.current;setData({status:'loading'});
-  const controller=new AbortController(),cancel=()=>controller.abort();focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
-  const timeout=setTimeout(()=>controller.abort(),15000);
-  try{const headers=await authHeaders(),next=await loadAgenda(()=>fetch(apiUrl('/assignments/mine'),{headers,signal:controller.signal}));if(id===requestId.current&&!focusSignal?.aborted)setData(next);}
-  catch{if(id===requestId.current&&!focusSignal?.aborted)setData({status:'error'});}
-  finally{clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
- },[]);
- useFocusEffect(useCallback(()=>{const controller=new AbortController();void load(controller.signal);return()=>{requestId.current++;controller.abort();setData({status:'loading'});};},[load]));
- async function action(assignment:Assignment,score?:number){
-  const key=assignment.tenantId+':'+assignment.id,state=assignmentState(assignment.status);
-  const endpoint=score!=null?(state.canRate?'company-rating':null):state.endpoint;
-  if(!endpoint||pendingActions.current.has(key))return;
-  pendingActions.current.add(key);setPending([...pendingActions.current]);setMessage('');
-  let timeout:ReturnType<typeof setTimeout>|undefined;
+ const requestId=useRef(0),epoch=useRef(0),displayedAuthorization=useRef<string|null>(null),controllers=useRef(new Set<AbortController>()),pendingActions=useRef(new Set<string>()),[pending,setPending]=useState<string[]>([]);
+ function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+ const load=useCallback(async()=>{
+  const id=++requestId.current,version=epoch.current,op=operation();displayedAuthorization.current=null;setData({status:'loading'});
   try{
-   const wantsLocation=endpoint==='check-in'||endpoint==='check-out';
-   const coordinates=wantsLocation?await optionalCoordinates():null,headers=await authHeaders();
-   const controller=new AbortController();timeout=setTimeout(()=>controller.abort(),15000);
-   const hasBody=wantsLocation||score!=null;
-   const response=await fetch(apiUrl('/assignments/'+assignment.id+'/'+endpoint),{method:'POST',headers:{...headers,'x-tenant-id':assignment.tenantId,...(hasBody?{'content-type':'application/json'}:{})},...(hasBody?{body:JSON.stringify(score!=null?{score}:coordinates??{})}:{}),signal:controller.signal});
-   if(!response.ok){setMessage('Não foi possível confirmar a atualização. Atualize os trabalhos antes de tentar novamente.');return;}
-   if(endpoint==='check-in')setMessage(coordinates?'Check-in realizado com localização.':'Check-in realizado. Localização não foi compartilhada.');
-   else if(endpoint==='check-out')setMessage(coordinates?'Check-out realizado com localização.':'Check-out realizado. Localização não foi compartilhada.');
+   const headers=await authHeaders();if(version!==epoch.current||id!==requestId.current||op.controller.signal.aborted)return;
+   if(!headers.Authorization)throw Error('session_missing');
+   const next=await loadAgenda(()=>fetch(apiUrl('/assignments/mine'),{headers,signal:op.controller.signal})),current=await authHeaders();
+   if(id===requestId.current&&version===epoch.current){if(current.Authorization!==headers.Authorization){setData({status:'error'});setMessage('A sessão mudou. Atualize seus trabalhos.');return;}setData(next);displayedAuthorization.current=next.status==='ready'?headers.Authorization:null;}
+  }catch{if(id===requestId.current&&version===epoch.current)setData({status:'error'});}
+  finally{op.finish();}
+ },[]);
+ useFocusEffect(useCallback(()=>{++epoch.current;setMessage('');void load();return()=>{++epoch.current;++requestId.current;for(const c of controllers.current)c.abort();controllers.current.clear();displayedAuthorization.current=null;pendingActions.current.clear();setPending([]);setData({status:'loading'});};},[load]));
+ async function action(assignment:Assignment,score?:number){
+  const key=assignment.tenantId+':'+assignment.id,state=assignmentState(assignment.status),authorization=displayedAuthorization.current,version=epoch.current;
+  const endpoint=score!=null?(state.canRate?'company-rating':null):state.endpoint;
+  if(!endpoint||!authorization||pendingActions.current.has(key)||data.status!=='ready'||!data.data.some(item=>item.id===assignment.id&&item.tenantId===assignment.tenantId&&item.status===assignment.status))return;
+  pendingActions.current.add(key);setPending([...pendingActions.current]);setMessage('');
+  const op=operation();
+  try{
+   const before=await authHeaders();if(version!==epoch.current||op.controller.signal.aborted)return;
+   if(before.Authorization!==authorization){setMessage('A sessão mudou. Atualize seus trabalhos antes de agir.');return;}
+   const coordinates=endpoint==='check-in'||endpoint==='check-out'?await optionalCoordinates():null;
+   const headers=await authHeaders();if(version!==epoch.current)return;if(op.controller.signal.aborted){setMessage('Não foi possível enviar a atualização a tempo. Atualize os trabalhos antes de tentar novamente.');return;}
+   if(headers.Authorization!==authorization){setMessage('A sessão mudou. Atualize seus trabalhos antes de agir.');return;}
+   const result=await submitAgendaAction(async(path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'x-tenant-id':assignment.tenantId,...(body!==undefined?{'content-type':'application/json'}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:op.controller.signal}),assignment,score,coordinates);
+   const current=await authHeaders();if(version!==epoch.current)return;
+   if(current.Authorization!==authorization){setMessage('A sessão mudou. Atualize para conferir o resultado.');return;}
+   if(result.status!=='confirmed'){setMessage(result.status==='rejected'?'A atualização não foi aceita. Atualize os trabalhos antes de tentar novamente.':'Não foi possível confirmar o resultado. Atualize os trabalhos antes de tentar novamente.');return;}
+   if(result.endpoint==='check-in')setMessage(result.coordinatesSent?'Check-in confirmado. Localização enviada.':'Check-in confirmado. Localização não foi compartilhada.');
+   else if(result.endpoint==='check-out')setMessage(result.coordinatesSent?'Check-out confirmado. Localização enviada.':'Check-out confirmado. Localização não foi compartilhada.');
    else setMessage(score!=null?'Avaliação da empresa salva.':'Status atualizado.');
    await load();
-  }catch{setMessage('Falha de conexão. Não foi possível confirmar a atualização. Atualize os trabalhos antes de tentar novamente.');}
-  finally{if(timeout)clearTimeout(timeout);pendingActions.current.delete(key);setPending([...pendingActions.current]);}
+  }catch{if(version===epoch.current)setMessage('Não foi possível confirmar o resultado. Atualize os trabalhos antes de tentar novamente.');}
+  finally{op.finish();if(version===epoch.current){pendingActions.current.delete(key);setPending([...pendingActions.current]);}}
+ }
+ async function openAssignment(assignment:Assignment,pathname:'/conversa'|'/seguranca'){
+  const authorization=displayedAuthorization.current,version=epoch.current;if(!authorization)return;
+  const current=await authHeaders();if(version!==epoch.current)return;if(current.Authorization!==authorization){setMessage('A sessão mudou. Atualize seus trabalhos.');return;}
+  router.push({pathname,params:{assignmentId:assignment.id,tenantId:assignment.tenantId}});
  }
  const items=data.status==='ready'?data.data:[];
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Text style={s.title}>Meus trabalhos</Text>
@@ -60,7 +71,7 @@ export default function Agenda(){
  <View style={s.steps}><Text style={s.step}>Confirmado</Text><Text style={s.step}>Check-in</Text><Text style={s.step}>Em andamento</Text><Text style={s.step}>Check-out</Text><Text style={s.step}>Concluído</Text></View>
  {state.action?<Pressable style={s.primaryButton} accessibilityRole="button" disabled={busy} accessibilityState={{disabled:busy,busy}} onPress={()=>void action(assignment)}><Text style={s.primaryAction}>{busy?'Atualizando…':state.action}</Text></Pressable>:null}
  {state.canRate?<View style={s.ratingBlock}><Text style={s.ratingTitle}>{assignment.companyRatingScore?'Sua avaliação da empresa: '+assignment.companyRatingScore+' ★':'Avalie a empresa'}</Text><View style={s.ratingRow}>{[1,2,3,4,5].map(score=><Pressable key={score} style={s.ratingButton} accessibilityRole="button" disabled={busy} accessibilityState={{disabled:busy,busy}} onPress={()=>void action(assignment,score)}><Text style={s.ratingText}>{score} ★</Text></Pressable>)}</View></View>:null}
- <View style={s.secondaryRow}><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/conversa',params:{assignmentId:assignment.id,tenantId:assignment.tenantId}})}><Text style={s.secondaryAction}>Conversar</Text></Pressable><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/seguranca',params:{assignmentId:assignment.id,tenantId:assignment.tenantId}})}><Text style={s.secondaryAction}>Segurança</Text></Pressable></View>
+ <View style={s.secondaryRow}><Pressable accessibilityRole="button" onPress={()=>void openAssignment(assignment,'/conversa')}><Text style={s.secondaryAction}>Conversar</Text></Pressable><Pressable accessibilityRole="button" onPress={()=>void openAssignment(assignment,'/seguranca')}><Text style={s.secondaryAction}>Segurança</Text></Pressable></View>
  </View>;})}
  {message?<View><Text style={s.message} accessibilityLiveRegion="polite">{message}</Text><Pressable accessibilityRole="button" onPress={()=>void load()}><Text style={s.secondaryAction}>Atualizar trabalhos</Text></Pressable></View>:null}
  </ScrollView><ProfessionalNav/></SafeAreaView>;
