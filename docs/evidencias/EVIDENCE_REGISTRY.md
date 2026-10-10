@@ -1,5 +1,7 @@
 # Evidence Registry — MLIVRETRABALHO
 
+> Integração/gates consolidados em 2026-10-10 02:32 UTC: [execução verificada](../conversas/EXECUCAO_VERIFICADA_2026-10-10_0232Z.md). O registro está em ../conversas/EXECUCAO_VERIFICADA_2026-10-10_0232Z.md.Reconsultar GitHub; estados abaixo são históricos da versão.
+
 Este registro acompanha o Documento da Verdade. Claims temporais devem ser revalidados em fonte primária antes de congelar comportamento de produção.
 
 | Evidence ID | Fonte | Tema | Fato registrado | Status | Transferibilidade/decisão |
