@@ -429,3 +429,13 @@ Subtree mobile exata #384/#385 é ba685042c10bf42051738241601f7a2041498a7b. Pró
 Jobs completos, smoke/uploadsuccess, vínculo artifactSHA e não-expiração conferidos. Main516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca possui pós-CI/APKsuccess; não implica fechamento físico. Pós #381 tentativa1APK38048068335/job114201515065 falhou input Broken pipe224 em11:39:53Z antes do script app, apósbuild. DiagnósticoZIP11668319473 sha256:2da1618bdea13d360df0481e9df4bfbd289b3a1fb1b672e8bcf94392db6ea229 vinculado ao SHAac18ca03de7a5f09ff3a626a763fadb55e699074. Único retry controlado no mesmoSHA solicitado, a acompanhar tentativa2; não repetir sem nova causa. Pós376retry2 e377/380 ainda a acompanhar; próprios APK383/384 pendentes. Nenhum novo merge realizado.
 
 Auditoria integrity/cancellation/career-conversion/work-graph encontrou lookup/relação tenant explícitos no fluxo lido; não alterar política sem defeito provado. Lacuna independente concreta encontrada: API package test enumera fontes manualmente e omite12arquivos .test.ts existentes (Copilottools/modalidades/SLA/integration/appeals/schedule/score/adapter HMAC/taxonomy/team/terms/vertical). Typecheck não executa testes. Próxima tarefa segura após publicar esta fixture: configurar descoberta dos29arquivos de teste API atuais (27da main+2suporte), provar execução efetiva dos omitidos e manter todos os gates. Sem ativar provider/financeiro real.
+
+
+## Descoberta API — v1.75
+
+|Evidence ID|Fonte|Fato|Estado|
+|---|---|---|---|
+|CI-API-DISCOVERY-001|API_TEST_DISCOVERY_v1.75.md|12fontes omitidas,21testes reais;26locais13files|Branch; novo próprio CIcompleto pendente|
+|SEC-SUPPORT-ASSIGNMENT-001|38049578933/job114205819194|Controller real+schema+HTTP/RLS no CI;47API238mobile|SUCCESS próprio;merge/pós aguardantecessores|
+|CI-ANDROID-POST-377-001|1150Z/38048000637|Smoke/job/upload/ZIP SHAexato conferidos|SUCCESS técnico;VisualTruth OPEN|
+|CI-ANDROID-POST-380-TRANSIENT-001|38048063298/job114201499870/ZIP11668792675|Download hashbytes + boot1/logcat124/pid1, earlyshell224|Único retry2 solicitado,semfakePASS|
