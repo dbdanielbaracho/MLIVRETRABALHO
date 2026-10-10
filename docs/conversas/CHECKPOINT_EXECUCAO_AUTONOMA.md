@@ -15,14 +15,15 @@
 - #348 head corrigido 4b1cb40d093acc578da1629388c260889bedb0f7: CI 38014454751/APK 38014454871 em execução; falha TS18048 no head anterior 38014176712 resolvida. Base #347.
 - #349 head edfdfb569aa232e82b34834548e4cc77b5408a39: Trabalhos foco/schema/timeout/ack, 40 testes; CI 38014598006/APK 38014598041 em acompanhamento. Base #348 corrigido.
 - #350 head f1bda2d848eda85652ddb9b85f591d898d5689a8: Interessados estados/seleção/contexto/ack, 45 testes; CI 38014796796 aprovado/APK 38014796852 em execução. Base #349.
-- Branch fix/teams-selection-and-network-states após #350: Equipe estados/seleção/contexto/ack e criação desconhecida sem novo POST automático, 51 testes; PR/gates a abrir/acompanhados.
+- #351 head 5e8fffdfee0944b1e518d9b38ec556b65d62a6b9: Equipe estados/seleção/contexto/ack/criação desconhecida, 51 testes; CI 38015021179/APK 38015021164 em acompanhamento. Base #350.
+- Branch fix/company-account-real-notifications após #351: Conta → notificações reais no tenant com CompanyNav; labels/saída offline. 51 testes preservados; PR/gates a abrir/acompanhados.
 - Uma rotina de continuidade ativa; não desativar por fim de rodada, bloqueio parcial ou espera de CI/APK.
 
 ## Próxima ação concreta
 1. Acompanhar pós-merge #342 e APK #343; revisar heads/árvores/diffs/gates exatos e integrar #343, com pós-merge.
-2. #344 retarget após #343; revisar/exigir CI/APK head exato e pós-merge. #345 retarget após #344, mesmos gates no head corrigido. #346 retarget após #345; #347 retarget após #346; #348 corrigido retarget e integrar após #347, depois #349 Trabalhos e #350 Interessados, depois Equipe.
+2. #344 retarget após #343; revisar/exigir CI/APK head exato e pós-merge. #345 retarget após #344, mesmos gates no head corrigido. #346 retarget após #345; #347 retarget após #346; #348 corrigido retarget e integrar após #347, depois #349 Trabalhos e #350 Interessados, depois #351 Equipe e Conta.
 3. Cards do Início implementados a partir da referência intacta. Executar auditoria visual em docs/referencias; capturas/jornadas reais, loading/erro/vazio e fricção. Gate OPEN. Não copiar nomes/valores/promessas ilustrativos.
-4. Próximos itens verificados por leitura: Trabalhos corrigido na branch, validar gates; Interessados corrigidos na branch; Equipe corrigida na branch, validar gates. Revalidar Conta/Pagamentos e criação de trabalho quanto a leituras/salvamento limitados antes da próxima fatia. Revalidar contratos antes de corrigir; capturas/jornadas reais contra desenho. Sem criar atividade artificial ou supor conclusão por ausência de PR.
+4. Próximos itens verificados por leitura: Trabalhos corrigido na branch, validar gates; Interessados corrigidos na branch; Equipe corrigida na branch, validar gates. Conta corrigida na branch. Próximas falhas lidas: Planejamento/Pagamentos não tratam rede/foco/timeout/retry, pay ausente vira zero; Membros/Relatos sem guards/catch/limites. Reconsultar contratos e tratar fatias independentes sem novas políticas. Revalidar contratos antes de corrigir; capturas/jornadas reais contra desenho. Sem criar atividade artificial ou supor conclusão por ausência de PR.
 
 ## Dependências por item
 #220 aparelho/piloto/pentest; #228/#215/#219 provider/comercial/contrato/sandbox; #224 WEB-ARCH/custo. Não habilitar dinheiro real, custos ou deploy pago. Essas dependências não bloqueiam correções internas independentes.

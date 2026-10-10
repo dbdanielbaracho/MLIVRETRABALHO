@@ -366,3 +366,7 @@ Continuidade autorizada mantida. Contratos company/jobs/candidates/recommendatio
 ## 2026-10-09 — Equipe com seleção e rede tratadas, v1.41
 
 Contratos reais reconsultados antes da correção. Equipes/membros/conhecidos/vagas/alocação loading/erro/vazio/schema/foco/retry/15s, versões/cancelamento, contexto tenant+identidade. Ações manuais guardadas/ack/releitura; criação não idempotente desconhecida exige refresh/lista antes de novo POST, sem retry automático. 51 testes UTC/São Paulo; styles/rotas/CompanyNav/backend/policies preservados. Gates próprios pendentes, branch após #350. #345 corrigido/#346 CI/APK sucesso em heads exatos, aguardam sequência. Visual Truth OPEN; não declarar conclusão integral por unidade/build.
+
+## 2026-10-09 — Conta → notificações empresariais reais, v1.42
+
+Conta abria Planejamento sob label Notificações. NotificationsController verificado aceita tenant/membership e identidade; componente compartilhado agora atende Empresa com tenant ativo/CompanyNav e Profissional por identidade/ProfessionalNav. Contexto/leitura e blur guardados, sem eventos inventados. Labels Membros da empresa/Relatos de segurança correspondem aos destinos; cadastro empresarial completo não foi inventado nem declarado pronto. Signout guardado/15s/catch/finally limpa estado local offline. 51 testes locais preservados, gates próprios obrigatórios. Leitura revelou próximas falhas concretas em Planejamento/Pagamentos/Membros/Relatos; não misturar novas políticas. Visual Truth OPEN.
