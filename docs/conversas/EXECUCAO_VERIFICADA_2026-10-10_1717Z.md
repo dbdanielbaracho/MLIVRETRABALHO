@@ -74,3 +74,8 @@ Acompanhar único retry pós388 run38054154641 pedido17:17UTC; CI e demaisAPKs p
 Próxima tarefa segura independente: idempotência de criação de suporte por tenant/reporter/intent, confrontando migrations/SupportController/contracts. Provar retries/concorrência/payloadconflitante em fixtures locais/CI; depois UI de enviohumano comdraft preservado e resultado incerto, sem chamados reais. Preferências é alternativa após confrontar requisitos/roles/capabilities/career reais. Não inventar tarefas nem declarar completo pelaausênciaPR.
 
 VisualTruth físico, piloto/device/distribuição/pentest, providers/TRUST/PSP/FIN-RISK/WEB-ARCH permanecem separados OPEN. Sem dinheiro/PSP/custos/cobranças/deploy pago. Manter rotina até integralidade comprovada/ordem explícita; bloqueio parcial/transiente/fimderodada não encerra projeto, sem outra rotina/promessa24h.
+
+
+## Correção de typecheck — 2026-10-10 17:24UTC
+
+PR396 publicada no headbe08d499f4ac4c199e8f57bdf6afc151b4d935ed/treea28afa107f7d64e6e439f86bdb0275aa1d5d2c8a. CI38071227829/job114268875794 FAIL no Typecheck: TS18048 work.data possivelmente undefined no JSX, devido Section unir loading|error no mesmo membro. Build/export/tests/HTTP ficaram skipped; não tratar CI aprovado. Corrigida projeção const items=work.status==='ready'?work.data:[] para render da lista, mantendo mensagens loading/erro e ausência apenas na ramificação legítima. Sem non-null assertion, coerção, relaxamento TS, alteração de testes/expectativas/estados, dependências ou API. Própriohead/CI/APK novos exigidos após publicar; APK38071227890 do primeirohead não autoriza merge do corrigido. Testes locais298mobile continuam válidos após nova execução; compilação completa requer CI real.
