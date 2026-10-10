@@ -28,3 +28,19 @@ test('expired agenda read avoids transport and late decoded assignments cannot b
  const result=loadAgenda(async()=>({ok:true,json:()=>pending}),()=>!controller.signal.aborted);
  await Promise.resolve();controller.abort();resolve([row]);assert.deepEqual(await result,{status:'error'});
 });
+
+test('agenda rejects missing/blank actual reference, tenant, lifecycle label or title instead of exposing actionable records',async()=>{
+ for(const patch of [{id:''},{id:' '},{tenantId:''},{tenantId:' '},{status:''},{title:' '},{id:42},{tenantId:null}]){
+  assert.deepEqual(await loadAgenda(async()=>({ok:true,json:async()=>[{...row,...patch}]})),{status:'error'});
+ }
+});
+test('malformed agenda timestamps are an error, while optional absence remains compatible',async()=>{
+ for(const key of ['startsAt','endsAt'])for(const value of ['not-a-date',' ','',42,{}]){
+  assert.deepEqual(await loadAgenda(async()=>({ok:true,json:async()=>[{...row,[key]:value}]})),{status:'error'});
+ }
+});
+test('agenda preserves real opaque references, future nonempty statuses and valid offset timestamps without normalizing data',async()=>{
+ const data=[{...row,id:'opaque:work',tenantId:'other-company',status:'future_status',startsAt:'2026-10-10T19:00:00-03:00',endsAt:'2026-10-11T06:00:00Z'}];
+ assert.deepEqual(await loadAgenda(async()=>({ok:true,json:async()=>data})),{status:'ready',data});
+ assert.equal(assignmentState(data[0].status).endpoint,null);
+});
