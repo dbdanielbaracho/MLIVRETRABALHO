@@ -789,3 +789,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [PROFESSIONAL_WEEK_CHRONOLOGY_v1.100.md](PROFESSIONAL_WEEK_CHRONOLOGY_v1.100.md): comparator por timestamp, cinco regressões novas e PASS67 local; HTTP/PostgreSQL/CI próprio pendentes antes da publicação. Provas completas dos gates/merges401–410 e pós401/402CI; pós-APKs em acompanhamento.
 - [EXECUCAO_VERIFICADA_2026-10-10_2313Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2313Z.md): SHAs reais, pais/árvores, runs e próxima ação; checkpoint anterior arquivado. Visual Truth físico/gates externos abertos.
+
+
+## 2026-10-10 — v1.101
+
+- [TALENTS_SAFETY_READ_DEADLINE_v1.101.md](TALENTS_SAFETY_READ_DEADLINE_v1.101.md):10falhas/6pass anteriores;16novas regressões, PASS34 local após correção; JSX/StyleSheets/mutations preservados. CI424mobile/145API+APK próprios pendentes antes de publicação.
+- [EXECUCAO_VERIFICADA_2026-10-10_2317Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2317Z.md):411 integrado com HTTP real de cronologia e145API; todos os pósCI401–410 conferidos; pósAPKs e411pósCI em acompanhamento.

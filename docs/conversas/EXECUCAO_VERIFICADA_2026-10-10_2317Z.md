@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada — 2026-10-10 23:17:54 UTC
 
 Verificado em 2026-10-10 23:17:54 UTC: main4b797cb19dc9a7f498a86bd5ba98f003d3239991, tree8be87c3522a1f0b1b65d0e5bf30a0026f77693bf, Documento vigentev1.100. #401–411 já integradas; não repetir. Pais/árvore/main/PR de cada merge confirmados; pré-gates e digests401–410 em [PROFESSIONAL_WEEK_CHRONOLOGY_v1.100.md](../evidencias/PROFESSIONAL_WEEK_CHRONOLOGY_v1.100.md). As reconsultas pós401–410 confirmam todos os CI, com passos completos/logs/typecheck/build/export/migrations/HTTP e contagens próprias. APKs pós no SHA real ainda em execução; não declarar conclusão nativa pós-merge.
 
@@ -22,8 +20,6 @@ Verificado em 2026-10-10 23:17:54 UTC: main4b797cb19dc9a7f498a86bd5ba98f003d3239
 
 401 retry próprio recuperado e400/ancestrais pós-gates comprovados nos registros anteriores; nenhum novo retry solicitado.
 
-## Item atual
-
 ## Prazo real nas leituras de Talentos e Segurança
 
 Os handlers existentes só abortavam o transporte após 15s; auth/fetch/JSON/auth final sem resolução mantinham loading. Novas 16 regressões dos handlers reais pré-JSX reproduziram 10 falhas/6pass no código anterior. Agora o timer publica erro e invalida o snapshot somente para request/foco atual. Talentos marca a lista indisponível; Segurança marca trabalhos/relatos/recursos indisponíveis. Auth que chega após deadline/blur/reload não inicia transporte; resposta final ainda exige sessão/tenant atual e sinal não abortado.
@@ -34,12 +30,8 @@ PASS34/34 local:16novos handlers +7company-talents +11professional-safety. Fixtu
 
 CI próprio esperado424mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP e APK standalone próprios no SHA exato obrigatórios; ainda pendentes antes da publicação. React19.1.4/RN0.81.6, lockfile, tenant/RLS, scopes das queries, helpers e escrita existentes preservados. Não alegar aceite visual/físico integral ou que mutations pendentes têm um novo timeout resolvido.
 
-## Dependências e alternativas verificadas
-
 Visual Truth físico (desenho original, dados e todos os estados, cobertura completa), Native/SecureStore/teclado/payload/restart e piloto/distribuição, pentest independente, providers/TRUST, PSP/FIN-RISK e WEB-ARCH permanecem separados e abertos. Não confundir CI/emulador/merge com deploy ou conclusão integral. Sem dinheiro real, PSP habilitado, nova cobrança, infraestrutura ou deploy pago.
 Preferências: falta contrato de campos/semântica/escopo/persistência/efeito de matching; não inventar defaults nem renomear capacidades como preferências. Ajuda nova sem membership: falta autoridade por identidade/isolamento/retenção aprovada, sem tenant global arbitrário ou bypass RLS. Forecast/no-show ML depende de dados reais e validação; integrações enterprise precisam alvo/contrato. Sandbox/provider e aparelho/pentest dependem evidência externa. São impedimentos parciais, sem bloquear correções seguras independentes. Issue214closed confirmado19:00UTC;215/219/220/224/228open; ledger base já se declara snapshot histórico2026-09-24.
-
-## Próxima ação concreta
 
 Publicar fix/talents-safety-read-deadline sobre main4b797cb19dc9a7f498a86bd5ba98f003d3239991/tree8be87c3522a1f0b1b65d0e5bf30a0026f77693bf, base main. Conferir bytes/patch; exigir CI424mobile/145API + APK próprios completos no SHA exato antes de integrar. Verificar após merge pais/tree/main e CI/APK no SHA real. Acompanhar pósAPKs401/403/404/408/409/410 e pósCI411 sem repetir merges já confirmados.
 Auditar handlers de leitura restantes nas rotas primárias contra contrato atual e reproduzir falhas antes de alterar. Pendências de escrita/logout devem preservar resposta incerta/guardas; não ativar retry automático ou descartar barreiras. Preferências/ajuda nova semmembership/provider/pentests/dispositivo dependem definições/evidências especificadas abaixo, sem travar alternativas independentes. Manter rotina até todos os gates comprovados ou ordem expressa; não desativar por gate em andamento ou fim de rodada.
