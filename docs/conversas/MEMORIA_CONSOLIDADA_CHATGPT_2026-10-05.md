@@ -508,3 +508,8 @@ Signinackidentity/email/token/membership verificado e guard15s/foco; saveSession
 ## Availability v1.58 e integração #364 — 2026-10-10 06:51:59 UTC
 
 #364merged8844a118caa19ea454dc713565db47827e58f853 árvore/parentsheadCIAPKpass;postCI38032152612pass/postAPK38032152603pendente.360postAPKpass,journal0650Z. AvailabilityackjanelaID/session/foco/draft/razãoperfilreal,6novostestes/152locaisUTCSP. Branch fix/availability-verified-window-and-session após368;gatesprópriospendentes. Bootstrap56fontes semconsumidor nãoalterado;próximoPerfilack/contexto/draft. VisualTruthOPEN;nenhumPOSTreal/PSP/custo.
+
+
+## Perfil/saída v1.59 e #365 integrado — 2026-10-10 07:02:38 UTC
+
+#365merge1c89d39cc4b25c66104eb7ffb06cf4cae5125e0e v1.54; headCIAPKpass/tree/parents/smokeartifact comprovadosjournal0700Z; pós-runs a consultar. PerfilGETIDreal/PUTcampos exatos/auth/foco/draft e saída local condicional em Perfil/Empresa/Privacidade,10 testesnovos/162locaisUTC/SP. Branch fix/profile-verified-fields-and-session-exit sobre369/gates própriospendentes.367headCIAPKpassaguardando366;próximoPainel/Agenda/Membros ack/contexto porcontratos. Nenhumaoperação real;VisualTruthOPEN.

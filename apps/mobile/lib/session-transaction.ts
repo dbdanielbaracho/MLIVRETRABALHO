@@ -12,3 +12,6 @@ export async function persistVerifiedSession(adapter:SessionAdapter,next:Session
   await adapter.write(previous);return isCurrent()?'failed':'stale';
  }catch{if(wrote&&previous){try{await adapter.write(previous);}catch{/* Caller receives failure, never claimed persistence. */}}return 'failed';}
 }
+export async function clearExpectedSession(adapter:SessionAdapter,expectedToken:string|null):Promise<'cleared'|'stale'|'failed'>{
+ try{const previous=await adapter.read();if(previous.token!==expectedToken)return 'stale';await adapter.write({token:null,tenantId:null});const actual=await adapter.read();return actual.token===null&&actual.tenantId===null?'cleared':'failed';}catch{return 'failed';}
+}

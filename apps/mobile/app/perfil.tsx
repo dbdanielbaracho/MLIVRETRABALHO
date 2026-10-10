@@ -2,8 +2,9 @@ import { router,useFocusEffect } from 'expo-router';
 import { useCallback,useRef,useState } from 'react';
 import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View } from 'react-native';
 import { ProfessionalNav } from '../components/ProfessionalNav';
-import { authHeaders,clearSession,clearTenant } from '../lib/session';
+import { authHeaders,clearSessionForAuthorization } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import {submitProfile} from '../lib/profile-submit';
 import { loadProfessionalProfile,loadWorkPassport,type Profile,type Passport,type Resource } from '../lib/professional-profile';
 
 export default function Perfil(){
@@ -12,48 +13,60 @@ export default function Perfil(){
  const[displayName,setDisplayName]=useState(''),[city,setCity]=useState(''),[role,setRole]=useState('');
  const[expanded,setExpanded]=useState<string|null>(null),[notice,setNotice]=useState('');
  const[saving,setSaving]=useState(false),[signingOut,setSigningOut]=useState(false);
- const dirty=useRef(false),submitting=useRef(false),exiting=useRef(false),requestId=useRef(0);
+ const dirty=useRef(false),submitting=useRef(false),exiting=useRef(false),requestId=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),sourceHeaders=useRef<Record<string,string>|null>(null),draftOwner=useRef<string|undefined>(undefined);
+ function changedContext(){sourceHeaders.current=null;dirty.current=false;setDisplayName('');setCity('');setRole('');setProfile({status:'error'});setPassport({status:'error'});setNotice('A sessão mudou. Atualize seus dados antes de continuar.');}
  const load=useCallback(async(focusSignal?:AbortSignal)=>{
-  const id=++requestId.current;setProfile({status:'loading'});setPassport({status:'loading'});
-  const controller=new AbortController(),cancel=()=>controller.abort();
+  const id=++requestId.current,generation=epoch.current;sourceHeaders.current=null;setProfile({status:'loading'});setPassport({status:'loading'});
+  const controller=new AbortController(),cancel=()=>controller.abort();controllers.current.add(controller);
   focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
   const timeout=setTimeout(()=>controller.abort(),15000);
   try{
-   const h=await authHeaders();
+   const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;if(!h.Authorization){changedContext();throw Error('session_required');}
+   if(draftOwner.current!==h.Authorization){dirty.current=false;setDisplayName('');setCity('');setRole('');setNotice('');}draftOwner.current=h.Authorization;
    const [nextProfile,nextPassport]=await Promise.all([
     loadProfessionalProfile(()=>fetch(apiUrl('/professional-profile'),{headers:h,signal:controller.signal})),
     loadWorkPassport(()=>fetch(apiUrl('/work-passport/mine'),{headers:h,signal:controller.signal}))
    ]);
-   if(id!==requestId.current||focusSignal?.aborted)return;
+   const current=await authHeaders();if(id!==requestId.current||generation!==epoch.current||focusSignal?.aborted)return;
+   if(current.Authorization!==h.Authorization){changedContext();return;}
+   if(nextProfile.status==='ready')sourceHeaders.current=h;
    setProfile(nextProfile);setPassport(nextPassport);
    if(nextProfile.status==='ready'&&!dirty.current){
     setDisplayName(nextProfile.data?.displayName??'');setCity(nextProfile.data?.homeCity??'');setRole(nextProfile.data?.primaryRole??'');
    }
   }catch{
-   if(id===requestId.current&&!focusSignal?.aborted){setProfile({status:'error'});setPassport({status:'error'});}
-  }finally{clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
+   if(id===requestId.current&&generation===epoch.current&&!focusSignal?.aborted){setProfile({status:'error'});setPassport({status:'error'});}
+  }finally{clearTimeout(timeout);controllers.current.delete(controller);focusSignal?.removeEventListener('abort',cancel);}
  },[]);
- useFocusEffect(useCallback(()=>{const controller=new AbortController();void load(controller.signal);return()=>{requestId.current++;controller.abort();};},[load]));
+ useFocusEffect(useCallback(()=>{++epoch.current;const controller=new AbortController();void load(controller.signal);return()=>{++epoch.current;++requestId.current;controller.abort();for(const c of controllers.current)c.abort();controllers.current.clear();sourceHeaders.current=null;submitting.current=false;exiting.current=false;setSaving(false);setSigningOut(false);};},[load]));
  async function saveProfile(){
-  if(submitting.current||exiting.current||profile.status!=='ready')return;
+  const original=sourceHeaders.current;if(submitting.current||exiting.current||profile.status!=='ready'||!original)return;
+  const input={displayName,homeCity:city,primaryRole:role},expectedId=profile.data?.id;
   if(!displayName.trim()){setNotice('Informe seu nome antes de salvar.');return;}
-  submitting.current=true;setSaving(true);setNotice('');
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+  submitting.current=true;setSaving(true);setNotice('');const generation=epoch.current;
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);controllers.current.add(controller);
   try{
-   const h=await authHeaders();
-   const result=await loadProfessionalProfile(()=>fetch(apiUrl('/professional-profile'),{method:'PUT',headers:{...h,'content-type':'application/json'},body:JSON.stringify({displayName,homeCity:city,primaryRole:role}),signal:controller.signal}));
-   if(result.status!=='ready'||!result.data){setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');return;}
-   dirty.current=false;setProfile(result);setDisplayName(result.data.displayName);setCity(result.data.homeCity??'');setRole(result.data.primaryRole??'');setNotice('Dados salvos.');void load();
-  }catch{setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');}
-  finally{clearTimeout(timeout);submitting.current=false;setSaving(false);}
+   const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;
+   if(h.Authorization!==original.Authorization){changedContext();return;}
+   const result=await submitProfile((path,body)=>fetch(apiUrl(path),{method:'PUT',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),input,expectedId);
+   const current=await authHeaders();if(generation!==epoch.current)return;
+   if(current.Authorization!==original.Authorization){changedContext();return;}
+   if(result.status!=='saved'){setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');return;}
+   ++requestId.current;dirty.current=false;setProfile({status:'ready',data:result.data});setDisplayName(result.data.displayName);setCity(result.data.homeCity??'');setRole(result.data.primaryRole??'');setNotice('Dados salvos.');void load();
+  }catch{if(generation===epoch.current)setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');}
+  finally{clearTimeout(timeout);controllers.current.delete(controller);if(generation===epoch.current){submitting.current=false;setSaving(false);}}
  }
  async function signout(){
   if(exiting.current||submitting.current)return;
-  exiting.current=true;setSigningOut(true);
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
-  try{const h=await authHeaders();await fetch(apiUrl('/auth/signout'),{method:'POST',headers:h,signal:controller.signal});}
-  catch{ /* Clear local credentials even when offline. */ }
-  finally{clearTimeout(timeout);await Promise.all([clearSession(),clearTenant()]);router.replace('/');}
+  exiting.current=true;setSigningOut(true);const generation=epoch.current;
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);controllers.current.add(controller);let authorization:string|undefined,started=false;
+  try{const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;authorization=h.Authorization;started=true;await fetch(apiUrl('/auth/signout'),{method:'POST',headers:h,signal:controller.signal});}
+  catch{ /* Clear the requested local session even when offline. */ }
+  finally{
+   clearTimeout(timeout);controllers.current.delete(controller);
+   if(started){const cleared=await clearSessionForAuthorization(authorization);if(generation===epoch.current){if(cleared==='cleared')router.replace('/');else{setNotice(cleared==='stale'?'A sessão mudou. Atualize seus dados antes de sair novamente.':'Não foi possível limpar o acesso neste aparelho. Tente novamente.');void load();}}}
+   if(generation===epoch.current){exiting.current=false;setSigningOut(false);}
+  }
  }
  const rows=[['👤','Meus dados'],['▣','Experiência profissional'],['♡','Preferências'],['◷','Disponibilidade'],['♢','Notificações'],['?','Ajuda e suporte'],['▤','Termos e privacidade']];
  const p=passport.status==='ready'?passport.data:null;
@@ -85,3 +98,4 @@ export default function Perfil(){
  </ScrollView><ProfessionalNav/></SafeAreaView>;
 }
 const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,paddingBottom:24},top:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},title:{fontSize:28,fontWeight:'900',color:'#111A35'},gear:{fontSize:22,color:'#53617A'},identity:{alignItems:'center',paddingVertical:22},avatar:{width:82,height:82,borderRadius:41,backgroundColor:'#E8E0FF',alignItems:'center',justifyContent:'center',marginBottom:10},avatarText:{fontSize:30,fontWeight:'900',color:'#651FFF'},profileName:{fontSize:20,fontWeight:'900',color:'#111A35'},profileRating:{fontSize:12,fontWeight:'700',color:'#65708A',marginTop:5},menu:{borderTopWidth:1,borderColor:'#EDF0F4'},row:{height:58,flexDirection:'row',alignItems:'center',borderBottomWidth:1,borderColor:'#EDF0F4'},icon:{width:34,fontSize:18,color:'#651FFF'},label:{flex:1,fontSize:15,fontWeight:'700',color:'#111A35'},chevron:{fontSize:26,color:'#9AA3B4'},panel:{padding:16,marginTop:14,backgroundColor:'#F6F3FF',borderRadius:12,gap:10},panelTitle:{fontSize:16,fontWeight:'800',color:'#111A35'},panelText:{fontSize:14,color:'#53617A'},close:{fontSize:14,fontWeight:'700',color:'#651FFF'},field:{borderWidth:1,borderColor:'#DDD',borderRadius:10,padding:12,marginBottom:8}});
+

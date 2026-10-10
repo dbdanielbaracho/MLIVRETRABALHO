@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
-import {createSessionQueue,persistVerifiedSession} from './session-transaction';
-import type {SessionState} from './session-transaction';
+import {createSessionQueue,persistVerifiedSession,clearExpectedSession} from './session-transaction';
+import type {SessionState,SessionAdapter} from './session-transaction';
 const queue=createSessionQueue();
 
 const KEY = 'mlivretrabalho.accessToken';
@@ -52,7 +52,13 @@ export const authenticatedTenantHeaders = async (): Promise<Record<string, strin
   };
 };
 
-export const saveVerifiedSignin = (next:SessionState,expectedToken:string|null,isCurrent:()=>boolean) => queue.run(()=>persistVerifiedSession({
+const verifiedStorage:SessionAdapter={
   read:async()=>{const [token,tenantId]=await Promise.all([SecureStore.getItemAsync(KEY),SecureStore.getItemAsync(TENANT_KEY)]);return {token,tenantId};},
   write:async state=>{await SecureStore.deleteItemAsync(TENANT_KEY);if(state.token)await SecureStore.setItemAsync(KEY,state.token);else await SecureStore.deleteItemAsync(KEY);if(state.tenantId)await SecureStore.setItemAsync(TENANT_KEY,state.tenantId);}
-},next,expectedToken,isCurrent));
+};
+export const saveVerifiedSignin = (next:SessionState,expectedToken:string|null,isCurrent:()=>boolean) => queue.run(()=>persistVerifiedSession(verifiedStorage,next,expectedToken,isCurrent));
+export const clearSessionForAuthorization = (authorization?:string) => {
+  if(authorization&&!authorization.startsWith('Bearer '))return Promise.resolve('stale' as const);
+  const expectedToken=authorization?.slice(7)||null;
+  return queue.run(()=>clearExpectedSession(verifiedStorage,expectedToken));
+};
