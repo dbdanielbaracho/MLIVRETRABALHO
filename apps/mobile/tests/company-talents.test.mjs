@@ -22,3 +22,7 @@ test('talent removal preserves the bodyless DELETE contract, encoded identity an
 test('rejection and lost DELETE response never imply success or automatically repeat the operation',async()=>{
  assert.equal(await removeTalent(async()=>response({removed:true},false,403),item),false);let calls=0;assert.equal(await removeTalent(async()=>{calls++;throw Error('timeout')},item),false);assert.equal(calls,1);
 });
+test('missing talent identities and unknown pools are rejected before DELETE transport',async()=>{
+ let calls=0;for(const bad of [{...item,professionalId:''},{...item,professionalId:' '},{...item,pool:'other'}])assert.equal(await removeTalent(async()=>{calls++;return response({removed:true})},bad),false);assert.equal(calls,0);
+ assert.equal((await loadTalents(async()=>response([{...item,professionalId:' '}]))).status,'error');
+});

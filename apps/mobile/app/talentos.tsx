@@ -16,6 +16,7 @@ export default function Talentos(){
  async function load(manual=false,expected?:Record<string,string>){
   if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData({status:'loading'});
   try{const headers=await authenticatedTenantHeaders();const result=await loadTalents((path,method)=>{if(!headers['x-tenant-id']||(expected&&!sameTalentContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,method);});
+   const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTalentContext(current,headers))throw Error('company_context_changed');
    if(version===generation.current&&seq===sequence.current){setData(result);snapshot.current=result.status==='ready'?{headers,items:result.data}:null;if(manual)setMessage('');}
   }catch{if(version===generation.current&&seq===sequence.current)setData({status:'error'});}
   finally{op.finish();}
@@ -24,8 +25,9 @@ export default function Talentos(){
  async function remove(item:Talent){
   const displayed=snapshot.current;if(pending.current||!displayed||!displayed.items.some(x=>x.professionalId===item.professionalId&&x.pool===item.pool))return;
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current)return;if(!sameTalentContext(headers,displayed.headers)){setMessage('A empresa ou sessão mudou. Atualize seus talentos.');return;}
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameTalentContext(headers,displayed.headers)){setMessage('A empresa ou sessão mudou. Atualize seus talentos.');return;}
    const ok=await removeTalent(requestWith(headers,op.controller.signal),item);
+   const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTalentContext(current,displayed.headers))throw Error('company_context_changed');
    if(version===generation.current){setMessage(ok?'Profissional removido da lista.':'Não foi possível confirmar a remoção. Atualize a lista para conferir.');await load(false,displayed.headers);}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize a lista para conferir a remoção.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
