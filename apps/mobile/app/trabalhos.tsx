@@ -4,28 +4,32 @@ import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View } from
 import { ProfessionalNav } from '../components/ProfessionalNav';
 import { authHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import {runForSession} from '../lib/session-context';
 import { loadJobs,sendInterest } from '../lib/jobs';
 import type {JobsState} from '../lib/jobs';
 export default function Trabalhos(){
  const [result,setResult]=useState<JobsState>({status:'loading'}),[retry,setRetry]=useState(0),[message,setMessage]=useState(''),[query,setQuery]=useState(''),[category,setCategory]=useState('Todos');
  const pendingInterests=useRef(new Set<string>()),[pendingIds,setPendingIds]=useState<string[]>([]);
- const generation=useRef(0),controllers=useRef(new Set<AbortController>());
+ const generation=useRef(0),controllers=useRef(new Set<AbortController>()),displayedAuthorization=useRef<string|null>(null);
  const categories=['Todos','Eventos','Atendimento','Limpeza'];
  const jobs=result.status==='ready'?result.data:[],loading=result.status==='loading',loadError=result.status==='error';
  const visibleJobs=jobs.filter(j=>{const matchText=`${j.title} ${j.location??''} ${j.workCity??''}`.toLocaleLowerCase('pt-BR').includes(query.trim().toLocaleLowerCase('pt-BR'));const matchCategory=category==='Todos'||j.title.toLocaleLowerCase('pt-BR').includes(category.toLocaleLowerCase('pt-BR'));return matchText&&matchCategory;});
  useFocusEffect(useCallback(()=>{
   const version=++generation.current,controller=new AbortController();controllers.current.add(controller);
-  const timer=setTimeout(()=>controller.abort(),15000);setResult({status:'loading'});setMessage('');
-  void loadJobs(async path=>{const headers=await authHeaders();return fetch(apiUrl(path),{headers,signal:controller.signal});}).then(next=>{if(version===generation.current)setResult(next);}).finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
-  return ()=>{++generation.current;clearTimeout(timer);for(const c of controllers.current)c.abort();controllers.current.clear();pendingInterests.current.clear();setPendingIds([]);};
+  const timer=setTimeout(()=>controller.abort(),15000);displayedAuthorization.current=null;setResult({status:'loading'});setMessage('');
+  void runForSession(authHeaders,headers=>loadJobs(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted).then(next=>{if(version!==generation.current)return;if(next.status==='ready'){setResult(next.data);displayedAuthorization.current=next.data.status==='ready'?next.authorization:null;}else setResult({status:'error'});}).finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
+  return ()=>{++generation.current;clearTimeout(timer);for(const c of controllers.current)c.abort();controllers.current.clear();displayedAuthorization.current=null;pendingInterests.current.clear();setPendingIds([]);};
  },[retry]));
  async function interest(id:string){
-  if(pendingInterests.current.has(id))return;
+  const authorization=displayedAuthorization.current;
+  if(!authorization||result.status!=='ready'||!result.data.some(job=>job.id===id)||pendingInterests.current.has(id))return;
   pendingInterests.current.add(id);setPendingIds([...pendingInterests.current]);
   const version=generation.current,controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);
   try{
-   const state=await sendInterest(async(path,method)=>{const headers=await authHeaders();return fetch(apiUrl(path),{method,headers,signal:controller.signal});},id);
-   if(version===generation.current)setMessage(state==='confirmed'?'Você já está confirmado neste trabalho. Confira sua agenda.':state==='interested'?'Interesse enviado':'Não foi possível confirmar o envio do interesse. Você pode tentar novamente.');
+   const state=await runForSession(authHeaders,headers=>sendInterest((path,method)=>fetch(apiUrl(path),{method,headers,signal:controller.signal}),id),()=>version===generation.current&&!controller.signal.aborted,authorization);
+   if(version!==generation.current)return;
+   if(state.status!=='ready'){displayedAuthorization.current=null;setResult({status:'error'});setMessage('Não foi possível confirmar o resultado na sessão atual. Atualize trabalhos antes de tentar novamente.');return;}
+   setMessage(state.data==='confirmed'?'Você já está confirmado neste trabalho. Confira sua agenda.':state.data==='interested'?'Interesse enviado':'Não foi possível confirmar o envio do interesse. Confira seus trabalhos antes de tentar novamente.');
   }finally{
    clearTimeout(timer);controllers.current.delete(controller);
    if(version===generation.current){pendingInterests.current.delete(id);setPendingIds([...pendingInterests.current]);}

@@ -4,6 +4,7 @@ import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'rea
 import { ProfessionalNav } from '../components/ProfessionalNav';
 import { authHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import {runForSession} from '../lib/session-context';
 import { loadHomeCards,loadingHomeCards } from '../lib/home-cards';
 import { assignmentSchedule, assignmentsToday, availabilityState, loadProfessionalHome, loadingHome, nextAssignment, weeklyEarnings } from '../lib/professional-home';
 
@@ -14,8 +15,11 @@ export default function ProfissionalInicio(){
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),15000);
   setData(loadingHome());setCards(loadingHomeCards());
-  const request=async(path:string)=>{const headers=await authHeaders();return fetch(apiUrl(path),{headers,signal:controller.signal});};
-  void Promise.all([loadProfessionalHome(request),loadHomeCards(request)]).then(([result,nextCards])=>{clearTimeout(timeout);if(active){setData(result);setCards(nextCards);}});
+  void runForSession(authHeaders,headers=>{const request=async(path:string)=>fetch(apiUrl(path),{headers,signal:controller.signal});return Promise.all([loadProfessionalHome(request),loadHomeCards(request)]);},()=>active&&!controller.signal.aborted).then(result=>{
+   clearTimeout(timeout);if(!active)return;
+   if(result.status==='ready'){setData(result.data[0]);setCards(result.data[1]);}
+   else{setData({profile:{status:'error'},assignments:{status:'error'},earnings:{status:'error'},availability:{status:'error'}});setCards({opportunities:{status:'error'},passport:{status:'error'}});}
+  });
   return ()=>{active=false;clearTimeout(timeout);controller.abort();};
  },[retry]));
  const now=new Date();

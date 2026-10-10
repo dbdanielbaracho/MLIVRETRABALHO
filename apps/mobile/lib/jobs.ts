@@ -9,5 +9,6 @@ export async function loadJobs(request:Request):Promise<JobsState>{
  try{const r=await request('/jobs');if(!r.ok)return {status:'error'};const data:unknown=await r.json();return Array.isArray(data)&&data.every(validJob)?{status:'ready',data}:{status:'error'};}catch{return {status:'error'};}
 }
 export async function sendInterest(request:Request,id:string):Promise<'interested'|'confirmed'|'error'>{
- try{const r=await request('/jobs/'+encodeURIComponent(id)+'/interest','POST');if(!r.ok)return 'error';const data:unknown=await r.json();return record(data)&&data.jobId===id&&typeof data.professionalId==='string'&&(data.status==='interested'||data.status==='confirmed')?data.status:'error';}catch{return 'error';}
+ if(!id.trim())return 'error';
+ try{const r=await request('/jobs/'+encodeURIComponent(id)+'/interest','POST');if(!r.ok)return 'error';const data:unknown=await r.json();return record(data)&&data.jobId===id&&typeof data.professionalId==='string'&&!!data.professionalId.trim()&&(data.status==='interested'||data.status==='confirmed')?data.status:'error';}catch{return 'error';}
 }
