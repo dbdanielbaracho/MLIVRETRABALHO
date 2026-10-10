@@ -1,5 +1,7 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+> Integração/gates consolidados em 2026-10-10 02:32 UTC: [execução verificada](EXECUCAO_VERIFICADA_2026-10-10_0232Z.md). Reconsultar GitHub; estados abaixo são históricos da versão.
+
 **Atualização:** 2026-10-09  
 **Escopo:** dbdanielbaracho/MLIVRETRABALHO; README → Documento vigente; continuidade v1.30.
 

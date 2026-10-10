@@ -1,5 +1,7 @@
 # MLIVRETRABALHO — MEMÓRIA CONSOLIDADA DAS CONVERSAS CHATGPT
 
+> Integração/gates consolidados em 2026-10-10 02:32 UTC: [execução verificada](EXECUCAO_VERIFICADA_2026-10-10_0232Z.md). Reconsultar GitHub; estados abaixo são históricos da versão.
+
 **Data de consolidação:** 2026-10-05  
 **Escopo exclusivo:** MLIVRETRABALHO  
 **Repositório:** dbdanielbaracho/MLIVRETRABALHO  
