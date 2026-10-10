@@ -749,3 +749,8 @@ GENERAL_PROFESSIONAL_SUPPORT_v1.92.md: escolha humana de nomes reais, histórico
 ## 2026-10-10 1821Z —v1.93
 
 SUPPORT_RECOVERY_WITHOUT_CONTEXT_v1.93.md: retomada independente de listas, modo sem nova preparação/envio, retry humano e release confirmed originais.8novas regressões;73localUTC/20SP aprovadas; CI377mobile/110API +APK próprios pendentes. #403CI38075196323/job114280600176 aprovado369/110/4/3/log completo, APK38075196283 pendente; natives400/401/pós399 pendentes. Sem bypass membership/RLS; novo suporte sem vínculo requer autoridade aprovada, gate físico aberto. Checkpoint/journal1821Z.
+
+
+## 2026-10-10 1830Z —v1.94
+
+CAPABILITY_INPUT_SHAPE_v1.94.md: TypeError antigo reproduzido em fixtures;9testes novos/39localAPI e bash-n aprovados; shape400/auth/perfil real/catálogo ativo textIDs preservados. CI119API/377mobile pendente, APK próprioN/A condicionado paths/tree. Preferências sem contrato próprio não inventada. #400merged5675327972869b16b0641a738d88f99cfb1a53b0/pósCIpass/ownAPKpass; #399pósAPK38074363965/job114278113410PASS/ZIP11678204886/digestf75356f54853369f8e3150addb7f950fe0611242eae53978358306fb813257a9 no head real. #404CI38075494028/job114281481865PASS377/110/4/3; natives401/403/404/pós400 pendentes. Checkpoint/journal1830Z.

@@ -1,4 +1,17 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
+# MLIVRETRABALHO —Documento da Verdade v1.94
+
+**Status:** NORMATIVO —DELTA SOBRE v1.93
+**Data:**2026-10-10
+
+## Validação de habilidades existentes e auditoria de Preferências
+
+Auditoria de Preferências confrontou v1.5§3/§4/§22.1, v1.18, v1.25/v1.26, referência original, Requirements Ledger, ProfileInput/Controller, disponibilidade, matching/company recommendations, notificações, capabilities/career e migration0058. Não há modelo/endpoint de preferência distinto nesses contratos: primaryRole/homeCity são fatos de perfil; availability são janelas; capabilities são habilidades/certificações declaradas no catálogo; career é advisory, sem decisão automática. Não rebatizar esses dados como preferências de raio/salário/modalidade ou inventar política/campo persistido.
+Defeito concreto encontrado em ProfessionalCapabilitiesController.put: corpos null ou listas numéricas provocam TypeError ao acessar/iterar b.skills/certifications. Reproduzido com método anterior sem decorators e fixtures explícitos de auth/db: null,{skills:1},{certifications:1} =>TypeError, zero writes; não se afirma HTTP antigo real local.
+
+professionalCapabilityInput valida root objeto, listas reais de strings e níveis nullable já existentes. Preserva defaults ausente/null=[], dedup exata, strings sem trim artificial, ausência de limite novo e níveis entry/proven/advanced/expert. Após autenticar/obter perfil real, corpo inválido produz BadRequest400 antes de consulta ao catálogo ou write. Catálogo ativo continua autoridade para skills/certifications; roleId é texto governado (ex.:hospitality.bartender), não UUID e não valor gerado pelo LLM. INSERT continua vinculado somente ao professional_id obtido da identidade atual, nunca a id do body.
+GET/DELETE válidos, rows/ACK existentes, níveis declarados e demais contratos válidos preservados; validação não cria prova de certificação, identidade ou carreira, nem permissiona escolha automática de profissão. Nenhuma taxonomy/role/skill/vertical criada/alterada, nenhuma migration/role/grant/RLS/política de emprego modificada.
+Nove testes novos (4 parser+5 controller) cobrem roots/lists, defaults/dedup sem transformação, níveis existentes, auth antes da validação, perfil real contra body injetado, catálogo ativo/noncanonical, erro DB real. PASS39/39 no conjunto localAPI (30anteriores+9), adapter Node/stubs Nest explícitos; bash-n aprovado. Contrato HTTP/PostgreSQL ampliado exige400 para9formas inválidas,401 sem sessão antes do shape, e registro canônico anterior exatamente preservado. CI completo próprio esperado119API/377mobile/4web/3CLI pendente, incluindo typecheck/build/export/migrations/HTTP real.
+Fatia API/script/docs somente. APK próprio N/A condicionado a paths efetivos e árvore mobile idêntica à404 no commit remoto; APKs401/403/404/pós400 não dispensados. Nenhum registro real/capability foi modificado pelo agente. React19.1.4/RN0.81.6/lockfile/standalone/desenho canônico/tenant/RLS preservados.
 
 ## Estado verificado
 
@@ -19,16 +32,6 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 #404 headf39891c5f9742739933dbd5f47659013d7e6adf8/treee569e1f7d074d5d255f0caccd6bc504f1671ba0f, basefix/general-professional-support. CI38075494028/job114281481865 aprovado377mobile/110API/4web/3CLI, todos os passos/logs, typecheck/build/export/migrations/HTTP. 14arquivos remotos byteidênticos; patch revisto. APK38075494042 em execução; não integrada.
 
 
-## Item atual
-
-Auditoria de Preferências confrontou v1.5§3/§4/§22.1, v1.18, v1.25/v1.26, referência original, Requirements Ledger, ProfileInput/Controller, disponibilidade, matching/company recommendations, notificações, capabilities/career e migration0058. Não há modelo/endpoint de preferência distinto nesses contratos: primaryRole/homeCity são fatos de perfil; availability são janelas; capabilities são habilidades/certificações declaradas no catálogo; career é advisory, sem decisão automática. Não rebatizar esses dados como preferências de raio/salário/modalidade ou inventar política/campo persistido.
-Defeito concreto encontrado em ProfessionalCapabilitiesController.put: corpos null ou listas numéricas provocam TypeError ao acessar/iterar b.skills/certifications. Reproduzido com método anterior sem decorators e fixtures explícitos de auth/db: null,{skills:1},{certifications:1} =>TypeError, zero writes; não se afirma HTTP antigo real local.
-
-professionalCapabilityInput valida root objeto, listas reais de strings e níveis nullable já existentes. Preserva defaults ausente/null=[], dedup exata, strings sem trim artificial, ausência de limite novo e níveis entry/proven/advanced/expert. Após autenticar/obter perfil real, corpo inválido produz BadRequest400 antes de consulta ao catálogo ou write. Catálogo ativo continua autoridade para skills/certifications; roleId é texto governado (ex.:hospitality.bartender), não UUID e não valor gerado pelo LLM. INSERT continua vinculado somente ao professional_id obtido da identidade atual, nunca a id do body.
-GET/DELETE válidos, rows/ACK existentes, níveis declarados e demais contratos válidos preservados; validação não cria prova de certificação, identidade ou carreira, nem permissiona escolha automática de profissão. Nenhuma taxonomy/role/skill/vertical criada/alterada, nenhuma migration/role/grant/RLS/política de emprego modificada.
-Nove testes novos (4 parser+5 controller) cobrem roots/lists, defaults/dedup sem transformação, níveis existentes, auth antes da validação, perfil real contra body injetado, catálogo ativo/noncanonical, erro DB real. PASS39/39 no conjunto localAPI (30anteriores+9), adapter Node/stubs Nest explícitos; bash-n aprovado. Contrato HTTP/PostgreSQL ampliado exige400 para9formas inválidas,401 sem sessão antes do shape, e registro canônico anterior exatamente preservado. CI completo próprio esperado119API/377mobile/4web/3CLI pendente, incluindo typecheck/build/export/migrations/HTTP real.
-Fatia API/script/docs somente. APK próprio N/A condicionado a paths efetivos e árvore mobile idêntica à404 no commit remoto; APKs401/403/404/pós400 não dispensados. Nenhum registro real/capability foi modificado pelo agente. React19.1.4/RN0.81.6/lockfile/standalone/desenho canônico/tenant/RLS preservados.
-
 ## Dependências
 
 Preferências segue aberta: definir campos, semântica, escopo por identidade/tenant, persistência, efeito em descoberta/matching e controle de dados antes de inventar novo modelo ou reaproveitar perfil/skills com significado falso. Essa decisão não bloqueia correção de defeitos efetivos nas APIs já existentes.
@@ -39,3 +42,5 @@ Ajuda nova sem membership depende de autoridade legítima por identidade/isolame
 Publicar fix/capability-input-shape sobre ownhead404f39891c5f9742739933dbd5f47659013d7e6adf8/treee569e1f7d074d5d255f0caccd6bc504f1671ba0f, basefix/support-recovery-without-context. Conferir número/head/tree/bytes/patch, paths/mobiletree e CI119API/377mobile; não inventar SHA/resultado futuro.
 Acompanhar APK401 e pós400,403/404; integrar401,402,403,404 e esta fatia em ordem após gates próprios no SHA exato. Retargetmain/reconsultar mergeable eventual, revisão fresca e merge-base tree igual main; pós-merge verificar pais/árvore/main e CI/APK exatos. #400 já integrado; #399 pós-gates comprovados e retry388 concluído, não repetir.
 Próxima auditoria independente segura: CareerConversionController atual ainda lê b.assignmentId/b.decision/b.note sem validação runtime de corpo; confrontar schema/direct-hire/HTTP existente e reproduzir entradas inválidas antes de qualquer correção. Não implementar funcionalidade arbitrária para aparentar progresso. Preservar checkpoint e rotina até conclusão integral comprovada ou ordem explícita, sem parar por execução/pendência parcial.
+
+Evidência CAPABILITY_INPUT_SHAPE_v1.94.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.94.md; checkpoint/journal1830Z. Baselines anteriores vigentes.

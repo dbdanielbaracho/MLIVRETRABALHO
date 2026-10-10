@@ -1,6 +1,8 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
+# Execução verificada —2026-10-10 1830Z
 
-## Estado verificado
+Exclusivamente MLIVRETRABALHO. Fontes README/main89/memória/checkpoint, v1.5/v1.18/referência original/v1.25/v1.26, código/schema/HTTP de catálogo e gates atuais. Registro analítico recuperável, não transcrição inventada.
+
+## Estado
 
 Verificação em2026-10-10,18:29 UTC: main5675327972869b16b0641a738d88f99cfb1a53b0/treec92641013a9228efe3ae44932e7ec3302438a680, Documento vigente v1.89. #396–400 integradas; não repetir. #400 pais[960d3f14c4d59018f9949569c930a6f9e4b82ef8,9eeaf89ca2e327bc756610ebd4aebb414840c21b], árvore idêntica ao head aprovado; main e PR merged confirmados.
 #399 pré-merge: CI38072920913/job114273878473 aprovado316mobile/105API/4web/3CLI; APK38072921018/job114273878889 aprovado, instalação18:02:14.6272057Z e DEVICE_SMOKE_OK sem Metro18:03:02.0665653Z. ZIP11678426523, sha256:51d009e3f264ede4b18f9363ff9797d482dbb39b2ace968909d1656c5c05a898, não expirado, head7bd91e24c1c0428d0ea8caa762fe995ba0271374. Pós-merge: CI38074363947/job114278113646 success, passos e log completo conferidos:316mobile/105API/4web/3CLI, typecheck/build/export/migrations/contratos HTTP. APK pós39938074363965/job114278113410 aprovado no SHA real960d3f14c4d59018f9949569c930a6f9e4b82ef8, todos os passos/logs: instalação18:27:23.1883760Z e DEVICE_SMOKE_OK sem Metro18:28:29.6869422Z. ZIP11678204886, sha256:f75356f54853369f8e3150addb7f950fe0611242eae53978358306fb813257a9, não expirado/head exato. Pós-gates399 comprovados no emulador; físico permanece aberto.
@@ -19,7 +21,7 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 #404 headf39891c5f9742739933dbd5f47659013d7e6adf8/treee569e1f7d074d5d255f0caccd6bc504f1671ba0f, basefix/general-professional-support. CI38075494028/job114281481865 aprovado377mobile/110API/4web/3CLI, todos os passos/logs, typecheck/build/export/migrations/HTTP. 14arquivos remotos byteidênticos; patch revisto. APK38075494042 em execução; não integrada.
 
 
-## Item atual
+## Defeito/auditoria/provas
 
 Auditoria de Preferências confrontou v1.5§3/§4/§22.1, v1.18, v1.25/v1.26, referência original, Requirements Ledger, ProfileInput/Controller, disponibilidade, matching/company recommendations, notificações, capabilities/career e migration0058. Não há modelo/endpoint de preferência distinto nesses contratos: primaryRole/homeCity são fatos de perfil; availability são janelas; capabilities são habilidades/certificações declaradas no catálogo; career é advisory, sem decisão automática. Não rebatizar esses dados como preferências de raio/salário/modalidade ou inventar política/campo persistido.
 Defeito concreto encontrado em ProfessionalCapabilitiesController.put: corpos null ou listas numéricas provocam TypeError ao acessar/iterar b.skills/certifications. Reproduzido com método anterior sem decorators e fixtures explícitos de auth/db: null,{skills:1},{certifications:1} =>TypeError, zero writes; não se afirma HTTP antigo real local.
@@ -29,12 +31,10 @@ GET/DELETE válidos, rows/ACK existentes, níveis declarados e demais contratos 
 Nove testes novos (4 parser+5 controller) cobrem roots/lists, defaults/dedup sem transformação, níveis existentes, auth antes da validação, perfil real contra body injetado, catálogo ativo/noncanonical, erro DB real. PASS39/39 no conjunto localAPI (30anteriores+9), adapter Node/stubs Nest explícitos; bash-n aprovado. Contrato HTTP/PostgreSQL ampliado exige400 para9formas inválidas,401 sem sessão antes do shape, e registro canônico anterior exatamente preservado. CI completo próprio esperado119API/377mobile/4web/3CLI pendente, incluindo typecheck/build/export/migrations/HTTP real.
 Fatia API/script/docs somente. APK próprio N/A condicionado a paths efetivos e árvore mobile idêntica à404 no commit remoto; APKs401/403/404/pós400 não dispensados. Nenhum registro real/capability foi modificado pelo agente. React19.1.4/RN0.81.6/lockfile/standalone/desenho canônico/tenant/RLS preservados.
 
-## Dependências
+## Dependências e retomada
 
 Preferências segue aberta: definir campos, semântica, escopo por identidade/tenant, persistência, efeito em descoberta/matching e controle de dados antes de inventar novo modelo ou reaproveitar perfil/skills com significado falso. Essa decisão não bloqueia correção de defeitos efetivos nas APIs já existentes.
 Ajuda nova sem membership depende de autoridade legítima por identidade/isolamento/retensão explicitamente aprovada; retomada de slot antigo não remove membership/RLS do servidor. VisualTruth físico original/dados/estados/cobertura completa, SecureStore/teclado/payload/restart, providers/TRUST/pentest, PSP/FIN-RISK, WEB-ARCH e piloto/distribuição continuam abertos e separados. Sem dinheiro real, novas cobranças ou deploy/infra paga.
-
-## Próxima ação concreta
 
 Publicar fix/capability-input-shape sobre ownhead404f39891c5f9742739933dbd5f47659013d7e6adf8/treee569e1f7d074d5d255f0caccd6bc504f1671ba0f, basefix/support-recovery-without-context. Conferir número/head/tree/bytes/patch, paths/mobiletree e CI119API/377mobile; não inventar SHA/resultado futuro.
 Acompanhar APK401 e pós400,403/404; integrar401,402,403,404 e esta fatia em ordem após gates próprios no SHA exato. Retargetmain/reconsultar mergeable eventual, revisão fresca e merge-base tree igual main; pós-merge verificar pais/árvore/main e CI/APK exatos. #400 já integrado; #399 pós-gates comprovados e retry388 concluído, não repetir.

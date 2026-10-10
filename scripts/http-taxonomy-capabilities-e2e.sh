@@ -37,6 +37,13 @@ request GET /v1/professional-capabilities "$TOKEN_A" | node -e 'const x=JSON.par
 request GET /v1/professional-capabilities "$TOKEN_B" | assert_count 0
 request DELETE "/v1/professional-capabilities/$ROLE_PATH" "$TOKEN_B" >/dev/null
 request GET /v1/professional-capabilities "$TOKEN_A" | assert_count 1
+# Malformed JSON shapes are rejected as400 without replacing the previously registered capability.
+for invalid in 'null' '[]' '{"skills":1}' '{"skills":"drink_preparation"}' '{"skills":["drink_preparation",1]}' '{"certifications":"certificate"}' '{"certifications":[null]}' '{"provenLevel":0}' '{"provenLevel":"verified_by_agent"}'; do
+ expect_status malformed-capability 400 PUT "/v1/professional-capabilities/$ROLE_PATH" "$TOKEN_A" "$invalid"
+done
+expect_status auth-before-shape 401 PUT "/v1/professional-capabilities/$ROLE_PATH" invalid-token 'null'
+request GET /v1/professional-capabilities "$TOKEN_A" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(x.length!==1||x[0].roleId!==process.argv[1]||x[0].skills.length!==1||x[0].skills[0]!==process.argv[2]||x[0].certifications.length!==0||x[0].provenLevel!==null)throw Error("invalid_capability_changed_registration");' -- "$ROLE_ID" "$SKILL"
+echo 'PASS: malformed capability bodies are HTTP400 after authentication, without overwriting canonical registration'
 expect_status noncanonical-skill 400 PUT "/v1/professional-capabilities/$ROLE_PATH" "$TOKEN_A" '{"skills":["fixture_not_in_catalog"]}'
 expect_status absent-role 400 PUT /v1/professional-capabilities/fixture.missing "$TOKEN_A" "$BODY"
 request GET /v1/professional-capabilities "$TOKEN_A" | assert_count 1
