@@ -43,6 +43,27 @@ LONG_BODY="$(node -e 'process.stdout.write(JSON.stringify({category:"other",desc
 expect_status description-limit 400 POST /v1/support-cases "$TOKEN_A" "$TENANT_A" "$LONG_BODY"
 request GET /v1/support-cases/mine "$TOKEN_A" "$TENANT_A" | assert_count 0
 expect_status absent-membership 401 POST /v1/support-cases "$TOKEN_A" "$TENANT_B" "$(case_body '')"
+# Preparing keys is authenticated, checks the existing assignment boundary and creates no case.
+expect_status prepare-auth-first 401 POST /v1/support-cases/intent invalid-token "$TENANT_A" 'null'
+expect_status prepare-absent-membership 401 POST /v1/support-cases/intent "$TOKEN_A" "$TENANT_B" "$(case_body '')"
+expect_status prepare-cross-assignment 400 POST /v1/support-cases/intent "$TOKEN_B" "$TENANT_B" "$(case_body "$ASSIGNMENT_A")"
+expect_status prepare-malformed-assignment 400 POST /v1/support-cases/intent "$TOKEN_A" "$TENANT_A" "$(case_body bad-id)"
+expect_status prepare-invalid-payload 400 POST /v1/support-cases/intent "$TOKEN_A" "$TENANT_A" "$LONG_BODY"
+PREPARED_A="$(request POST /v1/support-cases/intent "$TOKEN_P" "$TENANT_A" "$(case_body "$ASSIGNMENT_A")")"
+PREPARED_B="$(request POST /v1/support-cases/intent "$TOKEN_P" "$TENANT_A" "$(case_body "$ASSIGNMENT_A")")"
+PREPARED_KEY="$(printf '%s' "$PREPARED_A" | json_field requestKey)"
+ACTUAL_REPORTER="$(request GET /v1/me "$TOKEN_P" | json_field id)"
+node - "$PREPARED_A" "$PREPARED_B" "$ACTUAL_REPORTER" <<'JS'
+const [a,b]=process.argv.slice(2,4).map(JSON.parse),reporter=process.argv[4];
+const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+if(!uuid.test(a.requestKey)||!uuid.test(b.requestKey)||a.requestKey===b.requestKey||a.reporterIdentityId!==reporter||b.reporterIdentityId!==reporter)throw Error('support_prepare_invalid');
+for(const x of [a,b])if(Object.keys(x).sort().join(',')!=='reporterIdentityId,requestKey')throw Error('support_prepare_response_leak');
+JS
+request POST /v1/support-cases/intent "$TOKEN_B" "$TENANT_B" "$(case_body '')" >/dev/null
+request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 0
+request GET /v1/support-cases/mine "$TOKEN_A" "$TENANT_A" | assert_count 0
+request GET /v1/support-cases/mine "$TOKEN_B" "$TENANT_B" | assert_count 0
+echo 'PASS: support key preparation checks auth/membership/assignment, issues cryptographic UUIDs and creates no case'
 # Valid linked and unlinked requests preserve the existing support contract.
 CASE_A="$(request POST /v1/support-cases "$TOKEN_A" "$TENANT_A" "$(case_body "$ASSIGNMENT_A")")"
 CASE_A_ID="$(printf '%s' "$CASE_A" | json_field id)"
@@ -59,7 +80,7 @@ expect_status cross-review 400 POST "/v1/company/support-cases/$CASE_A_ID/status
 UPDATED="$(request POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Revisão humana fixture"}')"
 test "$(printf '%s' "$UPDATED" | json_field status)" = reviewing
 # Keyed requests keep one intent per tenant + authenticated reporter.
-INTENT_KEY='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+INTENT_KEY="$PREPARED_KEY"
 CONCURRENT_KEY='bbbbbbbb-cccc-dddd-eeee-ffffffffffff'
 CASE_BODY="$(case_body "$ASSIGNMENT_A")"
 KEYED_CASE="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY")"

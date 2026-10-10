@@ -1,3 +1,4 @@
+import {randomUUID} from 'node:crypto';
 import {BadRequestException,Body,ConflictException,Controller,ForbiddenException,Get,Headers,Param,Post} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {DatabaseService} from './database.service';
@@ -9,6 +10,20 @@ const acknowledgement=(c:ReplayCase)=>({id:c.id,category:c.category,priority:c.p
 @Controller()
 export class SupportController {
  constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
+ @Post('support-cases/intent')
+ async prepare(@Body()body:unknown,@Headers('authorization')authorization?:string,@Headers('x-tenant-id')tenantId?:string){
+  const identity=await this.auth.identityFromAuthorization(authorization);
+  if(!tenantId)throw new BadRequestException('tenant_required');
+  await this.auth.requireMembership(identity.id,tenantId);
+  const input=supportCaseInput(body);
+  if(!input)throw new BadRequestException('support_case_invalid');
+  if(input.assignmentId!==null)await this.db.tenant(tenantId,async db=>{
+   const assignment=(await db.query<{id:string}>('SELECT id FROM work_assignments WHERE tenant_id=$1 AND id=$2',[tenantId,input.assignmentId])).rows[0];
+   if(!assignment)throw new BadRequestException('support_assignment_not_found');
+  });
+  // Preparing an unused key creates no case. Creation still authenticates and checks membership.
+  return {requestKey:randomUUID(),reporterIdentityId:identity.id};
+ }
  @Post('support-cases')
  async create(@Body()body:unknown,@Headers('authorization')authorization?:string,@Headers('x-tenant-id')tenantId?:string,@Headers('idempotency-key')key?:string){
   const identity=await this.auth.identityFromAuthorization(authorization);

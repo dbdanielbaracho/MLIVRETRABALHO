@@ -1,11 +1,7 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.87
 
-## Estado verificado
-
-Verificação de 2026-10-10, 17:33 UTC: main permanece em 9ed1859ee28b1ba50e84bda0d4357d22760a59f3 (v1.84).
-PR #396: head 26b3fb2365200415366e12da76710a0ad629725b, tree 87ac6719b538d92a2b1843e9954cee80de0aece4, base main. CI 38071421868 / job 114269432957 aprovado (298 mobile, 88 API, 4 web, 3 CLI). APK próprio 38071421849 / job 114269432897 ainda executa o teste de instalação e abertura sem Metro; não integrado.
-PR #397: head be12cb6905234a081472971a8e37e5cbdc98d9cf, tree d57bfbb2cfb11ace871e0c3ef4c9a41ac6088763, base fix/professional-support-history. CI 38071852247 / job 114270695562 aprovado em todos os passos: 298 mobile, 98 API, 4 web, 3 CLI, migrations e HTTP/PostgreSQL, inclusive oito primeiros envios concorrentes, conflito de payload e guards SQL. APK próprio não aplicável: paths e árvore mobile 163de7d27fe6b49fb11d87ed9a9da2bf8b9e47e7 idênticos à #396; isso não dispensa o APK do predecessor.
-388–395 já integradas; não repetir merges. Retry controlado único do APK pós-merge #388, run 38054154641, tentativa 2 / job 114268524350, ainda em teste de dispositivo. Retry pedido em 17:17:11 UTC após falha de infraestrutura anterior à instalação; não solicitar nova repetição automática. Evidências dos outros pós-merges e dos gates históricos estão no registro 1717Z/v1.85.
+**Status:** NORMATIVO — DELTA SOBRE v1.86
+**Data:** 2026-10-10
 
 ## Preparação segura da tentativa de suporte
 
@@ -25,6 +21,13 @@ Fixture HTTP existente, restrita a localhost e banco efêmero, cobre auth/member
 
 Somente controller, testes API, fixture HTTP e documentos mudam. APK próprio não aplicável pelo filtro efetivo do workflow; verificar árvore mobile idêntica à #397 após publicar. CI completo, diff, bytes remotos, branch/base e SHA exato são obrigatórios antes de integrar. React 19.1.4, RN 0.81.6, lockfile, desenho e navegação permanecem preservados. Nenhuma operação em produção, chamado real, PSP, dinheiro real, nova cobrança ou infraestrutura paga foi habilitada.
 
+## Estado verificado
+
+Verificação de 2026-10-10, 17:33 UTC: main permanece em 9ed1859ee28b1ba50e84bda0d4357d22760a59f3 (v1.84).
+PR #396: head 26b3fb2365200415366e12da76710a0ad629725b, tree 87ac6719b538d92a2b1843e9954cee80de0aece4, base main. CI 38071421868 / job 114269432957 aprovado (298 mobile, 88 API, 4 web, 3 CLI). APK próprio 38071421849 / job 114269432897 ainda executa o teste de instalação e abertura sem Metro; não integrado.
+PR #397: head be12cb6905234a081472971a8e37e5cbdc98d9cf, tree d57bfbb2cfb11ace871e0c3ef4c9a41ac6088763, base fix/professional-support-history. CI 38071852247 / job 114270695562 aprovado em todos os passos: 298 mobile, 98 API, 4 web, 3 CLI, migrations e HTTP/PostgreSQL, inclusive oito primeiros envios concorrentes, conflito de payload e guards SQL. APK próprio não aplicável: paths e árvore mobile 163de7d27fe6b49fb11d87ed9a9da2bf8b9e47e7 idênticos à #396; isso não dispensa o APK do predecessor.
+388–395 já integradas; não repetir merges. Retry controlado único do APK pós-merge #388, run 38054154641, tentativa 2 / job 114268524350, ainda em teste de dispositivo. Retry pedido em 17:17:11 UTC após falha de infraestrutura anterior à instalação; não solicitar nova repetição automática. Evidências dos outros pós-merges e dos gates históricos estão no registro 1717Z/v1.85.
+
 ## Próxima ação concreta
 
 Publicar fix/support-intent-preparation sobre be12cb6905234a081472971a8e37e5cbdc98d9cf, com base fix/support-intent-idempotency. Reconsultar PR/SHA/runs, revisar patch e conferir todos os bytes publicados; não antecipar número ou aprovação. Esperar CI próprio com 105 API / 298 mobile / 4 web / 3 CLI e fixture HTTP/PostgreSQL.
@@ -34,3 +37,5 @@ Acompanhar APK da #396 e único retry pós-merge #388. Integrar #396 somente com
 Próximo produto independente: armazenamento durável da tentativa de suporte, vinculado à identidade autenticada (GET /me retorna id no nível superior), tenant e trabalho escolhidos nos dados reais, antes do transporte. Falha de storage impede POST. Timeout ou resposta inválida mantém conteúdo/chave sem confirmação falsa. Mudança de sessão/identidade não pode reenviar draft de outra pessoa nem apagar uma barreira de resultado incerto; relogin da mesma identidade deve permitir retomada segura. Testar races, persistência, ACK e falhas antes de habilitar UI.
 
 Histórico de suporte permanece leitura parcial; suporte geral/contexto Dia do Trabalho e Preferências ainda têm pendências. Visual Truth físico (desenho original, dados e estados reais, cobertura completa), piloto/aparelho/distribuição, pentest e providers/TRUST/PSP/FIN-RISK/WEB-ARCH continuam abertos e independentes. Não declarar projeto concluído. Bloqueio parcial ou fim de rodada não encerra continuidade; manter a rotina, sem promessa de execução 24h ou nova automação.
+
+Evidência: SUPPORT_INTENT_PREPARATION_v1.87.md. Requisitos: REQUIREMENTS_LEDGER_DELTA_v1.87.md. Registro de execução: 1733Z. Baselines anteriores continuam vigentes.
