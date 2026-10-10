@@ -1,8 +1,37 @@
-import { useEffect,useMemo,useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback,useRef,useState } from 'react';
 import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { ProfessionalNav } from '../components/ProfessionalNav';
-import { authHeaders } from '../lib/session'; import { apiUrl } from '../lib/api';
-type Earning={id:string;tenantId:string;amountCents:number;status:string;title:string;createdAt:string};
+import { authHeaders } from '../lib/session';
+import { apiUrl } from '../lib/api';
+import {loadEarnings,earningsWeek,earningStatus,type Earning} from '../lib/earnings';
+import type {Section} from '../lib/professional-home';
 const money=(v:number)=>'R$ '+(v/100).toFixed(2).replace('.',',');
-export default function Ganhos(){const[items,setItems]=useState<Earning[]>([]),[message,setMessage]=useState(''),[showAll,setShowAll]=useState(false),[loading,setLoading]=useState(true);useEffect(()=>{void load()},[]);async function load(){setLoading(true);setMessage('');try{const headers=await authHeaders();const x=await fetch(apiUrl('/earnings/mine'),{headers});if(x.ok)setItems(await x.json());else setMessage('Não foi possível carregar seus ganhos.')}catch{setMessage('Falha de conexão ao carregar seus ganhos.')}finally{setLoading(false)}}const week=useMemo(()=>{const now=new Date(),day=(now.getDay()+6)%7,start=new Date(now);start.setHours(0,0,0,0);start.setDate(start.getDate()-day);return items.filter(x=>x.status!=='reversed'&&new Date(x.createdAt)>=start)},[items]);const total=week.reduce((a,x)=>a+x.amountCents,0);const daily=[0,1,2,3,4,5,6].map(d=>week.filter(x=>{const n=(new Date(x.createdAt).getDay()+6)%7;return n===d}).reduce((a,x)=>a+x.amountCents,0));const max=Math.max(...daily,1);return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Text style={s.title}>Ganhos</Text><View style={s.summary}><Text style={s.summaryLabel}>Total da semana</Text><Text style={s.value}>{money(total)}</Text><View style={s.chart}>{daily.map((v,i)=><View key={i} style={s.day}><View style={[s.bar,{height:Math.max(5,64*v/max)}]}/><Text style={s.dayLabel}>{['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'][i]}</Text></View>)}</View></View><View style={s.sectionHead}><Text style={s.heading}>Últimos trabalhos</Text><Pressable onPress={()=>setShowAll(v=>!v)} accessibilityRole="button"><Text style={s.seeAll}>{showAll?'Ver menos':'Ver todos'}</Text></Pressable></View>{loading?<Text style={s.meta}>Carregando ganhos...</Text>:null}{!loading&&items.length===0&&!message?<View style={s.card}><Text style={s.job}>Nenhum ganho registrado</Text><Text style={s.meta}>Seus trabalhos concluídos aparecerão aqui.</Text></View>:null}{!loading&&(showAll?items:items.slice(0,6)).map(x=><View key={x.id} style={s.card}><View style={s.thumb}><Text style={s.thumbText}>✓</Text></View><View style={s.jobInfo}><Text style={s.job}>{x.title}</Text><Text style={s.meta}>{new Date(x.createdAt).toLocaleDateString('pt-BR')}</Text><Text style={s.done}>Concluído</Text></View><Text style={s.amount}>{money(x.amountCents)}</Text></View>)}{message?<Pressable accessibilityRole="button" onPress={()=>void load()}><Text style={s.meta}>{message} Toque para tentar novamente.</Text></Pressable>:null}</ScrollView><ProfessionalNav/></SafeAreaView>}
+export default function Ganhos(){
+ const[result,setResult]=useState<Section<Earning[]>>({status:'loading'}),[showAll,setShowAll]=useState(false);
+ const requestId=useRef(0);
+ const load=useCallback(async(focusSignal?:AbortSignal)=>{
+  const id=++requestId.current;setResult({status:'loading'});
+  const controller=new AbortController(),cancel=()=>controller.abort();
+  focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
+  const timeout=setTimeout(()=>controller.abort(),15000);
+  try{
+   const headers=await authHeaders(),next=await loadEarnings(()=>fetch(apiUrl('/earnings/mine'),{headers,signal:controller.signal}));
+   if(id===requestId.current&&!focusSignal?.aborted)setResult(next);
+  }catch{if(id===requestId.current&&!focusSignal?.aborted)setResult({status:'error'});}
+  finally{clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
+ },[]);
+ useFocusEffect(useCallback(()=>{const controller=new AbortController();void load(controller.signal);return()=>{requestId.current++;controller.abort();};},[load]));
+ const items=result.status==='ready'?result.data:[],week=earningsWeek(items),max=Math.max(...week.daily,1);
+ return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
+ <Text style={s.title}>Ganhos</Text><View style={s.summary}>
+ <Text style={s.summaryLabel}>Total da semana</Text><Text style={s.value}>{result.status==='ready'?money(week.total):'—'}</Text>
+ {result.status==='ready'?<><Text style={s.meta}>A receber e pagos, de segunda-feira até agora.</Text><View style={s.chart}>{week.daily.map((v,i)=><View key={i} style={s.day}><View style={[s.bar,{height:Math.max(5,64*v/max)}]}/><Text style={s.dayLabel}>{['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'][i]}</Text></View>)}</View></>:null}
+ </View><View style={s.sectionHead}><Text style={s.heading}>Últimos trabalhos</Text><Pressable onPress={()=>setShowAll(v=>!v)} accessibilityRole="button"><Text style={s.seeAll}>{showAll?'Ver menos':'Ver todos'}</Text></Pressable></View>
+ {result.status==='loading'?<Text style={s.meta}>Carregando ganhos…</Text>:null}
+ {result.status==='error'?<Pressable accessibilityRole="button" onPress={()=>void load()}><Text style={s.meta}>Não foi possível carregar seus ganhos. Toque para tentar novamente.</Text></Pressable>:null}
+ {result.status==='ready'&&items.length===0?<View style={s.card}><Text style={s.job}>Nenhum ganho registrado</Text><Text style={s.meta}>Seus trabalhos concluídos aparecerão aqui.</Text></View>:null}
+ {(showAll?items:items.slice(0,6)).map(x=><View key={x.tenantId+':'+x.id} style={s.card}><View style={s.thumb}><Text style={s.thumbText}>{x.status==='paid'?'✓':x.status==='reversed'?'↩':'◷'}</Text></View><View style={s.jobInfo}><Text style={s.job}>{x.title}</Text><Text style={s.meta}>{new Date(x.createdAt).toLocaleDateString('pt-BR')}</Text><Text style={s.done}>{earningStatus(x.status)}</Text></View><Text style={s.amount}>{money(x.amountCents)}</Text></View>)}
+ </ScrollView><ProfessionalNav/></SafeAreaView>;
+}
 const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,gap:13,paddingBottom:24},title:{fontSize:28,fontWeight:'900',color:'#111A35'},summary:{padding:20,borderRadius:14,backgroundColor:'#FFF',borderWidth:1,borderColor:'#E7EAF0',gap:5},summaryLabel:{fontSize:13,fontWeight:'700',color:'#65708A'},value:{fontSize:34,fontWeight:'900',color:'#111A35'},chart:{height:92,flexDirection:'row',alignItems:'flex-end',justifyContent:'space-between',marginTop:10},day:{flex:1,alignItems:'center',justifyContent:'flex-end',gap:5},bar:{width:18,borderRadius:5,backgroundColor:'#651FFF'},dayLabel:{fontSize:9,fontWeight:'700',color:'#65708A'},sectionHead:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:6},heading:{fontSize:16,fontWeight:'900',color:'#111A35'},seeAll:{fontSize:12,fontWeight:'800',color:'#651FFF'},card:{padding:13,borderWidth:1,borderColor:'#E7EAF0',backgroundColor:'#FFF',borderRadius:12,flexDirection:'row',alignItems:'center',gap:11},thumb:{width:42,height:42,borderRadius:9,backgroundColor:'#F0EBFF',alignItems:'center',justifyContent:'center'},thumbText:{fontWeight:'900',color:'#651FFF'},jobInfo:{flex:1},job:{fontSize:14,fontWeight:'800',color:'#111A35'},amount:{fontSize:15,fontWeight:'900',color:'#651FFF'},meta:{fontSize:11,color:'#65708A',marginTop:2},done:{fontSize:10,fontWeight:'800',color:'#218A4B',marginTop:3}});
