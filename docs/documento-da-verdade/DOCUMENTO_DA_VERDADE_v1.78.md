@@ -1,6 +1,17 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.78
 
-## Estado verificado e retomada
+**Status:** NORMATIVO — DELTA SOBRE v1.77
+**Data:** 2026-10-10
+
+## Cadastro e respostas tardias
+
+CriarConta verificava foco, mas não prazo ao confirmar resultado; signup é POST não idempotente. signupAccount passa a receber isCurrent opcional/padrão compatível, conferir antes do transporte e depois de HTTP/JSON, inclusive corpo de rejeição. HTTP/JSON tardio continua unknown, sem confirmação de criação, motivo de rejeição tardio ou reenvio automático.
+
+A tela fornece guarda de geração/foco/prazo, revalida AbortSignal ao receber resultado e mantém a barreira contra outro POST depois da tentativa de envio. O marcador sent é ativado apenas quando o callback de transporte é chamado; blur durante validação local inválida (zero POST) não marca cadastro incerto. Após ACK válido ou rejeição válida recebidos em tempo, pending/unknown são liberados antes de navegação/cleanup. Resultado incerto depois de tentativa preserva orientação para conferir via login e impede novo cadastro automático/manual nessa instância. Blur continua limpar senha local; mudança não persiste senha/sessão nem ativa conta real.
+
+Quatro regressões novas exercitam helper real (canceled antesPOST, HTTP tardio sem ler corpo, JSON tardio profissional/empresa, rejeição tardia). Cinco exercitam o código pré-JSX real da tela extraído do arquivo com hooks/roteador/timer/fetch simulados: deadline/JSON/blur pós-envio bloqueiam navegação e segundo POST; entrada inválida sem POST permite corrigir senha/refocus e cadastrar; ACK válido não se torna incerto no cleanup da navegação. É execução dos handlers reais, não React Native/renderização/aparelho físico. 255 testes mobile completos passaram UTC e America/Sao_Paulo (246da fatia anterior+9novos), além dos16 testes dedicados signup/helper+screen. JSX e StyleSheet iguais à base, sem mudança do desenho; React19.1.4/RN0.81.6/lockfile/API/tenant/RLS preservados. CI completo e APK próprio do novo SHA ainda obrigatórios.
+
+## Provas e continuidade
 
 Snapshot 2026-10-10 12:16 UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76), árvore29ee4cadb0a41ef7c89b8c08452d17691a66eeb3. README/Documento vigente/memória/checkpoint/main/PRs/gates atuais reconsultados. #351–#387 já integradas conforme histórico persistente; checkpoint remoto não deve fazer repetir operações antigas. #387 ownhead0e45557096c025ef431c37d1f6983666b95f7962 e merge738073540f7ff6f9156b704a95c7a5616643307e conferidos no journal1208Z. Pós-CI38050884981/job114209605292 SUCCESS todos os passos typecheck/build/export/tests/migration/privacy/HTTP,73API/238mobile/4Web/3CLI, catálogo CRUD/isolation PASS2026-10-10T12:11:05.1450848Z e suporte PASS12:11:06.5108388Z. APK N/A por pathfilter e mobile idêntica; merge não implica deploy público.
 
@@ -19,11 +30,3 @@ Publicar fix/signup-response-deadline sobre head próprio388af42616736b1850d7549
 A próxima falha independente foi demonstrada em fontes reais auditadas: Agenda e EmpresaInicio fazem final auth/foco após HTTP/JSON, mas não conferem prazo abortado antes de publicar dados prontos/ACK de check-in/check-out/avaliação/preferido. Revalidar helpers e contratos atuais e corrigir somente confirmação/carga de resposta expirada com testes efetivos, preservando tenant por trabalho, transições/enforcement/backend, geolocalização opcional, sem reenvio ou operações reais. Signout permanece semântica própria de limpeza local condicional. Presença de backend/ausência de issues não prova escopo completo.
 
 Visual Truth desenho original/dados/estados/cobertura integral físico OPEN. Piloto/device, pentest independente, providers/TRUST/PSP/FIN-RISK/WEB-ARCH separados. Sem contas reais/mensagens/suporte/assignments/PSP/dinheiro, nova cobrança ou infraestrutura/deploy pago. Somente fixtures mocks/API local descartável. Bloqueio parcial/falha transitória/CIAPKrunning não encerra projeto; rotina existente permanece, sem criar outra ou alegar execução24h.
-
-## Item atual — prazo e tentativa de cadastro
-
-CriarConta verificava foco, mas não prazo ao confirmar resultado; signup é POST não idempotente. signupAccount passa a receber isCurrent opcional/padrão compatível, conferir antes do transporte e depois de HTTP/JSON, inclusive corpo de rejeição. HTTP/JSON tardio continua unknown, sem confirmação de criação, motivo de rejeição tardio ou reenvio automático.
-
-A tela fornece guarda de geração/foco/prazo, revalida AbortSignal ao receber resultado e mantém a barreira contra outro POST depois da tentativa de envio. O marcador sent é ativado apenas quando o callback de transporte é chamado; blur durante validação local inválida (zero POST) não marca cadastro incerto. Após ACK válido ou rejeição válida recebidos em tempo, pending/unknown são liberados antes de navegação/cleanup. Resultado incerto depois de tentativa preserva orientação para conferir via login e impede novo cadastro automático/manual nessa instância. Blur continua limpar senha local; mudança não persiste senha/sessão nem ativa conta real.
-
-Quatro regressões novas exercitam helper real (canceled antesPOST, HTTP tardio sem ler corpo, JSON tardio profissional/empresa, rejeição tardia). Cinco exercitam o código pré-JSX real da tela extraído do arquivo com hooks/roteador/timer/fetch simulados: deadline/JSON/blur pós-envio bloqueiam navegação e segundo POST; entrada inválida sem POST permite corrigir senha/refocus e cadastrar; ACK válido não se torna incerto no cleanup da navegação. É execução dos handlers reais, não React Native/renderização/aparelho físico. 255 testes mobile completos passaram UTC e America/Sao_Paulo (246da fatia anterior+9novos), além dos16 testes dedicados signup/helper+screen. JSX e StyleSheet iguais à base, sem mudança do desenho; React19.1.4/RN0.81.6/lockfile/API/tenant/RLS preservados. CI completo e APK próprio do novo SHA ainda obrigatórios.
