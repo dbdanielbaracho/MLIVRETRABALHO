@@ -1,4 +1,23 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.88
+
+**Status:** NORMATIVO — DELTA SOBRE v1.87
+**Data:** 2026-10-10
+
+## Persistência da tentativa móvel de suporte
+
+O contrato de envio exige preservar a mesma chave, identidade, tenant e mensagem quando uma criação fica sem confirmação. support-intent.ts implementa uma barreira local persistida: um único registro por identidade autenticada, com payload normalizado, requestKey e fase pending ou confirmed. O adapter usa o Expo SecureStore já instalado, sem token no registro nem dependência nova.
+
+stage lê o slot antes de escrever e verifica a leitura depois da escrita. Qualquer registro anterior, mesmo de outro trabalho/tenant da mesma identidade, bloqueia sua substituição. Falha de leitura, JSON/schema inválido, escrita ou readback divergente retorna failed, nunca um slot vazio ou persistência confirmada. A fila compartilhada serializa leituras, escritas, confirmações e exclusões concorrentes; uma escrita que salvou mas perdeu seu ACK é recuperada na próxima leitura, sem trocar a chave.
+
+A identidade é normalizada como UUID e separa os slots. Troca de usuário não expõe nem sobrescreve o registro anterior. Logout não apaga uma tentativa de resultado incerto; relogin da mesma identidade recupera a mesma chave/conteúdo. O módulo de storage não autentica: o futuro fluxo precisa verificar GET /me e sessão/foco antes de preparar, ler/aplicar e enviar. Não inferir identidade a partir de campos do formulário ou do token armazenado.
+
+Payload segue enums reais do backend e limite de 4000 codepoints Unicode, sem truncamento. Campos extras e Authorization não são persistidos. confirm exige UUID de chamado, categoria/priority iguais ao payload, status não vazio e data válida; preserva a chave/conteúdo e verifica a gravação confirmed. ACK malformado, chave/identidade errada ou falha de storage mantém a barreira. confirmed também não libera sozinho um novo intent: releaseConfirmed exige chave exata, fase confirmada e verifica exclusão. Não há operação para descartar pending ou substituir uma tentativa incerta.
+
+Dados locais ficam no SecureStore da identidade até confirmação e liberação explícita. Não há sincronização externa, token em draft, novo banco ou alteração de retenção do chamado no servidor. Limites/falhas do storage nativo, inclusive payload grande, precisam de validação no aparelho; a falha deve impedir o futuro POST. Não afirmar atomicidade contra crash do SO nem aprovação de erasure/DSAR local por estes testes.
+
+18 testes novos exercitam schema/enums/Unicode, persistência antes de saved, prevenção de replacement, restart/relogin, troca de identidade, corrupção, falhas reais, escrita com ACK perdido, readback divergente, corrida de stage, ACK factual, confirmação que falha, proibição de descartar pending e liberação confirmada que verifica exclusão. PASS local 18/18 em UTC e America/Sao_Paulo com o módulo real, sem storage/HTTP externo. O adapter SecureStore em aparelho não foi executado. Total mobile esperado 316 (298+18); API continua 105, a confirmar no CI próprio.
+
+A etapa fornece armazenamento e contrato, sem habilitar interface ou POST de criação. Nenhum chamado real foi enviado. Como há novos arquivos mobile, CI e APK standalone próprios são obrigatórios no SHA exato. React 19.1.4, RN 0.81.6, lockfile, tenant/RLS, navegação e desenho original permanecem preservados. Nenhum PSP, dinheiro real, cobrança ou deploy pago.
 
 ## Estado verificado
 
@@ -18,22 +37,6 @@ Pós-merge #396 no SHA56922...: CI38072758220 e APK38072758154 em execução. P�
 
 388–395 já integradas. Único retry pós-merge #388run38054154641, tentativa2/job114268524350, continua em execução após pedido17:17:11UTC; falha anterior foi infraestrutura Brokenpipe32/exit224 antes de instalação. Não solicitar novo retry automático. Evidências dos demais pós-merges/históricos estão em1717Z/v1.85. Não repetir merges351–398.
 
-## Persistência da tentativa móvel de suporte
-
-O contrato de envio exige preservar a mesma chave, identidade, tenant e mensagem quando uma criação fica sem confirmação. support-intent.ts implementa uma barreira local persistida: um único registro por identidade autenticada, com payload normalizado, requestKey e fase pending ou confirmed. O adapter usa o Expo SecureStore já instalado, sem token no registro nem dependência nova.
-
-stage lê o slot antes de escrever e verifica a leitura depois da escrita. Qualquer registro anterior, mesmo de outro trabalho/tenant da mesma identidade, bloqueia sua substituição. Falha de leitura, JSON/schema inválido, escrita ou readback divergente retorna failed, nunca um slot vazio ou persistência confirmada. A fila compartilhada serializa leituras, escritas, confirmações e exclusões concorrentes; uma escrita que salvou mas perdeu seu ACK é recuperada na próxima leitura, sem trocar a chave.
-
-A identidade é normalizada como UUID e separa os slots. Troca de usuário não expõe nem sobrescreve o registro anterior. Logout não apaga uma tentativa de resultado incerto; relogin da mesma identidade recupera a mesma chave/conteúdo. O módulo de storage não autentica: o futuro fluxo precisa verificar GET /me e sessão/foco antes de preparar, ler/aplicar e enviar. Não inferir identidade a partir de campos do formulário ou do token armazenado.
-
-Payload segue enums reais do backend e limite de 4000 codepoints Unicode, sem truncamento. Campos extras e Authorization não são persistidos. confirm exige UUID de chamado, categoria/priority iguais ao payload, status não vazio e data válida; preserva a chave/conteúdo e verifica a gravação confirmed. ACK malformado, chave/identidade errada ou falha de storage mantém a barreira. confirmed também não libera sozinho um novo intent: releaseConfirmed exige chave exata, fase confirmada e verifica exclusão. Não há operação para descartar pending ou substituir uma tentativa incerta.
-
-Dados locais ficam no SecureStore da identidade até confirmação e liberação explícita. Não há sincronização externa, token em draft, novo banco ou alteração de retenção do chamado no servidor. Limites/falhas do storage nativo, inclusive payload grande, precisam de validação no aparelho; a falha deve impedir o futuro POST. Não afirmar atomicidade contra crash do SO nem aprovação de erasure/DSAR local por estes testes.
-
-18 testes novos exercitam schema/enums/Unicode, persistência antes de saved, prevenção de replacement, restart/relogin, troca de identidade, corrupção, falhas reais, escrita com ACK perdido, readback divergente, corrida de stage, ACK factual, confirmação que falha, proibição de descartar pending e liberação confirmada que verifica exclusão. PASS local 18/18 em UTC e America/Sao_Paulo com o módulo real, sem storage/HTTP externo. O adapter SecureStore em aparelho não foi executado. Total mobile esperado 316 (298+18); API continua 105, a confirmar no CI próprio.
-
-A etapa fornece armazenamento e contrato, sem habilitar interface ou POST de criação. Nenhum chamado real foi enviado. Como há novos arquivos mobile, CI e APK standalone próprios são obrigatórios no SHA exato. React 19.1.4, RN 0.81.6, lockfile, tenant/RLS, navegação e desenho original permanecem preservados. Nenhum PSP, dinheiro real, cobrança ou deploy pago.
-
 ## Próxima ação concreta
 
 Publicar fix/support-intent-durability sobre main60759a41bfb6a90aed80d85045b9ec837c50a3ad/treef222de6ba92646e70d3aa99b5bcd513097768d5f, base main. Conferir bytes remotos, patch, head/tree e runs; não antecipar número ou gates. Aprovar CI completo com 316 mobile / 105 API / 4 web / 3 CLI e APK standalone com instalação/abertura real sem Metro e artefato no SHA próprio.
@@ -43,3 +46,5 @@ Publicar fix/support-intent-durability sobre main60759a41bfb6a90aed80d85045b9ec8
 Próximo produto: fluxo humano de envio com identityId real de GET /me, tenant e trabalho escolhidos nos dados da API; ler eventual intent da mesma identidade, persistir e verificar a barreira antes de POST, manter mesma chave/conteúdo em erro/timeout/reinício e confirmar storage somente com ACK válido da sessão atual. Testar foco/sessão/deadline, dupla ação e resposta tardia antes de conectar a interface. Nenhuma troca silenciosa de tenant, compensação com outra chave ou descarte de pending.
 
 Histórico de suporte é leitura parcial; suporte geral/contexto Dia do Trabalho e Preferências ainda têm pendências. Visual Truth físico (desenho original, dados/estados reais e cobertura completa), aparelho/piloto/distribuição, pentest e providers/TRUST/PSP/FIN-RISK/WEB-ARCH continuam abertos e independentes. Rotina permanece ativa até conclusão integral comprovada ou ordem expressa; bloqueio parcial, run pendente ou fim de rodada não encerram o projeto.
+
+Evidência SUPPORT_INTENT_DURABILITY_v1.88.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.88.md; registro 1742Z. Baselines anteriores permanecem vigentes.
