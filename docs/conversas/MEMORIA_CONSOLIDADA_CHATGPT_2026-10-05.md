@@ -529,3 +529,8 @@ Rating e preferred apenas ack real + Authorization/tenant antes/depois; GET/conv
 ## Agenda v1.62 — 2026-10-10 07:23:59 UTC
 
 ACKid/status/stamp/ratingreal,Authda lista antes/depois/foco/15s,coordforegroundopcional e rotas contexto.7novostestes/183locaisUTCSP, branchfix/agenda-verified-lifecycle-and-session após372;gatesprópriospendentes. #372headbd6d67180392558f9a97f5821bd71ca788e3d3b3 CI38033993074success/APK38033993076running. #365pósCIAPKsuccesscomsmoke/artefatojournal0723Z. #368retry2running,semmergeantecipado/alternativascontinuam. PróximoauditarPerfilEmpresa/menus/APIs/canônico. RLS/ledger/policies/depsintactos,nenhumaopreal. VisualTruthOPEN.
+
+
+## Diagnóstico Android v1.63 — 2026-10-10 07:33:35 UTC
+
+Todos356–360/362/363/364–367 pósCIAPKsuccess comsmoke/artifacts/journals. #369/#370/#371gatesheadsuccess aguardam368retry2emsmoke. #373head5d5d028280de7e5beb920ce53af6efde15420ad7 CI38034313964success/APK38034313949running. DiagnósticofalhasAndroidagoracoletaantesrunnerdesligar/fallbackboundedmanifest/exitpreservado/primeiroLognão sobrescrito;8shellfixturetests+bash-n/YAMLpass. Branchfix/android-smoke-failure-diagnostics após373, novosgatesreaispendentes. Nãoappcódigo/mobiledeps/infra/policies alterados. Menusindisponíveisnão autorizamcontrato inventado; próximodefeitoHomeGETsmistos/Trabalhosinterestcontexto real. VisualTruthOPEN;semcusto/opreais.
