@@ -33,3 +33,21 @@ test('member changes use existing add/delete contracts and require a matching ac
  assert.equal(await changeTeamMember(async()=>response({teamId:'other',professionalId:'p'}),'t','p',false),false);
  assert.equal(await changeTeamMember(async()=>{throw Error('offline')},'t','p',true),false);
 });
+test('blank identifiers cannot create actionable team, member, job or allocation records',async()=>{
+ for(const id of ['', ' ']){
+  const b=await loadTeamBase(async path=>response(path==='/company/teams'?[{id,name:'Equipe',memberCount:0}]:path==='/company/jobs'?[{id,title:'Evento',status:'open'}]:[{professionalId:id,professionalName:'Pessoa'}]));
+  for(const key of ['teams','active','completed','jobs'])assert.equal(b[key].status,'error');
+  assert.equal((await loadMembers(async()=>response([{professionalId:id,displayName:'Pessoa'}]),'t')).status,'error');
+  assert.equal((await loadAllocation(async()=>response([{professionalId:id,score:80,reasons:[]}]),'t','j')).status,'error');
+ }
+});
+test('matching tenant without an authenticated identity is not a valid team context',()=>{
+ assert.equal(sameTeamContext({'x-tenant-id':'t'},{'x-tenant-id':'t'}),false);
+});
+test('blank team name prevents transport and blank acknowledgement cannot confirm creation',async()=>{
+ let calls=0;for(const name of ['', ' '])assert.deepEqual(await createTeam(async()=>{calls++;return response({})},name),{status:'rejected'});assert.equal(calls,0);
+ for(const id of ['', ' '])assert.deepEqual(await createTeam(async()=>response({id,name:'Equipe'}),'Equipe'),{status:'unknown'});
+});
+test('missing member identifiers prevent both add and delete transport',async()=>{
+ let calls=0;for(const remove of [true,false])for(const ids of [['','p'],['t',' ']])assert.equal(await changeTeamMember(async()=>{calls++;return response({removed:true})},...ids,remove),false);assert.equal(calls,0);
+});

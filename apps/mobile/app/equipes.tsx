@@ -8,13 +8,12 @@ import {loadingTeamBase,loadTeamBase,knownProfessionals,loadMembers,loadAllocati
 import type {Result,TeamMember,Allocation,TeamBase,Request} from '../lib/teams';
 export default function Equipes(){
  const [base,setBase]=useState(loadingTeamBase),[selectedTeamId,setSelectedTeamId]=useState(''),[membersState,setMembersState]=useState<Result<TeamMember[]>>({status:'loading'}),[selectedJobId,setSelectedJobId]=useState(''),[allocationState,setAllocationState]=useState<Result<Allocation[]>>({status:'loading'}),[teamName,setTeamName]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[createUncertain,setCreateUncertain]=useState(false);
- const generation=useRef(0),baseSequence=useRef(0),teamSelection=useRef({id:'',version:0}),allocationSequence=useRef(0),snapshot=useRef<{headers:Record<string,string>;base:TeamBase}|null>(null),pending=useRef(false),controllers=useRef(new Set<AbortController>()),memberController=useRef<AbortController|null>(null),allocationController=useRef<AbortController|null>(null);
+ const draftContext=useRef<Record<string,string>|null>(null),generation=useRef(0),baseSequence=useRef(0),teamSelection=useRef({id:'',version:0}),allocationSequence=useRef(0),snapshot=useRef<{headers:Record<string,string>;base:TeamBase}|null>(null),pending=useRef(false),controllers=useRef(new Set<AbortController>()),memberController=useRef<AbortController|null>(null),allocationController=useRef<AbortController|null>(null);
  const teams=base.teams.status==='ready'?base.teams.data:[],members=membersState.status==='ready'?membersState.data:[],jobs=base.jobs.status==='ready'?base.jobs.data:[],allocation=allocationState.status==='ready'?allocationState.data:[];
  const memberIds=new Set(members.map(m=>m.professionalId)),availableToAdd=knownProfessionals(base).filter(p=>!memberIds.has(p.professionalId)),selectedTeam=teams.find(t=>t.id===selectedTeamId);
  function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
- async function requestFor(headers:Record<string,string>,signal:AbortSignal):Promise<Request>{
-  const current=await authenticatedTenantHeaders();if(!sameTeamContext(current,headers))throw Error('company_context_changed');
-  return async(path,options)=>fetch(apiUrl(path),{...options,headers:{...headers,...(options?.method==='POST'?{'content-type':'application/json'}:{})},signal});
+ async function requestFor(headers:Record<string,string>,signal:AbortSignal,onTransport?:()=>void):Promise<Request>{
+  return async(path,options)=>{const current=await authenticatedTenantHeaders();if(signal.aborted||!sameTeamContext(current,headers))throw Error('company_context_changed');onTransport?.();return fetch(apiUrl(path),{...options,headers:{...headers,...(options?.method==='POST'?{'content-type':'application/json'}:{})},signal});};
  }
  function resetSelection(){memberController.current?.abort();allocationController.current?.abort();teamSelection.current={id:'',version:teamSelection.current.version+1};++allocationSequence.current;setSelectedTeamId('');setSelectedJobId('');setMembersState({status:'loading'});setAllocationState({status:'loading'});}
  async function loadBase(selectId?:string,manual=false,expectedHeaders?:Record<string,string>){
@@ -22,7 +21,10 @@ export default function Equipes(){
   const version=generation.current,seq=++baseSequence.current,op=operation();snapshot.current=null;resetSelection();setBase(loadingTeamBase());
   try{
    const headers=await authenticatedTenantHeaders();
-   const next=await loadTeamBase(async(path,options)=>{if(!headers['x-tenant-id']||(expectedHeaders&&!sameTeamContext(headers,expectedHeaders)))throw Error('company_context_changed');return fetch(apiUrl(path),{...options,headers,signal:op.controller.signal});});
+   if(expectedHeaders&&!sameTeamContext(headers,expectedHeaders))throw Error('company_context_changed');
+   const request=await requestFor(headers,op.controller.signal),next=await loadTeamBase(request);
+   const current=await authenticatedTenantHeaders();if(!sameTeamContext(current,headers)||op.controller.signal.aborted)throw Error('company_context_changed');
+   if(version===generation.current&&seq===baseSequence.current){if(draftContext.current&&!sameTeamContext(headers,draftContext.current)){setTeamName('');setCreateUncertain(false);}draftContext.current={...headers};}
    if(version===generation.current&&seq===baseSequence.current){setBase(next);snapshot.current=next.teams.status==='ready'?{headers,base:next}:null;if(manual&&next.teams.status==='ready'){setCreateUncertain(false);setMessage('');}if(selectId&&snapshot.current?.base.teams.status==='ready'&&snapshot.current.base.teams.data.some(t=>t.id===selectId))await selectTeam(selectId,true);}
   }catch{if(version===generation.current&&seq===baseSequence.current)setBase({teams:{status:'error'},active:{status:'error'},completed:{status:'error'},jobs:{status:'error'}});}
   finally{op.finish();}
@@ -31,31 +33,31 @@ export default function Equipes(){
  async function selectTeam(id:string,refresh=false){
   const data=snapshot.current;if((pending.current&&!refresh)||!data||data.base.teams.status!=='ready'||!data.base.teams.data.some(t=>t.id===id))return;
   memberController.current?.abort();allocationController.current?.abort();const version=generation.current,seq=teamSelection.current.version+1,op=operation();memberController.current=op.controller;teamSelection.current={id,version:seq};++allocationSequence.current;setSelectedTeamId(id);setSelectedJobId('');setMembersState({status:'loading'});setAllocationState({status:'loading'});if(!refresh)setMessage('');
-  try{const request=await requestFor(data.headers,op.controller.signal),result=await loadMembers(request,id);if(version===generation.current&&seq===teamSelection.current.version)setMembersState(result);}
+  try{const request=await requestFor(data.headers,op.controller.signal),result=await loadMembers(request,id);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTeamContext(current,data.headers))throw Error('company_context_changed');if(version===generation.current&&seq===teamSelection.current.version)setMembersState(result);}
   catch{if(version===generation.current&&seq===teamSelection.current.version){setMembersState({status:'error'});setMessage('Não foi possível carregar membros. Se a empresa ou sessão mudou, atualize equipes.');}}
   finally{op.finish();}
  }
  async function selectAllocation(id:string){
   const data=snapshot.current,teamId=teamSelection.current.id;if(pending.current||!data||!teamId||selectedTeamId!==teamId||membersState.status!=='ready'||data.base.jobs.status!=='ready'||!data.base.jobs.data.some(j=>j.id===id))return;
   allocationController.current?.abort();const version=generation.current,teamVersion=teamSelection.current.version,seq=++allocationSequence.current,op=operation();allocationController.current=op.controller;setSelectedJobId(id);setAllocationState({status:'loading'});
-  try{const request=await requestFor(data.headers,op.controller.signal),result=await loadAllocation(request,teamId,id);if(version===generation.current&&teamVersion===teamSelection.current.version&&seq===allocationSequence.current)setAllocationState(result);}
+  try{const request=await requestFor(data.headers,op.controller.signal),result=await loadAllocation(request,teamId,id);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTeamContext(current,data.headers))throw Error('company_context_changed');if(version===generation.current&&teamVersion===teamSelection.current.version&&seq===allocationSequence.current)setAllocationState(result);}
   catch{if(version===generation.current&&teamVersion===teamSelection.current.version&&seq===allocationSequence.current){setAllocationState({status:'error'});setMessage('Não foi possível carregar alocação. Se a empresa ou sessão mudou, atualize equipes.');}}
   finally{op.finish();}
  }
  async function create(){
   const data=snapshot.current,name=teamName.trim();if(pending.current||createUncertain||!data)return;if(!name){setMessage('Informe o nome da equipe.');return;}
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const request=await requestFor(data.headers,op.controller.signal),result=await createTeam(request,name);if(version!==generation.current)return;
-   if(result.status==='created'){setTeamName('');setMessage('Equipe criada.');await loadBase(result.team.id,false,data.headers);}
-   else if(result.status==='rejected')setMessage('Não foi possível criar a equipe.');
+  try{const request=await requestFor(data.headers,op.controller.signal,()=>setCreateUncertain(true)),result=await createTeam(request,name);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTeamContext(current,data.headers))throw Error('company_context_changed');if(version!==generation.current)return;
+   if(result.status==='created'){setCreateUncertain(false);setTeamName('');setMessage('Equipe criada.');await loadBase(result.team.id,false,data.headers);}
+   else if(result.status==='rejected'){setCreateUncertain(false);setMessage('Não foi possível criar a equipe.');}
    else{setCreateUncertain(true);setMessage('O resultado da criação não foi confirmado. Atualize equipes e confira a lista antes de criar novamente.');}
-  }catch{if(version===generation.current)setMessage('A empresa ou sessão mudou, ou houve falha de conexão. Atualize equipes.');}
+  }catch{if(version===generation.current)setMessage('A empresa ou sessão mudou, ou houve falha de conexão. Atualize equipes e confira a lista antes de criar novamente.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
  }
  async function changeMember(professionalId:string,remove:boolean){
   const data=snapshot.current,id=teamSelection.current.id;if(pending.current||!data||!id||selectedTeamId!==id||membersState.status!=='ready'||(remove?!members.some(m=>m.professionalId===professionalId):!availableToAdd.some(p=>p.professionalId===professionalId)))return;
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const request=await requestFor(data.headers,op.controller.signal),ok=await changeTeamMember(request,id,professionalId,remove);if(version!==generation.current)return;setMessage(ok?(remove?'Profissional removido da equipe.':'Profissional adicionado à equipe.'):'Não foi possível confirmar o resultado. Atualize equipes para conferir os membros.');await loadBase(id,false,data.headers);}
+  try{const request=await requestFor(data.headers,op.controller.signal),ok=await changeTeamMember(request,id,professionalId,remove);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTeamContext(current,data.headers))throw Error('company_context_changed');if(version!==generation.current)return;setMessage(ok?(remove?'Profissional removido da equipe.':'Profissional adicionado à equipe.'):'Não foi possível confirmar o resultado. Atualize equipes para conferir os membros.');await loadBase(id,false,data.headers);}
   catch{if(version===generation.current)setMessage('Falha de conexão ou contexto alterado. Atualize equipes para conferir os membros.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
  }

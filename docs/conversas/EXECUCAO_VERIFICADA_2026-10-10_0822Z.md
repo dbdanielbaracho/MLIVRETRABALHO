@@ -1,4 +1,6 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# Equipes e Talentos — contexto de origem v1.69
+
+## Estado remoto verificado
 
 Snapshot verificado em 2026-10-10 08:22 UTC. Main 765cb2e834065f6eeaf0262ed9eedca9cbb2d52a (#375, Documento da Verdade v1.64), árvore c0ce45ba92c04ae69de8271f110d1a6c6c9cc301, pais 5938a40ee27be04f4ccb63242421eb293ba2ddb9 + f31422e45165dd8eeaa276d15142bab83a343176. README, Documento vigente, memória e checkpoint da main relidos. #356–360 e #362–375 já integrados; não repetir.
 
@@ -18,7 +20,11 @@ Pós-merge #373: SHA 4ff59618d6813890c438be234c86cca3ced496cc, CI 38035748570 e 
 |378|6492ea1e523c8122bd9966d48b566a2abbda5d30|fix/earnings-conversation-origin-context|38036810382 success tentativa2|38036810418 em execução|
 |379|31ed3bfed81b0bb43b49a7b4a7810d2026a9c44d|fix/company-publication-origin-context|38037026997 success|38037027052 em execução|
 
-## Item atual
+## Defeito e contratos
+
+Leitura integral das telas, helpers, testes e TeamsController, TeamAllocationController e TalentPoolsController: validações antes das mutações não eram repetidas após respostas. A nova fatia fecha essa lacuna sem afirmar reprodução física. O controller de criação não oferece chave de idempotência; perda de resposta exige conferência manual. Adição/remoção de membros e DELETE de talento mantêm seus ACKs reais, sem inventar campos.
+
+## Correção
 
 Equipes verifica Authorization e empresa antes de cada transporte e novamente após as leituras da base, membros, alocação e os ACKs de criação/alteração de membros. Talentos verifica novamente o par de origem após GET/DELETE. Abort, timeout de 15s, foco e gerações impedem aplicação tardia. Dados inválidos ou descartados são erro; não viram listas ou contagens vazias fictícias.
 
@@ -26,9 +32,11 @@ A criação de equipe é não idempotente: marca resultado incerto ao iniciar o 
 
 Backend, membership, tenant/RLS e papéis continuam autoridade; não se inventa tenant echo em ACKs. Ranking, disponibilidade, proximidade, pools, rotas, navegação e estilos canônicos preservados. React 19.1.4, RN 0.81.6 e lockfile intactos. Nenhuma operação real de criação, membro ou talento executada.
 
+## Validação
+
 214/214 testes mobile locais passaram em UTC e America/Sao_Paulo, sem falha/cancelamento/skip: cinco regressões novas exercitam schemas/IDs, contexto sem Auth, criação inválida e ausência de transporte POST/DELETE. As fixtures não comprovam taps/foco em aparelho. Diff de quatro fontes e dois testes revisado; typecheck/build/HTTP/CI e APK próprios ainda obrigatórios no SHA publicado. Visual Truth físico integral permanece OPEN.
 
-## Retomada
+## Próximas ações
 
 Filho fix/teams-talents-final-company-context baseado no head #379, com código, v1.69, evidência, requisitos, memória e checkpoint no mesmo commit. Este snapshot precede seu próprio commit: consultar PR/head/runs após publicação, sem inventar autorreferência.
 
