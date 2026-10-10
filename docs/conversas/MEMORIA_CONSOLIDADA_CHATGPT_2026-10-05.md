@@ -386,3 +386,11 @@ Conta abria Planejamento sob label Notificações. NotificationsController verif
 ## Preparação #352 — 2026-10-10
 
 Head original 953bdcf9426d66b0e25bc054dbfa56b83dbf2f8e; predecessor reconciliado #351 7ac5a6dace04ae120b6f8114ea87a499b0e222eb. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
+## 2026-10-09 — Leituras Planejamento/Pagamentos, v1.43
+
+Contratos GET/roles/RLS reconsultados. Foco/retry/schema/15s/loading/erro/vazio e limpeza/geração no blur. NULL monetário não é zero; no_earning não é ausência de obrigação, label Sem lançamento de ganho. Nenhuma operação financeira/provider/custo. 57 testes UTC/São Paulo, styles/backend/policies mantidos. #342 pós-merge CI 38014015303/APK 38014015274 sucesso no SHA aee58e7776eee0dc211713edcbe29075f841ecb1. #343 smoke novo head em acompanhamento; #351 CI aprovado. Branch após #352, gates próprios obrigatórios. Visual Truth/FIN-RISK OPEN; Membros/Relatos pendências concretas.
+
+## Preparação #353 — 2026-10-10
+
+Head original 5560abdf3a11bbdf63800ed2767d6db7e656ff17; predecessor reconciliado #352 667f7ef92d4596a773379add4c7a022242160b63. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
