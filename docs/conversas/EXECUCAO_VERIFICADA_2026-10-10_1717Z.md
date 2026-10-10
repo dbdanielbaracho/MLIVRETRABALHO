@@ -1,8 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
-
-Snapshot2026-10-10 17:17UTC: main9ed1859... v1.84 revalidada, README/Documento/memória/checkpoint lidos. PRs388–395 integradas e CI pós-merge de todas SUCCESS; APK pós389–391/393/394 SUCCESS comsmoke/artefato, pós388falhainfra/únicoretry solicitado. Prova detalhada docs/evidencias/INTEGRACAO_388_395_2026-10-10_1717Z.md. Não repetir integrações.
+# Execução verificada —2026-10-10 17:17UTC
 
 
 Main9ed1859ee28b1ba50e84bda0d4357d22760a59f3/tree0b145254562a386f00b0aa7cefb75b4fb1a6012a/Documento v1.84. README, Documento vigente, memória e checkpoint desseSHA relidos. PRs388–395 já integradas; não repetir. Pais reais e árvores novamente conferidos na API; processos anteriores revisaram diff íntegro/bytes/gates/head exato antes de integrar. Nenhum deploy ou aceitação física inferido.
@@ -53,7 +49,7 @@ Próprios CI/APKs pré-merge388–395 aprovados no head exato antes de integrar,
 
 Pós351–355 já reconsultados e registrados nojournal1257Z/v1.84 com qualificação do gate legado anterior375; não repetirmerge/rerun, não tratar como novo smoke/endurecimento atual/aparelho físico. Ausência dePR aberta não comprova integralidade; suporte/Preferências/gatesexternos seguem pendentes.
 
-## Item atual — consulta de suporte
+## Implementação e testes
 
 O suporte exigido na v1.5§22.1 ainda era placeholder em Perfil > Ajuda e suporte. Esta fatia implementa consulta de solicitações existentes vinculadas a um trabalho real, no painel existente, sem nova rota ou alterar navegação canônica.
 
@@ -69,7 +65,7 @@ Limite de escopo: apenas consulta vinculada; envio de novo chamado ainda indispo
 
 StyleSheet do Perfil byteidêntico; painel/fourareas/bottomnav foraScrollView mantidos. PNG original relido antes e depois nesta sessão; não detalha esse painel nem prova24/7. Sem render/captura física RN. React19.1.4/RN0.81.6/lockfile/backend/schema/tenant/RLS inalterados. VisualTruth original/dados/estados/cobertura física OPEN.
 
-## Próxima ação concreta
+## Próxima ação
 
 Publicar fix/professional-support-history a partir da main9ed1859ee28b1ba50e84bda0d4357d22760a59f3/tree0b145254562a386f00b0aa7cefb75b4fb1a6012a. Consultar própriohead/tree/PR/runs após publicar, rever15arquivos remotos/diff íntegro. CI/typecheck/build/export/298mobile/88API e APK/smoke/artefato do próprioSHA exigidos; merge só comfreshmain/base/mergebase/expectedhead, depois conferir pais/árvore/main/pósCI/APK. Nada de número/head/gate futuro inventado.
 
