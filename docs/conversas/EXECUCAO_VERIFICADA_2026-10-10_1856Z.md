@@ -1,3 +1,5 @@
+# Execução verificada — 2026-10-10 18:56 UTC
+
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
 ## Estado verificado
@@ -47,3 +49,4 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/declared-capabilities-profile sobre head40841a8ce990560cbfed040311511b11c873d656196/treeb8292b2022d49c5a8a62c35b28acbe34e9f6b35a, basefix/planner-screen-deadline. Conferir bytes/patch e próprios CI396mobile/140API +APK no SHA exato; não antecipar número/SHA/resultado. Validar que o Perfil só renderiza declarações na área Experiência profissional e estilos/menu/navegação foram preservados.
 Acompanhar APK401 tentativa2/job114286755368 e APK40838077510463. Integrar401–408 e esta fatia em ordem com retargetmain/reconsulta eventual, merge-base tree igual main, diff fresco e próprios gates aprovados; confirmar pais/tree/main +CI/APK pós no SHA real.400pós/ancestrais aprovados e retry401 único já solicitado; não repetir.
 Auditar campos/handlers/APIs restantes e confrontar o canônico antes de definir nova funcionalidade. Preferências não tem campos/política aprovados e ajuda nova sem membership exige autoridade própria; não redefinir esses itens como skills/availability/profile ou criar tenant global. VisualTruth físico, SecureStore/piloto/distribuição/pentest/providers/TRUST/PSP/FIN-RISK/WEB-ARCH seguem separados. Não pausar projeto por dependência parcial; registrar alternativas e continuar tarefa concreta segura.
+

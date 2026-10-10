@@ -771,3 +771,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [PLANNER_SCREEN_DEADLINE_v1.97.md](PLANNER_SCREEN_DEADLINE_v1.97.md):5falhas/1pass anteriores e PASS15 após correção local explícita. CI/APK próprios pendentes. #407CI377mobile/140API/HTTP válido e #400pósAPK com instalação/sem Metro/digest comprovados.
 - [EXECUCAO_VERIFICADA_2026-10-10_1851Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1851Z.md): #401 cancelada antes de boot/install; retry único no mesmo SHA solicitado e em execução. Não repetir nem interpretar cancelamento como crash do app. Gate físico aberto.
+
+
+## 2026-10-10 — v1.98
+
+- [DECLARED_CAPABILITIES_PROFILE_v1.98.md](DECLARED_CAPABILITIES_PROFILE_v1.98.md): declarações reais em Experiência profissional, GET auth-only, sem alterações de catálogo/certificação;13regressões novas/PASS28 local explícito. CI396mobile/140API+APK próprios pendentes; gate físico aberto.
+- [EXECUCAO_VERIFICADA_2026-10-10_1856Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1856Z.md): #408CI38077510496/job114287470090 aprovado383mobile/140API/4web/3CLI/HTTP; APK408 e tentativa2APK401 em execução. #400 pós-gates comprovados.
