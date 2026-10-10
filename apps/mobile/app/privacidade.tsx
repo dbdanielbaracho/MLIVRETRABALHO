@@ -2,7 +2,7 @@ import { router,useFocusEffect } from 'expo-router';
 import { useCallback,useRef,useState } from 'react';
 import { Alert,Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View } from 'react-native';
 import { apiUrl } from '../lib/api';
-import { authHeaders,clearSession,clearTenant } from '../lib/session';
+import { authHeaders,clearSessionForAuthorization } from '../lib/session';
 
 import {loadPrivacyRequests} from '../lib/privacy-requests';
 import type {PrivacyRequestResult} from '../lib/privacy-requests';
@@ -71,8 +71,9 @@ export default function Privacidade(){
     Alert.alert('Desativar conta','A desativação encerra a sessão e pode ser bloqueada se houver trabalho ativo, valor pendente ou se você for o único proprietário de uma empresa.',[{text:'Cancelar',style:'cancel',onPress:dismiss},{text:'Desativar',style:'destructive',onPress:()=>{dismiss();if(generation===epoch.current)void deactivate(headers);}}],{onDismiss:dismiss});
   }
   async function deactivate(expected:Record<string,string>){
+    const generation=epoch.current;
     await operate(deactivatePrivacyAccount,async(result,headers)=>{
-      if(result.status==='deactivated'){setExportText('');await Promise.all([clearSession(),clearTenant()]);router.replace('/');}
+      if(result.status==='deactivated'){setExportText('');const cleared=await clearSessionForAuthorization(headers.Authorization);if(generation!==epoch.current)return;if(cleared==='cleared')router.replace('/');else if(cleared==='stale')changedContext();else setMessage('Conta desativada. Não foi possível limpar o acesso neste aparelho. Tente sair da conta.');}
       else if(result.status==='unknown')markUnknown();
       else{setMessage(result.message==='account_deactivation_active_assignment'?'Não é possível desativar com trabalho ativo.':result.message==='account_deactivation_unsettled_earnings'?'Não é possível desativar enquanto houver ganhos pendentes.':result.message==='account_deactivation_sole_tenant_owner'?'Antes de desativar, defina outro proprietário para a empresa.':'Não foi possível desativar a conta.');await load(false,headers);}
     },expected);

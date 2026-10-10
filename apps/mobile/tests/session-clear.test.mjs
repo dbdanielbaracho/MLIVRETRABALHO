@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {createSessionQueue,persistVerifiedSession,clearExpectedSession} from '../lib/session-transaction.ts';
+const fixture=()=>{let state={token:'old',tenantId:'company'};return {read:async()=>({...state}),write:async next=>{state={...next}}};};
+test('local signout clears and verifies both fields of the requested session',async()=>{const a=fixture();assert.equal(await clearExpectedSession(a,'old'),'cleared');assert.deepEqual(await a.read(),{token:null,tenantId:null});});
+test('old signout cannot clear a session that has changed',async()=>{const a=fixture();assert.equal(await clearExpectedSession(a,'other'),'stale');assert.deepEqual(await a.read(),{token:'old',tenantId:'company'});});
+test('failed or partial local deletion is not reported as cleared',async()=>{const a=fixture();a.write=async()=>{throw Error('storage')};assert.equal(await clearExpectedSession(a,'old'),'failed');const b=fixture(),write=b.write;b.write=async()=>write({token:null,tenantId:'company'});assert.equal(await clearExpectedSession(b,'old'),'failed');});
+test('an older queued logout cannot erase a later valid login',async()=>{const q=createSessionQueue(),a=fixture();assert.equal(await q.run(()=>persistVerifiedSession(a,{token:'new',tenantId:'new-company'},'old',()=>true)),'saved');assert.equal(await q.run(()=>clearExpectedSession(a,'old')),'stale');assert.deepEqual(await q.run(a.read),{token:'new',tenantId:'new-company'});});

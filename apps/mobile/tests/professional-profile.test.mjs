@@ -4,7 +4,7 @@ import {loadProfessionalProfile,loadWorkPassport} from '../lib/professional-prof
 const response=(data,status=200)=>async()=>({ok:status>=200&&status<300,status,json:async()=>data});
 test('profile absence is a successful state, distinct from failure or invalid data',async()=>{
  assert.deepEqual(await loadProfessionalProfile(response(null)),{status:'ready',data:null});
- const real={displayName:'Real name',homeCity:null,primaryRole:'Real role'};
+ const real={id:'profile',displayName:'Real name',homeCity:null,primaryRole:'Real role'};
  assert.deepEqual(await loadProfessionalProfile(response(real)),{status:'ready',data:real});
  for(const request of [response(null,401),response({error:'failure'},500),response([]),response({displayName:23}),response({displayName:'Name',homeCity:42}),async()=>{throw Error('offline');},async()=>({ok:true,json:async()=>{throw Error('bad JSON');}})])assert.deepEqual(await loadProfessionalProfile(request),{status:'error'});
 });
@@ -24,7 +24,7 @@ test('Passport retains actual counts/rating and rejects malformed or inconsisten
 });
 test('retry recovers server data after profile/Passport failures',async()=>{
  assert.equal((await loadProfessionalProfile(response({},500))).status,'error');
- assert.deepEqual(await loadProfessionalProfile(response({displayName:'Recovered'})),{status:'ready',data:{displayName:'Recovered'}});
+ assert.deepEqual(await loadProfessionalProfile(response({id:'profile',displayName:'Recovered'})),{status:'ready',data:{id:'profile',displayName:'Recovered'}});
  const p={displayName:'Recovered',completedWorkCount:2,averageRating:5,ratingCount:1};
  assert.equal((await loadWorkPassport(response(p,500))).status,'error');
  assert.deepEqual(await loadWorkPassport(response(p)),{status:'ready',data:p});
