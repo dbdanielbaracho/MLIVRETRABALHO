@@ -3,6 +3,7 @@ import { useCallback,useRef,useState } from 'react';
 import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-native';
 import * as Location from 'expo-location';
 import { ProfessionalNav } from '../components/ProfessionalNav';
+import {SupportRequest} from '../components/SupportRequest';
 import { authHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
 import {loadAgenda,assignmentState,submitAgendaAction,type Assignment} from '../lib/agenda';
@@ -18,11 +19,11 @@ async function optionalCoordinates():Promise<Coordinates|null>{
  finally{if(timeout)clearTimeout(timeout);}
 }
 export default function Agenda(){
- const[data,setData]=useState<Section<Assignment[]>>({status:'loading'}),[message,setMessage]=useState('');
- const requestId=useRef(0),epoch=useRef(0),displayedAuthorization=useRef<string|null>(null),controllers=useRef(new Set<AbortController>()),pendingActions=useRef(new Set<string>()),[pending,setPending]=useState<string[]>([]);
+ const[data,setData]=useState<Section<Assignment[]>>({status:'loading'}),[message,setMessage]=useState(''),[help,setHelp]=useState<Assignment|null>(null);
+ const requestId=useRef(0),helpRequest=useRef(0),epoch=useRef(0),displayedAuthorization=useRef<string|null>(null),controllers=useRef(new Set<AbortController>()),pendingActions=useRef(new Set<string>()),[pending,setPending]=useState<string[]>([]);
  function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  const load=useCallback(async()=>{
-  const id=++requestId.current,version=epoch.current,op=operation();displayedAuthorization.current=null;setData({status:'loading'});
+  const id=++requestId.current,version=epoch.current,op=operation();displayedAuthorization.current=null;++helpRequest.current;setHelp(null);setData({status:'loading'});
   try{
    const headers=await authHeaders();if(version!==epoch.current||id!==requestId.current||op.controller.signal.aborted)return;
    if(!headers.Authorization)throw Error('session_missing');
@@ -31,7 +32,7 @@ export default function Agenda(){
   }catch{if(id===requestId.current&&version===epoch.current)setData({status:'error'});}
   finally{op.finish();}
  },[]);
- useFocusEffect(useCallback(()=>{++epoch.current;setMessage('');void load();return()=>{++epoch.current;++requestId.current;for(const c of controllers.current)c.abort();controllers.current.clear();displayedAuthorization.current=null;pendingActions.current.clear();setPending([]);setData({status:'loading'});};},[load]));
+ useFocusEffect(useCallback(()=>{++epoch.current;setMessage('');void load();return()=>{++epoch.current;++requestId.current;++helpRequest.current;setHelp(null);for(const c of controllers.current)c.abort();controllers.current.clear();displayedAuthorization.current=null;pendingActions.current.clear();setPending([]);setData({status:'loading'});};},[load]));
  async function action(assignment:Assignment,score?:number){
   const key=assignment.tenantId+':'+assignment.id,state=assignmentState(assignment.status),authorization=displayedAuthorization.current,version=epoch.current;
   const endpoint=score!=null?(state.canRate?'company-rating':null):state.endpoint;
@@ -56,6 +57,22 @@ export default function Agenda(){
   }catch{if(version===epoch.current)setMessage('Não foi possível confirmar o resultado. Atualize os trabalhos antes de tentar novamente.');}
   finally{op.finish();if(version===epoch.current){pendingActions.current.delete(key);setPending([...pendingActions.current]);}}
  }
+ async function openSupport(assignment:Assignment){
+  const authorization=displayedAuthorization.current,version=epoch.current;
+  const actual=data.status==='ready'?data.data.find(item=>item.id===assignment.id&&item.tenantId===assignment.tenantId):undefined;
+  if(!authorization||!actual)return;
+  const id=++helpRequest.current;
+  if(help?.id===actual.id&&help.tenantId===actual.tenantId){setHelp(null);return;}
+  const op=operation();
+  try{
+   const current=await authHeaders();
+   if(version!==epoch.current||id!==helpRequest.current)return;
+   if(op.controller.signal.aborted){setHelp(null);setMessage('Não foi possível verificar sua sessão a tempo. Atualize os trabalhos.');return;}
+   if(current.Authorization!==authorization){displayedAuthorization.current=null;setHelp(null);setData({status:'error'});setMessage('A sessão mudou. Atualize seus trabalhos antes de solicitar ajuda.');return;}
+   setHelp(actual);
+  }catch{if(version===epoch.current&&id===helpRequest.current){setHelp(null);setMessage('Não foi possível verificar sua sessão. Atualize os trabalhos.');}}
+  finally{op.finish();}
+ }
  async function openAssignment(assignment:Assignment,pathname:'/conversa'|'/seguranca'){
   const authorization=displayedAuthorization.current,version=epoch.current;if(!authorization)return;
   const current=await authHeaders();if(version!==epoch.current)return;if(current.Authorization!==authorization){setMessage('A sessão mudou. Atualize seus trabalhos.');return;}
@@ -72,7 +89,8 @@ export default function Agenda(){
  <View style={s.steps}><Text style={s.step}>Confirmado</Text><Text style={s.step}>Check-in</Text><Text style={s.step}>Em andamento</Text><Text style={s.step}>Check-out</Text><Text style={s.step}>Concluído</Text></View>
  {state.action?<Pressable style={s.primaryButton} accessibilityRole="button" disabled={busy} accessibilityState={{disabled:busy,busy}} onPress={()=>void action(assignment)}><Text style={s.primaryAction}>{busy?'Atualizando…':state.action}</Text></Pressable>:null}
  {state.canRate?<View style={s.ratingBlock}><Text style={s.ratingTitle}>{assignment.companyRatingScore?'Sua avaliação da empresa: '+assignment.companyRatingScore+' ★':'Avalie a empresa'}</Text><View style={s.ratingRow}>{[1,2,3,4,5].map(score=><Pressable key={score} style={s.ratingButton} accessibilityRole="button" disabled={busy} accessibilityState={{disabled:busy,busy}} onPress={()=>void action(assignment,score)}><Text style={s.ratingText}>{score} ★</Text></Pressable>)}</View></View>:null}
- <View style={s.secondaryRow}><Pressable accessibilityRole="button" onPress={()=>void openAssignment(assignment,'/conversa')}><Text style={s.secondaryAction}>Conversar</Text></Pressable><Pressable accessibilityRole="button" onPress={()=>void openAssignment(assignment,'/seguranca')}><Text style={s.secondaryAction}>Segurança</Text></Pressable></View>
+ <View style={s.secondaryRow}><Pressable accessibilityRole="button" onPress={()=>void openAssignment(assignment,'/conversa')}><Text style={s.secondaryAction}>Conversar</Text></Pressable><Pressable accessibilityRole="button" onPress={()=>void openAssignment(assignment,'/seguranca')}><Text style={s.secondaryAction}>Segurança</Text></Pressable><Pressable accessibilityRole="button" accessibilityState={{expanded:help?.id===assignment.id&&help?.tenantId===assignment.tenantId}} onPress={()=>void openSupport(assignment)}><Text style={s.secondaryAction}>{help?.id===assignment.id&&help?.tenantId===assignment.tenantId?'Fechar ajuda':'Solicitar ajuda'}</Text></Pressable></View>
+ {help?.id===assignment.id&&help?.tenantId===assignment.tenantId&&displayedAuthorization.current?<SupportRequest key={assignment.tenantId+':'+assignment.id} assignment={help} workItems={items} authorization={displayedAuthorization.current} onRegistered={()=>setMessage('Solicitação de ajuda registrada. Consulte as respostas em Perfil > Ajuda e suporte.')} onContextChanged={()=>void load()}/>:null}
  </View>;})}
  {message?<View><Text style={s.message} accessibilityLiveRegion="polite">{message}</Text><Pressable accessibilityRole="button" onPress={()=>void load()}><Text style={s.secondaryAction}>Atualizar trabalhos</Text></Pressable></View>:null}
  </ScrollView><ProfessionalNav/></SafeAreaView>;
