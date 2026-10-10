@@ -1,6 +1,6 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
-Snapshot 2026-10-10 07:55:16 UTC. Main 4ff59618d6813890c438be234c86cca3ced496cc/#373/v1.62, tree1334e87367562a0691376373819ff9178ccf2b88; README/verdade/memória/checkpoint atuais relidos. Merges356–360/362–373 já confirmados; não repetir. Pós356–360/362/363/364–367CIAPKsuccess comsmoke/jobs/artefatos nos históricos. Pós369 agoraCIAPKsuccess; job114163883844/smoke2026-10-10T07:53:56.8301765Z/artifact11663896319 ZIPsha256a7214ec9762f49dadcb4cfae97eefc2ad1120e1546ddb9d9a5c9a3c9101d920f headbe8c02d2c813533ae0a9b8a29446410ecac48d82. Digest é arquivo ZIP, não hash de APK isolado.
+Snapshot 2026-10-10 08:00 UTC. Main 4ff59618d6813890c438be234c86cca3ced496cc/#373/v1.62, tree1334e87367562a0691376373819ff9178ccf2b88; README/verdade/memória/checkpoint atuais relidos. Merges356–360/362–373 já confirmados; não repetir. Pós356–360/362/363/364–367CIAPKsuccess comsmoke/jobs/artefatos nos históricos. Pós369 agoraCIAPKsuccess; job114163883844/smoke2026-10-10T07:53:56.8301765Z/artifact11663896319 ZIPsha256a7214ec9762f49dadcb4cfae97eefc2ad1120e1546ddb9d9a5c9a3c9101d920f headbe8c02d2c813533ae0a9b8a29446410ecac48d82. Digest é arquivo ZIP, não hash de APK isolado.
 
 |PR|Merge SHA|Pós-CI|Pós-APK|
 |---|---|---|---|
@@ -13,15 +13,19 @@ Snapshot 2026-10-10 07:55:16 UTC. Main 4ff59618d6813890c438be234c86cca3ced496cc/
 
 #370 CI tentativa1 FAILURE mantém-se registrado: Node interpretou tokenfixture iniciando por hífen como opção em FIRST_HASH. Correção#375 usa-- e 3regressões; #375CI38035883488success headf31422e45165dd8eeaa276d15142bab83a343176, job114166084838, RunTests e HTTP/ProductionTruth step14success. Isso comprova correção/jornada no novo SHA; não muda status do run antigo. Não houve rerun cego.
 
-|PR|Head|Base|CI|APK|
+
+#376CI38036176120 success no head931a9b3c333a0771c5a2237cdd84a249eba14589, job114166946494, typecheck/HTTP success;APK38036176113 em execução.
+
+|PR|Head exato|Base|CI|APK|
 |---|---|---|---|---|
 |374|d986972cdd6ab9b96e393d85ccfa5a4e510e8d03|main|38034863081 success|38034863018 in_progress|
 |375|f31422e45165dd8eeaa276d15142bab83a343176|fix/android-smoke-failure-diagnostics|38035883488 success|38035883538 in_progress|
+|376|931a9b3c333a0771c5a2237cdd84a249eba14589|fix/professional-originating-session-context|38036176120 success|38036176113 in_progress|
 
-Novo filho fix/notifications-verified-read-and-context após375 inclui3arquivos mobile+v1.65/evidências/ledger/memória/checkpoint,198locaisUTCSP. Próprios PR/head/runs consultar após publicação (snapshot antecede commit).
+Novo filho fix/earnings-conversation-origin-context após376: Ganhos/Conversa/helper/tests +v1.66/evidência/ledger/memória/checkpoint,204mobile locais UTC/SP; PR/head/runs próprios consultar após publicação (snapshot anterior ao commit).
 
-Próximo: acompanhar374/375APKs e pós368/370/371/372/373, sem tratar running como bloqueio/conclusão. Merge374 somente ownCIAPKsuccess SHAinalterado + freshmain/rawPR/mergebase tree/diff revisão; confirmar árvore/pais/main/pós-runs; retarget375 e estefilho main em ordem. mergeable=false apósretarget pode sereventual, reconsultar; conflito real reconciliarpreservandoancestrais+novosgates, semforce/gateemprestado. Falha conexão reconsultarantesrepetir. Falha370diagnosticada/corrigida375, nunca declarar antigoHTTPpass por novoSHA.
+Próximo: acompanhar APK374 e pós368/370/371/372/373. Integrar374 apenas gates próprios success SHAinalterado + freshmain/rawPR/merge-base tree/diff/revisão; confirmar árvore/pais/main e pós-runs. Retarget375,376,este filho main em ordem com a mesma disciplina. Eventual mergeablefalse reconsultar; conflito real reconciliar ancestral semsobrescrever+novosgates. Erro deconexão reconsultar antes repetir operação. Não ignorar CI370tentativa1failure nem usar novoSHAcomo aprovação do histórico; novoHTTP375 está comprovado.
 
-Próxima auditoria segura independente: Ganhos e Conversa contra endpoints/ACK/contexto/foco atuais e desenho canônico; só alterar se defeito concreto demonstrado, sem inventar feature ou mexer em policy financeira. Preferências/Ajuda/Experiência permanecem conforme auditoria registrada, sem contrato criado por suposição.
+Próxima auditoria segura: empresa.tsx e rotas de busca/equipe/company contra contratos atuais/estados/contexto e referência; mapear pendência concreta, sem alterarproduto ou criarcommit paraatividade. Reavaliar gates externos mesmo sem PR aberto, jamais concluir integralmente pela ausência deissues. APKemexecução é acompanhamento, não bloqueio permanente; alternativas seguras continuam.
 
-Visual Truth original/cobertura completa/aparelho OPEN; piloto/pentest#220,providers/PSP/FIN-RISK#215/#219/#228,WEB-ARCH#224 independentes. Sem operações reais de conta/DSAR/convite/interest/reading/pagamentos, nova cobrança ou paiddeploy. Bloqueio parcial/fim de rodada não encerra projeto. Manter rotina até conclusão integral provada ou ordem explícita; não exigir continuar. Históricos preservados; provas [journal0756Z](EXECUCAO_VERIFICADA_2026-10-10_0756Z.md).
+Visual TruthOPEN até desenho original/cobertura física completa/dados/estados; piloto/pentest#220, providers/PSP/FIN-RISK#215/#219/#228, WEB-ARCH#224 independentes. Sem mensagem real/conta/DSAR/dinheiro/PSP/cobrança/deploypago pelo agente. Manter rotina até conclusão integral comprovada ou ordem explícita; fim de rodada/bloqueio parcial não encerram projeto e não exigem continuar. Histórico preservado; [journal0801Z](EXECUCAO_VERIFICADA_2026-10-10_0801Z.md).

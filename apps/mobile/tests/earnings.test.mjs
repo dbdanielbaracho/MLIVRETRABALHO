@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {runForSession} from '../lib/session-context.ts';
 import {loadEarnings,earningsWeek,earningStatus} from '../lib/earnings.ts';
 import {weeklyEarnings} from '../lib/professional-home.ts';
 const now=new Date(2026,9,9,14),row=(id,status,day,amountCents=1000)=>({id,tenantId:'real-tenant',title:'Real job',status,amountCents,createdAt:new Date(2026,9,day,12).toISOString()});
@@ -20,4 +21,10 @@ test('ledger states do not pretend every entry is completed or paid',()=>{
 test('multiple company earnings retain tenant/item identity and real data',async()=>{
  const rows=[row('same-id','payable',5),{...row('same-id','paid',9),tenantId:'other-tenant'}];
  assert.deepEqual(await loadEarnings(async()=>({ok:true,json:async()=>rows})),{status:'ready',data:rows});
+});
+
+test('earnings from a previous identity are withheld instead of displaying its ledger as the current account',async()=>{
+ let authorization='Bearer a',calls=0;const result=await runForSession(async()=>({Authorization:authorization}),headers=>loadEarnings(async()=>{calls++;assert.deepEqual(headers,{Authorization:'Bearer a'});authorization='Bearer b';return {ok:true,json:async()=>[row('actual','paid',9)]}}),()=>true);
+ assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+ const empty=await runForSession(async()=>({Authorization:'Bearer a'}),()=>loadEarnings(async()=>({ok:true,json:async()=>[]})),()=>true);assert.equal(empty.status,'ready');assert.deepEqual(empty.data,{status:'ready',data:[]});
 });
