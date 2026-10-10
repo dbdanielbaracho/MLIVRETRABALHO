@@ -1,23 +1,6 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# Suporte: vínculo de trabalho no contexto tenant — v1.74
 
-## Atualização verificada 2026-10-10 11:45 UTC — correção da fixture e pós-provas
-
-PR #385 primeiro head b8674912ea8e553fe3e311b551a31a597ef633b3/tree f1ea148e29fa6aa87ee0ea60108f0109d89191d6/pai d2146ef4a84a025567d52af7cb2b506462e29836 conferidos, diff remoto16arquivos revisado. CI38049311501/job114205058747 FAILURE no passo HTTP, após type/build/export, testes unitários incluindo controller inteiro, migration runner e privacy pass. Não reclassificar run nem repetir como transiente: havia expectativa403 incorreta para absent-membership no novo script; AuthService.requireMembership atual lança UnauthorizedException401. Fixture corrigida para401, com etiquetas/HTTPesperado+real em todos os negativos (sem tokens/payloads em diagnóstico), sem mudar autorização/backend. Bash -n passou. Novo commit próprio é obrigatório e será revalidado integralmente; consultar seu SHA após publicação, pois este registro o antecede. HTTP suporte ainda pendente até novo run success.
-
-Subtree mobile exata #384/#385 é ba685042c10bf42051738241601f7a2041498a7b. Próprio #385 só emitiu CI (path filter APK N/A para API/CI/script/docs); isto não fecha APKs próprios #383/#384 nem Visual Truth.
-
-|PR|SHA pós-merge exato|Gates|Job APK|Smoke real sem Metro|Artefato/digest ZIP (não APK individual)|
-|---|---|---|---|---|---|
-|#378|0e8321c4aa0adeb389d11d776a8cd66567680798|CI38048052533/APK38048052704 SUCCESS|114201468568|2026-10-10T11:40:07.1735973Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false|ZIP11668990409 sha256:323b858d10f7dda7dc93143c2b5ec9283a1ebd02af0299521c8ee1587b5b3eb3|
-|#379|18869fe910a89a55f897e74d6e81015404ca3998|CI38048058105/APK38048058091 SUCCESS|114201484903|2026-10-10T11:38:58.5421271Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false|ZIP11668797338 sha256:0c37566a8d48dbecc2488428cb7e0d7577aae23296fca9e42f7f21b608cf9892|
-|#382|516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca|CI38048073330/APK38048073303 SUCCESS|114201529542|2026-10-10T11:39:26.5431555Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false|ZIP11668462821 sha256:145261eb8336c7981d9e6ff40c0a9609fa7a5b4f17f59ca52cdd85e52cf8d87a|
-
-Jobs completos, smoke/uploadsuccess, vínculo artifactSHA e não-expiração conferidos. Main516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca possui pós-CI/APKsuccess; não implica fechamento físico. Pós #381 tentativa1APK38048068335/job114201515065 falhou input Broken pipe224 em11:39:53Z antes do script app, apósbuild. DiagnósticoZIP11668319473 sha256:2da1618bdea13d360df0481e9df4bfbd289b3a1fb1b672e8bcf94392db6ea229 vinculado ao SHAac18ca03de7a5f09ff3a626a763fadb55e699074. Único retry controlado no mesmoSHA solicitado, a acompanhar tentativa2; não repetir sem nova causa. Pós376retry2 e377/380 ainda a acompanhar; próprios APK383/384 pendentes. Nenhum novo merge realizado.
-
-Auditoria integrity/cancellation/career-conversion/work-graph encontrou lookup/relação tenant explícitos no fluxo lido; não alterar política sem defeito provado. Lacuna independente concreta encontrada: API package test enumera fontes manualmente e omite12arquivos .test.ts existentes (Copilottools/modalidades/SLA/integration/appeals/schedule/score/adapter HMAC/taxonomy/team/terms/vertical). Typecheck não executa testes. Próxima tarefa segura após publicar esta fixture: configurar descoberta dos29arquivos de teste API atuais (27da main+2suporte), provar execução efetiva dos omitidos e manter todos os gates. Sem ativar provider/financeiro real.
-
-
-## Snapshot anterior e contratos preservados
+## Estado remoto
 
 Snapshot 2026-10-10 11:40 UTC. Main 516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca (#382/v1.71), árvore 27f168902ad888017df379526437690202204473. #376–#382 merges conferidos; não repetir. Provas próprias e pós #375 no journal1129Z; CIs pós #376–#382 success.
 
@@ -28,7 +11,7 @@ Pós #376 APK38047970768 tentativa1 FAILURE: job114201236096 aprovou build; Andr
 
 Pós APKs #37738048000637/#37838048052704/#37938048058091/#38038048063298/#38138048068335/#38238048073303 permanecem em execução na última consulta. Acompanhar conclusão e conferir job/smoke/artefato/head; pré-merge não prova pós-merge. Nenhum novo gate físico/externo fechado.
 
-## Item atual
+## Defeito e correção
 
 A auditoria do escopo v1.16–v1.18 encontrou defeito concreto no SupportController atual: create verificava membership no tenant do pedido, mas inseria assignmentId sem consultar o trabalho naquele contexto. Migração0060 tem FK simples para work_assignments(id); RLS de support_cases restringe seu próprio tenant_id, sem provar tenant do objeto referenciado. Portanto a validação de membership/RLS do caso isoladamente não impede um vínculo cruzado informado no corpo.
 
@@ -36,13 +19,15 @@ Correção: validar o contrato existente e consultar work_assignments por tenant
 
 Não há migração, correção/varredura de dados reais ou mudança de permissões/RLS; isto corrige a entrada HTTP, sem alegar que a FK simples virou uma constraint tenant-composta. Pentest independente e auditoria de vínculos persistidos permanecem distintos; nenhuma exposição/ausência de exploração real foi presumida. Nenhuma abertura/revisão de suporte ou operação real foi executada.
 
+## Prova e limites
+
 Quatro testes novos do helper de input passaram localmente, incluindo limite Unicode; quatro testes novos da criação passaram exercitando o corpo real de create extraído do controller, com auth/DB simulados (sem decorators/Nest runtime). Estes quatro fixtures também estão em support.controller.test.ts para instanciar o controller inteiro no CI com dependências reais; mock não prova PostgreSQL/RLS. API test script registra explicitamente ambos os arquivos TS. Bash -n do novo HTTP E2E passou.
 
 HTTP E2E adicionado ao CI usa API local+PostgreSQL efêmero com duas empresas e profissional, cria assignment por onboarding legítimo, rejeita associação B→assignmentA/IDs inexistentes e malformados/descrição longa sem alterar contagens, valida casos vinculados e sem vínculo, filtro reporter e revisão admin/cross-tenant. Sucesso HTTP/DB ainda PENDENTE até run próprio, não simulado como PASS local. Nenhum endpoint público de produção usado.
 
 238 testes mobile UTC/SP já comprovados em #384; nenhum arquivo mobile alterado nesta correção. React19.1.4/RN0.81.6, lockfile/deps e JSX preservados; package API muda apenas script de testes, workflow CI ganha uma chamada de regressão. Próprio CI exato obrigatório para type/build/testes/migrações/HTTP/DB. Workflow standalone possui path filter e esta fatia só altera API/CI/script/docs; APK próprio pode não ser disparado (aplicabilidade N/A documentada, sem inventar run). Os APKs próprios de #383/#384 e seus pós-gates permanecem obrigatórios antes de integrar antecessores; verificar subtree mobile idêntica ao pai e gates realmente emitidos após publicar/retarget. Não usar ausência de APK como sucesso ou para fechar Visual Truth.
 
-## Próxima ação concreta
+## Retomada
 
 Publicar fix/support-assignment-tenant-boundary sobre #384 d2146ef4a84a025567d52af7cb2b506462e29836, base fix/startup-session-pair. Consultar próprio PR/head/árvore/diff/run após publicação; registro antecede commit, sem SHA circular fictício. Integrar #383 e #384 em ordem somente com próprios CI/APK success, fresh main/base/merge-base e diff; conferir árvore/pais/main e pós. Retarget filho para main só depois, reconsultar eventual mergeable e reconciliar conflito real preservando antecessores e novos gates. Para esta correção de API, exigir próprio CI success incluindo HTTP suporte e verificar aplicabilidade do standalone pelos paths/subtree intactos. Pós-merge exige CI no SHA real e deploy/Production Truth quando aplicável; não inferir deploy só de merge.
 
