@@ -2,27 +2,29 @@
 
 **Atualização:** 2026-10-09  
 **Escopo:** dbdanielbaracho/MLIVRETRABALHO, main  
-**Normativo:** Documento da Verdade vigente no README; continuidade da v1.30 preservada.
+**Normativo:** README → Documento vigente; regra de continuidade v1.30 preservada.
 
-## Estado verificado
-- Main fonte/entregue após #341: `1f40e9e0bcab3e302b3319652a8f030495d7ccde`.
-- #341 head `1a58d538b89269a89662cbf48ce12f3102293149`; CI `38006447169` e APK `38006447148`: sucesso no SHA exato.
-- Pós-merge de #341: CI `38012421142`, APK `38012421105` em andamento nesta atualização inicial. Acompanhar; não tratar como bloqueio nem PASS.
-- Branch atual: `fix/profile-existing-shortcuts`, atalhos Perfil corrigidos; PR/gates ainda pendentes.
-- Nenhum outro PR aberto no início desta fatia. Uma rotina permanece ativa; duplicada desativada.
+## Fonte/entrega verificada
+- Main: `1f40e9e0bcab3e302b3319652a8f030495d7ccde`, merge #341.
+- #341 head `1a58d538b89269a89662cbf48ce12f3102293149`; CI `38006447169` e APK `38006447148`: sucesso.
+- Pós-merge #341: CI `38012421142` sucesso; APK `38012421105` em andamento.
+- #342 aberto, head `516643aa07d5c80acd965c63788d5358a3eee703`; CI `38012515909` e APK `38012515803` em andamento.
+- Branch `fix/professional-secondary-network-states` preparada sobre head #342; corrige Disponibilidade/Notificações. Integração depende de #342, diff contra main e gates próprios.
+- Uma rotina de continuidade ativa, duplicada desativada. Não finalizar projeto nem desativar por processos em andamento.
 
-## Fila concreta
+## Fila
 
 | Item | Estado | Próxima ação |
 |---|---|---|
-| Dados reais do Início / barra Empresa, #341 | INTEGRADO; PÓS-MERGE EM ANDAMENTO | Acompanhar runs acima até conclusão e registrar resultado |
-| Perfil → Disponibilidade/Notificações | IMPLEMENTADO NA BRANCH; GATES PENDENTES | Abrir PR, revisar diff, conferir CI/APK no head exato, merge e pós-merge |
-| Disponibilidade: salvamento offline e submissão simultânea | PENDENTE INTERNO COMPROVADO | Adicionar catch e proteção de submissão, mensagens honestas; preservar POST/validação de datas |
-| Notificações: loading/erro/vazio | PENDENTE INTERNO COMPROVADO | Distinguir falha de ausência de notificações, permitir retry e preservar x-tenant-id na leitura |
-| Visual Truth Gate | OPEN | Recomparar referência aprovada, requisito, implementação, dados/estados e evidência navegada; sem fechar por CI/APK |
+| #341 dados reais e navegação Empresa | INTEGRADO; APK PÓS-MERGE EM ANDAMENTO | Acompanhar APK, registrar resultado real |
+| #342 atalhos Perfil | PR EM VALIDAÇÃO | Conferir CI/APK head exato, integrar e verificar pós-merge |
+| Disponibilidade offline/submissão simultânea | IMPLEMENTADO NA BRANCH | Abrir PR encadeado, testar CI/APK e integrar depois #342 |
+| Notificações loading/erro/vazio/read tenant | IMPLEMENTADO NA BRANCH | Mesmo ciclo; seis novos testes locais, 14 totais aprovados em UTC/São Paulo |
+| Visual Truth Gate | OPEN | Recuperar referência original e confrontar telas/estados navegados; não substituir por inspeção estática |
+| Perfil loading/erro de Passport e nome | PENDENTE INTERNO COMPROVADO | HTTP não-ok é ignorado e ratingCount vira 0 antes da resposta; conferir estados por seção sem alterar edição |
 
-## Dependências externas
-#220 dispositivo/piloto/pentest; #228/#215/#219 provider, elegibilidade, contrato e sandbox; #224 WEB-ARCH/custo. Limitam seus itens, sem bloquear tarefas internas independentes.
+## Dependências
+#220 aparelho/piloto/pentest; #228/#215/#219 provider/comercial/contrato/sandbox; #224 WEB-ARCH/custo. São por item; não bloqueiam fila interna independente. Não habilitar dinheiro real, custos ou deploy pago.
 
 ## Retomada
-Reconsultar main, PRs, runs e código. Persistir SHA, item, PR/runs, resultado e próxima ação. CI/APK em andamento deve ser acompanhado. Não desativar por fim de rodada, ausência de PR ou bloqueio parcial. Não inventar tarefas ou contornar controles.
+Revalidar main, PRs, runs e código. Registrar SHA fonte/entregue, head/PR, CI/APK/pós-merge, resultado e próxima ação. Acompanhar runs existentes. Não inferir conclusão da ausência de PR, não inventar atividade e não contornar controles.
