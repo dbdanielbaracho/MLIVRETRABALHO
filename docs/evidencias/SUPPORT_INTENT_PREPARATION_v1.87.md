@@ -1,11 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
-
-Verificação de 2026-10-10, 17:33 UTC: main permanece em 9ed1859ee28b1ba50e84bda0d4357d22760a59f3 (v1.84).
-PR #396: head 26b3fb2365200415366e12da76710a0ad629725b, tree 87ac6719b538d92a2b1843e9954cee80de0aece4, base main. CI 38071421868 / job 114269432957 aprovado (298 mobile, 88 API, 4 web, 3 CLI). APK próprio 38071421849 / job 114269432897 ainda executa o teste de instalação e abertura sem Metro; não integrado.
-PR #397: head be12cb6905234a081472971a8e37e5cbdc98d9cf, tree d57bfbb2cfb11ace871e0c3ef4c9a41ac6088763, base fix/professional-support-history. CI 38071852247 / job 114270695562 aprovado em todos os passos: 298 mobile, 98 API, 4 web, 3 CLI, migrations e HTTP/PostgreSQL, inclusive oito primeiros envios concorrentes, conflito de payload e guards SQL. APK próprio não aplicável: paths e árvore mobile 163de7d27fe6b49fb11d87ed9a9da2bf8b9e47e7 idênticos à #396; isso não dispensa o APK do predecessor.
-388–395 já integradas; não repetir merges. Retry controlado único do APK pós-merge #388, run 38054154641, tentativa 2 / job 114268524350, ainda em teste de dispositivo. Retry pedido em 17:17:11 UTC após falha de infraestrutura anterior à instalação; não solicitar nova repetição automática. Evidências dos outros pós-merges e dos gates históricos estão no registro 1717Z/v1.85.
+# Evidência — preparação da tentativa de suporte v1.87
 
 ## Preparação segura da tentativa de suporte
 
@@ -24,6 +17,15 @@ Sete testes novos de controller cobrem UUIDs criptográficos distintos, identida
 Fixture HTTP existente, restrita a localhost e banco efêmero, cobre auth/membership/assignment, formato e unicidade das chaves, identidade comparada com GET /me e contagem de chamados zero após preparar várias chaves. A chave preparada é usada nos testes reais de criação/replay/conflito e oito primeiros envios concorrentes. Todas as regressões anteriores permanecem. bash -n aprovado; CI próprio ainda não iniciado antes da publicação.
 
 Somente controller, testes API, fixture HTTP e documentos mudam. APK próprio não aplicável pelo filtro efetivo do workflow; verificar árvore mobile idêntica à #397 após publicar. CI completo, diff, bytes remotos, branch/base e SHA exato são obrigatórios antes de integrar. React 19.1.4, RN 0.81.6, lockfile, desenho e navegação permanecem preservados. Nenhuma operação em produção, chamado real, PSP, dinheiro real, nova cobrança ou infraestrutura paga foi habilitada.
+
+## Referências e estado anterior
+
+Verificação de 2026-10-10, 17:33 UTC: main permanece em 9ed1859ee28b1ba50e84bda0d4357d22760a59f3 (v1.84).
+PR #396: head 26b3fb2365200415366e12da76710a0ad629725b, tree 87ac6719b538d92a2b1843e9954cee80de0aece4, base main. CI 38071421868 / job 114269432957 aprovado (298 mobile, 88 API, 4 web, 3 CLI). APK próprio 38071421849 / job 114269432897 ainda executa o teste de instalação e abertura sem Metro; não integrado.
+PR #397: head be12cb6905234a081472971a8e37e5cbdc98d9cf, tree d57bfbb2cfb11ace871e0c3ef4c9a41ac6088763, base fix/professional-support-history. CI 38071852247 / job 114270695562 aprovado em todos os passos: 298 mobile, 98 API, 4 web, 3 CLI, migrations e HTTP/PostgreSQL, inclusive oito primeiros envios concorrentes, conflito de payload e guards SQL. APK próprio não aplicável: paths e árvore mobile 163de7d27fe6b49fb11d87ed9a9da2bf8b9e47e7 idênticos à #396; isso não dispensa o APK do predecessor.
+388–395 já integradas; não repetir merges. Retry controlado único do APK pós-merge #388, run 38054154641, tentativa 2 / job 114268524350, ainda em teste de dispositivo. Retry pedido em 17:17:11 UTC após falha de infraestrutura anterior à instalação; não solicitar nova repetição automática. Evidências dos outros pós-merges e dos gates históricos estão no registro 1717Z/v1.85.
+
+A verificação local usa Node 24 com transformação de tipos e stubs explícitos; o gate remoto usa Nest e PostgreSQL reais no CI Node 22. Não transferir PASS local para um gate ainda não executado. O teste de preparação não cria chamados; a criação nos testes HTTP ocorre apenas em fixtures efêmeras do CI.
 
 ## Próxima ação concreta
 

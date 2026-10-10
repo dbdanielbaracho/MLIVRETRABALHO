@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada — 2026-10-10 17:33 UTC
 
 Verificação de 2026-10-10, 17:33 UTC: main permanece em 9ed1859ee28b1ba50e84bda0d4357d22760a59f3 (v1.84).
 PR #396: head 26b3fb2365200415366e12da76710a0ad629725b, tree 87ac6719b538d92a2b1843e9954cee80de0aece4, base main. CI 38071421868 / job 114269432957 aprovado (298 mobile, 88 API, 4 web, 3 CLI). APK próprio 38071421849 / job 114269432897 ainda executa o teste de instalação e abertura sem Metro; não integrado.
@@ -24,6 +22,8 @@ Sete testes novos de controller cobrem UUIDs criptográficos distintos, identida
 Fixture HTTP existente, restrita a localhost e banco efêmero, cobre auth/membership/assignment, formato e unicidade das chaves, identidade comparada com GET /me e contagem de chamados zero após preparar várias chaves. A chave preparada é usada nos testes reais de criação/replay/conflito e oito primeiros envios concorrentes. Todas as regressões anteriores permanecem. bash -n aprovado; CI próprio ainda não iniciado antes da publicação.
 
 Somente controller, testes API, fixture HTTP e documentos mudam. APK próprio não aplicável pelo filtro efetivo do workflow; verificar árvore mobile idêntica à #397 após publicar. CI completo, diff, bytes remotos, branch/base e SHA exato são obrigatórios antes de integrar. React 19.1.4, RN 0.81.6, lockfile, desenho e navegação permanecem preservados. Nenhuma operação em produção, chamado real, PSP, dinheiro real, nova cobrança ou infraestrutura paga foi habilitada.
+
+Antes das mudanças, foram consultados README, Documento vigente, memória/checkpoint e fontes atuais do GitHub. GET /me e session.ts foram inspecionados: id da identidade é retornado no nível superior, e SecureStore atual trata somente sessão/tenant. A extensão não reutiliza tenant padrão nem cria chaves com aleatoriedade fraca. Nenhum merge pendente foi repetido.
 
 ## Próxima ação concreta
 

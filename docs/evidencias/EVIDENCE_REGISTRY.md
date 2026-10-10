@@ -676,3 +676,13 @@ Snapshot2026-10-10 17:26UTC: main9ed1859ee28b1ba50e84bda0d4357d22760a59f3/v1.84 
 
 388–395jáintegradas, CI pós de todas e APKpós389–391/393/394SUCCESScomjobs/smoke/artefatos/digests no journal1717Z/v1.85. Pós388run38054154641tentativa1infraBrokenpipe32/exit224antesapp, diagnósticoZIP11671065789/digest78996502e4e43543f065ec334594068669c0dc7a7acc523b33aa780681f250bd. Único retry do job114219065904pedido17:17:11UTC, tentativa2emexecução; não repetir. Pré-merge388retryhistórico recuperado é distinto, não refazer. Não repetirmerges351–395.
 
+
+
+## 2026-10-10 — preparação da tentativa de suporte v1.87
+
+Verificação de 2026-10-10, 17:33 UTC: main permanece em 9ed1859ee28b1ba50e84bda0d4357d22760a59f3 (v1.84).
+PR #396: head 26b3fb2365200415366e12da76710a0ad629725b, tree 87ac6719b538d92a2b1843e9954cee80de0aece4, base main. CI 38071421868 / job 114269432957 aprovado (298 mobile, 88 API, 4 web, 3 CLI). APK próprio 38071421849 / job 114269432897 ainda executa o teste de instalação e abertura sem Metro; não integrado.
+PR #397: head be12cb6905234a081472971a8e37e5cbdc98d9cf, tree d57bfbb2cfb11ace871e0c3ef4c9a41ac6088763, base fix/professional-support-history. CI 38071852247 / job 114270695562 aprovado em todos os passos: 298 mobile, 98 API, 4 web, 3 CLI, migrations e HTTP/PostgreSQL, inclusive oito primeiros envios concorrentes, conflito de payload e guards SQL. APK próprio não aplicável: paths e árvore mobile 163de7d27fe6b49fb11d87ed9a9da2bf8b9e47e7 idênticos à #396; isso não dispensa o APK do predecessor.
+388–395 já integradas; não repetir merges. Retry controlado único do APK pós-merge #388, run 38054154641, tentativa 2 / job 114268524350, ainda em teste de dispositivo. Retry pedido em 17:17:11 UTC após falha de infraestrutura anterior à instalação; não solicitar nova repetição automática. Evidências dos outros pós-merges e dos gates históricos estão no registro 1717Z/v1.85.
+
+Evidência SUPPORT_INTENT_PREPARATION_v1.87.md: randomUUID no servidor após auth/membership/assignment, sem criar chamado; 7 regressões novas e fixture de contagem zero. PASS local 25/25 suporte e bash -n; CI próprio/105 API pendente. UI e storage durável continuam abertos. Journal 1733Z e checkpoint preservam gates e retomada.
