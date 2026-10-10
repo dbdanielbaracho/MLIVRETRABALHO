@@ -13,10 +13,10 @@ export default function ProfissionalInicio(){
  useFocusEffect(useCallback(()=>{
   let active=true;
   const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),15000);
+  const timeout=setTimeout(()=>{controller.abort();if(active){setData({profile:{status:'error'},assignments:{status:'error'},earnings:{status:'error'},availability:{status:'error'}});setCards({opportunities:{status:'error'},passport:{status:'error'}});}},15000);
   setData(loadingHome());setCards(loadingHomeCards());
   void runForSession(authHeaders,headers=>{const request=async(path:string)=>fetch(apiUrl(path),{headers,signal:controller.signal});return Promise.all([loadProfessionalHome(request),loadHomeCards(request)]);},()=>active&&!controller.signal.aborted).then(result=>{
-   clearTimeout(timeout);if(!active)return;
+   clearTimeout(timeout);if(!active||controller.signal.aborted)return;
    if(result.status==='ready'){setData(result.data[0]);setCards(result.data[1]);}
    else{setData({profile:{status:'error'},assignments:{status:'error'},earnings:{status:'error'},availability:{status:'error'}});setCards({opportunities:{status:'error'},passport:{status:'error'}});}
   });
