@@ -2,6 +2,7 @@ import { useCallback,useRef,useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
+import {runForSession} from '../lib/session-context';
 import { apiUrl } from '../lib/api';
 import { loadCompanyJobs,loadCandidates,loadingCandidates,orderedCandidates,sameCompanyContext,confirmCandidate } from '../lib/company-candidates';
 import type {CompanyJob,Result} from '../lib/company-candidates';
@@ -12,7 +13,7 @@ export default function Candidatos(){
  useFocusEffect(useCallback(()=>{
   const version=++generation.current,controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);
   context.current=null;selection.current={version:selection.current.version+1,id:''};setJobId('');setData(loadingCandidates());setJobsState({status:'loading'});setMessage('');
-  void (async()=>{let headers:Record<string,string>|null=null;const next=await loadCompanyJobs(async path=>{headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return fetch(apiUrl(path),{headers,signal:controller.signal});});if(version===generation.current){context.current=next.status==='ready'?headers:null;setJobsState(next);}})().finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
+  void (async()=>{const headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return runForSession(authenticatedTenantHeaders,async origin=>({headers:origin,jobs:await loadCompanyJobs(path=>fetch(apiUrl(path),{headers:origin,signal:controller.signal}))}),()=>version===generation.current&&!controller.signal.aborted,headers.Authorization,headers['x-tenant-id']);})().then(next=>{if(version!==generation.current)return;if(next.status==='ready'){context.current=next.data.jobs.status==='ready'?next.data.headers:null;setJobsState(next.data.jobs);}else setJobsState({status:'error'});}).catch(()=>{if(version===generation.current)setJobsState({status:'error'});}).finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
   return ()=>{++generation.current;++selection.current.version;for(const c of controllers.current)c.abort();controllers.current.clear();context.current=null;pending.current=false;setPendingId('');setJobId('');setData(loadingCandidates());};
  },[retry]));
  async function selectJob(id:string,refresh=false){
@@ -22,8 +23,10 @@ export default function Candidatos(){
   setJobId(id);setData(loadingCandidates());if(!refresh)setMessage('');
   try{
    const current=await authenticatedTenantHeaders();
-   const result=await loadCandidates(async(path,options)=>{if(!sameCompanyContext(current,headers))throw Error('company_context_changed');return fetch(apiUrl(path),{...options,headers,signal:controller.signal});},id);
-   if(version===generation.current&&selectedVersion===selection.current.version){setData(result);if(!sameCompanyContext(current,headers))setMessage('A empresa ou sessão mudou. Atualize a lista de trabalhos.');}
+   if(controller.signal.aborted||!sameCompanyContext(current,headers))throw Error('company_context_changed');
+   const result=await loadCandidates(async(path,options)=>{const active=await authenticatedTenantHeaders();if(controller.signal.aborted||!sameCompanyContext(active,headers))throw Error('company_context_changed');return fetch(apiUrl(path),{...options,headers,signal:controller.signal});},id);
+   const final=await authenticatedTenantHeaders();if(controller.signal.aborted||!sameCompanyContext(final,headers))throw Error('company_context_changed');
+   if(version===generation.current&&selectedVersion===selection.current.version)setData(result);
   }catch{if(version===generation.current&&selectedVersion===selection.current.version)setData({candidates:{status:'error'},recommendations:{status:'error'}});}
   finally{clearTimeout(timer);controllers.current.delete(controller);}
  }
@@ -32,8 +35,10 @@ export default function Candidatos(){
   pending.current=true;setPendingId(professionalId);const version=generation.current,controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);
   try{
    const current=await authenticatedTenantHeaders();
+   if(version!==generation.current||controller.signal.aborted)return;
    if(!sameCompanyContext(current,headers)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize a lista de trabalhos.');return;}
    const ok=await confirmCandidate(async(path,options)=>fetch(apiUrl(path),{...options,headers:{...headers,'content-type':'application/json'},signal:controller.signal}),id,professionalId,headers['x-tenant-id']);
+   const final=await authenticatedTenantHeaders();if(controller.signal.aborted||!sameCompanyContext(final,headers))throw Error('company_context_changed');
    if(version===generation.current){setMessage(ok?'Profissional confirmado.':'Não foi possível confirmar o resultado. Atualize os interessados antes de tentar novamente.');await selectJob(id,true);}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize os interessados para conferir o resultado.');}
   finally{clearTimeout(timer);controllers.current.delete(controller);if(version===generation.current){pending.current=false;setPendingId('');}}

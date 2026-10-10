@@ -29,3 +29,10 @@ test('planner retry restores server facts after JSON failure without confirming 
  assert.equal((await loadPlanner(async()=>({ok:true,json:async()=>{throw Error('json')}}))).status,'error');
  assert.deepEqual((await loadPlanner(async()=>response([plan]))).data,[plan]);
 });
+import {runForSession} from '../lib/session-context.ts';
+test('financial and planning rows require a real nonblank record identity',async()=>{
+ for(const id of ['', ' ']){assert.equal((await loadReconciliation(async()=>response([{...financial,assignmentId:id}]))).status,'error');assert.equal((await loadPlanner(async()=>response([{...plan,id}]))).status,'error');}
+});
+test('verified financial zero aggregates are discarded when the originating account changes during GET',async()=>{
+ let authorization='Bearer a',calls=0;const result=await runForSession(async()=>({Authorization:authorization,'x-tenant-id':'t'}),headers=>loadReconciliation(async()=>{calls++;assert.equal(headers.Authorization,'Bearer a');authorization='Bearer b';return response([financial])}),()=>true,'Bearer a','t');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+});

@@ -39,3 +39,12 @@ test('selection acknowledges the requested replacement, professional and origina
 test('lost request or selection response cannot imply success or automatically repeat manual operations',async()=>{
  let calls=0;const request=async()=>{calls++;throw Error('lost response')};assert.equal(await requestReplacement(request,'a'),false);assert.equal(await selectReplacement(request,replacement,'p'),false);assert.equal(calls,2);
 });
+import {runForSession} from '../lib/session-context.ts';
+test('replacement mutations reject missing IDs before transport and whitespace ACKs remain unconfirmed',async()=>{
+ let calls=0;const request=async()=>{calls++;return response({})};assert.equal(await requestReplacement(request,' '),false);assert.equal((await matchReplacement(request,'')).status,'error');assert.equal(await selectReplacement(request,{...replacement,id:' '},'p'),false);assert.equal(await selectReplacement(request,replacement,' '),false);assert.equal(calls,0);
+ assert.equal(await requestReplacement(async()=>response({...replacement,id:' '}),'a'),false);assert.equal((await matchReplacement(async()=>response({...recommendation,recommendedProfessionalId:' '}),'r')).status,'error');
+ assert.equal((await loadReplacements(async p=>response(p.endsWith('assignments')?[{...assignment,id:' '}]:[{...replacement,assignmentId:' '}]))).replacements.status,'error');
+});
+test('a matching response cannot be applied after the originating company changes',async()=>{
+ let tenant='t',calls=0;const result=await runForSession(async()=>({Authorization:'Bearer a','x-tenant-id':tenant}),headers=>matchReplacement(async()=>{calls++;assert.equal(headers['x-tenant-id'],'t');tenant='other';return response(recommendation)},'r'),()=>true,'Bearer a','t');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+});
