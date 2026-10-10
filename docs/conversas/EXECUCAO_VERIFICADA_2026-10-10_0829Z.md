@@ -1,4 +1,6 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# Segurança: contexto final de origem — v1.71
+
+## Estado remoto
 
 Snapshot 2026-10-10 08:29 UTC. Main 765cb2e834065f6eeaf0262ed9eedca9cbb2d52a (#375/v1.64), árvore c0ce45ba92c04ae69de8271f110d1a6c6c9cc301, pais 5938a40ee27be04f4ccb63242421eb293ba2ddb9 + f31422e45165dd8eeaa276d15142bab83a343176. #356–360 e #362–375 integrados e verificados; não repetir. Journal0822Z e0826Z preservam head gates/merges e pós-provas anteriores.
 
@@ -10,13 +12,15 @@ Pós #374 CI 38036515564/APK 38036515570 SUCCESS no SHA5938a40ee27be04f4ccb63242
 #381 publicado após380, headb26f9bf4aa3b62d2c832fa612a25389ead21cb80/tree809120203e16c074db7352ab25304db7c23b6dce; próprio CI38037927257 success, APK38037927282 em execução. Conferir resultados antes de qualquer merge.
 Falha histórica CI370tentativa1 e falhas infra378/376 permanecem registradas; retries únicos controlados, sem martelar/gate reduzido.
 
-## Item atual
+## Correção e contratos
 
 Segurança Profissional verifica a identidade que originou trabalhos/relatos/pedidos após leituras e submissões, antes de aplicar sucesso ou limpar texto. GET profissional permanece multi-company; POST usa tenant real do trabalho/caso escolhido. Ao confirmar outra conta na atualização, limpa rascunho/seleções antigos; erro na mesma conta preserva texto. Casos da empresa verifica Authorization+tenant após GET e ACKs, mantendo foco/abort/geração/15s.
 
 Schemas recusam IDs vazios/brancos, inclusive vínculo de caso/apelante; rotas de relato/pedido/status com IDs ausentes não iniciam POST. ACKs continuam apenas os campos efetivamente retornados pelo backend, sem tenant echo inventado. Erro/stale não vira lista vazia ou decisão confirmada. Nenhum POST repetido automaticamente.
 
 Lidos integralmente SafetyCasesController, SafetyAdminController e SafetyAppealsController/Admin e helpers/testes atuais. Roles owner/admin, tenant/RLS, acesso do profissional/relator, idempotência da revisão, transições, notas/trilha, revisão humana e ausência de enforcement automático preservados. Relato continua não idempotente; resultado desconhecido exige conferência antes de nova ação humana. Sem alteração de política, penalidade, score/acesso/pagamento, desenho canônico, React19.1.4/RN0.81.6 ou lockfile. Nenhum relato, recurso ou decisão real executado.
+
+## Validação
 
 227/227 testes mobile locais aprovados em UTC e America/Sao_Paulo, zero falha/cancelamento/skip; seis regressões novas exercitam schemas/guard pré-transporte e composição dos helpers com troca de identidade/empresa após ACK válido. Duas telas, dois helpers e dois testes revisados. Fixtures e revisão estática não provam taps físicos; próprios type/build/HTTP/CI/APK e pós-merge continuam obrigatórios.
 
