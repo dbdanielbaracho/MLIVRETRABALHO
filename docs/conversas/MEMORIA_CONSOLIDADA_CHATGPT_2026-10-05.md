@@ -300,3 +300,14 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 **Próxima fatia:** branch `fix/profile-existing-shortcuts` liga Disponibilidade e Notificações do Perfil às rotas existentes em uma ação, preservando layout, edição e contratos. Destinos lidos antes da alteração. Acessibilidade de botão explicitada. CI/APK/merge desta fatia ainda pendentes; não são afirmados verdes antecipadamente.
 
 **Pendências verificadas:** Disponibilidade save sem catch/busy; Notificações load sem loading/catch/erro distinto de vazio. São tarefas internas independentes para continuidade. v1.32, evidência, requisitos, registry e checkpoint atualizados no mesmo ciclo. Visual Truth Gate OPEN; nenhuma pausa por ausência de PR e nenhuma declaração de execução 24h.
+
+
+---
+
+## 2026-10-09 — Continuidade durante gates: destinos do Perfil
+
+**Implementação preparada:** branch `fix/professional-secondary-network-states` sobre head do #342. Disponibilidade trata HTTP/rede/timeout e impede envio simultâneo preservando campos no erro. Notificações distingue loading/erro/vazio, tem retry/recarga no foco, guarda respostas antigas e preserva tenant na marcação como lida. Rolagem e navegação inferior fora do conteúdo, sem novo design/contrato/dependência.
+
+**Teste:** seis novos testes de calendário/notificações mais oito do Início: 14/14 locais UTC/São Paulo. Não apresentados como E2E nativo nem prova do guard/UI. CI/APK da nova fatia pendentes no registro inicial; integração só após #342 e diff/gates próprios.
+
+**Gates reconsultados:** #341 pós-merge CI `38012421142` sucesso, APK `38012421105` em andamento. #342 CI/APK `38012515909`/`38012515803` em andamento. Documentos v1.33, requisitos, evidência, registry/checkpoint no mesmo ciclo. Próxima lacuna concreta: Perfil ignora HTTP não-ok de Passport e exibe 0 avaliações antes de carregar. Visual Truth Gate OPEN e continuidade ativa.
