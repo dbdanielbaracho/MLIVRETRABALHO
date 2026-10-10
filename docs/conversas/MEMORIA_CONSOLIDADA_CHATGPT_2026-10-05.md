@@ -286,3 +286,17 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 **Validação local:** oito testes aprovados em UTC e America/Sao_Paulo. Script mobile test incorpora testes, sem dependências novas, React/RN/lockfile preservados. CI/APK/merge ainda pendentes nesta atualização inicial; devem ser acompanhados e registrados, sem afirmar aprovação antecipada.
 
 **Documentação:** Documento v1.31, evidência MOBILE_REAL_HOME_AND_COMPANY_NAV_v1.31, Evidence Registry e checkpoint no mesmo ciclo. Visual Truth Gate OPEN; próxima ação é concluir gates e seguir comparação das telas/estados com referência original. Uma rotina permanece ativa; não encerrar projeto por fim de rodada ou ausência de PRs.
+
+
+---
+
+## 2026-10-09 — Integração #341 e atalhos reais do Perfil
+
+**Registro literal — usuário:**
+> CONTINUAR
+
+**Verificação e ação:** Documento v1.30 vigente na main, memória/checkpoint e diff reconsultados. #341 head `1a58d538b89269a89662cbf48ce12f3102293149`, CI `38006447169` e APK `38006447148` sucesso. Merge `1f40e9e0bcab3e302b3319652a8f030495d7ccde`; CI/APK pós-merge `38012421142`/`38012421105` em andamento no registro inicial.
+
+**Próxima fatia:** branch `fix/profile-existing-shortcuts` liga Disponibilidade e Notificações do Perfil às rotas existentes em uma ação, preservando layout, edição e contratos. Destinos lidos antes da alteração. Acessibilidade de botão explicitada. CI/APK/merge desta fatia ainda pendentes; não são afirmados verdes antecipadamente.
+
+**Pendências verificadas:** Disponibilidade save sem catch/busy; Notificações load sem loading/catch/erro distinto de vazio. São tarefas internas independentes para continuidade. v1.32, evidência, requisitos, registry e checkpoint atualizados no mesmo ciclo. Visual Truth Gate OPEN; nenhuma pausa por ausência de PR e nenhuma declaração de execução 24h.
