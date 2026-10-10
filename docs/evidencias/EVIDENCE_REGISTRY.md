@@ -777,3 +777,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [DECLARED_CAPABILITIES_PROFILE_v1.98.md](DECLARED_CAPABILITIES_PROFILE_v1.98.md): declarações reais em Experiência profissional, GET auth-only, sem alterações de catálogo/certificação;13regressões novas/PASS28 local explícito. CI396mobile/140API+APK próprios pendentes; gate físico aberto.
 - [EXECUCAO_VERIFICADA_2026-10-10_1856Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1856Z.md): #408CI38077510496/job114287470090 aprovado383mobile/140API/4web/3CLI/HTTP; APK408 e tentativa2APK401 em execução. #400 pós-gates comprovados.
+
+
+## 2026-10-10 — v1.99
+
+- [PROFILE_ANALYTICS_READ_DEADLINE_v1.99.md](PROFILE_ANALYTICS_READ_DEADLINE_v1.99.md):10falhas/2pass antes ePASS58 após correção de leitura; campos privados condicionados a perfilready; sem mudança de escrita. CI408mobile/140API+APK próprios pendentes.
+- [EXECUCAO_VERIFICADA_2026-10-10_1903Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1903Z.md): #409CI38077842127/job114288445864 aprovado396mobile/140API/4web/3CLI; APKs401retry/408/409 em execução. Issue214closed, dependências externas aindaopen; ledger histórico não redefinido.

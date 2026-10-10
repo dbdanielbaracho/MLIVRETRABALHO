@@ -23,7 +23,7 @@ export default function Perfil(){
   const id=++requestId.current,generation=epoch.current;sourceHeaders.current=null;setProfile({status:'loading'});setPassport({status:'loading'});
   const controller=new AbortController(),cancel=()=>controller.abort();controllers.current.add(controller);
   focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
-  const timeout=setTimeout(()=>controller.abort(),15000);
+  const timeout=setTimeout(()=>{controller.abort();if(id===requestId.current&&generation===epoch.current&&!focusSignal?.aborted){sourceHeaders.current=null;setProfile({status:'error'});setPassport({status:'error'});}},15000);
   try{
    const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;if(!h.Authorization){changedContext();throw Error('session_required');}
    if(draftOwner.current!==h.Authorization){dirty.current=false;setDisplayName('');setCity('');setRole('');setNotice('');}draftOwner.current=h.Authorization;
@@ -93,19 +93,20 @@ export default function Perfil(){
  }}><Text style={s.icon}>{icon}</Text><Text style={s.label}>{label}</Text><Text style={s.chevron}>›</Text></Pressable>)}</View>
  {expanded?<View style={s.panel}><Text style={s.panelTitle}>{expanded}</Text>{expanded==='Meus dados'?<View>
  {profile.status==='loading'?<Text style={s.panelText}>Carregando seus dados…</Text>:profile.status==='error'?<Text style={s.panelText}>Não foi possível carregar seus dados. Tente novamente acima.</Text>:null}
- <TextInput style={s.field} value={displayName} editable={canEdit} onChangeText={value=>{dirty.current=true;setDisplayName(value);}} placeholder="Nome"/>
+ {profile.status==='ready'?<View><TextInput style={s.field} value={displayName} editable={canEdit} onChangeText={value=>{dirty.current=true;setDisplayName(value);}} placeholder="Nome"/>
  <TextInput style={s.field} value={city} editable={canEdit} onChangeText={value=>{dirty.current=true;setCity(value);}} placeholder="Cidade"/>
  <TextInput style={s.field} value={role} editable={canEdit} onChangeText={value=>{dirty.current=true;setRole(value);}} placeholder="Atuação principal"/>
- <Pressable accessibilityRole="button" disabled={!canEdit} accessibilityState={{disabled:!canEdit,busy:saving}} onPress={()=>void saveProfile()}><Text style={s.close}>{saving?'Salvando…':'Salvar dados'}</Text></Pressable>
+ <Pressable accessibilityRole="button" disabled={!canEdit} accessibilityState={{disabled:!canEdit,busy:saving}} onPress={()=>void saveProfile()}><Text style={s.close}>{saving?'Salvando…':'Salvar dados'}</Text></Pressable></View>:null}
  <Pressable accessibilityRole="button" onPress={()=>router.push('/membros')}><Text style={s.close}>Aceitar convite</Text></Pressable>
  <Pressable accessibilityRole="button" disabled={saving||signingOut} accessibilityState={{disabled:saving||signingOut,busy:signingOut}} onPress={()=>void signout()}><Text style={s.close}>{signingOut?'Saindo…':'Sair da conta'}</Text></Pressable>
  {notice?<Text accessibilityLiveRegion="polite">{notice}</Text>:null}
  </View>:expanded==='Experiência profissional'?<View style={{gap:10}}>
  <Text style={s.panelText}>{passport.status==='loading'?'Carregando histórico…':passport.status==='error'?'Não foi possível carregar seu histórico. Tente novamente acima.':!p?'Complete seus dados para criar seu passaporte.':p.completedWorkCount===0?'Nenhum trabalho concluído registrado no passaporte profissional.':p.completedWorkCount+' trabalhos concluídos registrados no passaporte profissional.'}</Text>
  {history.status==='unavailable'?<Text style={s.panelText}>Histórico detalhado não fornecido nesta resposta.</Text>:history.status==='empty'?<Text style={s.panelText}>Nenhum registro disponível no histórico verificado.</Text>:history.status==='ready'?<View style={{gap:12}}><Text style={s.panelText}>Histórico verificado recente</Text>{history.data.map(work=><View key={work.tenantId+':'+work.id} style={{gap:4}}><Text style={s.panelTitle}>{work.title}</Text><Text style={s.panelText}>{work.location?.trim()?work.location:'Local não informado'}</Text><Text style={s.panelText}>{completionDate(work.completedAt)}</Text></View>)}</View>:null}
- <DeclaredCapabilities/></View>:expanded==='Ajuda e suporte'?<View style={{gap:16}}><GeneralSupport/><SupportHistory/></View>:<Text style={s.panelText}>Esta área ainda não está disponível nesta versão do aplicativo.</Text>}
+<DeclaredCapabilities/></View>:expanded==='Ajuda e suporte'?<View style={{gap:16}}><GeneralSupport/><SupportHistory/></View>:<Text style={s.panelText}>Esta área ainda não está disponível nesta versão do aplicativo.</Text>}
  <Pressable accessibilityRole="button" onPress={()=>setExpanded(null)}><Text style={s.close}>Fechar</Text></Pressable></View>:null}
  </ScrollView><ProfessionalNav/></SafeAreaView>;
 }
 const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,paddingBottom:24},top:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},title:{fontSize:28,fontWeight:'900',color:'#111A35'},gear:{fontSize:22,color:'#53617A'},identity:{alignItems:'center',paddingVertical:22},avatar:{width:82,height:82,borderRadius:41,backgroundColor:'#E8E0FF',alignItems:'center',justifyContent:'center',marginBottom:10},avatarText:{fontSize:30,fontWeight:'900',color:'#651FFF'},profileName:{fontSize:20,fontWeight:'900',color:'#111A35'},profileRating:{fontSize:12,fontWeight:'700',color:'#65708A',marginTop:5},menu:{borderTopWidth:1,borderColor:'#EDF0F4'},row:{height:58,flexDirection:'row',alignItems:'center',borderBottomWidth:1,borderColor:'#EDF0F4'},icon:{width:34,fontSize:18,color:'#651FFF'},label:{flex:1,fontSize:15,fontWeight:'700',color:'#111A35'},chevron:{fontSize:26,color:'#9AA3B4'},panel:{padding:16,marginTop:14,backgroundColor:'#F6F3FF',borderRadius:12,gap:10},panelTitle:{fontSize:16,fontWeight:'800',color:'#111A35'},panelText:{fontSize:14,color:'#53617A'},close:{fontSize:14,fontWeight:'700',color:'#651FFF'},field:{borderWidth:1,borderColor:'#DDD',borderRadius:10,padding:12,marginBottom:8}});
+
 

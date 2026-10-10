@@ -1,4 +1,16 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.99
+
+**Status:** NORMATIVO — DELTA SOBRE v1.98
+**Data:** 2026-10-10
+
+## Prazo real nas leituras de Perfil e Indicadores
+
+Leituras existentes de Perfil/Work Passport e Indicadores somente abortavam transporte após15s; auth, fetch, JSON ou auth final que ignorassem abort mantinham loading.12regressões nos handlers reais pré-JSX reproduziram10falhas/2pass na versão anterior. Hooks/auth/transport/timer são fixtures explícitas; não são HTTP real externo ou renderização React Native.
+Deadline agora publica erro imediatamente apenas no request/foco atual. Perfil invalida sourceHeaders e marca perfil/passaporte indisponíveis; origem de auth expirada não dispara queries. Indicadores verifica sequência/sinal/prazo antes de iniciar runForSession e antes de aplicar ready. Resposta tardia, blur e deadline antigo não substituem o snapshot atual; novo foco/retry carrega fatos reais.
+Os campos Nome/Cidade/Atuação e Salvar dados são renderizados somente quando profile.statusready, inclusive readydata null para completar perfil novo. Loading/erro ocultam rascunho visível enquanto a identidade/perfil atual não estiver confirmado; rascunho interno permanece para recuperação na mesma sessão, e troca real de owner mantém a limpeza já existente. Essa condição JSX foi revisada por diff; não se reivindica teste visual/aparelho.
+Não altera PUT do perfil, signout, clearSession, edição real, scopes auth/tenant, dados do passaporte ou cálculo de indicadores. Nenhuma mutation/retry de escrita automática. StyleSheets de Perfil e Indicadores byteidênticos; menu/Nav/habilidades/histórico/suporte preservados. Apenas a visibilidade dos campos pessoais durante loading/erro muda.
+PASS58/58 local no conjunto:12novos+13capabilities+6planner+9session-context+9professional-profile+9profile-submit. Regressões cobrem todas as fases sem resolução no prazo, ausência de HTTP após origem expirada, rejeição de ready tardio, blur/novo foco/retry com dados reais. Node/handlers e fixtures explícitos; sem RNrendereado ou prova física.
+CI completo esperado408mobile/140API/4web/3CLI, typecheck/build/export/migrations/HTTP +APK standalone no SHA próprio obrigatórios; pendentes antes de publicação. React19.1.4/RN0.81.6/lockfile reproduzível/standalone/tenant/RLS preservados. Visual Truth físico de privacidade/rascunho/loading/erro/recuperação, layout/cobertura original e gates externos seguem abertos. Sem custo novo, provider ou dinheiro real.
 
 ## Estado verificado
 
@@ -31,15 +43,6 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 
 Issues reconsultadas em2026-10-10,19:00 UTC: #214closed desde2026-09-28T03:02:23Z; #215/#219/#220/#224/#228open. Requirements Ledger base contém aviso explícito de snapshot histórico2026-09-24; suas antigas linhas de runner/probe não são bloqueios atuais nem autorização para inferir deploy do head corrente. v1.14 e evidências posteriores prevalecem. Nenhuma mudança semântica foi fabricada nesse snapshot.
 
-## Item atual
-
-Leituras existentes de Perfil/Work Passport e Indicadores somente abortavam transporte após15s; auth, fetch, JSON ou auth final que ignorassem abort mantinham loading.12regressões nos handlers reais pré-JSX reproduziram10falhas/2pass na versão anterior. Hooks/auth/transport/timer são fixtures explícitas; não são HTTP real externo ou renderização React Native.
-Deadline agora publica erro imediatamente apenas no request/foco atual. Perfil invalida sourceHeaders e marca perfil/passaporte indisponíveis; origem de auth expirada não dispara queries. Indicadores verifica sequência/sinal/prazo antes de iniciar runForSession e antes de aplicar ready. Resposta tardia, blur e deadline antigo não substituem o snapshot atual; novo foco/retry carrega fatos reais.
-Os campos Nome/Cidade/Atuação e Salvar dados são renderizados somente quando profile.statusready, inclusive readydata null para completar perfil novo. Loading/erro ocultam rascunho visível enquanto a identidade/perfil atual não estiver confirmado; rascunho interno permanece para recuperação na mesma sessão, e troca real de owner mantém a limpeza já existente. Essa condição JSX foi revisada por diff; não se reivindica teste visual/aparelho.
-Não altera PUT do perfil, signout, clearSession, edição real, scopes auth/tenant, dados do passaporte ou cálculo de indicadores. Nenhuma mutation/retry de escrita automática. StyleSheets de Perfil e Indicadores byteidênticos; menu/Nav/habilidades/histórico/suporte preservados. Apenas a visibilidade dos campos pessoais durante loading/erro muda.
-PASS58/58 local no conjunto:12novos+13capabilities+6planner+9session-context+9professional-profile+9profile-submit. Regressões cobrem todas as fases sem resolução no prazo, ausência de HTTP após origem expirada, rejeição de ready tardio, blur/novo foco/retry com dados reais. Node/handlers e fixtures explícitos; sem RNrendereado ou prova física.
-CI completo esperado408mobile/140API/4web/3CLI, typecheck/build/export/migrations/HTTP +APK standalone no SHA próprio obrigatórios; pendentes antes de publicação. React19.1.4/RN0.81.6/lockfile reproduzível/standalone/tenant/RLS preservados. Visual Truth físico de privacidade/rascunho/loading/erro/recuperação, layout/cobertura original e gates externos seguem abertos. Sem custo novo, provider ou dinheiro real.
-
 ## Dependências
 
 Preferências não tem contrato próprio nos schemas/APIs auditados: definir campos/semântica/escopo/persistência/efeito em matching antes de inventar modelo ou confundir fatos de perfil/availability/capabilities. Ajuda nova sem membership depende de autoridade por identidade/isolamento/retensão aprovada, sem tenant global arbitrário ou bypass RLS. Ambos são bloqueios parciais; não impedem correção de erros concretos das APIs existentes.
@@ -50,3 +53,5 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/profile-analytics-read-deadline sobre head4096d57c62f864ee660c6573f101db1e515dd0be183/tree10c1670c39e2583e4f14e94c157b4cd616a172e0, basefix/declared-capabilities-profile. Conferir bytes/patch e próprios CI408mobile/140API +APK no SHA exato; não antecipar número/SHA/resultado. Revisar condição dos campos pessoais e preservação dos handlers de salvar/sair.
 Acompanhar APK401 tentativa2/job114286755368 e APKs40838077510463/40938077842117. Integrar401–409 e esta fatia em ordem, com retargetmain/reconsulta eventual, merge-base tree equivalente main, diff fresco e próprios gates aprovados. Verificar pais/tree/main e CI/APK pós-merge no SHA real. #400pós/ancestrais aprovados e retry401 único já solicitado; não repetir.
 Alternativas inspecionadas: requisitos/ledger base explicitamente histórico e v1.14/v1.18; issues externas atuais; Perfil/capabilities/passaporte/analytics/planner; CompanyConta signout, Talentos e Segurança possuem outros handlers de deadline a auditar com prova concreta e sem mutation automática. Priorizar essas regressões reais após esta fatia e a integração, sem modificar política/custo/tenant. Preferências e ajuda nova sem membership permanecem definições parciais externas; dados de forecast/no-show ML, integrações enterprise, sandbox provider e physical/pentest não são fabricáveis internamente.
+
+Evidência PROFILE_ANALYTICS_READ_DEADLINE_v1.99.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.99.md; checkpoint/journal1903Z. Baselines anteriores vigentes.

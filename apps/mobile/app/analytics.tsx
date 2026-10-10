@@ -15,12 +15,13 @@ export default function Analytics() {
   async function load(signal?:AbortSignal) {
     const id=++sequence.current,controller=new AbortController();
     controllers.current.add(controller);setState({status:'loading'});
-    const timer=setTimeout(()=>controller.abort(),15000),abort=()=>controller.abort();
+    const timer=setTimeout(()=>{controller.abort();if(id===sequence.current&&!signal?.aborted)setState({status:'error'});},15000),abort=()=>controller.abort();
     signal?.addEventListener('abort',abort);if(signal?.aborted)controller.abort();
     try {
       const origin=await authenticatedTenantHeaders();
+      if(id!==sequence.current||controller.signal.aborted||signal?.aborted)return;
       const result=await runForSession(authenticatedTenantHeaders,headers=>loadAnalytics(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>id===sequence.current&&!controller.signal.aborted&&!signal?.aborted,origin.Authorization,origin['x-tenant-id']??'');
-      if(id===sequence.current&&!signal?.aborted)setState(result.status==='ready'?result.data:{status:'error'});
+      if(id===sequence.current&&!signal?.aborted)setState(!controller.signal.aborted&&result.status==='ready'?result.data:{status:'error'});
     } catch {if(id===sequence.current&&!signal?.aborted)setState({status:'error'});} finally {
       clearTimeout(timer);controllers.current.delete(controller);signal?.removeEventListener('abort',abort);
     }

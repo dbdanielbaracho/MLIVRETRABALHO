@@ -1,3 +1,5 @@
+# Execução verificada — 2026-10-10 19:03 UTC
+
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
 ## Estado verificado
@@ -50,3 +52,4 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/profile-analytics-read-deadline sobre head4096d57c62f864ee660c6573f101db1e515dd0be183/tree10c1670c39e2583e4f14e94c157b4cd616a172e0, basefix/declared-capabilities-profile. Conferir bytes/patch e próprios CI408mobile/140API +APK no SHA exato; não antecipar número/SHA/resultado. Revisar condição dos campos pessoais e preservação dos handlers de salvar/sair.
 Acompanhar APK401 tentativa2/job114286755368 e APKs40838077510463/40938077842117. Integrar401–409 e esta fatia em ordem, com retargetmain/reconsulta eventual, merge-base tree equivalente main, diff fresco e próprios gates aprovados. Verificar pais/tree/main e CI/APK pós-merge no SHA real. #400pós/ancestrais aprovados e retry401 único já solicitado; não repetir.
 Alternativas inspecionadas: requisitos/ledger base explicitamente histórico e v1.14/v1.18; issues externas atuais; Perfil/capabilities/passaporte/analytics/planner; CompanyConta signout, Talentos e Segurança possuem outros handlers de deadline a auditar com prova concreta e sem mutation automática. Priorizar essas regressões reais após esta fatia e a integração, sem modificar política/custo/tenant. Preferências e ajuda nova sem membership permanecem definições parciais externas; dados de forecast/no-show ML, integrações enterprise, sandbox provider e physical/pentest não são fabricáveis internamente.
+
