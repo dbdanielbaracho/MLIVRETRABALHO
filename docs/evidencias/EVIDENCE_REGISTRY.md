@@ -76,3 +76,10 @@ Cada evidência material futura deve registrar: Evidence ID, concorrente/fonte, 
 | Evidence ID | Fonte | Fato | Status | Próxima ação |
 |---|---|---|---|---|
 | UI-MOBILE-COMPANY-STATES-001 | MOBILE_COMPANY_STATES_v1.36.md | Estados independentes/ações tratadas/tenant consistente; quatro novos testes, 27 totais locais | Implementado na branch, gates pendentes | Integrar após #345 corrigido e gates exatos/pós-merge; Visual Truth OPEN |
+
+## Agenda e pós-merge — v1.37
+
+| Evidence ID | Fonte | Fato | Status | Próxima ação |
+|---|---|---|---|---|
+| UI-MOBILE-AGENDA-STATES-001 | MOBILE_AGENDA_STATES_v1.37.md | Badge/ciclo/loading reais; 4 novos testes, 31 totais locais | Implementado na branch; gates pendentes | Integrar após #346/gates exatos/pós-merge |
+| UI-MOBILE-HOME-POST-MERGE-001 | Runs 38012421142 / 38012421105, main 1f40e9e0bcab3e302b3319652a8f030495d7ccde | CI/smoke sem Metro/upload APK sucesso, artefato 11654492684 | Técnico aprovado | Visual Truth/piloto físico seguem separados |
