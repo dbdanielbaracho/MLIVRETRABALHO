@@ -6,3 +6,18 @@ test('missing auth, changed displayed identity or expired focus prevent the oper
 test('blur during an operation or while reading final headers never reapplies a ready result',async()=>{let current=true;assert.equal((await runForSession(async()=>({Authorization:'Bearer account-a'}),async()=>{current=false;return 'old-result'},()=>current)).status,'stale');current=true;let reads=0;assert.equal((await runForSession(async()=>{if(++reads===2)current=false;return {Authorization:'Bearer account-a'}},async()=>42,()=>current)).status,'stale');});
 test('a mutable external header object cannot retroactively change the originating identity',async()=>{const shared={Authorization:'Bearer account-a'};const result=await runForSession(async()=>shared,async headers=>{assert.equal(Object.isFrozen(headers),true);shared.Authorization='Bearer account-b';assert.equal(headers.Authorization,'Bearer account-a');return 'old-result'},()=>true);assert.equal(result.status,'stale');});
 test('transport/header errors and session loss do not expose successful results or repeat operations',async()=>{let calls=0;assert.equal((await runForSession(async()=>({Authorization:'Bearer account-a'}),async()=>{calls++;throw Error('network')},()=>true)).status,'error');assert.equal(calls,1);assert.equal((await runForSession(async()=>{throw Error('storage')},async()=>{calls++;return 'unexpected'},()=>true)).status,'error');assert.equal(calls,1);let reads=0;assert.equal((await runForSession(async()=>++reads===1?{Authorization:'Bearer account-a'}:{},async()=>123,()=>true)).status,'stale');});
+
+test('required displayed company must exist and match before any operation',async()=>{
+ let calls=0;const operation=async()=>{calls++;return 'unexpected'};
+ for(const [headers,tenant] of [[{Authorization:'Bearer owner'},'company-a'],[{Authorization:'Bearer owner','x-tenant-id':'company-b'},'company-a'],[{Authorization:'Bearer owner','x-tenant-id':'company-a'},' ']])assert.equal((await runForSession(async()=>headers,operation,()=>true,'Bearer owner',tenant)).status,'stale');
+ assert.equal(calls,0);
+});
+test('company switch after a successful operation with the same identity withholds its acknowledgement',async()=>{
+ let tenant='company-a',calls=0;const result=await runForSession(async()=>({Authorization:'Bearer owner','x-tenant-id':tenant}),async headers=>{calls++;assert.equal(headers['x-tenant-id'],'company-a');tenant='company-b';return {status:'created',id:'actual-job'}},()=>true,'Bearer owner','company-a');
+ assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+});
+test('unchanged originating company and identity preserve the actual outcome without imposing tenant scope on professional reads',async()=>{
+ const result=await runForSession(async()=>({Authorization:'Bearer owner','x-tenant-id':'company-a'}),async()=>({status:'created',id:'actual-job'}),()=>true,'Bearer owner','company-a');
+ assert.equal(result.status,'ready');assert.deepEqual(result.data,{status:'created',id:'actual-job'});
+ assert.equal((await runForSession(async()=>({Authorization:'Bearer pro'}),async()=>[],()=>true)).status,'ready');
+});
