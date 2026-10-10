@@ -1,3 +1,5 @@
+# Execução verificada — 2026-10-10 18:47 UTC
+
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
 ## Estado verificado
@@ -41,3 +43,4 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/team-plan-input sobre head4067d33fe51056ff0de3959f3cfc57c69ff3d1bdb48/tree5edb2a42020b17b7f14a1d7637437f62913facf0, basefix/career-conversion-input. Conferir bytes remotos, patch, paths/mobiletree e CI377mobile/140API, inclusive HTTP válido que executa a query corrigida. Não antecipar número, SHA ou resultado próprio.
 Acompanhar APK40138074120056 e pós40038075689034; ainda em execução no último estado lido. Integrar401–406 e esta fatia em ordem com retarget main/reconsulta eventual, merge-base tree equivalente à main, diff fresco e próprios gates exatos; verificar pais/tree/main e gates pós-merge do SHA real. Não repetir merges400/ancestrais nem gates já comprovados.
 Após esta correção, confrontar os requisitos e handlers restantes de planejamento/alocação/integração; implementar somente defeito ou requisito concreto comprovado. Ausência de PR não prova conclusão. Bloqueios de preferências/ajuda sem membership e gates físicos/provider/pentest são parciais; não fabricar atividade nem contornar segurança. Persistir checkpoint e manter continuidade até conclusão integral comprovada ou ordem explícita.
+

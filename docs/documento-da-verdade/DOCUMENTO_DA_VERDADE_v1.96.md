@@ -1,4 +1,15 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.96
+
+**Status:** NORMATIVO — DELTA SOBRE v1.95
+**Data:** 2026-10-10
+
+## Validação do planejamento de equipes existente
+
+O endpoint existente POST /company/planner/:jobId/team-plan acessava requirements/map/row.role sem validação runtime. Quatro chamadas do método anterior, com fixtures explícitas de auth/db e sem decorators, reproduziram TypeError para null, requirements numérico, linha null e role numérico, sem iniciar query. Isso é evidência local do método, não uma alegação de HTTP antigo em produção.
+teamPlanRequirements valida objeto, lista não vazia, linhas objeto, role string não vazia e count numérico inteiro positivo. Preserva trim, ordem e repetições anteriores; não inventa papéis, limites, políticas de seleção ou candidatos. Contexto autenticado/membership/role company continuam antes do payload; inválidos tornam-se requirements_invalid400 antes da transação.
+A query de disponibilidade tinha parâmetros $2/$3 mas enviava [tenant,startsAt,endsAt] com $1 ausente no SQL. Corrigido o bind para $1/$2 e [startsAt,endsAt], ambos do trabalho real consultado dentro da mesma transação tenant. active_tenant_professional e RLS permanecem; nenhuma alteração de autorização, score/roleFit/optimizer, requisito de disponibilidade, schema ou dados. Identificação do bind foi inspeção do SQL; execução PostgreSQL real só será comprovada pelo novo CI.
+9 regressões novas (3 parser e6 controller) cobrem malformados, auth/membership/role anteriores, tenant e intervalo reais, ausência de trabalho/candidato, binds contíguos, resultado unfilled e erro de banco. PASS62/62 testes locais da API nesse conjunto:51 anteriores +2 optimizer existentes +9 novos, adapter Node/stubs Nest explícitos; bash-n aprovado. HTTP localhost/PostgreSQL existente ampliado com shape400/auth401/role403/cross-tenant400, chamada válida sem disponibilidade mantendo unfilled e lista de trabalho idêntica antes/depois. Nenhuma alocação/contratação real criada; HTTP real novo ainda pendente.
+CI completo esperado377mobile/140API/4web/3CLI; todos typecheck/build/export/migrations/HTTP devem passar no SHA próprio. APK próprio N/A condicionado aos paths e árvore mobile iguais à406; gates natives anteriores não são dispensados. React19.1.4/RN0.81.6, lockfile reproduzível, Android standalone e isolamento tenant/RLS preservados.
 
 ## Estado verificado
 
@@ -23,14 +34,6 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 
 #406 head7d33fe51056ff0de3959f3cfc57c69ff3d1bdb48/tree5edb2a42020b17b7f14a1d7637437f62913facf0, basefix/capability-input-shape. CI38076567880/job114284679931 success no SHA exato, todos os passos e log completo conferidos:377mobile/131API/4web/3CLI, typecheck/build/export/migrations/HTTP PostgreSQL. Marker18:40:24.1149470Z comprova propostas/respostas malformadas e referências cross-tenant/não concluídas rejeitadas sem criar conversão. 14 arquivos remotos byteidênticos, diff revisto inclusive script HTTP. apps/mobile39e121e416614fa92ce16775d19e65648492d9f3 idêntico à405, paths API/script/docs: APK próprio N/A comprovado; gates natives anteriores não dispensados. Ainda não integrada.
 
-## Item atual
-
-O endpoint existente POST /company/planner/:jobId/team-plan acessava requirements/map/row.role sem validação runtime. Quatro chamadas do método anterior, com fixtures explícitas de auth/db e sem decorators, reproduziram TypeError para null, requirements numérico, linha null e role numérico, sem iniciar query. Isso é evidência local do método, não uma alegação de HTTP antigo em produção.
-teamPlanRequirements valida objeto, lista não vazia, linhas objeto, role string não vazia e count numérico inteiro positivo. Preserva trim, ordem e repetições anteriores; não inventa papéis, limites, políticas de seleção ou candidatos. Contexto autenticado/membership/role company continuam antes do payload; inválidos tornam-se requirements_invalid400 antes da transação.
-A query de disponibilidade tinha parâmetros $2/$3 mas enviava [tenant,startsAt,endsAt] com $1 ausente no SQL. Corrigido o bind para $1/$2 e [startsAt,endsAt], ambos do trabalho real consultado dentro da mesma transação tenant. active_tenant_professional e RLS permanecem; nenhuma alteração de autorização, score/roleFit/optimizer, requisito de disponibilidade, schema ou dados. Identificação do bind foi inspeção do SQL; execução PostgreSQL real só será comprovada pelo novo CI.
-9 regressões novas (3 parser e6 controller) cobrem malformados, auth/membership/role anteriores, tenant e intervalo reais, ausência de trabalho/candidato, binds contíguos, resultado unfilled e erro de banco. PASS62/62 testes locais da API nesse conjunto:51 anteriores +2 optimizer existentes +9 novos, adapter Node/stubs Nest explícitos; bash-n aprovado. HTTP localhost/PostgreSQL existente ampliado com shape400/auth401/role403/cross-tenant400, chamada válida sem disponibilidade mantendo unfilled e lista de trabalho idêntica antes/depois. Nenhuma alocação/contratação real criada; HTTP real novo ainda pendente.
-CI completo esperado377mobile/140API/4web/3CLI; todos typecheck/build/export/migrations/HTTP devem passar no SHA próprio. APK próprio N/A condicionado aos paths e árvore mobile iguais à406; gates natives anteriores não são dispensados. React19.1.4/RN0.81.6, lockfile reproduzível, Android standalone e isolamento tenant/RLS preservados.
-
 ## Dependências
 
 Preferências não tem contrato próprio nos schemas/APIs auditados: definir campos/semântica/escopo/persistência/efeito em matching antes de inventar modelo ou confundir fatos de perfil/availability/capabilities. Ajuda nova sem membership depende de autoridade por identidade/isolamento/retensão aprovada, sem tenant global arbitrário ou bypass RLS. Ambos são bloqueios parciais; não impedem correção de erros concretos das APIs existentes.
@@ -41,3 +44,5 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/team-plan-input sobre head4067d33fe51056ff0de3959f3cfc57c69ff3d1bdb48/tree5edb2a42020b17b7f14a1d7637437f62913facf0, basefix/career-conversion-input. Conferir bytes remotos, patch, paths/mobiletree e CI377mobile/140API, inclusive HTTP válido que executa a query corrigida. Não antecipar número, SHA ou resultado próprio.
 Acompanhar APK40138074120056 e pós40038075689034; ainda em execução no último estado lido. Integrar401–406 e esta fatia em ordem com retarget main/reconsulta eventual, merge-base tree equivalente à main, diff fresco e próprios gates exatos; verificar pais/tree/main e gates pós-merge do SHA real. Não repetir merges400/ancestrais nem gates já comprovados.
 Após esta correção, confrontar os requisitos e handlers restantes de planejamento/alocação/integração; implementar somente defeito ou requisito concreto comprovado. Ausência de PR não prova conclusão. Bloqueios de preferências/ajuda sem membership e gates físicos/provider/pentest são parciais; não fabricar atividade nem contornar segurança. Persistir checkpoint e manter continuidade até conclusão integral comprovada ou ordem explícita.
+
+Evidência TEAM_PLAN_INPUT_v1.96.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.96.md; checkpoint/journal1847Z. Baselines anteriores vigentes.
