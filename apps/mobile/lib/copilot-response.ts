@@ -1,11 +1,13 @@
-export type CopilotRoute='/analytics'|'/candidatos'|'/planejamento'|'/ganhos'|'/agenda'|'/notificacoes'|'/trabalhos';
-export type Interpretation={intent:string;confidence:number;reasons:string[];suggestedRoute:CopilotRoute|null;mode:'assisted';executionAllowed:false;requiresHumanConfirmation:boolean;provider:string;providerConfigured:boolean;disclaimer:string};
+export type CopilotRoute='/analytics'|'/candidatos'|'/planejamento'|'/ganhos'|'/agenda'|'/notificacoes'|'/empresa-notificacoes'|'/trabalhos';
+export type Interpretation={accountType:'company'|'professional';intent:string;confidence:number;reasons:string[];suggestedRoute:CopilotRoute|null;mode:'assisted';executionAllowed:false;requiresHumanConfirmation:boolean;provider:string;providerConfigured:boolean;disclaimer:string};
 export type InterpretResult={status:'ready';data:Interpretation}|{status:'invalid'|'error'};
 type Request=(path:string,body:{text:string;mode:'assisted'})=>Promise<{ok:boolean;json():Promise<unknown>}>;
 const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
 const routes:Record<string,CopilotRoute|null>={find_jobs:'/trabalhos',show_schedule:'/agenda',show_earnings:'/ganhos',show_notifications:'/notificacoes',company_staffing:'/planejamento',company_candidates:'/candidatos',company_analytics:'/analytics',unknown:null};
 export function validInterpretation(value:unknown):value is Interpretation {
- return record(value)&&typeof value.intent==='string'&&Object.prototype.hasOwnProperty.call(routes,value.intent)&&value.suggestedRoute===routes[value.intent]
+ return record(value)&&typeof value.intent==='string'&&Object.prototype.hasOwnProperty.call(routes,value.intent)&&(value.accountType==='company'||value.accountType==='professional')
+  &&value.suggestedRoute===(value.intent==='show_notifications'&&value.accountType==='company'?'/empresa-notificacoes':routes[value.intent])
+  &&(!value.intent.startsWith('company_')||value.accountType==='company')
   &&typeof value.confidence==='number'&&Number.isFinite(value.confidence)&&value.confidence>=0&&value.confidence<=1
   &&Array.isArray(value.reasons)&&value.reasons.every(reason=>typeof reason==='string')
   &&value.mode==='assisted'&&value.executionAllowed===false&&typeof value.requiresHumanConfirmation==='boolean'

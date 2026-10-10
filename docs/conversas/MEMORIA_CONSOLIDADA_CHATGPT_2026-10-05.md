@@ -488,3 +488,8 @@ Resultados de integração/pós-merges/retries em [execução verificada06:21](E
 ## Privacidade manual v1.54 — 2026-10-10 06:30:59 UTC
 
 Operações com guard/ack/sessão/15s/sem duplicar, export explícito e cópia somente em memória, desativação humana/bloqueios preservados.8 novos testes,125/125 locais UTC/São Paulo. Branch fix/privacy-manual-action-acknowledgements dependente #364; gates próprios/pós-merge ainda pendentes neste snapshot. Journal0630Z registra sete CIs pós-merge success/APKs pendentes e retries353/355. Nenhuma operação real/PSP/paid. Visual Truth OPEN; continuar auditando itens independentes.
+
+
+## Assistente/Notificações v1.55 — 2026-10-10 06:36:03 UTC
+
+Company agora sugere /empresa-notificacoes e professional /notificacoes conforme accountType autenticado. Plural notificações reconhecido; mobile rejeita contexto/rota inconsistentes.126 testes mobile em dois fusos+5 política API locais; runner API inclui Copilot e HTTP asserções duas contas adicionadas. Branch fix/copilot-account-notification-route sobre#365; gates próprios/integração/taps pendentes. #362 APK pós-merge success; #355 retry2 APK success com smoke/artefato comprovados no journal0635Z. Próximo: onboarding/criar-conta/entrar; Visual Truth OPEN.

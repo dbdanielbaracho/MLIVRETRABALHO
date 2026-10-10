@@ -1,0 +1,9 @@
+# Assistente — Notificações por conta autenticada — v1.55
+
+Snapshot 2026-10-10 06:36:03 UTC; base #365 head74f9023ac86052c548cc540a115d693126c8cbe1 e main177f15c92323b9bf807a6cbee1c802f5953ac907. Fontes: CopilotController(accountType por memberships), copilot.ts, copilot-response.ts, wrappers/NotificationsScreen, CompanyNav/ProfessionalNav e scripts/http-copilot-e2e.sh.
+
+Defeito concreto: show_notifications sempre /notificacoes renderizava ProfessionalNav mesmo em company; plural notificações normaliza para notificacoes e não correspondia a notificacao. Correção: company /empresa-notificacoes, professional /notificacoes; plural aceito. Mobile exige company/professional da resposta, rota coerente e intents company somente no contexto company. Nenhuma nova rota, escopo SQL, regra de membership, tenant, tool ou decisão automática. execução false/controle humano/modo mantidos.
+
+API teste de Copilot existente não fazia parte do test script: inclusão dos dois arquivos no comando tsc comum torna 5 testes obrigatórios. Teste novo cobre notificações/avisos/mensagem nova e linguagem crítica; mobile novo cobre rotas opostas, conta ausente/desconhecida e intent empresarial fora de conta. Fixtures mobile existentes atualizadas com accountType real do contrato. HTTP E2E acrescenta asserções de interpretação dos dois usuários já provisionados pelo teste, sem requisição extra de mensagem/export/pagamento.
+
+Prova local:126/126 mobile UTC/São Paulo;5/5 política API com import extension .ts adaptado só em scratch; bash -n do HTTP aprovado. Não declarar build/typecheck/HTTP/Postgres local. CI/APK no head próprio/pós-merge/taps físicos pendentes. Code/docs/evidence/ledger/memory/checkpoint juntos; React/RN/lockfile/backendisolamento/policies financeiras/retention/workflows preservados. Visual Truth OPEN.

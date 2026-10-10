@@ -1,14 +1,11 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
-Snapshot 2026-10-10 06:30:59 UTC; escopo exclusivo dbdanielbaracho/MLIVRETRABALHO. Reconsultar README/Documento/commit/PR/gates antes de agir; não repetir merges.
+Snapshot 2026-10-10 06:36:03 UTC; exclusivo dbdanielbaracho/MLIVRETRABALHO. Reconsultar README/Documento/main/PR/diff/gates exatos antes de agir. Não repetir merges já confirmados.
 
-Main177f15c92323b9bf807a6cbee1c802f5953ac907 (#363/v1.52); sete integrações #356–#360/#362/#363 confirmadas, trees/parents e CI/APK pré-merge exatos verificados. Sete CIs pós-merge success, APKs ainda em execução. Histórico/resultados/runs completos: [journal06:30](EXECUCAO_VERIFICADA_2026-10-10_0630Z.md) e06:21.
+Main177f15c92323b9bf807a6cbee1c802f5953ac907 (#363/v1.52); sete merges #356–#360/#362/#363 com árvores/parents/gates próprios verificados. Sete CIs pós-merge success; #362 APK success; demais APKs em acompanhamento. #355 retry2 success/artefato/smoke confirmado; #353 retry2 em execução. Runs/provas no [journal0635Z](EXECUCAO_VERIFICADA_2026-10-10_0635Z.md), históricos0621Z/0630Z preservados.
 
-#364 aberto fix/privacy-request-read-states head8031ab71459bc76ae7452adc43a7a10d65fffcfd; CI38030714422 success/APK38030714543 em execução. Próximo filho fix/privacy-manual-action-acknowledgements sobre esse head, Documento v1.54/code/evidence/memory neste ciclo;125 testes UTC/São Paulo; PR/run/commit ainda a consultar pela branch neste snapshot. Não declarar integração/CI/APK antes de prova.
+Fila: #364 head8031ab71459bc76ae7452adc43a7a10d65fffcfd CI38030714422 success/APK38030714543 em execução; #365 head74f9023ac86052c548cc540a115d693126c8cbe1 CI38031304477/APK38031304499 em execução, base#364. Novo filho fix/copilot-account-notification-route sobre#365 com v1.55/126 testes mobile UTC/São Paulo/5 política API locais/HTTP asserções e docs neste ciclo. PR/head/run próprios a consultar pela branch após publicação. Nenhum desses merges afirmado neste snapshot.
 
-1. Acompanhar APKs pós-merge/run IDs no journal e #35338023554678/#35538023598566 tentativa2; nenhum novo retry sem diagnóstico. CI em execução não é bloqueio nem conclusão.
-2. Revisar/integrar #364 só gates próprios SHA exato success; conferir tree/parents e pós-merge. Depois retarget filho main em ordem, comparar preservação e gates exatos próprios; integrar apenas aprovado.
-3. Próxima auditoria independente: onboarding/cadastro; sugestão Notificações company/professional no Copilot, comparar contratos/rotas existentes; verificar cobertura de telas/estados/jornadas contra PNG original. Não inventar tarefa para atividade.
-4. Visual Truth físico/piloto/pentest #220; provider/contrato/sandbox PSP/FIN-RISK #228/#215/#219; WEB-ARCH #224/custo separados. Sem operações reais DSAR/PSP/dinheiro/infra paga. Bloqueio de item não bloqueia projeto. Manter continuidade sem exigir continuar, sem alegar execução permanente em tempo real.
+Próxima ação concreta: acompanhar/diagnosticar pendentes; integrar364 somente verde exato/revisão, árvore/parents/pós-merge. Retarget365 main após364, conferir tree preservada/gates exactos e integrar aprovado; repetir para filho. Não confiar só mergeable false eventual nem substituir gates do novo SHA pelos ancestrais.
 
-Checkpoint anterior preservado em CHECKPOINT_ANTES_2026-10-10_0630Z.md; históricos0621Z/0232Z/0318Z/0324Z intactos.
+Próxima auditoria independente: apps/mobile/app/criar-conta.tsx e entrar.tsx, AuthController/AuthService/scripts HTTP onboarding e ack/session/routing atuais. Checar dados/estados/jornadas/capturas completas contra desenho original; Visual Truth OPEN até prova física/completa. #220 dispositivo/piloto/pentest; #228/#215/#219 provider/FIN-RISK; #224 WEB-ARCH/custos separados. Nenhuma operação real DSAR/PSP/dinheiro/paiddeploy. Bloqueio parcial não para alternativas, manter rotina, sem exigir continuar nem alegar execução permanente em tempo real.

@@ -56,8 +56,8 @@ export function interpretCopilotIntent(text: string, accountType?: string): Omit
   if (includesAny(input, ['agenda', 'proximo trabalho', 'proximo turno', 'meu turno', 'meus turnos'])) {
     return { intent: 'show_schedule', confidence: 0.88, reasons: ['pedido sobre agenda/turnos'], suggestedRoute: '/agenda' };
   }
-  if (includesAny(input, ['notificacao', 'aviso', 'mensagem nova'])) {
-    return { intent: 'show_notifications', confidence: 0.85, reasons: ['pedido sobre notificações'], suggestedRoute: '/notificacoes' };
+  if (includesAny(input, ['notificacao', 'notificacoes', 'aviso', 'mensagem nova'])) {
+    return { intent: 'show_notifications', confidence: 0.85, reasons: ['pedido sobre notificações'], suggestedRoute: accountType === 'company' ? '/empresa-notificacoes' : '/notificacoes' };
   }
   if (includesAny(input, ['trabalho', 'vaga', 'oportunidade', 'turno disponivel'])) {
     return { intent: 'find_jobs', confidence: 0.86, reasons: ['pedido sobre oportunidades de trabalho'], suggestedRoute: '/trabalhos' };
@@ -80,3 +80,4 @@ export function copilotPolicy(input: { text: string; accountType?: string; mode?
     requiresHumanConfirmation: criticalLanguage || mode === 'automatic'
   };
 }
+
