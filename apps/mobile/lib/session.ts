@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import {createSessionQueue,persistVerifiedSession,clearExpectedSession} from './session-transaction';
+import {createSessionQueue,persistVerifiedSession,clearExpectedSession,persistExpectedTenant} from './session-transaction';
 import type {SessionState,SessionAdapter} from './session-transaction';
 const queue=createSessionQueue();
 
@@ -61,4 +61,10 @@ export const clearSessionForAuthorization = (authorization?:string) => {
   if(authorization&&!authorization.startsWith('Bearer '))return Promise.resolve('stale' as const);
   const expectedToken=authorization?.slice(7)||null;
   return queue.run(()=>clearExpectedSession(verifiedStorage,expectedToken));
+};
+export const saveTenantForContext = (tenantId:string,headers:Record<string,string>,isCurrent:()=>boolean) => {
+ const authorization=headers.Authorization;
+ if(!authorization?.startsWith('Bearer ')||!authorization.slice(7))return Promise.resolve('stale' as const);
+ const expected={token:authorization.slice(7),tenantId:headers['x-tenant-id']||null};
+ return queue.run(()=>persistExpectedTenant(verifiedStorage,tenantId,expected,isCurrent));
 };

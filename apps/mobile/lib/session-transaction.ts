@@ -15,3 +15,9 @@ export async function persistVerifiedSession(adapter:SessionAdapter,next:Session
 export async function clearExpectedSession(adapter:SessionAdapter,expectedToken:string|null):Promise<'cleared'|'stale'|'failed'>{
  try{const previous=await adapter.read();if(previous.token!==expectedToken)return 'stale';await adapter.write({token:null,tenantId:null});const actual=await adapter.read();return actual.token===null&&actual.tenantId===null?'cleared':'failed';}catch{return 'failed';}
 }
+// Membership acknowledgement may select a company only while its original
+// token AND company selection still apply. Run within the shared session queue.
+export async function persistExpectedTenant(adapter:SessionAdapter,tenantId:string,expected:SessionState,isCurrent:()=>boolean):Promise<'saved'|'stale'|'failed'>{
+ if(!expected.token||!tenantId.trim())return 'failed';
+ try{const current=await adapter.read();if(current.token!==expected.token||current.tenantId!==expected.tenantId||!isCurrent())return 'stale';return await persistVerifiedSession(adapter,{token:expected.token,tenantId},expected.token,isCurrent);}catch{return 'failed';}
+}
