@@ -1,47 +1,47 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { authHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
 
-type Result = {
-  intent: string;
-  confidence: number;
-  reasons: string[];
-  suggestedRoute: string | null;
-  executionAllowed: false;
-  requiresHumanConfirmation: boolean;
-  provider: string;
-  providerConfigured: boolean;
-  disclaimer: string;
-};
+import {interpretRequest} from '../lib/copilot-response';
+import type {Interpretation} from '../lib/copilot-response';
 
 export default function Copilot() {
   const router = useRouter();
   const [text, setText] = useState('');
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResult] = useState<Interpretation | null>(null);
   const [message, setMessage] = useState('');
 
+  const pending=useRef(false),epoch=useRef(0),suggestion=useRef(0),controller=useRef<AbortController|null>(null),sourceAuthorization=useRef<string|undefined>(undefined);
+  const [busy,setBusy]=useState(false);
+  useFocusEffect(useCallback(()=>{
+    ++epoch.current;setResult(null);sourceAuthorization.current=undefined;
+    return ()=>{++epoch.current;controller.current?.abort();pending.current=false;setBusy(false);sourceAuthorization.current=undefined;setResult(null);};
+  },[]));
   async function interpret() {
-    const value = text.trim();
-    if (!value) {
-      setMessage('Escreva o que você quer fazer.');
-      return;
-    }
-    setMessage('Entendendo seu pedido...');
-    const headers = await authHeaders();
-    const response = await fetch(apiUrl('/copilot/interpret'), {
-      method: 'POST',
-      headers: { ...headers, 'content-type': 'application/json' },
-      body: JSON.stringify({ text: value, mode: 'assisted' })
-    });
-    if (!response.ok) {
-      setResult(null);
-      setMessage('Não foi possível interpretar o pedido agora.');
-      return;
-    }
-    setResult(await response.json());
-    setMessage('');
+    if(pending.current)return;
+    pending.current=true;++suggestion.current;setBusy(true);setResult(null);setMessage('Entendendo seu pedido…');
+    const version=epoch.current,operation=new AbortController();controller.current=operation;
+    const timer=setTimeout(()=>operation.abort(),15000);
+    try{
+      const headers=await authHeaders();
+      if(version!==epoch.current||operation.signal.aborted)return;
+      const next=await interpretRequest((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),text);
+      if(version!==epoch.current)return;
+      if(next.status==='ready'){sourceAuthorization.current=headers.Authorization;setResult(next.data);setMessage('');}
+      else setMessage(next.status==='invalid'?'Escreva um pedido de até 2000 caracteres.':'Não foi possível interpretar o pedido. Tente novamente.');
+    }catch{if(version===epoch.current)setMessage('Não foi possível interpretar o pedido. Tente novamente.');}
+    finally{clearTimeout(timer);if(version===epoch.current){pending.current=false;setBusy(false);}}
+  }
+  async function nextStep(){
+    const route=result?.suggestedRoute,version=epoch.current,selection=suggestion.current;if(!route||pending.current)return;
+    try{
+      const current=await authHeaders();
+      if(version!==epoch.current||selection!==suggestion.current)return;
+      if(current.Authorization!==sourceAuthorization.current){setResult(null);setMessage('A sessão mudou. Interprete o pedido novamente.');return;}
+      router.push(route);
+    }catch{if(version===epoch.current)setMessage('Não foi possível abrir o próximo passo. Tente novamente.');}
   }
 
   return (
@@ -51,13 +51,15 @@ export default function Copilot() {
         <Text style={s.subtitle}>Diga o que você precisa em linguagem simples. O assistente orienta e sugere o próximo passo, mas não confirma trabalho, paga, bloqueia ou pune ninguém sozinho.</Text>
         <TextInput
           value={text}
-          onChangeText={setText}
+          onChangeText={value=>{++suggestion.current;setText(value);setResult(null);setMessage('');}}
+          editable={!busy}
+          maxLength={2000}
           placeholder="Ex.: Quero ver meu próximo trabalho"
           multiline
           style={s.input}
         />
-        <TouchableOpacity style={s.primary} onPress={() => void interpret()}>
-          <Text style={s.primaryText}>Continuar</Text>
+        <TouchableOpacity style={s.primary} accessibilityRole="button" disabled={busy} accessibilityState={{disabled:busy,busy}} onPress={() => void interpret()}>
+          <Text style={s.primaryText}>{busy?'Interpretando…':'Continuar'}</Text>
         </TouchableOpacity>
         {message ? <Text>{message}</Text> : null}
         {result ? (
@@ -65,7 +67,7 @@ export default function Copilot() {
             <Text style={s.heading}>Entendi</Text>
             <Text>{result.reasons[0] ?? 'Pedido interpretado.'}</Text>
             {result.suggestedRoute ? (
-              <TouchableOpacity style={s.secondary} onPress={() => router.push(result.suggestedRoute as never)}>
+              <TouchableOpacity style={s.secondary} accessibilityRole="button" onPress={() => void nextStep()}>
                 <Text style={s.secondaryText}>Ir para o próximo passo</Text>
               </TouchableOpacity>
             ) : (
