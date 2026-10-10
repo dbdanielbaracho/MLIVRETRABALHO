@@ -1,4 +1,23 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.74
+
+**Status:** NORMATIVO — DELTA SOBRE v1.73
+**Data:** 2026-10-10
+
+## Suporte: vínculo tenant real
+
+A auditoria do escopo v1.16–v1.18 encontrou defeito concreto no SupportController atual: create verificava membership no tenant do pedido, mas inseria assignmentId sem consultar o trabalho naquele contexto. Migração0060 tem FK simples para work_assignments(id); RLS de support_cases restringe seu próprio tenant_id, sem provar tenant do objeto referenciado. Portanto a validação de membership/RLS do caso isoladamente não impede um vínculo cruzado informado no corpo.
+
+Correção: validar o contrato existente e consultar work_assignments por tenant_id+id dentro da mesma DatabaseService.tenant (app_runtime/RLS) antes do INSERT. Assignment ausente naquele contexto retorna support_assignment_not_found (400) sem INSERT; UUID malformado/branco retorna support_case_invalid antes da transação. Caso sem assignment continua permitido. Descrição mantém limite real do schema de4000 caracteres Unicode (não só unidades UTF-16), campos/categorias/prioridades existentes e defaultnormal; dados malformados retornam400. Membership, reporter filtering, owner/admin review, status/SLA e política intratenant inalterados.
+
+Não há migração, correção/varredura de dados reais ou mudança de permissões/RLS; isto corrige a entrada HTTP, sem alegar que a FK simples virou uma constraint tenant-composta. Pentest independente e auditoria de vínculos persistidos permanecem distintos; nenhuma exposição/ausência de exploração real foi presumida. Nenhuma abertura/revisão de suporte ou operação real foi executada.
+
+## Validação e continuidade
+
+Quatro testes novos do helper de input passaram localmente, incluindo limite Unicode; quatro testes novos da criação passaram exercitando o corpo real de create extraído do controller, com auth/DB simulados (sem decorators/Nest runtime). Estes quatro fixtures também estão em support.controller.test.ts para instanciar o controller inteiro no CI com dependências reais; mock não prova PostgreSQL/RLS. API test script registra explicitamente ambos os arquivos TS. Bash -n do novo HTTP E2E passou.
+
+HTTP E2E adicionado ao CI usa API local+PostgreSQL efêmero com duas empresas e profissional, cria assignment por onboarding legítimo, rejeita associação B→assignmentA/IDs inexistentes e malformados/descrição longa sem alterar contagens, valida casos vinculados e sem vínculo, filtro reporter e revisão admin/cross-tenant. Sucesso HTTP/DB ainda PENDENTE até run próprio, não simulado como PASS local. Nenhum endpoint público de produção usado.
+
+238 testes mobile UTC/SP já comprovados em #384; nenhum arquivo mobile alterado nesta correção. React19.1.4/RN0.81.6, lockfile/deps e JSX preservados; package API muda apenas script de testes, workflow CI ganha uma chamada de regressão. Próprio CI exato obrigatório para type/build/testes/migrações/HTTP/DB. Workflow standalone possui path filter e esta fatia só altera API/CI/script/docs; APK próprio pode não ser disparado (aplicabilidade N/A documentada, sem inventar run). Os APKs próprios de #383/#384 e seus pós-gates permanecem obrigatórios antes de integrar antecessores; verificar subtree mobile idêntica ao pai e gates realmente emitidos após publicar/retarget. Não usar ausência de APK como sucesso ou para fechar Visual Truth.
 
 Snapshot 2026-10-10 11:40 UTC. Main 516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca (#382/v1.71), árvore 27f168902ad888017df379526437690202204473. #376–#382 merges conferidos; não repetir. Provas próprias e pós #375 no journal1129Z; CIs pós #376–#382 success.
 
@@ -8,22 +27,6 @@ Snapshot 2026-10-10 11:40 UTC. Main 516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca (#3
 Pós #376 APK38047970768 tentativa1 FAILURE: job114201236096 aprovou build; Android anunciou boot após472175ms, mas input keyevent82 do runner falhou Broken pipe/exit224 em2026-10-10T11:37:33Z, antes de iniciar o script que instala/abre o aplicativo. Nenhum DEVICE_SMOKE_OK no job. Diagnóstico/upload preservado: artefato ZIP11668597419 sha256:e80f2911d73490f73ddcf7d0d7fdb28a6592922a38ccfc5b11b1f1bebc6b196a, vinculado ao SHA847992ad32b078d0bdffe734510ba9113f7e6304, não expirado. Um único retry controlado deste job pós-merge no mesmo SHA solicitado11:38:51UTC; tentativa2 agora in_progress. É outro run em relação ao retry próprio376 anterior; não repetir qualquer tentativa recuperada ou esta tentativa2 sem novo diagnóstico/decisão. Histórico preservado, sem transformar falha de infraestrutura em PASS do app.
 
 Pós APKs #37738048000637/#37838048052704/#37938048058091/#38038048063298/#38138048068335/#38238048073303 permanecem em execução na última consulta. Acompanhar conclusão e conferir job/smoke/artefato/head; pré-merge não prova pós-merge. Nenhum novo gate físico/externo fechado.
-
-## Item atual
-
-A auditoria do escopo v1.16–v1.18 encontrou defeito concreto no SupportController atual: create verificava membership no tenant do pedido, mas inseria assignmentId sem consultar o trabalho naquele contexto. Migração0060 tem FK simples para work_assignments(id); RLS de support_cases restringe seu próprio tenant_id, sem provar tenant do objeto referenciado. Portanto a validação de membership/RLS do caso isoladamente não impede um vínculo cruzado informado no corpo.
-
-Correção: validar o contrato existente e consultar work_assignments por tenant_id+id dentro da mesma DatabaseService.tenant (app_runtime/RLS) antes do INSERT. Assignment ausente naquele contexto retorna support_assignment_not_found (400) sem INSERT; UUID malformado/branco retorna support_case_invalid antes da transação. Caso sem assignment continua permitido. Descrição mantém limite real do schema de4000 caracteres Unicode (não só unidades UTF-16), campos/categorias/prioridades existentes e defaultnormal; dados malformados retornam400. Membership, reporter filtering, owner/admin review, status/SLA e política intratenant inalterados.
-
-Não há migração, correção/varredura de dados reais ou mudança de permissões/RLS; isto corrige a entrada HTTP, sem alegar que a FK simples virou uma constraint tenant-composta. Pentest independente e auditoria de vínculos persistidos permanecem distintos; nenhuma exposição/ausência de exploração real foi presumida. Nenhuma abertura/revisão de suporte ou operação real foi executada.
-
-Quatro testes novos do helper de input passaram localmente, incluindo limite Unicode; quatro testes novos da criação passaram exercitando o corpo real de create extraído do controller, com auth/DB simulados (sem decorators/Nest runtime). Estes quatro fixtures também estão em support.controller.test.ts para instanciar o controller inteiro no CI com dependências reais; mock não prova PostgreSQL/RLS. API test script registra explicitamente ambos os arquivos TS. Bash -n do novo HTTP E2E passou.
-
-HTTP E2E adicionado ao CI usa API local+PostgreSQL efêmero com duas empresas e profissional, cria assignment por onboarding legítimo, rejeita associação B→assignmentA/IDs inexistentes e malformados/descrição longa sem alterar contagens, valida casos vinculados e sem vínculo, filtro reporter e revisão admin/cross-tenant. Sucesso HTTP/DB ainda PENDENTE até run próprio, não simulado como PASS local. Nenhum endpoint público de produção usado.
-
-238 testes mobile UTC/SP já comprovados em #384; nenhum arquivo mobile alterado nesta correção. React19.1.4/RN0.81.6, lockfile/deps e JSX preservados; package API muda apenas script de testes, workflow CI ganha uma chamada de regressão. Próprio CI exato obrigatório para type/build/testes/migrações/HTTP/DB. Workflow standalone possui path filter e esta fatia só altera API/CI/script/docs; APK próprio pode não ser disparado (aplicabilidade N/A documentada, sem inventar run). Os APKs próprios de #383/#384 e seus pós-gates permanecem obrigatórios antes de integrar antecessores; verificar subtree mobile idêntica ao pai e gates realmente emitidos após publicar/retarget. Não usar ausência de APK como sucesso ou para fechar Visual Truth.
-
-## Próxima ação concreta
 
 Publicar fix/support-assignment-tenant-boundary sobre #384 d2146ef4a84a025567d52af7cb2b506462e29836, base fix/startup-session-pair. Consultar próprio PR/head/árvore/diff/run após publicação; registro antecede commit, sem SHA circular fictício. Integrar #383 e #384 em ordem somente com próprios CI/APK success, fresh main/base/merge-base e diff; conferir árvore/pais/main e pós. Retarget filho para main só depois, reconsultar eventual mergeable e reconciliar conflito real preservando antecessores e novos gates. Para esta correção de API, exigir próprio CI success incluindo HTTP suporte e verificar aplicabilidade do standalone pelos paths/subtree intactos. Pós-merge exige CI no SHA real e deploy/Production Truth quando aplicável; não inferir deploy só de merge.
 
