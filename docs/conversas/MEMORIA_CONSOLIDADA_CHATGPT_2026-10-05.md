@@ -513,3 +513,9 @@ Signinackidentity/email/token/membership verificado e guard15s/foco; saveSession
 ## Perfil/saída v1.59 e #365 integrado — 2026-10-10 07:02:38 UTC
 
 #365merge1c89d39cc4b25c66104eb7ffb06cf4cae5125e0e v1.54; headCIAPKpass/tree/parents/smokeartifact comprovadosjournal0700Z; pós-runs a consultar. PerfilGETIDreal/PUTcampos exatos/auth/foco/draft e saída local condicional em Perfil/Empresa/Privacidade,10 testesnovos/162locaisUTC/SP. Branch fix/profile-verified-fields-and-session-exit sobre369/gates própriospendentes.367headCIAPKpassaguardando366;próximoPainel/Agenda/Membros ack/contexto porcontratos. Nenhumaoperação real;VisualTruthOPEN.
+
+
+## Membros v1.60 e integrações verificadas — 2026-10-10 07:13:49 UTC
+
+#366 merge4a8f652806bf995b6ef751d5ab7e20542a41545f e #367 merge61341937bdf54ce15d6cf211061051b1c074baed confirmados com headCIAPK/árvore/pais; pós-CIs364–367success/APKsemexecução. Todos356–360/362/363pósCIAPKsuccess, inclusive357/358retry2. #368 APK ANR com.android.phone startup/Events0/pidvazio após installSuccess; único retrycontrolado sameSHA solicitado, merge retido; alternativas independentes continuam.
+Membroscorrige seleção local do tenant de convite antigo após login/troca empresa/foco, fila/releitura/rollback/ackdistinto,6novostestes/168locaisUTCSP; branchfix/members-verified-tenant-selection após370, gatesprópriospendentes. Backendpapéis/e-mail/owner/RLS intactos. Provasjournal0712Z. PróximoEmpresaInicioACK/signout eAgendaACK/contexto porcontratos. VisualTruthOPEN, sem operaçõesreais/custos/PSP.

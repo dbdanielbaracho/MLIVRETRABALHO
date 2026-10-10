@@ -2,7 +2,7 @@ import {router,useFocusEffect} from 'expo-router';
 import {useCallback,useRef,useState} from 'react';
 import {Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View} from 'react-native';
 import {apiUrl} from '../lib/api';
-import {authHeaders,authenticatedTenantHeaders,saveTenant} from '../lib/session';
+import {authenticatedTenantHeaders,saveTenantForContext} from '../lib/session';
 import {loadingManagement,loadManagement,sameManagementContext,generateInvitation,acceptInvitation,revokeInvitation} from '../lib/company-members';
 import type {Request} from '../lib/company-members';
 export default function Membros(){
@@ -13,9 +13,10 @@ export default function Membros(){
  function requestWith(headers:Record<string,string>,signal:AbortSignal):Request{return async(path,body,method)=>fetch(apiUrl(path),{method:method??(body?'POST':'GET'),headers:{...headers,...(body?{'content-type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal});}
  async function load(manual=false,expected?:Record<string,string>){
   if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,old=context.current,op=operation();context.current=null;setData(loadingManagement());
-  try{const headers=await authenticatedTenantHeaders();if(old&&!sameManagementContext(headers,old))setGeneratedCode('');
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||seq!==sequence.current||op.controller.signal.aborted)return;if(old&&!sameManagementContext(headers,old))setGeneratedCode('');
    const result=await loadManagement(async(path,body)=>{if(!headers['x-tenant-id']||(expected&&!sameManagementContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,body);});
-   if(version===generation.current&&seq===sequence.current){setData(result);context.current=result.members.status==='ready'&&result.invitations.status==='ready'?headers:null;if(manual&&context.current){setInviteUncertain(false);setMessage('');}}
+   const current=await authenticatedTenantHeaders();
+   if(version===generation.current&&seq===sequence.current){if(!sameManagementContext(current,headers)){setGeneratedCode('');if(current.Authorization!==headers.Authorization){setEmail('');setInviteCode('');}setData({members:{status:'error'},invitations:{status:'error'}});setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}setData(result);context.current=result.members.status==='ready'&&result.invitations.status==='ready'?headers:null;if(manual&&context.current){setInviteUncertain(false);setMessage('');}}
   }catch{if(version===generation.current&&seq===sequence.current)setData({members:{status:'error'},invitations:{status:'error'}});}
   finally{op.finish();}
  }
@@ -23,8 +24,9 @@ export default function Membros(){
  async function createInvite(){
   const displayed=context.current;if(pending.current||inviteUncertain||!displayed||!canManage)return;
   pending.current=true;setBusy(true);const version=generation.current,op=operation();setGeneratedCode('');
-  try{const headers=await authenticatedTenantHeaders();if(!sameManagementContext(headers,displayed)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameManagementContext(headers,displayed)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}
    const result=await generateInvitation(requestWith(headers,op.controller.signal),displayed['x-tenant-id'],email.trim().toLowerCase(),role);if(version!==generation.current)return;
+   const after=await authenticatedTenantHeaders();if(version!==generation.current)return;if(!sameManagementContext(after,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou. Atualize para conferir os convites.');return;}
    if(result.status==='created'){const current=await authenticatedTenantHeaders();if(version!==generation.current)return;if(!sameManagementContext(current,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou. Atualize para conferir os convites.');return;}setGeneratedCode(result.inviteCode);setMessage('Convite criado para '+result.email+'.');await load(false,displayed);}
    else if(result.status==='rejected')setMessage('Não foi possível gerar o convite.');
    else{setInviteUncertain(true);setMessage('O resultado do convite não foi confirmado. Atualize a lista antes de gerar novamente.');}
@@ -33,18 +35,20 @@ export default function Membros(){
  }
  async function acceptInvite(){
   if(pending.current||!inviteCode.trim())return;pending.current=true;setBusy(true);const version=generation.current,op=operation(),code=inviteCode.trim();
-  try{const headers=await authHeaders(),result=await acceptInvitation(requestWith(headers,op.controller.signal),code);if(version!==generation.current)return;
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!headers.Authorization){setMessage('Entre na sua conta para aceitar o convite.');return;}const result=await acceptInvitation(requestWith(headers,op.controller.signal),code);if(version!==generation.current)return;
    if(result.status!=='accepted'){setMessage(result.message==='invitation_email_mismatch'?'Este convite pertence a outro e-mail.':result.message==='invitation_existing_membership_role_change_forbidden'?'Você já participa desta empresa com outro papel. Alterações de papel precisam seguir o fluxo de gestão da empresa.':'Não foi possível confirmar o aceite. Confira o código e sua participação na empresa antes de tentar novamente.');return;}
-   const current=await authHeaders();if(version!==generation.current)return;if(current.Authorization!==headers.Authorization){setMessage('A sessão mudou. Atualize para conferir sua participação na empresa.');return;}
-   await saveTenant(result.tenantId);setInviteCode('');setMessage('Convite aceito como '+result.role+'.');router.replace('/empresa-inicio');
+   const saved=await saveTenantForContext(result.tenantId,headers,()=>version===generation.current&&!op.controller.signal.aborted);if(version!==generation.current)return;
+   if(saved!=='saved'){setMessage(saved==='stale'?'A sessão ou empresa mudou. Confira sua participação antes de selecionar a empresa.':'O aceite foi confirmado, mas não foi possível salvar a empresa neste aparelho. O código foi mantido; confira sua participação antes de tentar novamente.');return;}
+   const current=await authenticatedTenantHeaders();if(version!==generation.current)return;if(current.Authorization!==headers.Authorization||current['x-tenant-id']!==result.tenantId){setMessage('A sessão ou empresa mudou. Confira sua participação na empresa.');return;}
+   setInviteCode('');setMessage('Convite aceito como '+result.role+'.');router.replace('/empresa-inicio');
   }catch{if(version===generation.current)setMessage('Falha de conexão. O código foi mantido; confira o resultado antes de tentar novamente.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
  }
  async function revoke(id:string){
   const displayed=context.current;if(pending.current||!displayed||!canManage||!invitations.some(i=>i.id===id&&!i.acceptedAt&&!i.revokedAt))return;
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const headers=await authenticatedTenantHeaders();if(!sameManagementContext(headers,displayed)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}
-   const ok=await revokeInvitation(requestWith(headers,op.controller.signal),id);if(version===generation.current){setMessage(ok?'Convite revogado.':'Não foi possível confirmar a revogação. Atualize a lista para conferir.');if(ok)setGeneratedCode('');await load(false,displayed);}
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameManagementContext(headers,displayed)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}
+   const ok=await revokeInvitation(requestWith(headers,op.controller.signal),id),current=await authenticatedTenantHeaders();if(version===generation.current){if(!sameManagementContext(current,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou. Atualize para conferir os convites.');return;}setMessage(ok?'Convite revogado.':'Não foi possível confirmar a revogação. Atualize a lista para conferir.');if(ok)setGeneratedCode('');await load(false,displayed);}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize membros e convites para conferir.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
  }
