@@ -56,7 +56,7 @@ LAST_TOKEN="$FIRST_TOKEN"
 for n in $(seq 1 11); do LAST_TOKEN="$(login_token)"; done
 ACTIVE_SESSIONS="$(psql "$DB_URL" -tAc "SELECT count(*) FROM sessions WHERE identity_id='$IDENTITY_ID' AND expires_at>now()")"
 test "$ACTIVE_SESSIONS" = "10"
-FIRST_HASH="$(node -e 'const c=require("node:crypto");process.stdout.write(c.createHash("sha256").update(process.argv[1]).digest("hex"))' "$FIRST_TOKEN")"
+FIRST_HASH="$(node -e 'const c=require("node:crypto");process.stdout.write(c.createHash("sha256").update(process.argv[1]).digest("hex"))' -- "$FIRST_TOKEN")"
 test "$(psql "$DB_URL" -tAc "SELECT count(*) FROM sessions WHERE identity_id='$IDENTITY_ID' AND token_hash='$FIRST_HASH'")" = "0"
 
 curl -sS --fail-with-body -X POST "${BASE_URL%/}/v1/auth/signout" -H "authorization: Bearer $LAST_TOKEN" -H 'content-type: application/json' --data '{}' >/dev/null

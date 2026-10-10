@@ -21,3 +21,5 @@ test('failed interest stays unconfirmed and the existing idempotent endpoint can
  assert.equal(await sendInterest(async()=>response({},false),'j'),'error');
  assert.equal(await sendInterest(async()=>response({jobId:'j',professionalId:'p',status:'interested'}),'j'),'interested');
 });
+test('missing job identity prevents interest POST instead of calling a malformed route',async()=>{let calls=0;for(const id of ['',' '])assert.equal(await sendInterest(async()=>{calls++;return response({})},id),'error');assert.equal(calls,0);});
+test('successful HTTP cannot confirm interest without the actual professional identifier',async()=>{for(const professionalId of ['',' ',null])assert.equal(await sendInterest(async()=>response({jobId:'j',professionalId,status:'interested'}),'j'),'error');});

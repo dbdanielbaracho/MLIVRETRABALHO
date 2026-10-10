@@ -70,7 +70,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
       - name: Run tests
-        run: pnpm test
+        run: |
+          pnpm test
+          node --test scripts/tests/http-auth-rate-limit.test.mjs
 
       - name: Verify production migration runner
         env:
