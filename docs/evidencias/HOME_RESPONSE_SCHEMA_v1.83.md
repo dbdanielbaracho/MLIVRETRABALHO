@@ -1,14 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
-
-Snapshot 2026-10-10 12:49UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76), código/contratos atuais auditados no head393; README/Documento vigente/memória/checkpoint já lidos no mesmoSHA main. #351–#387 integradas/histórico pós-merge preservado; não repetir operações antigas.
-
-PR388 ownhead af42616736b1850d7549073d89cd5500dbe13880/base main/CI38050976291 SUCCESS; APK38050976276 tentativa2/job114214397242 smoke em execução/buildPASS. Falha1infra e único retry mantidos no journal1235Z. PR389 ownhead71987cb7beebfba1f64a15a3dcbb6e00471fc6ea/basefix/profile-availability-response-deadline: CI38051472605/APK38051472614 SUCCESS, smoke/artefato11670726043/head/digest conferidos no journal1246Z. PR390 ownhead97bfd3f8344cc5447b6b0eae1e83a2e098ad9a65/basefix/signup-response-deadline: CI38051941067/APK38051941014 SUCCESS, smoke/artefato11670101921 no journal1240Z. PR391 ownhead d3811eb5bbcb119b59fb2e9d769f1c242a0e5c6e/basefix/agenda-company-response-deadline: CI38052634310 SUCCESS275mobile73API, APK38052634388 em execução. PR392 ownhead35119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/basefix/assignment-response-schema: CI38053028411 SUCCESS81API275mobile/HTTPperfil PASS12:45:27.3421765Z; APK N/A mobiletreeidêntica39101ebadd68b56c3239bde95db27a690a3cc0f6875. Correção8conteúdos remotos conferidos byte a byte/diffintegral revisado; falhaTS2532nohead35ab... CI38052927578 histórica preservada, não retry.
-
-PR393 ownhead27144fbfa6fb9e7ce114b831d0f668e110b8af2d/tree6225d322e06bd10eaa3cef80a5b5e942c3388bfc/pai35119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/basefix/profile-input-validation: CI38053297959 eAPK38053298010 em execução.14arquivos remotos byte a byte iguais e diff produto integral revisado.280local é dohead393, main ainda238mobile/73API. Nenhuma dessas PRs integrada neste snapshot; não usar gate de descendente para predecessor pendente. Próprio head/PR/gates desta nova fatia serão consultados depois de publicar, sem gate/número/SHA futuro inventado.
-
-## Item atual — dados reais e estados da página inicial
+# Schema factual da home — v1.83
 
 profissional-inicio.tsx já consome APIs reais, usa runForSession com foco/deadline/identidade e oferece loading/erro/retry/vazio. Auditoria do código confirmou estas guardas finais; não refazê-las por analogia. Porém professional-home.ts aceitava IDs/títulos/status vazios, timestamps ilegíveis em assignments/earnings e disponibilidade invertida/igual como ready. Cálculos filtravam essas entradas e podiam mostrar0trabalhos/ganhos ou pedir cadastro de disponibilidade em vez de erro factual. home-cards.ts também aceitava oportunidades com referência vazia/datas inválidas.
 
@@ -16,7 +6,11 @@ Helpers agora validam strings obrigatórias não vazias e datas interpretáveis 
 
 6regressões novas no fluxo real dos loaders (5home+1cards) comprovam malformedassignment não pronta/zero, earningsdate/status não zero, availability inválida não vazio, nome branco, controlepositivo real/opaque/future/null/offset/cents e sucesso parcial Passport/opportunity. Suíte mobile completa286/286 PASSUTC e America/Sao_Paulo;280anteriores+6novas. Campos/calculadores válidos existentes sem mudança. CI/typecheck/build/export e APK standalone/smoke/artefato próprios ainda obrigatórios no novoSHA; prova local não é renderização física.
 
-## Próxima ação concreta e retomada
+Snapshot 2026-10-10 12:49UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76), código/contratos atuais auditados no head393; README/Documento vigente/memória/checkpoint já lidos no mesmoSHA main. #351–#387 integradas/histórico pós-merge preservado; não repetir operações antigas.
+
+PR388 ownhead af42616736b1850d7549073d89cd5500dbe13880/base main/CI38050976291 SUCCESS; APK38050976276 tentativa2/job114214397242 smoke em execução/buildPASS. Falha1infra e único retry mantidos no journal1235Z. PR389 ownhead71987cb7beebfba1f64a15a3dcbb6e00471fc6ea/basefix/profile-availability-response-deadline: CI38051472605/APK38051472614 SUCCESS, smoke/artefato11670726043/head/digest conferidos no journal1246Z. PR390 ownhead97bfd3f8344cc5447b6b0eae1e83a2e098ad9a65/basefix/signup-response-deadline: CI38051941067/APK38051941014 SUCCESS, smoke/artefato11670101921 no journal1240Z. PR391 ownhead d3811eb5bbcb119b59fb2e9d769f1c242a0e5c6e/basefix/agenda-company-response-deadline: CI38052634310 SUCCESS275mobile73API, APK38052634388 em execução. PR392 ownhead35119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/basefix/assignment-response-schema: CI38053028411 SUCCESS81API275mobile/HTTPperfil PASS12:45:27.3421765Z; APK N/A mobiletreeidêntica39101ebadd68b56c3239bde95db27a690a3cc0f6875. Correção8conteúdos remotos conferidos byte a byte/diffintegral revisado; falhaTS2532nohead35ab... CI38052927578 histórica preservada, não retry.
+
+PR393 ownhead27144fbfa6fb9e7ce114b831d0f668e110b8af2d/tree6225d322e06bd10eaa3cef80a5b5e942c3388bfc/pai35119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/basefix/profile-input-validation: CI38053297959 eAPK38053298010 em execução.14arquivos remotos byte a byte iguais e diff produto integral revisado.280local é dohead393, main ainda238mobile/73API. Nenhuma dessas PRs integrada neste snapshot; não usar gate de descendente para predecessor pendente. Próprio head/PR/gates desta nova fatia serão consultados depois de publicar, sem gate/número/SHA futuro inventado.
 
 Publicar fix/home-response-schema sobre ownhead39327144fbfa6fb9e7ce114b831d0f668e110b8af2d/tree6225d322e06bd10eaa3cef80a5b5e942c3388bfc, basefix/passport-verified-history. Consultar head/tree/PR/runs reais e diff/bytes remotos.286mobile/81API esperado só comprovado no próprioCI; APK/smoke/upload/artefato obrigatório.
 

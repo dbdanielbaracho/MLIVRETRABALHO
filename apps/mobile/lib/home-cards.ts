@@ -5,11 +5,13 @@ export type HomeCards={opportunities:Section<HomeOpportunity[]>;passport:Section
 type Request=(path:string)=>Promise<{ok:boolean;status?:number;json():Promise<unknown>}>;
 export const loadingHomeCards=():HomeCards=>({opportunities:{status:'loading'},passport:{status:'loading'}});
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
+const nonempty=(x:unknown):x is string=>typeof x==='string'&&!!x.trim();
+const optionalDate=(x:unknown)=>x==null||(typeof x==='string'&&Number.isFinite(new Date(x).getTime()));
 const text=(x:unknown)=>x==null||typeof x==='string';
 export async function loadHomeCards(request:Request):Promise<HomeCards>{
  async function opportunities():Promise<Section<HomeOpportunity[]>>{
   try{const r=await request('/jobs');if(!r.ok)return {status:'error'};const d:unknown=await r.json();
-   if(!Array.isArray(d)||!d.every(x=>record(x)&&typeof x.id==='string'&&typeof x.title==='string'&&text(x.location)&&text(x.workCity)&&text(x.startsAt)&&text(x.endsAt)&&(x.payCents==null||Number.isSafeInteger(x.payCents))))return {status:'error'};
+   if(!Array.isArray(d)||!d.every(x=>record(x)&&nonempty(x.id)&&nonempty(x.title)&&text(x.location)&&text(x.workCity)&&optionalDate(x.startsAt)&&optionalDate(x.endsAt)&&(x.payCents==null||Number.isSafeInteger(x.payCents))))return {status:'error'};
    return {status:'ready',data:d};
   }catch{return {status:'error'};}
  }
