@@ -655,3 +655,9 @@ Reconsulta histórica pós-merge351–355 em12:54UTC: CI/jobsteps SUCCESS nos SH
 |355|6f8bea84a8fbb61f91a3ef057b9b9c75b75caa85|38023598557/114129633716|38023598566attempt2/114149969814|06:31:17.8143751|11661758941/8230509f7451e9308e47b0546d92c101756e67366ebf2bf5539fcf8b84f2187b|
 
 Digests ZIP, não APK individual. Não refazer antigosmerges/retries históricos; revalidar o produto integrado com gates atuais e manter VisualTruth aberto.
+
+
+## v1.85 — suporte e integração388–395 /2026-10-10 17:17UTC
+
+[Suporteconsulta](PROFESSIONAL_SUPPORT_HISTORY_v1.85.md), [integrações/gates pós](INTEGRACAO_388_395_2026-10-10_1717Z.md), journal1717Z; requisitos v1.85. Snapshot2026-10-10 17:17UTC: main9ed1859... v1.84 revalidada, README/Documento/memória/checkpoint lidos. PRs388–395 integradas e CI pós-merge de todas SUCCESS; APK pós389–391/393/394 SUCCESS comsmoke/artefato, pós388falhainfra/únicoretry solicitado. Prova detalhada docs/evidencias/INTEGRACAO_388_395_2026-10-10_1717Z.md. Não repetir integrações.
+
