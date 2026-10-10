@@ -1,10 +1,12 @@
 import type {Section} from './professional-home';
 export type Assignment={id:string;tenantId:string;status:string;title:string;location?:string|null;startsAt?:string|null;endsAt?:string|null;payCents?:number|null;companyRatingScore?:number|null};
 type Response={ok:boolean;json():Promise<unknown>};
+const nonempty=(value:unknown):value is string=>typeof value==='string'&&!!value.trim();
+const optionalDate=(value:unknown)=>value==null||(typeof value==='string'&&Number.isFinite(new Date(value).getTime()));
 export async function loadAgenda(request:()=>Promise<Response>,isCurrent:()=>boolean=()=>true):Promise<Section<Assignment[]>>{
  try{
   if(!isCurrent())return {status:'error'};const response=await request();if(!isCurrent())return {status:'error'};if(!response.ok)return {status:'error'};const data:unknown=await response.json();if(!isCurrent())return {status:'error'};
-  if(!Array.isArray(data)||!data.every(a=>a&&typeof a==='object'&&typeof a.id==='string'&&typeof a.tenantId==='string'&&typeof a.status==='string'&&typeof a.title==='string'&&(a.location==null||typeof a.location==='string')&&(a.startsAt==null||typeof a.startsAt==='string')&&(a.endsAt==null||typeof a.endsAt==='string')&&(a.payCents==null||Number.isSafeInteger(a.payCents))&&(a.companyRatingScore==null||(Number.isInteger(a.companyRatingScore)&&a.companyRatingScore>=1&&a.companyRatingScore<=5))))return {status:'error'};
+  if(!Array.isArray(data)||!data.every(a=>a&&typeof a==='object'&&!Array.isArray(a)&&nonempty(a.id)&&nonempty(a.tenantId)&&nonempty(a.status)&&nonempty(a.title)&&(a.location==null||typeof a.location==='string')&&optionalDate(a.startsAt)&&optionalDate(a.endsAt)&&(a.payCents==null||Number.isSafeInteger(a.payCents))&&(a.companyRatingScore==null||(Number.isInteger(a.companyRatingScore)&&a.companyRatingScore>=1&&a.companyRatingScore<=5))))return {status:'error'};
   return {status:'ready',data};
  }catch{return {status:'error'};}
 }

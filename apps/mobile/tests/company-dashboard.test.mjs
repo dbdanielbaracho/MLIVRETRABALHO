@@ -42,3 +42,27 @@ test('deadline during the last company section invalidates the whole expired sna
  await Promise.resolve();await Promise.resolve();controller.abort();resolve([completed]);
  assert.deepEqual(await result,{dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});
 });
+
+test('active company records need nonblank actual references and displayed identity/title/state',async()=>{
+ for(const patch of [{id:''},{professionalId:' '},{professionalName:''},{title:' '},{status:''}]){
+  const result=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[{...active,...patch}],'/company/dashboard/completed':[completed]}));
+  assert.deepEqual(result.active,{status:'error'});assert.deepEqual(result.dashboard,{status:'ready',data:dashboard});assert.deepEqual(result.completed,{status:'ready',data:[completed]});
+ }
+});
+test('active company date errors are not ready/empty and do not erase other valid sections',async()=>{
+ for(const value of ['bad-date',' ','',42,{}]){
+  const result=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[{...active,startsAt:value}],'/company/dashboard/completed':[completed]}));
+  assert.deepEqual(result.active,{status:'error'});assert.equal(result.completed.status,'ready');assert.equal(result.dashboard.status,'ready');
+ }
+});
+test('completed company records reject blank references/names and unparseable completion timestamps',async()=>{
+ for(const patch of [{id:' '},{professionalId:''},{professionalName:' '},{title:''},{completedAt:'bad-date'},{completedAt:''},{completedAt:42}]){
+  const result=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[active],'/company/dashboard/completed':[{...completed,...patch}]}));
+  assert.deepEqual(result.completed,{status:'error'});assert.equal(result.active.status,'ready');
+ }
+});
+test('company snapshot keeps valid dates and genuine optional nulls unchanged, including nonempty future states',async()=>{
+ const a={...active,id:'opaque:assignment',status:'future_status',startsAt:'2026-10-10T19:00:00-03:00'},c={...completed,completedAt:'2026-10-10T23:00:00Z'};
+ const result=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[a],'/company/dashboard/completed':[c]}));
+ assert.deepEqual(result,{dashboard:{status:'ready',data:dashboard},active:{status:'ready',data:[a]},completed:{status:'ready',data:[c]}});
+});
