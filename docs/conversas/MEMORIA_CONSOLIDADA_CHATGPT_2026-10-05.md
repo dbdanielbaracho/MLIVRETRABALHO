@@ -519,3 +519,8 @@ Signinackidentity/email/token/membership verificado e guard15s/foco; saveSession
 
 #366 merge4a8f652806bf995b6ef751d5ab7e20542a41545f e #367 merge61341937bdf54ce15d6cf211061051b1c074baed confirmados com headCIAPK/árvore/pais; pós-CIs364–367success/APKsemexecução. Todos356–360/362/363pósCIAPKsuccess, inclusive357/358retry2. #368 APK ANR com.android.phone startup/Events0/pidvazio após installSuccess; único retrycontrolado sameSHA solicitado, merge retido; alternativas independentes continuam.
 Membroscorrige seleção local do tenant de convite antigo após login/troca empresa/foco, fila/releitura/rollback/ackdistinto,6novostestes/168locaisUTCSP; branchfix/members-verified-tenant-selection após370, gatesprópriospendentes. Backendpapéis/e-mail/owner/RLS intactos. Provasjournal0712Z. PróximoEmpresaInicioACK/signout eAgendaACK/contexto porcontratos. VisualTruthOPEN, sem operaçõesreais/custos/PSP.
+
+
+## Painel Empresa v1.61 — 2026-10-10 07:18:22 UTC
+
+Rating e preferred apenas ack real + Authorization/tenant antes/depois; GET/conversa contextual e signout condicional, refresh manual.8 novos testes/176 locais UTC/SP; branchfix/company-dashboard-verified-actions após371, gates próprios pendentes. #371head1e3b9f0d6bbce76d7f693be91fa4faba1c8d529d CI38033728516success/APK38033728471running. #364 pósCIAPKsuccess/artefato/smokejournal0717Z. #368retry2running, alternativas continuam; próximaAgenda contrato/ACK. Backend/policy/RLS/deps preservados;nenhumaoperaçãoreal. VisualTruthOPEN.

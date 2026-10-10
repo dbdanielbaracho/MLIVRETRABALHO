@@ -1,11 +1,12 @@
 import { Link, router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { authenticatedTenantHeaders, clearSession, clearTenant } from '../lib/session';
+import { authenticatedTenantHeaders, clearSessionForAuthorization } from '../lib/session';
 import { apiUrl } from '../lib/api';
 import { CompanyNav } from '../components/CompanyNav';
 
 import { loadCompanyDashboard,loadingCompany } from '../lib/company-dashboard';
+import {sameCompanyContext,rateCompletedAssignment,preferProfessional} from '../lib/company-dashboard-actions';
 
 const statusLabel: Record<string, string> = {
   confirmed: 'Confirmado',
@@ -18,51 +19,60 @@ export default function EmpresaInicio() {
   const [data,setData]=useState(loadingCompany);
   const [tenantId,setTenantId]=useState('');
   const [message,setMessage]=useState('');
-  const pendingActions=useRef(new Set<string>()),requestId=useRef(0),exiting=useRef(false);
+  const pendingActions=useRef(new Set<string>()),requestId=useRef(0),exiting=useRef(false),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),displayedContext=useRef<Record<string,string>|null>(null);
   const [pending,setPending]=useState<string[]>([]),[signingOut,setSigningOut]=useState(false);
-  const load=useCallback(async(focusSignal?:AbortSignal)=>{
-    const id=++requestId.current;setData(loadingCompany());setTenantId('');
-    const controller=new AbortController(),cancel=()=>controller.abort();
-    focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
-    const timeout=setTimeout(()=>controller.abort(),15000);
+  function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+  const load=useCallback(async()=>{
+    const id=++requestId.current,version=epoch.current,op=operation();displayedContext.current=null;setData(loadingCompany());setTenantId('');
     try{
       const headers=await authenticatedTenantHeaders();
-      const next=await loadCompanyDashboard(path=>fetch(apiUrl(path),{headers,signal:controller.signal}));
-      if(id===requestId.current&&!focusSignal?.aborted){setData(next);setTenantId(headers['x-tenant-id']??'');}
-    }catch{
-      if(id===requestId.current&&!focusSignal?.aborted)setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});
-    }finally{clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
+      if(id!==requestId.current||version!==epoch.current||op.controller.signal.aborted)return;
+      if(!sameCompanyContext(headers,headers))throw Error('company_context_missing');
+      const next=await loadCompanyDashboard(path=>fetch(apiUrl(path),{headers,signal:op.controller.signal}));
+      const current=await authenticatedTenantHeaders();
+      if(id===requestId.current&&version===epoch.current){
+        if(!sameCompanyContext(current,headers)){setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});setMessage('A empresa ou sessão mudou. Atualize o painel.');return;}
+        displayedContext.current=headers;setData(next);setTenantId(headers['x-tenant-id']);
+      }
+    }catch{if(id===requestId.current&&version===epoch.current)setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});}
+    finally{op.finish();}
   },[]);
-  useFocusEffect(useCallback(()=>{const controller=new AbortController();void load(controller.signal);return()=>{requestId.current++;controller.abort();setData(loadingCompany());setTenantId('');};},[load]));
+  useFocusEffect(useCallback(()=>{++epoch.current;setMessage('');void load();return()=>{++epoch.current;++requestId.current;for(const c of controllers.current)c.abort();controllers.current.clear();displayedContext.current=null;pendingActions.current.clear();exiting.current=false;setPending([]);setSigningOut(false);setData(loadingCompany());setTenantId('');};},[load]));
   const dashboard=data.dashboard.status==='ready'?data.dashboard.data:null;
   const active=data.active.status==='ready'?data.active.data:[];
   const completed=data.completed.status==='ready'?data.completed.data:[];
-  async function action(key:string,path:string,body:object,success:string,reload=false){
-    if(pendingActions.current.has(key)||exiting.current||!tenantId)return;
+  async function action(kind:'rating'|'preferred',id:string,score?:number){
+    const key=kind+':'+id,displayed=displayedContext.current;
+    if(pendingActions.current.has(key)||exiting.current||!displayed||!tenantId||!completed.some(item=>kind==='rating'?item.id===id:item.professionalId===id))return;
     pendingActions.current.add(key);setPending([...pendingActions.current]);setMessage('');
-    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+    const version=epoch.current,op=operation();
     try{
-      const headers=await authenticatedTenantHeaders();
-      if(headers['x-tenant-id']!==tenantId){setMessage('A empresa ativa mudou. Atualize o painel antes de tentar novamente.');return;}
-      const response=await fetch(apiUrl(path),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
-      if(!response.ok){setMessage('Não foi possível confirmar a ação. Tente novamente.');return;}
-      setMessage(success);if(reload)await load();
-    }catch{setMessage('Falha de conexão. Não foi possível confirmar a ação. Tente novamente.');}
-    finally{clearTimeout(timeout);pendingActions.current.delete(key);setPending([...pendingActions.current]);}
+      const headers=await authenticatedTenantHeaders();if(version!==epoch.current||op.controller.signal.aborted)return;
+      if(!sameCompanyContext(headers,displayed)){setMessage('A empresa ou sessão mudou. Atualize o painel antes de tentar novamente.');return;}
+      const request=async(path:string,body:Record<string,string|number>)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(body),signal:op.controller.signal});
+      const result=kind==='rating'?await rateCompletedAssignment(request,id,score??NaN):await preferProfessional(request,id);
+      const current=await authenticatedTenantHeaders();if(version!==epoch.current)return;
+      if(!sameCompanyContext(current,displayed)){setMessage('A empresa ou sessão mudou. Atualize para conferir o resultado.');return;}
+      if(result.status==='confirmed'){setMessage(kind==='rating'?'Avaliação salva.':'Profissional adicionado aos preferidos.');if(kind==='rating')await load();}
+      else setMessage(result.status==='rejected'?'A ação não foi aceita. Atualize os dados antes de tentar novamente.':kind==='rating'?'Não foi possível confirmar a avaliação. Atualize o painel para conferir.':'Não foi possível confirmar a inclusão. Confira seus preferidos em Talentos.');
+    }catch{if(version===epoch.current)setMessage('Não foi possível confirmar a ação. Confira os dados antes de tentar novamente.');}
+    finally{op.finish();if(version===epoch.current){pendingActions.current.delete(key);setPending([...pendingActions.current]);}}
   }
   async function signout(){
     if(exiting.current||pendingActions.current.size)return;exiting.current=true;setSigningOut(true);
-    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
-    try{const headers=await authenticatedTenantHeaders();await fetch(apiUrl('/auth/signout'),{method:'POST',headers,signal:controller.signal});}
-    catch{ /* Local credentials are cleared even offline. */ }
-    finally{clearTimeout(timeout);await Promise.all([clearSession(),clearTenant()]);router.replace('/');}
+    const version=epoch.current,displayed=displayedContext.current,op=operation();let authorization:string|undefined,started=false;
+    try{const headers=await authenticatedTenantHeaders();if(version!==epoch.current||op.controller.signal.aborted)return;if(displayed&&!sameCompanyContext(headers,displayed)){setMessage('A empresa ou sessão mudou. Atualize o painel antes de sair.');return;}authorization=headers.Authorization;started=true;await fetch(apiUrl('/auth/signout'),{method:'POST',headers,signal:op.controller.signal});}
+    catch{ /* The requested session can still be cleared locally when offline. */ }
+    finally{op.finish();if(started){const result=await clearSessionForAuthorization(authorization);if(version===epoch.current){if(result==='cleared')router.replace('/');else setMessage(result==='stale'?'A sessão mudou. A nova conta foi preservada.':'Não foi possível confirmar a saída neste aparelho. Tente sair novamente.');}}if(version===epoch.current){exiting.current=false;setSigningOut(false);}}
   }
-
-  function openConversation(assignmentId: string) {
-    if (!tenantId) {
+  async function openConversation(assignmentId: string) {
+    const displayed=displayedContext.current,version=epoch.current;
+    if (!tenantId||!displayed||!active.some(item=>item.id===assignmentId)) {
       setMessage('Não foi possível identificar a empresa ativa.');
       return;
     }
+    const current=await authenticatedTenantHeaders();if(version!==epoch.current)return;
+    if(!sameCompanyContext(current,displayed)){setMessage('A empresa ou sessão mudou. Atualize o painel antes de abrir a conversa.');return;}
     router.push({ pathname: '/conversa', params: { assignmentId, tenantId } });
   }
 
@@ -70,7 +80,7 @@ export default function EmpresaInicio() {
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
         <Text style={s.brand}>MLIVRE<Text style={s.purple}>TRABALHO</Text></Text><Text style={s.title}>Painel da empresa</Text><Text style={s.subtitle}>Resumo da sua operação</Text>
-        {[data.dashboard,data.active,data.completed].some(section=>section.status==='error') ? <Pressable accessibilityRole="button" onPress={()=>void load()}><Text>Falha ao carregar parte do painel. Toque para tentar novamente.</Text></Pressable> : null}
+        <Pressable accessibilityRole="button" disabled={signingOut||pending.length>0} onPress={()=>void load()}><Text>{[data.dashboard,data.active,data.completed].some(section=>section.status==='error')?'Falha ao carregar parte do painel. Toque para tentar novamente.':'Atualizar painel'}</Text></Pressable>
         <View style={s.summaryCard}>
           <Text style={s.summaryLabel}>TRABALHOS ABERTOS</Text>
           <Text style={s.summaryValue}>{dashboard?.openJobs ?? '—'}</Text>
@@ -97,7 +107,7 @@ export default function EmpresaInicio() {
             <Text>{item.location ?? 'Local não informado'}</Text>
             <Text>Status: {statusLabel[item.status] ?? item.status}</Text>
             {item.startsAt ? <Text>Início: {new Date(item.startsAt).toLocaleString()}</Text> : null}
-            <Pressable style={s.inlineButton} onPress={() => openConversation(item.id)}>
+            <Pressable style={s.inlineButton} onPress={() => void openConversation(item.id)}>
               <Text style={s.bold}>Abrir conversa</Text>
             </Pressable>
           </View>
@@ -114,12 +124,12 @@ export default function EmpresaInicio() {
             <Text>{item.ratingScore ? `Sua avaliação: ${item.ratingScore} ★` : 'Ainda não avaliado'}</Text>
             <View style={s.ratingRow}>
               {[1, 2, 3, 4, 5].map(score => (
-                <Pressable key={score} style={s.ratingButton} accessibilityRole="button" disabled={!tenantId||pending.includes('rating:'+item.id)||signingOut} accessibilityState={{disabled:!tenantId||pending.includes('rating:'+item.id)||signingOut,busy:pending.includes('rating:'+item.id)}} onPress={()=>void action('rating:'+item.id,'/assignments/'+item.id+'/rating',{score},'Avaliação salva.',true)}>
+                <Pressable key={score} style={s.ratingButton} accessibilityRole="button" disabled={!tenantId||pending.includes('rating:'+item.id)||signingOut} accessibilityState={{disabled:!tenantId||pending.includes('rating:'+item.id)||signingOut,busy:pending.includes('rating:'+item.id)}} onPress={()=>void action('rating',item.id,score)}>
                   <Text style={s.bold}>{score} ★</Text>
                 </Pressable>
               ))}
             </View>
-            <Pressable style={s.preferredButton} accessibilityRole="button" disabled={!tenantId||pending.includes('preferred:'+item.professionalId)||signingOut} accessibilityState={{disabled:!tenantId||pending.includes('preferred:'+item.professionalId)||signingOut,busy:pending.includes('preferred:'+item.professionalId)}} onPress={()=>void action('preferred:'+item.professionalId,'/company/talent-pools',{professionalId:item.professionalId,pool:'preferred'},'Profissional adicionado aos preferidos.')}>
+            <Pressable style={s.preferredButton} accessibilityRole="button" disabled={!tenantId||pending.includes('preferred:'+item.professionalId)||signingOut} accessibilityState={{disabled:!tenantId||pending.includes('preferred:'+item.professionalId)||signingOut,busy:pending.includes('preferred:'+item.professionalId)}} onPress={()=>void action('preferred',item.professionalId)}>
               <Text style={s.bold}>Adicionar aos preferidos</Text>
             </Pressable>
           </View>
