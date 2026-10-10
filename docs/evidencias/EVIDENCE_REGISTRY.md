@@ -754,3 +754,8 @@ SUPPORT_RECOVERY_WITHOUT_CONTEXT_v1.93.md: retomada independente de listas, modo
 ## 2026-10-10 1830Z —v1.94
 
 CAPABILITY_INPUT_SHAPE_v1.94.md: TypeError antigo reproduzido em fixtures;9testes novos/39localAPI e bash-n aprovados; shape400/auth/perfil real/catálogo ativo textIDs preservados. CI119API/377mobile pendente, APK próprioN/A condicionado paths/tree. Preferências sem contrato próprio não inventada. #400merged5675327972869b16b0641a738d88f99cfb1a53b0/pósCIpass/ownAPKpass; #399pósAPK38074363965/job114278113410PASS/ZIP11678204886/digestf75356f54853369f8e3150addb7f950fe0611242eae53978358306fb813257a9 no head real. #404CI38075494028/job114281481865PASS377/110/4/3; natives401/403/404/pós400 pendentes. Checkpoint/journal1830Z.
+
+
+## 2026-10-10 1836Z —v1.95
+
+CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51localAPI e bash-n aprovados, parsers/profissional/tenant/completed/proposed preservados. CI131API/377mobile/HTTPnegativos pendentes; APK próprioN/A condicionado paths/tree. #405CI38076148645/job114283385677 aprovado377/119/4/3/HTTPshape400/cadastro intacto; mobiletree39e121e416614fa92ce16775d19e65648492d9f3 igual404, APK N/A. Natives401/403/404/pós400 continuam execução. Preferências/autoridade sem membership/VisualTruth físico seguem abertos. Checkpoint/journal1836Z.

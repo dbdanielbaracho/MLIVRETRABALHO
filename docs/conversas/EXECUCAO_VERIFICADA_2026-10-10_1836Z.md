@@ -1,6 +1,8 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
+# Execução verificada —2026-10-10 1836Z
 
-## Estado verificado
+Exclusivamente MLIVRETRABALHO. Fontes README/main89/memória/checkpoint e predecessores, v1.18/CareerConversionController/migration0057/CI e contrato HTTP de suporte atuais. Registro analítico recuperável, não transcrição inventada.
+
+## Estado
 
 Verificação em2026-10-10,18:35 UTC: main5675327972869b16b0641a738d88f99cfb1a53b0/treec92641013a9228efe3ae44932e7ec3302438a680, Documento vigente v1.89. #396–400 integradas; não repetir. #400 pais[960d3f14c4d59018f9949569c930a6f9e4b82ef8,9eeaf89ca2e327bc756610ebd4aebb414840c21b], árvore idêntica ao head aprovado; main e PR merged confirmados.
 #399 pré-merge: CI38072920913/job114273878473 aprovado316mobile/105API/4web/3CLI; APK38072921018/job114273878889 aprovado, instalação18:02:14.6272057Z e DEVICE_SMOKE_OK sem Metro18:03:02.0665653Z. ZIP11678426523, sha256:51d009e3f264ede4b18f9363ff9797d482dbb39b2ace968909d1656c5c05a898, não expirado, head7bd91e24c1c0428d0ea8caa762fe995ba0271374. Pós-merge: CI38074363947/job114278113646 success, passos e log completo conferidos:316mobile/105API/4web/3CLI, typecheck/build/export/migrations/contratos HTTP. APK pós39938074363965/job114278113410 aprovado no SHA real960d3f14c4d59018f9949569c930a6f9e4b82ef8, todos os passos/logs: instalação18:27:23.1883760Z e DEVICE_SMOKE_OK sem Metro18:28:29.6869422Z. ZIP11678204886, sha256:f75356f54853369f8e3150addb7f950fe0611242eae53978358306fb813257a9, não expirado/head exato. Pós-gates399 comprovados no emulador; físico permanece aberto.
@@ -22,7 +24,7 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 #405 head7cc6f149b79b2facabaf72db9ab53e70e2b46d2b/treefa1842da48675baded1fd93a694ace9598f1d080, basefix/support-recovery-without-context. CI38076148645/job114283385677 aprovado377mobile/119API/4web/3CLI, passos e logs completos, typecheck/build/export/migrations/HTTPPostgreSQL com badshapes400/auth401 e cadastro canônico intacto. 14arquivos remotos byteidênticos e patch revisto. apps/mobile de404 e405 ambos39e121e416614fa92ce16775d19e65648492d9f3; paths API/script/docs não acionam workflow standalone: APK próprioN/A comprovado, gates natives anteriores não dispensados. Ainda não integrada.
 
 
-## Item atual
+## Defeito/provas
 
 Auditoria de CareerConversionController e migration0057 identificou corpo sem validação runtime: proposal null/nota numérica e response null causam TypeError. Reproduzido no método anterior em fixture explícita de auth/db sem decorators; não se afirma HTTP antigo real. assignment e conversion ids têm schema UUID real; role IDs de capabilities continuam texto e não são alterados.
 conversionProposalInput aceita somente objeto, assignment UUID real, modalidades existentes temp_to_hire/permanent e nota string/null/ausente com trim/null anterior. ConversionDecisionInput aceita apenas decisão humana accepted/declined em objeto. Conversão id malformada é rejeitada antes de query UUID do alvo, após autenticação/decisão/perfil profissional efetivo.
@@ -32,12 +34,10 @@ Não altera modalidades/status/compromisso, note dedup ONCONFLICT, autorização
 12regressões novas (4 parser+8 controller) cobrem roots/notas/UUIDs, defaults/trim, decisões existentes, auth/tenant/role antes do shape, assignment completedreal, id profissional atual ignorando injeção, statusproposed e erro DB. PASS51/51 conjunto localAPI (39anteriores+12), adapter Node/stubs Nest explícitos; bash-n aprovado. HTTPPostgreSQL existente de suporte ampliado com propostas/respostas inválidas400, auth401, professionalrole403, assignmentconfirmed não elegível400 e referência cross-tenant400; companyA/B conversões continuam vazias antes/depois, sem criar compromisso. HTTP real novo ainda pendente de CI, não provado localmente.
 CI próprio esperado131API/377mobile/4web/3CLI, todos typecheck/build/export/migrations/HTTP. Fatia API/script/docs: APK próprioN/A condicionado à prova remota de paths/mobiletree idêntica à405; natives401/403/404/pós400 continuam obrigatórios. React19.1.4/RN0.81.6/lockfile/standalone/canônico/tenant/RLS preservados.
 
-## Dependências
+## Dependências/retomada
 
 Preferências não tem contrato próprio nos schemas/APIs auditados: definir campos/semântica/escopo/persistência/efeito em matching antes de inventar modelo ou confundir fatos de perfil/availability/capabilities. Ajuda nova sem membership depende de autoridade por identidade/isolamento/retensão aprovada, sem tenant global arbitrário ou bypass RLS. Ambos são bloqueios parciais; não impedem correção de erros concretos das APIs existentes.
 VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStore/teclado/payload/restart, pentest, provider/TRUST, PSP/FIN-RISK, WEB-ARCH e piloto/distribuição seguem abertos e separados. Sem dinheiro real, custo, infraestrutura/deploy pagos. Não interpretar CI/emulador como aceite físico integral ou merge como deploy.
-
-## Próxima ação concreta
 
 Publicar fix/career-conversion-input sobre ownhead4057cc6f149b79b2facabaf72db9ab53e70e2b46d2b/treefa1842da48675baded1fd93a694ace9598f1d080, basefix/capability-input-shape. Conferir head/tree/bytes/patch/paths/mobiletree e CI131API/377mobile; não antecipar número/SHA/resultado.
 Acompanhar natives401/403/404/pós400. Integrar401,402,403,404,405 e esta fatia em ordem, com retargetmain/reconsulta eventual/merge-base tree igual main, diff fresco e próprios gates no SHA exato. Pós-merge exige pais/árvore/main +CI/APK real. #400 e ancestrais já integrados;399pós e388retry comprovados, não repetir.

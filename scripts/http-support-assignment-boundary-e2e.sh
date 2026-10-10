@@ -158,6 +158,25 @@ test "$(printf '%s' "$REPLAY" | json_field status)" = reviewing
 request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 3
 echo 'PASS: support intent sequential/concurrent retry, payload conflict, reporter/tenant isolation and immutable database guards'
 
+# Existing direct-hire endpoints reject malformed inputs without creating any commitment.
+request GET /v1/company/conversions "$TOKEN_A" "$TENANT_A" | assert_count 0
+for invalid in 'null' '[]' '{"assignmentId":"bad","modality":"permanent"}' '{"assignmentId":1,"modality":"permanent"}' "$(node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],modality:"permanent",note:1}))' -- "$ASSIGNMENT_A")"; do
+ expect_status conversion-shape 400 POST /v1/company/conversions "$TOKEN_A" "$TENANT_A" "$invalid"
+done
+expect_status conversion-auth 401 POST /v1/company/conversions invalid-token "$TENANT_A" 'null'
+expect_status conversion-company-role 403 POST /v1/company/conversions "$TOKEN_P" "$TENANT_A" 'null'
+CONVERSION_BODY="$(node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],modality:"permanent"}))' -- "$ASSIGNMENT_A")"
+expect_status conversion-not-completed 400 POST /v1/company/conversions "$TOKEN_A" "$TENANT_A" "$CONVERSION_BODY"
+expect_status conversion-cross-tenant 400 POST /v1/company/conversions "$TOKEN_B" "$TENANT_B" "$CONVERSION_BODY"
+for invalid in 'null' '[]' '{"decision":1}' '{"decision":"withdrawn"}'; do
+ expect_status conversion-decision 400 POST /v1/career/conversions/cccccccc-dddd-4eee-8fff-aaaaaaaaaaaa/respond "$TOKEN_P" '' "$invalid"
+done
+expect_status conversion-id 400 POST /v1/career/conversions/not-a-uuid/respond "$TOKEN_P" '' '{"decision":"accepted"}'
+expect_status conversion-response-auth 401 POST /v1/career/conversions/not-a-uuid/respond invalid-token '' 'null'
+request GET /v1/company/conversions "$TOKEN_A" "$TENANT_A" | assert_count 0
+request GET /v1/company/conversions "$TOKEN_B" "$TENANT_B" | assert_count 0
+echo 'PASS: malformed direct-hire proposal/response, noncompleted and cross-tenant references cannot create a conversion'
+
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
 expect_status contexts-revoked 401 GET /v1/me/support-contexts "$TOKEN_P" '' ''
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'
