@@ -30,6 +30,17 @@ test "$(printf '%s' "$CRITICAL" | json_field executionAllowed)" = "false"
 test "$(printf '%s' "$CRITICAL" | json_field requiresHumanConfirmation)" = "true"
 test "$(printf '%s' "$CRITICAL" | json_field providerConfigured)" = "false"
 
+
+PRO_NOTIFICATIONS="$(request POST /v1/copilot/interpret "$PRO_TOKEN" '{"text":"minhas notificações","mode":"assisted"}')"
+test "$(printf '%s' "$PRO_NOTIFICATIONS" | json_field accountType)" = "professional"
+test "$(printf '%s' "$PRO_NOTIFICATIONS" | json_field suggestedRoute)" = "/notificacoes"
+test "$(printf '%s' "$PRO_NOTIFICATIONS" | json_field executionAllowed)" = "false"
+
+COMPANY_NOTIFICATIONS="$(request POST /v1/copilot/interpret "$COMPANY_TOKEN" '{"text":"minhas notificações","mode":"assisted"}')"
+test "$(printf '%s' "$COMPANY_NOTIFICATIONS" | json_field accountType)" = "company"
+test "$(printf '%s' "$COMPANY_NOTIFICATIONS" | json_field suggestedRoute)" = "/empresa-notificacoes"
+test "$(printf '%s' "$COMPANY_NOTIFICATIONS" | json_field executionAllowed)" = "false"
+
 request POST /v1/auth/signout "$PRO_TOKEN" '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '{}' >/dev/null
 

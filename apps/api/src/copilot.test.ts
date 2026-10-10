@@ -31,3 +31,20 @@ test('unknown language does not invent a critical action', () => {
   assert.equal(unknown.suggestedRoute, null);
   assert.equal(unknown.executionAllowed, false);
 });
+
+
+test('notifications keep the authenticated account navigation and do not execute any action', () => {
+  for (const text of ['minhas notificações', 'mostrar avisos', 'mensagem nova']) {
+    const professional = copilotPolicy({text, accountType:'professional'});
+    const company = copilotPolicy({text, accountType:'company'});
+    assert.equal(professional.intent, 'show_notifications');
+    assert.equal(professional.suggestedRoute, '/notificacoes');
+    assert.equal(company.intent, 'show_notifications');
+    assert.equal(company.suggestedRoute, '/empresa-notificacoes');
+    assert.equal(company.executionAllowed, false);
+  }
+  const critical = copilotPolicy({text:'pague e mostre notificações', accountType:'company', mode:'automatic'});
+  assert.equal(critical.suggestedRoute, '/empresa-notificacoes');
+  assert.equal(critical.requiresHumanConfirmation, true);
+  assert.equal(critical.executionAllowed, false);
+});
