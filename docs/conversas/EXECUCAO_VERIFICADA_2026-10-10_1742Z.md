@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada — 2026-10-10 17:42 UTC
 
 Verificação de 2026-10-10, 17:42 UTC: main 60759a41bfb6a90aed80d85045b9ec837c50a3ad, tree f222de6ba92646e70d3aa99b5bcd513097768d5f, Documento da Verdade v1.87. #396, #397 e #398 integradas nesta etapa, em ordem, após retarget main, diff idêntico ao revisado e gates próprios no SHA exato. mergeable false imediato no retarget foi reconsultado e tornou-se true; não houve conflito real nem overwrite.
 
@@ -33,6 +31,8 @@ Dados locais ficam no SecureStore da identidade até confirmação e liberação
 18 testes novos exercitam schema/enums/Unicode, persistência antes de saved, prevenção de replacement, restart/relogin, troca de identidade, corrupção, falhas reais, escrita com ACK perdido, readback divergente, corrida de stage, ACK factual, confirmação que falha, proibição de descartar pending e liberação confirmada que verifica exclusão. PASS local 18/18 em UTC e America/Sao_Paulo com o módulo real, sem storage/HTTP externo. O adapter SecureStore em aparelho não foi executado. Total mobile esperado 316 (298+18); API continua 105, a confirmar no CI próprio.
 
 A etapa fornece armazenamento e contrato, sem habilitar interface ou POST de criação. Nenhum chamado real foi enviado. Como há novos arquivos mobile, CI e APK standalone próprios são obrigatórios no SHA exato. React 19.1.4, RN 0.81.6, lockfile, tenant/RLS, navegação e desenho original permanecem preservados. Nenhum PSP, dinheiro real, cobrança ou deploy pago.
+
+Fonte support-input.ts conferida: schedule/payment/work_conditions/cancellation/dispute/other e normal/high/urgent; nenhuma categoria inventada. GET /me e session.ts reais já inspecionados; identidade não será derivada do tenant padrão nem de um draft. Adapter reutiliza SecureStore existente e propaga falhas. Baselines e gates continuam separados.
 
 ## Próxima ação concreta
 
