@@ -378,3 +378,7 @@ Contratos GET/roles/RLS reconsultados. Foco/retry/schema/15s/loading/erro/vazio 
 ## 2026-10-09 — Membros/convites tratados e retry Android controlado, v1.44
 
 Contratos owner-only/rotação/aceite/email/membership lidos, preservados. Estados/read schema/foco/retry/15s, guards síncronos e contexto tenant/identity. Geração unknown requer refresh explícito antes de novo POST, sem distribuir código; ack validado/limpeza blur. Aceite valida accepted/tenant/role/sessão antes do estado local; revoke preserva bodyless POST e ack. 63 testes UTC/São Paulo; gates próprios pendentes, após #353. #343 APK 38014252773 tentativa1 falhou settings Broken pipe exit224 dentro emulador antes do script; job 114100922318 repetido no mesmo SHA 4f39c2c92750c3a5c70bae21986d823a1eeff637. Não é aprovação nem crash app comprovado. Relatos ainda pendente; Visual Truth OPEN.
+
+## 2026-10-09 — Relatos de segurança, v1.45
+
+Estados independentes/schema/foco/retry/15s/epoch/cancelamento, snapshot tenant+identity/guard/ack e releitura. Decisão continua humana manual com payloads/notas/backend/transições existentes, sem penalidade/score/acesso/pagamento automático. 69 testes UTC/São Paulo, sem relatos reais. #354 CI 38015650955 aprovado/APK 38015650952 em execução. #343 retry2 no mesmo SHA, sem bypass. Main #342 pós-merge aprovado e artefato 11655825530/zip SHA256 2b1de7f5186e03e7c9293caa3558bcb5ae50634f37137a9f5f3e9034c361a5fd provados; smoke emulador não é aceite físico. Visual Truth OPEN; próxima integração e revisão de criação/jornadas.
