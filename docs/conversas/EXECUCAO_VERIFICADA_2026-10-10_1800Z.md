@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada —2026-10-10 18:00UTC
 
 Verificação de 2026-10-10, 18:00 UTC: main60759a41bfb6a90aed80d85045b9ec837c50a3ad/treef222de6ba92646e70d3aa99b5bcd513097768d5f, Documento da Verdade v1.87. #396–398 já integradas e pais/árvores iguais aos heads aprovados conferidos em1742Z/v1.88; não repetir.
 
