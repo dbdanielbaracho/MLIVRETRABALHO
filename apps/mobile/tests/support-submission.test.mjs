@@ -116,3 +116,15 @@ test('release authenticates current owner and only clears a confirmed exact-key 
  const f=fixture();await f.store.stage(pending());assert.deepEqual(await f.flow.releaseConfirmed(key,authorization),{status:'error'});await f.store.confirm(identity,key,ack);
  f.setOwner(other);assert.deepEqual(await f.flow.releaseConfirmed(key,authorization),{status:'error'});f.setOwner(identity);assert.deepEqual(await f.flow.releaseConfirmed(key,authorization),{status:'empty',authorization});assert.equal(f.calls.every(c=>c.path==='/me'),true);
 });
+
+test('general support persists and sends actual null assignment in the explicitly supplied tenant with no default tenant header',async()=>{
+ const f=fixture(),body={...payload,assignmentId:null};const result=await f.flow.sendNew(tenant,null,body,authorization);
+ assert.equal(result.status,'confirmed');assert.equal(result.record.payload.assignmentId,null);
+ const preparation=f.calls.find(c=>c.path==='/support-cases/intent'),post=f.calls.find(c=>c.path==='/support-cases');
+ for(const call of [preparation,post]){assert.equal(call.opts.headers['x-tenant-id'],tenant);assert.deepEqual(JSON.parse(call.opts.body),body);}
+ assert.equal(post.opts.headers['idempotency-key'],key);
+});
+test('switching from work to general context preserves the same pending work barrier and cannot prepare a replacement',async()=>{
+ const f=fixture();await f.store.stage(pending());const result=await f.flow.sendNew(other,null,{...payload,assignmentId:null,description:'General draft'},authorization);
+ assert.equal(result.status,'pending');assert.deepEqual(result.record,pending());assert.deepEqual(f.calls.map(c=>c.path),['/me']);
+});

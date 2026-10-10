@@ -6,10 +6,11 @@ import {apiUrl} from '../lib/api';
 import {supportIntentStore} from '../lib/support-intent-storage';
 import {createSupportSubmission,type SupportSubmissionResult} from '../lib/support-submission';
 import type {Assignment} from '../lib/agenda';
+import type {SupportContext} from '../lib/support-contexts';
 const categories=[['schedule','Horários'],['payment','Pagamento'],['work_conditions','Condições de trabalho'],['cancellation','Cancelamento'],['dispute','Conflito'],['other','Outro assunto']] as const;
 const priorities=[['normal','Normal'],['high','Alta'],['urgent','Urgente']] as const;
-type Props={assignment:Assignment;workItems:Assignment[];authorization:string;onRegistered():void;onContextChanged():void};
-export function SupportRequest({assignment,workItems,authorization,onRegistered,onContextChanged}:Props){
+type Props=({assignment:Assignment;generalContext?:never}|{assignment?:never;generalContext:SupportContext})&{workItems:Assignment[];authorization:string;onRegistered():void;onContextChanged():void};
+export function SupportRequest({assignment,generalContext,workItems,authorization,onRegistered,onContextChanged}:Props){
  const[view,setView]=useState<SupportSubmissionResult|{status:'loading'}>({status:'loading'}),[description,setDescription]=useState(''),[category,setCategory]=useState<string>('schedule'),[priority,setPriority]=useState<string>('normal'),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const active=useRef(false),epoch=useRef(0),running=useRef(false),callbacks=useRef({onRegistered,onContextChanged});callbacks.current={onRegistered,onContextChanged};
  const flow=useMemo(()=>createSupportSubmission({getHeaders:authHeaders,transport:(path,options)=>fetch(apiUrl(path),options),store:supportIntentStore,isCurrent:()=>active.current}),[]);
@@ -47,7 +48,9 @@ export function SupportRequest({assignment,workItems,authorization,onRegistered,
  }
  async function send(){
   if(view.status!=='empty'||!description.trim()||Array.from(description.trim()).length>4000)return;
-  return act(()=>flow.sendNew(assignment.tenantId,assignment.id,{assignmentId:assignment.id,category,description,priority},authorization));
+  const tenantId=assignment?.tenantId??generalContext?.tenantId,assignmentId=assignment?.id??null;
+  if(!tenantId)return;
+  return act(()=>flow.sendNew(tenantId,assignmentId,{assignmentId,category,description,priority},authorization));
  }
  async function retry(){
   if(view.status!=='pending'||view.record.phase!=='pending')return;
@@ -59,19 +62,20 @@ export function SupportRequest({assignment,workItems,authorization,onRegistered,
  }
  const record='record' in view?view.record:null,ack=record?.phase==='confirmed'?record.acknowledgement:null;
  const originalWork=record?workItems.find(w=>w.tenantId.toLowerCase()===record.tenantId&&w.id.toLowerCase()===record.payload.assignmentId):undefined;
+ const generalName=record&&record.payload.assignmentId===null&&generalContext&&generalContext.tenantId.toLowerCase()===record.tenantId?generalContext.displayName:null;
  const length=Array.from(description.trim()).length,canSend=view.status==='empty'&&length>0&&length<=4000&&!busy;
  return <View style={s.section}>
  <Text style={s.heading}>Solicitar ajuda</Text>
  {notice?<Text accessibilityLiveRegion="polite" style={s.text}>{notice}</Text>:null}
  {view.status==='loading'?<Text style={s.text}>Verificando suas solicitações…</Text>:view.status==='empty'?<View style={s.section}>
- <Text style={s.text}>Sua mensagem será vinculada a {assignment.title}. Escolha o assunto e descreva o que aconteceu.</Text>
+ <Text style={s.text}>{assignment?'Sua mensagem será vinculada a '+assignment.title+'.':'Sua mensagem será enviada no espaço '+generalContext?.displayName+', sem vínculo com um trabalho.'} Escolha o assunto e descreva o que aconteceu.</Text>
  <Text style={s.label}>Assunto</Text><View style={s.choices}>{categories.map(([value,label])=><Pressable key={value} style={[s.choice,category===value?s.selected:null]} accessibilityRole="button" accessibilityState={{selected:category===value,disabled:busy}} disabled={busy} onPress={()=>setCategory(value)}><Text style={s.text}>{label}</Text></Pressable>)}</View>
  <Text style={s.label}>Prioridade</Text><View style={s.choices}>{priorities.map(([value,label])=><Pressable key={value} style={[s.choice,priority===value?s.selected:null]} accessibilityRole="button" accessibilityState={{selected:priority===value,disabled:busy}} disabled={busy} onPress={()=>setPriority(value)}><Text style={s.text}>{label}</Text></Pressable>)}</View>
  <Text style={s.label}>Mensagem</Text><TextInput style={s.input} multiline editable={!busy} maxLength={8000} value={description} onChangeText={setDescription} accessibilityLabel="Mensagem da solicitação de suporte" placeholder="Descreva o que aconteceu" placeholderTextColor="#6D7A91"/>
  <Text style={s.text}>{length}/4000 caracteres</Text>
  <Pressable style={[s.button,!canSend?s.disabled:null]} accessibilityRole="button" accessibilityState={{disabled:!canSend}} disabled={!canSend} onPress={()=>void send()}><Text style={s.buttonText}>{busy?'Verificando envio…':'Enviar solicitação'}</Text></Pressable>
  </View>:record?<View style={s.section}>
- <Text style={s.label}>{originalWork?originalWork.title:'Solicitação anterior'}</Text><Text style={s.text}>Assunto: {categories.find(([value])=>value===record.payload.category)?.[1]??record.payload.category}</Text><Text style={s.text}>Prioridade: {priorities.find(([value])=>value===record.payload.priority)?.[1]??record.payload.priority}</Text><Text style={s.text}>{record.payload.description}</Text>
+ <Text style={s.label}>{originalWork?originalWork.title:generalName?'Suporte geral em '+generalName:'Solicitação anterior'}</Text><Text style={s.text}>Assunto: {categories.find(([value])=>value===record.payload.category)?.[1]??record.payload.category}</Text><Text style={s.text}>Prioridade: {priorities.find(([value])=>value===record.payload.priority)?.[1]??record.payload.priority}</Text><Text style={s.text}>{record.payload.description}</Text>
  {record.phase==='pending'?<View style={s.section}><Text style={s.text}>O registro desta solicitação ainda está sem confirmação. A mensagem continua preservada no contexto em que foi iniciada. A nova tentativa pode registrar o chamado se a anterior não foi concluída.</Text><Pressable style={[s.button,busy?s.disabled:null]} accessibilityRole="button" accessibilityState={{disabled:busy}} disabled={busy} onPress={()=>void retry()}><Text style={s.buttonText}>{busy?'Verificando solicitação…':'Tentar confirmar esta solicitação'}</Text></Pressable></View>:ack?<View style={s.section}><Text accessibilityLiveRegion="polite" style={s.label}>Solicitação registrada</Text><Text style={s.text}>{new Date(ack.createdAt).toLocaleString('pt-BR')}</Text><Text style={s.text}>Consulte o histórico para acompanhar as respostas registradas.</Text><Pressable accessibilityRole="button" accessibilityState={{disabled:busy}} disabled={busy} onPress={()=>void release()}><Text style={s.action}>Escrever outra solicitação</Text></Pressable></View>:null}
  </View>:<View style={s.section}><Text style={s.text}>Não foi possível verificar as solicitações preservadas nesta sessão. O envio permanece indisponível até essa verificação.</Text><Pressable accessibilityRole="button" accessibilityState={{disabled:busy}} disabled={busy} onPress={()=>void refresh()}><Text style={s.action}>Verificar novamente</Text></Pressable></View>}
  </View>;
