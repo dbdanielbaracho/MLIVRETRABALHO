@@ -26,8 +26,8 @@ export default function Agenda(){
   try{
    const headers=await authHeaders();if(version!==epoch.current||id!==requestId.current||op.controller.signal.aborted)return;
    if(!headers.Authorization)throw Error('session_missing');
-   const next=await loadAgenda(()=>fetch(apiUrl('/assignments/mine'),{headers,signal:op.controller.signal})),current=await authHeaders();
-   if(id===requestId.current&&version===epoch.current){if(current.Authorization!==headers.Authorization){setData({status:'error'});setMessage('A sessão mudou. Atualize seus trabalhos.');return;}setData(next);displayedAuthorization.current=next.status==='ready'?headers.Authorization:null;}
+   const next=await loadAgenda(()=>fetch(apiUrl('/assignments/mine'),{headers,signal:op.controller.signal}),()=>id===requestId.current&&version===epoch.current&&!op.controller.signal.aborted),current=await authHeaders();
+   if(id===requestId.current&&version===epoch.current){if(current.Authorization!==headers.Authorization){setData({status:'error'});setMessage('A sessão mudou. Atualize seus trabalhos.');return;}if(op.controller.signal.aborted){setData({status:'error'});return;}setData(next);displayedAuthorization.current=next.status==='ready'?headers.Authorization:null;}
   }catch{if(id===requestId.current&&version===epoch.current)setData({status:'error'});}
   finally{op.finish();}
  },[]);
@@ -44,9 +44,10 @@ export default function Agenda(){
    const coordinates=endpoint==='check-in'||endpoint==='check-out'?await optionalCoordinates():null;
    const headers=await authHeaders();if(version!==epoch.current)return;if(op.controller.signal.aborted){setMessage('Não foi possível enviar a atualização a tempo. Atualize os trabalhos antes de tentar novamente.');return;}
    if(headers.Authorization!==authorization){setMessage('A sessão mudou. Atualize seus trabalhos antes de agir.');return;}
-   const result=await submitAgendaAction(async(path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'x-tenant-id':assignment.tenantId,...(body!==undefined?{'content-type':'application/json'}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:op.controller.signal}),assignment,score,coordinates);
+   const result=await submitAgendaAction(async(path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'x-tenant-id':assignment.tenantId,...(body!==undefined?{'content-type':'application/json'}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:op.controller.signal}),assignment,score,coordinates,()=>version===epoch.current&&!op.controller.signal.aborted);
    const current=await authHeaders();if(version!==epoch.current)return;
    if(current.Authorization!==authorization){setMessage('A sessão mudou. Atualize para conferir o resultado.');return;}
+   if(op.controller.signal.aborted){setMessage('Não foi possível confirmar o resultado. Atualize os trabalhos antes de tentar novamente.');return;}
    if(result.status!=='confirmed'){setMessage(result.status==='rejected'?'A atualização não foi aceita. Atualize os trabalhos antes de tentar novamente.':'Não foi possível confirmar o resultado. Atualize os trabalhos antes de tentar novamente.');return;}
    if(result.endpoint==='check-in')setMessage(result.coordinatesSent?'Check-in confirmado. Localização enviada.':'Check-in confirmado. Localização não foi compartilhada.');
    else if(result.endpoint==='check-out')setMessage(result.coordinatesSent?'Check-out confirmado. Localização enviada.':'Check-out confirmado. Localização não foi compartilhada.');

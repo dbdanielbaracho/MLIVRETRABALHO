@@ -1,6 +1,17 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.79
 
-## Estado verificado
+**Status:** NORMATIVO — DELTA SOBRE v1.78
+**Data:** 2026-10-10
+
+## Prazo e confirmação operacional
+
+Agenda/EmpresaInicio verificavam identidade/foco no retorno, mas podiam aplicar carga pronta ou confirmar check-in/check-out/start/complete/avaliação/preferido depois do prazo de15s. loadAgenda, submitAgendaAction, loadCompanyDashboard, rateCompletedAssignment e preferProfessional recebem guarda isCurrent opcional, padrão compatível. Conferem antes de transporte e após HTTP/JSON; writes expirados resultam unknown, reads error. Painel empresarial invalida o snapshot inteiro se expira enquanto a última seção resolve, mesmo se outras ficaram prontas antes; falha parcial em prazo continua preservar seções válidas como antes.
+
+Telas passam geração/foco/prazo ao helper e rechecagem após a releitura final de auth/tenant, porque essa própria await pode ultrapassar prazo depois de ACK/schema legítimos. Sem confirmação tardia, refresh automático pós-ACK inválido ou contexto acionável pronto de snapshot vencido. Mensagens de incerteza/reconsulta existentes mantidas. Não altera backend/lifecycle, avaliação humana, rating score, idempotência, tenant por assignment, geolocalização opcional ou signout condicional. Nenhum check-in/avaliação real; só mocks.
+
+Nove regressões novas de helpers reais cobrem zero requests expirados, HTTP tardio sem consumo de corpo, JSON tardio de lifecycle/rating/preferido e última seção de dashboard. Quatro executam handlers pré-JSX reais de Agenda/EmpresaInicio com hooks/fetch/auth/timer simulados: helper retorna resposta válida, releitura auth fica pendente, prazo aborta, auth resolve; não confirma write nem expõe read ready. Verificam tenant/cabeçalhos do transporte fixture e nenhum refresh/POST extra. A suíte mobile completa passou268/268 UTC e America/Sao_Paulo (255anteriores+13novos). JSX/StyleSheet das duas telas byte a byte iguais à base. Execução de handlers não equivale a React Native/renderização física. Typecheck/build e próprio CI/APK standalone ainda obrigatórios no novoSHA. React19.1.4/RN0.81.6/lockfile/API/RLS preservados.
+
+## Evidência e continuidade
 
 Snapshot 2026-10-10 12:24 UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76), árvore29ee4cadb0a41ef7c89b8c08452d17691a66eeb3. README/Documento vigente/memória/checkpoint/PRs/main/head/gates revalidados antes de agir. #387 pós-CI38050884981 SUCCESS/73API/238mobile/HTTP realfixture provado no journal1216Z; nenhum novo merge antes dos APKs próprios pendentes.
 
@@ -18,11 +29,3 @@ Publicar fix/agenda-company-response-deadline sobre ownhead38971987cb7beebfba1f6
 Próximo confronto seguro de dados/estados, após preservar esta fatia: loadAgenda/company-dashboard aceitam strings vazias de IDs e datas não interpretáveis como ready no schema atual. Ler contratos/controllers efetivos antes de decidir validação de referência e campos, provar caso malformed/nulo/real em testes e manter nomes/valores reais, optionalnulls e unknown-status sem inventar política/IDs UUID para catálogo TEXT. Auditoria deadline também conferiu conversa/pagamentos/candidatos/equipes/substituições/planejamento/casos-seguranca/trabalhos: guardas de origem e aborto já existem nos pontos finais lidos; não criar alterações por analogia ou repetir tarefas.
 
 Visual Truth desenho original/dados/estados/cobertura integral em aparelho físico OPEN. Pentest independente, piloto/device, providers/TRUST/PSP/FIN-RISK/WEB-ARCH separados. Sem operações de contas/dados/assignments/mensagens/PSP/dinheiro reais, nova cobrança ou infraestrutura/deploy pago; somente fixtures locais. Manter rotina existente até conclusão integral comprovada/ordem explícita. Bloqueio parcial/transiente/CIAPKrunning/fim de rodada não encerra projeto; não criar outra rotina nem alegar24h contínuo.
-
-## Item atual — prazo em Agenda e Painel da empresa
-
-Agenda/EmpresaInicio verificavam identidade/foco no retorno, mas podiam aplicar carga pronta ou confirmar check-in/check-out/start/complete/avaliação/preferido depois do prazo de15s. loadAgenda, submitAgendaAction, loadCompanyDashboard, rateCompletedAssignment e preferProfessional recebem guarda isCurrent opcional, padrão compatível. Conferem antes de transporte e após HTTP/JSON; writes expirados resultam unknown, reads error. Painel empresarial invalida o snapshot inteiro se expira enquanto a última seção resolve, mesmo se outras ficaram prontas antes; falha parcial em prazo continua preservar seções válidas como antes.
-
-Telas passam geração/foco/prazo ao helper e rechecagem após a releitura final de auth/tenant, porque essa própria await pode ultrapassar prazo depois de ACK/schema legítimos. Sem confirmação tardia, refresh automático pós-ACK inválido ou contexto acionável pronto de snapshot vencido. Mensagens de incerteza/reconsulta existentes mantidas. Não altera backend/lifecycle, avaliação humana, rating score, idempotência, tenant por assignment, geolocalização opcional ou signout condicional. Nenhum check-in/avaliação real; só mocks.
-
-Nove regressões novas de helpers reais cobrem zero requests expirados, HTTP tardio sem consumo de corpo, JSON tardio de lifecycle/rating/preferido e última seção de dashboard. Quatro executam handlers pré-JSX reais de Agenda/EmpresaInicio com hooks/fetch/auth/timer simulados: helper retorna resposta válida, releitura auth fica pendente, prazo aborta, auth resolve; não confirma write nem expõe read ready. Verificam tenant/cabeçalhos do transporte fixture e nenhum refresh/POST extra. A suíte mobile completa passou268/268 UTC e America/Sao_Paulo (255anteriores+13novos). JSX/StyleSheet das duas telas byte a byte iguais à base. Execução de handlers não equivale a React Native/renderização física. Typecheck/build e próprio CI/APK standalone ainda obrigatórios no novoSHA. React19.1.4/RN0.81.6/lockfile/API/RLS preservados.
