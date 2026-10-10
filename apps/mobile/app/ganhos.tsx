@@ -4,24 +4,25 @@ import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View } from 'react-na
 import { ProfessionalNav } from '../components/ProfessionalNav';
 import { authHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import {runForSession} from '../lib/session-context';
 import {loadEarnings,earningsWeek,earningStatus,type Earning} from '../lib/earnings';
 import type {Section} from '../lib/professional-home';
 const money=(v:number)=>'R$ '+(v/100).toFixed(2).replace('.',',');
 export default function Ganhos(){
  const[result,setResult]=useState<Section<Earning[]>>({status:'loading'}),[showAll,setShowAll]=useState(false);
- const requestId=useRef(0);
+ const requestId=useRef(0),generation=useRef(0),controllers=useRef(new Set<AbortController>());
  const load=useCallback(async(focusSignal?:AbortSignal)=>{
-  const id=++requestId.current;setResult({status:'loading'});
-  const controller=new AbortController(),cancel=()=>controller.abort();
+  const id=++requestId.current,version=generation.current;setResult({status:'loading'});
+  const controller=new AbortController(),cancel=()=>controller.abort();controllers.current.add(controller);
   focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
   const timeout=setTimeout(()=>controller.abort(),15000);
   try{
-   const headers=await authHeaders(),next=await loadEarnings(()=>fetch(apiUrl('/earnings/mine'),{headers,signal:controller.signal}));
-   if(id===requestId.current&&!focusSignal?.aborted)setResult(next);
+   const next=await runForSession(authHeaders,headers=>loadEarnings(()=>fetch(apiUrl('/earnings/mine'),{headers,signal:controller.signal})),()=>id===requestId.current&&version===generation.current&&!controller.signal.aborted&&!focusSignal?.aborted);
+   if(id===requestId.current&&version===generation.current&&!focusSignal?.aborted)setResult(next.status==='ready'?next.data:{status:'error'});
   }catch{if(id===requestId.current&&!focusSignal?.aborted)setResult({status:'error'});}
-  finally{clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
+  finally{controllers.current.delete(controller);clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
  },[]);
- useFocusEffect(useCallback(()=>{const controller=new AbortController();void load(controller.signal);return()=>{requestId.current++;controller.abort();};},[load]));
+ useFocusEffect(useCallback(()=>{++generation.current;const controller=new AbortController();void load(controller.signal);return()=>{++generation.current;++requestId.current;controller.abort();for(const c of controllers.current)c.abort();controllers.current.clear();setResult({status:'loading'});};},[load]));
  const items=result.status==='ready'?result.data:[],week=earningsWeek(items),max=Math.max(...week.daily,1);
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
  <Text style={s.title}>Ganhos</Text><View style={s.summary}>
