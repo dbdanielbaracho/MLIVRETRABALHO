@@ -1,4 +1,16 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
+# MLIVRETRABALHO —Documento da Verdade v1.93
+
+**Status:** NORMATIVO —DELTA SOBRE v1.92
+**Data:**2026-10-10
+
+## Retomada independente da lista de trabalhos/espaços
+
+A tentativa durável da identidade não pode ficar inacessível porque a lista de trabalhos/espaços está vazia ou falhou. GeneralSupport acrescenta SupportRecovery enquanto nenhum espaço estiver selecionado, independentemente do resultado dessa lista. A leitura inicial de sessão é limitada a15s, protege geração/foco/blur/reload, invalida auth tardia e não exige tenant/membership artificial.
+SupportRequest recebe modo explícito recoveryOnly em união de props. Reutiliza inspect do mesmo protocolo: reconsulta identidade /me autenticada, verifica dono do slot e leitura válida antes de mostrar conteúdo. Não assume que ler token equivale a ler dados pessoais autorizados. Sessão substituída exige recarregar fonte; outros usuários não recebem o registro antigo.
+Modo de retomada sem trabalho/contexto selecionado não oferece formulário de novo envio e send sai antes de preparar qualquer chave ou POST. Vazio só após identidade/storage válidos; erro/timeout permanecem erro. Tentativa pendente exibe mensagem/assunto/prioridade preservados sem nome de empresa/trabalho inventado; retry exige ação humana e mantém chave/body/tenant/assignment originais. Servidor continua exigindo autorização/membership/RLS atuais, inclusive quando vínculo anterior já não existe. Rejeição não significa ausência do chamado e não apaga o slot.
+ACK confirmado persistido prova o registro já confirmado, não estado atual/live ou nova resposta do servidor. Release humano permanece apenas para confirmed com chave exata; texto Concluir visualização não promete iniciar solicitação nova. Selecionar espaço monta o formulário contextual normal e cancela a apresentação anterior, preservando storage; abrir/trocar não envia automaticamente.
+Oito regressões novas (5 fonte de sessão +3 modo retomada) cobrem fonte real sem lista, sessão inválida/falha, deadline mesmo com auth ignorando abort, blur, reload concorrente, novo envio proibido, retry original e release somente confirmado sem liberar modo de novo envio. PASS73/73 local UTC no conjunto suporte/Agenda; PASS20/20 America/Sao_Paulo no conjunto alterado de retomada/formulário. Fixtures de handlers reais pré-JSX/hooks/router/timers; sem Native render/aparelho físico/HTTP real local. CI próprio esperado377mobile/110API/4web/3CLI e APK standalone no SHA exato obrigatórios.
+Nenhuma API/role/grant/migration/tenant/RLS/regra de pagamento/React19.1.4/RN0.81.6/lockfile/rota/área primária modificada. Desenho e VisualTruth físicos permanecem abertos. O agente não envia chamado real nem habilita custo/PSP/deploy.
 
 ## Estado verificado
 
@@ -16,15 +28,6 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 #403 headc762e5f1607aac3a06ac7f9c51be10a55c5b69cc/treedb552b101ccaa54ef5e1e5562bec5bcf482c2360, basefix/named-support-contexts, mergeabletrue. CI38075196323/job114280600176 aprovado369mobile/110API/4web/3CLI, todos os passos/logs, typecheck/build/export/migrations/contratos HTTP reais. 17arquivos remotos byteidênticos; patch revisado incluindo Perfil/GeneralSupport/SupportRequest/helper. APK38075196283 em execução no head próprio; não integrada.
 
 
-## Item atual
-
-A tentativa durável da identidade não pode ficar inacessível porque a lista de trabalhos/espaços está vazia ou falhou. GeneralSupport acrescenta SupportRecovery enquanto nenhum espaço estiver selecionado, independentemente do resultado dessa lista. A leitura inicial de sessão é limitada a15s, protege geração/foco/blur/reload, invalida auth tardia e não exige tenant/membership artificial.
-SupportRequest recebe modo explícito recoveryOnly em união de props. Reutiliza inspect do mesmo protocolo: reconsulta identidade /me autenticada, verifica dono do slot e leitura válida antes de mostrar conteúdo. Não assume que ler token equivale a ler dados pessoais autorizados. Sessão substituída exige recarregar fonte; outros usuários não recebem o registro antigo.
-Modo de retomada sem trabalho/contexto selecionado não oferece formulário de novo envio e send sai antes de preparar qualquer chave ou POST. Vazio só após identidade/storage válidos; erro/timeout permanecem erro. Tentativa pendente exibe mensagem/assunto/prioridade preservados sem nome de empresa/trabalho inventado; retry exige ação humana e mantém chave/body/tenant/assignment originais. Servidor continua exigindo autorização/membership/RLS atuais, inclusive quando vínculo anterior já não existe. Rejeição não significa ausência do chamado e não apaga o slot.
-ACK confirmado persistido prova o registro já confirmado, não estado atual/live ou nova resposta do servidor. Release humano permanece apenas para confirmed com chave exata; texto Concluir visualização não promete iniciar solicitação nova. Selecionar espaço monta o formulário contextual normal e cancela a apresentação anterior, preservando storage; abrir/trocar não envia automaticamente.
-Oito regressões novas (5 fonte de sessão +3 modo retomada) cobrem fonte real sem lista, sessão inválida/falha, deadline mesmo com auth ignorando abort, blur, reload concorrente, novo envio proibido, retry original e release somente confirmado sem liberar modo de novo envio. PASS73/73 local UTC no conjunto suporte/Agenda; PASS20/20 America/Sao_Paulo no conjunto alterado de retomada/formulário. Fixtures de handlers reais pré-JSX/hooks/router/timers; sem Native render/aparelho físico/HTTP real local. CI próprio esperado377mobile/110API/4web/3CLI e APK standalone no SHA exato obrigatórios.
-Nenhuma API/role/grant/migration/tenant/RLS/regra de pagamento/React19.1.4/RN0.81.6/lockfile/rota/área primária modificada. Desenho e VisualTruth físicos permanecem abertos. O agente não envia chamado real nem habilita custo/PSP/deploy.
-
 ## Dependências
 
 Ajuda nova de profissional sem membership ainda depende de decisão arquitetural/produto sobre autoridade legítima por identidade e isolamento/retensão, ou alternativa explícita aprovada. Retomar registro privado antigo não cria namespace e não contorna autorização do servidor. Preservar RLS; não inventar tenant global/empresa ou canal/SLA.
@@ -35,3 +38,5 @@ A leitura/retomada sem lista ativa fica implementada nesta fatia, mas validaçã
 Publicar fix/support-recovery-without-context sobre ownhead403c762e5f1607aac3a06ac7f9c51be10a55c5b69cc/treedb552b101ccaa54ef5e1e5562bec5bcf482c2360, basefix/general-professional-support. Verificar número/commit/tree/bytes/patch e CI377mobile/110API +APK próprios; registrar provas depois de existirem.
 Acompanhar400/401/403 APKs e pós399; integrar400,401,402,403 e esta fatia em ordem, com retargetmain/reconsulta eventual/merge-base tree igual main, diff fresco e gates próprios exatos aprovados. Pós-merge exige pais/tree/main e CI/APK no SHA real. #402API-onlyN/A não dispensa natives anteriores. Não repetir399/ancestrais ou retry388 já recuperado.
 Em paralelo, auditar Preferências: referência original/requisito canônico, schema e APIs reais de profile/availability/matching/notifications, identificando a próxima implementação segura ou decisão requerida com limites explícitos. Bloqueio parcial/transiente/fim de rodada não encerra projeto nem desativa rotina.
+
+Evidência SUPPORT_RECOVERY_WITHOUT_CONTEXT_v1.93.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.93.md; checkpoint/journal1821Z. Baselines anteriores continuam vigentes.

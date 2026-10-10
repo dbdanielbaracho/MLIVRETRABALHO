@@ -69,3 +69,16 @@ test('a general support form cannot replace a prior work intent and explicit ret
  const h=panel(snapshot(pending),{generalContext:{tenantId:'22222222-3333-4444-5555-666666666666',displayName:'Outro espaço'},workItems:[]});await h.pump();h.render();h.setDescription('New general');await h.send();assert.equal(h.calls.some(c=>c[0]==='sendNew'),false);
  await h.retry();assert.deepEqual(h.calls.find(c=>c[0]==='retry'),['retry',key,authorization]);h.blur();
 });
+
+test('recovery mode can inspect an empty authenticated slot but cannot create support without a selected context',async()=>{
+ const h=panel({status:'empty',authorization},{recoveryOnly:true,workItems:[]});await h.pump();h.render();h.setDescription('Cannot send new');await h.send();
+ assert.deepEqual(h.calls,[['inspect',authorization]]);assert.equal(h.state[0].status,'empty');h.blur();
+});
+test('recovery mode explicitly retries only the original preserved work key without needing an active work list',async()=>{
+ const h=panel(snapshot(pending),{recoveryOnly:true,workItems:[]});await h.pump();h.render();h.setDescription('Cannot replace');await h.send();assert.equal(h.calls.some(c=>c[0]==='sendNew'),false);
+ await h.retry();assert.deepEqual(h.calls.find(c=>c[0]==='retry'),['retry',key,authorization]);assert.equal(h.state[0].status,'confirmed');h.blur();
+});
+test('recovery mode only releases a confirmed original slot and remains unable to prepare new support afterward',async()=>{
+ const h=panel(snapshot(confirmed),{recoveryOnly:true,workItems:[]});await h.pump();h.render();await h.release();assert.equal(h.state[0].status,'empty');
+ h.setDescription('Still cannot send');await h.send();assert.deepEqual(h.calls.map(c=>c[0]),['inspect','release']);h.blur();
+});
