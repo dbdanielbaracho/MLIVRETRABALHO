@@ -1,6 +1,14 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
 
+## Preparação #355 — 2026-10-10
+
+Head original 05e2c7e6cf4ea8ef1c7553e2f9928af3b6a25d71; predecessor reconciliado #354 92651205a78181e7440375c552b933033ba7d54b. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
+
+## Registros anteriores da preparação
+
+
 ## Preparação #354 — 2026-10-10
 
 Head original da169b62efdc52a4e72ccdb3d2d4b77ef491ae3f; predecessor reconciliado #353 f54f14f5ed6d375861b086469496ecddf14718f2. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
@@ -45,7 +53,7 @@ Head original 953bdcf9426d66b0e25bc054dbfa56b83dbf2f8e; predecessor reconciliado
 - Main atual: aee58e7776eee0dc211713edcbe29075f841ecb1, #342 integrado após #341.
 - #341 head 1a58d538b89269a89662cbf48ce12f3102293149: CI 38006447169 e APK 38006447148 aprovados. Pós-merge CI 38012421142 e APK 38012421105 sucesso; smoke sem Metro e artefato 11654492684 comprovados.
 - #342 head 516643aa07d5c80acd965c63788d5358a3eee703: CI 38012515909/APK 38012515803 sucesso, integrado; pós-merge CI 38014015303/APK 38014015274 sucesso.
-- #343 head reconciliado 4f39c2c92750c3a5c70bae21986d823a1eeff637: conflito após squash #342 resolvido incorporando main como segundo parent; árvore b4583e2d9aa1e6bb784c3345157f589a85ce99a8 preservada. CI 38014252721 sucesso; APK 38014252773 tentativa1 falhou action settings Broken pipe exit224 antes do smoke do projeto. Retry job 114100922318 solicitado no mesmo head; acompanhar tentativa2, gates antigos não autorizam merge.
+- #343 head reconciliado 4f39c2c92750c3a5c70bae21986d823a1eeff637: conflito após squash #342 resolvido incorporando main como segundo parent; árvore b4583e2d9aa1e6bb784c3345157f589a85ce99a8 preservada. CI 38014252721 sucesso; APK 38014252773 tentativa1 falhou action settings Broken pipe exit224 antes do smoke do projeto. Retry tentativa2 do job 114100922318 em execução no mesmo head; acompanhar, gates antigos não autorizam merge.
 - #344 head b2f81a5e5c8e7151e16edcaf4345739c1aba4a67: CI 38013195821/APK 38013195786 sucesso; aguarda integração #343, retarget main/revisão/merge/pós-merge.
 - #345 head corrigido 58b3b9455b1406923a2676d9cc8b0ec0916a7d4c: Ganhos reais, 23 testes locais. CI 38013501602 sucesso, APK 38013501605 sucesso. CI antigo 38013341406 falhou TS5097 e foi corrigido, não habilita merge. Base #344.
 - #346 head ea36faf73c22a533cb5461cb561c248412d9a0b0: Painel Empresa, 27 testes locais. CI 38013571739/APK 38013571804 sucesso. Base #345.
@@ -56,20 +64,22 @@ Head original 953bdcf9426d66b0e25bc054dbfa56b83dbf2f8e; predecessor reconciliado
 - #351 head 5e8fffdfee0944b1e518d9b38ec556b65d62a6b9: Equipe estados/seleção/contexto/ack/criação desconhecida, 51 testes; CI 38015021179 sucesso/APK 38015021164 em execução. Base #350.
 - #352 head 953bdcf9426d66b0e25bc054dbfa56b83dbf2f8e: Conta → notificações reais no tenant/CompanyNav, labels/saída offline; CI 38015213524/APK 38015213470 em acompanhamento. Base #351.
 - #353 head 5560abdf3a11bbdf63800ed2767d6db7e656ff17: Planejamento/Pagamentos read-only e valores ausentes, 57 testes; CI 38015338561 aprovado/APK 38015338504 em andamento. Base #352.
-- Branch fix/members-network-states-and-verified-actions após #353: Membros/convites/aceite/revogação com estado/contexto/ack reais, 63 testes; PR/gates a abrir/acompanhados.
+- #354 head da169b62efdc52a4e72ccdb3d2d4b77ef491ae3f: Membros/convites/aceite/revogação, 63 testes; CI 38015650955 sucesso/APK 38015650952 em execução. Base #353.
+- Branch fix/safety-network-states-and-verified-actions após #354: Relatos/pedidos com estados/contexto/guard/ack reais, políticas humanas intactas, 69 testes; PR/gates a abrir/acompanhados.
 - Uma rotina de continuidade ativa; não desativar por fim de rodada, bloqueio parcial ou espera de CI/APK.
 
 ## Próxima ação concreta
 1. Acompanhar pós-merge #342 e APK #343; revisar heads/árvores/diffs/gates exatos e integrar #343, com pós-merge.
-2. #344 retarget após #343; revisar/exigir CI/APK head exato e pós-merge. #345 retarget após #344, mesmos gates no head corrigido. #346 retarget após #345; #347 retarget após #346; #348 corrigido retarget e integrar após #347, depois #349 Trabalhos e #350 Interessados, depois #351 Equipe, #352 Conta #353 leituras Empresa e Membros.
+2. #344 retarget após #343; revisar/exigir CI/APK head exato e pós-merge. #345 retarget após #344, mesmos gates no head corrigido. #346 retarget após #345; #347 retarget após #346; #348 corrigido retarget e integrar após #347, depois #349 Trabalhos e #350 Interessados, depois #351 Equipe, #352 Conta #353 leituras Empresa, #354 Membros e Relatos.
 3. Cards do Início implementados a partir da referência intacta. Executar auditoria visual em docs/referencias; capturas/jornadas reais, loading/erro/vazio e fricção. Gate OPEN. Não copiar nomes/valores/promessas ilustrativos.
-4. Próximos itens verificados por leitura: Trabalhos corrigido na branch, validar gates; Interessados corrigidos na branch; Equipe corrigida na branch, validar gates. Conta corrigida na branch. Planejamento/Pagamentos corrigidos na branch; Membros corrigido na branch; próximo Relatos sem guards/catch/limites, preservar análise humana/policies. Reconsultar contratos e tratar fatias independentes sem novas políticas. Revalidar contratos antes de corrigir; capturas/jornadas reais contra desenho. Sem criar atividade artificial ou supor conclusão por ausência de PR.
+4. Próximos itens verificados por leitura: Trabalhos corrigido na branch, validar gates; Interessados corrigidos na branch; Equipe corrigida na branch, validar gates. Conta corrigida na branch. Planejamento/Pagamentos corrigidos na branch; Membros corrigido na branch; Relatos corrigido na branch preservando análise humana/policies. Próximo: revalidar criação de trabalho (POST sem timeout/ack) e jornadas/contextos/estados contra desenho original; inspecionar código antes de alterar. Reconsultar contratos e tratar fatias independentes sem novas políticas. Revalidar contratos antes de corrigir; capturas/jornadas reais contra desenho. Sem criar atividade artificial ou supor conclusão por ausência de PR.
 
 ## Dependências por item
 #220 aparelho/piloto/pentest; #228/#215/#219 provider/comercial/contrato/sandbox; #224 WEB-ARCH/custo. Não habilitar dinheiro real, custos ou deploy pago. Essas dependências não bloqueiam correções internas independentes.
 
 ## Retomada
 Reconsultar main/PRs/runs/código, persistir SHA/PR/head/run/resultados e próxima ação. Acompanhar runs até conclusão; registrar falha real e tratar. Visual Truth/Production-DONE globais não declarados.
+
 
 
 
