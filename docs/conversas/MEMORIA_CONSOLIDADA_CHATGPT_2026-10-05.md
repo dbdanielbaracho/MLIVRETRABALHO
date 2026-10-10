@@ -503,3 +503,8 @@ Signupmobile guard/15s/ackidentidade-email-tipo/ownerworkspace,7testesnovos/133l
 ## Login v1.57 — 2026-10-10 06:46:33 UTC
 
 Signinackidentity/email/token/membership verificado e guard15s/foco; saveSessionpairfila/releitura/rollbackantesfuturosleitores, sem atomicidadeOSprometida.13 novos testes/146 mobile locaisUTC/SP. Branch fix/signin-verified-session-persistence sobre#367;gatespróprios/pós-merge pendentes. PostAPK356/359/362/363success e353/355retry2success; smoke/artifacts journal0645Z. Próximo bootstrap.ts/consumidores e estados/jornadas físicos. Visual Truth OPEN.
+
+
+## Availability v1.58 e integração #364 — 2026-10-10 06:51:59 UTC
+
+#364merged8844a118caa19ea454dc713565db47827e58f853 árvore/parentsheadCIAPKpass;postCI38032152612pass/postAPK38032152603pendente.360postAPKpass,journal0650Z. AvailabilityackjanelaID/session/foco/draft/razãoperfilreal,6novostestes/152locaisUTCSP. Branch fix/availability-verified-window-and-session após368;gatesprópriospendentes. Bootstrap56fontes semconsumidor nãoalterado;próximoPerfilack/contexto/draft. VisualTruthOPEN;nenhumPOSTreal/PSP/custo.
