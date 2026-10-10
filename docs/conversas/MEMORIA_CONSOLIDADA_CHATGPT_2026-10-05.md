@@ -606,3 +606,26 @@ Ganhos usa Authorization única sem tenant selecionado, conferindo a mesma sess�
 Conversa mantém assignmentId/tenantId explícitos da rota e mesma identidade que carregou a conversa. GET e POST não iniciam após foco/timeout/identidade obsoletos e conferem identidade após resposta. Só ACK real/mesma sessão limpa draft/confirma envio. Perda de resposta na mesma conta preserva texto e pede conferência; troca de conta limpa draft antigo/invalidalista. Releitura após envio continua GET na identidade original, sem mensagem repetida automaticamente. Falhas403/404, mensagens vazias reais e acesso backend/membership/RLS permanecem diferenciados. ID/assignment em branco e texto em branco não chegam a transporte; IDs de mensagem/remetente em branco não são schema válido. ACK não exige senderIdentityId, pois POSTbackend retorna apenas id/body/createdAt.
 
 6novos/204mobileUTCSP; filhoapós376 requer owngates. Próximocompanyrotas/contexto/estados. VisualTruth/externosOPEN, sem mensagens/opreais/custos.
+
+
+## Publicação v1.67 — 2026-10-10 08:06UTC
+
+Snapshot 2026-10-10 08:06UTC. Main comprovada5938a40ee27be04f4ccb63242421eb293ba2ddb9 (#374/v1.63), tree6daef4f0245277dddf06839f273570ac9f5f47d8, parents4ff59618d6813890c438be234c86cca3ced496cc+d986972cdd6ab9b96e393d85ccfa5a4e510e8d03. README/Documento/memória/checkpoint atuais relidos. Merges356–360/362–374 verificados, não repetir. #374 headCI38034863081/APK38034863018success; smoke/jobs/artefatos/árvore/pais/main conferidos. Retarget375mainfeito; rawmergeabletrue/unstable aguardandoAPK, sem conflito real. Pós356–360/362/363/364–367 CIAPKsuccess com provas anteriores.
+
+|PR|Merge SHA|Pós-CI|Pós-APK|
+|---|---|---|---|
+|368|c221a0b4ca00b70368c3287ecaf55b0f190e31ab|38035076767 success|38035076771 success|
+|369|be8c02d2c813533ae0a9b8a29446410ecac48d82|38035132058 success|38035131936 success|
+|370|c381dec921be51b0aa76e98bac244277f85f7384|38035165889 failure|38035165785 success|
+|371|a6267c8947711d6cfa6b76de9bfa0c6c783815da|38035191248 success|38035191261 success|
+|372|f3305abaef4c144ce2fe0a89a6531e098e43d923|38035692664 success|38035692677 in_progress|
+|373|4ff59618d6813890c438be234c86cca3ced496cc|38035748570 success|38035748523 in_progress|
+|374|5938a40ee27be04f4ccb63242421eb293ba2ddb9|38036515564 success|38036515570 in_progress|
+
+#370CI38035165889 FAILUREtentativa1 continua registrado: tokenfixturehífen tratado como opção Node, corrigido em375 (ownCI38035883488success headf31422e45165dd8eeaa276d15142bab83a343176/HTTPcompleto+3regressões). O novoSHA não muda status antigo. Pós370APKsuccess técnico; VisualTruth permaneceOPEN.
+
+Empresa.tsx vincula formulário a Authorization+tenant reais carregados ao foco, bloqueando edição/publicação sem contexto verificado. Envio confere o par do formulário antes e depois; blur/timeout/conta ou empresa trocada não aplica ACK nem limpa draft da operação antiga. Troca de contexto ao recarregar descarta draft de outra conta/empresa; mesma origem preserva draft. Resultado incerto/saída durante POST mantém aviso para conferir Planejamento ao voltar; nenhum POST automático ou nova idempotência presumida.
+
+runForSession passa a aceitar tenant esperado opcional, mantendo todas chamadas profissionais sem escopo extra e sem conceder autorização no frontend. ACKpublicação valida local normalizado/null e IDreal não vazio além dos fatos já conferidos (título/cidade/status/valor/janela). Backend sempre retorna location; não exige eco de tenant ausente do contrato. Guarda síncrona/15s/abort/epoch/controllers, CompanyNav, datas/turno noturno, dinheirocentavos e estilos preservados. Não alteraAPI/policy financeira/engagement modalities nem cria trabalho real.
+
+5novos/209mobilelocaisUTCSP; filhoapós377 requer owngates. Próximocompanyrotas atuais/leituraseACKs; VisualTruth/externosOPEN. Semopreais/custos.
