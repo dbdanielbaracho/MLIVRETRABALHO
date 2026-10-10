@@ -1,41 +1,29 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
-## Atualização da preparação — Assistente v1.52
+**Atualização:** 2026-10-10 06:21 UTC. Escopo exclusivo dbdanielbaracho/MLIVRETRABALHO. Reconsultar main/PRs/CI/APK antes de agir.
 
-#362 Indicadores headcb5b39a19d89593cafc9ca6bbd44c1528a9253f0, CI38020467694/APK38020467686 em execução;113 testes locais com6 novos do Assistente. Branch fix/copilot-verified-suggestions-and-network-states preparada sobre#362; PR/gates próprios ainda não criados neste snapshot, consultar GitHub pelo nome. #351–#360 novos CIs aprovados; APKs em acompanhamento. #351 CI38020116345 sucesso/APK38020116350 em execução. #345 APK38017162774 tentativa2 em execução após diagnóstico input Broken pipe224. Nenhum merge afirmado antecipadamente. Próxima ação: acompanhar/integrar #351 na main, retarget352 e sequência; Assistente só após#362 e gates próprios exatos. Visual Truth OPEN.
+## Estado comprovado
+Main **177f15c92323b9bf807a6cbee1c802f5953ac907**, #363 integrado, Documento v1.52. #356–#360/#362/#363 integrados com CI/APK pré-merge success no SHA exato e árvore/parents pós-merge conferidos. Pós-merges ainda em execução, não são declarados aprovados. Detalhes, SHAs/runs/retries/evidências: [execução verificada 06:21](EXECUCAO_VERIFICADA_2026-10-10_0621Z.md).
 
+| #356 | e0d472a5b53e30633fbfa25d624643d2af274f92 | 6dd68681ec2739fbc5589fcbb68bcb4a57447510 | CI38020277202/APK38020277200: success | CI 38030456954 in_progress; Standalone Pilot APK 38030456925 in_progress |
+| #357 | 1317f3623f74bc29457daa3b39608ef230853ba2 | 4ee8172b3ed97cff66709ac58b0f903aba8572ab | CI38020281194/APK38020281206: success | Standalone Pilot APK 38030523164 in_progress; CI 38030523152 in_progress |
+| #358 | 3aafc8a8912f9807d70dba64f2e2b33751bd3974 | 8523aed8d98a596a22ee2d5d762f8d05afcfa2a5 | CI38020284889/APK38020284890: success | CI 38030527858 in_progress; Standalone Pilot APK 38030527903 in_progress |
+| #359 | 0c588982f4132ef291f6cf75b70a3c8af1c883a4 | 99a10a406c00db62eaec784e22ec4e53cf0585d2 | CI38020288356/APK38020288363: success | Standalone Pilot APK 38030533744 in_progress; CI 38030533668 in_progress |
+| #360 | 1369cfba1cf569e6ef810f260b257bcc557b8ff1 | d11bbeec3ec33bf6e20145f910ad0d31f57d31cb | CI38020292113/APK38020292073: success | Standalone Pilot APK 38030539264 in_progress; CI 38030539260 in_progress |
+| #362 | f1028c64e5d02105ba0bb24e87a533478b6b0ceb | cb5b39a19d89593cafc9ca6bbd44c1528a9253f0 | CI38020467694/APK38020467686: success | CI 38030545118 in_progress; Standalone Pilot APK 38030545125 in_progress |
+| #363 | 177f15c92323b9bf807a6cbee1c802f5953ac907 | 2c4f3ef0b1c2bbb49017ffa4496e8d84b5001e3c | CI38020628004/APK38020627966: success | CI 38030550928 in_progress; Standalone Pilot APK 38030550899 in_progress |
 
-## Snapshot anterior
+## Item atual
+Branch fix/privacy-request-read-states sobre main177f15c92323b9bf807a6cbee1c802f5953ac907: GET Privacidade/requests com loading/erro/vazio/retry/foco/schema/15s/geração/cancelamento;4 novos testes/117 locais UTC/São Paulo. PR/gates ainda não criados neste snapshot; consultar GitHub pela branch, não usar gates anteriores para aprovar novo SHA. Código e docs v1.53/evidência/ledger/memória neste ciclo.
 
-**Snapshot:** 2026-10-10 03:24 UTC. Reconsultar GitHub antes de agir. Escopo exclusivo dbdanielbaracho/MLIVRETRABALHO.
+## Próxima ação concreta
+1. Acompanhar pós-merges #356–#360/#362/#363 (runs acima) e retry APK pós-merge #35338023554678/#35538023598566 no SHA próprio. #351/#352/#354 pós-merge success; #34538017162774 retry2 success.
+2. Revisar e integrar GET Privacidade somente CI/APK head exato success, árvore/gates/main reconsultados; verificar pós-merge. Nenhuma ação real DSAR/export/deactivate feita pelo agente.
+3. Próximas lacunas lidas: create/export/deactivate da Privacidade sem guard síncrono/catch/timeout/ack robusto; export GET gera DSAR de acesso no backend e não deve ser repetido automaticamente ou disparado no foco. Preservar alerta humano, bloqueios sole-owner/trabalho ativo/ganhos pendentes e retenção/legal hold; isolamento da identidade e limpeza de cópia em memória. Revalidar contratos e implementar fatia segura sem executar a operação real.
+4. Auditar onboarding/cadastro, sugestão de Notificações company/professional no Copilot e demais capturas/jornadas contra PNG original. Visual Truth OPEN; nenhum fechamento por build/unidade.
 
-## Main comprovada
-658e335cec144ba151645719b2b3fc0bf571f9c5, Documento vigente v1.40, #350 integrado. Pós-merge CI38018391376/APK38018391418 sucesso, smoke sem Metro em 2026-10-10T03:13:18.8509889Z e artefato11657718589. Não repetir esse merge.
+## Dependências por item
+Device/piloto/pentest #220, provider/contrato/sandbox PSP/FIN-RISK #228/#215/#219, WEB-ARCH #224/custo separados. Não habilitar dinheiro real/custos/deploy pago; continuar independentes autorizados. Sem desativar rotina por fim de rodada/espera/falha transitória.
 
-## Fila reconciliada, ainda sem declarar integração
-#351 conflito README v1.40/v1.41 após squash#350 reproduzido e resolvido. Cada branch mantém código idêntico ao seu head original; incorpora predecessor reconciliado como segundo parent e preserva journal#361/Documento_v1.39. Gates antigos não aprovam novos SHAs.
-
-| PR | Head reconciliado | Gates consultados |
-|---|---|---|
-| #351 | 7ac5a6dace04ae120b6f8114ea87a499b0e222eb | Standalone Pilot APK 38020116350 in_progress; CI 38020116345 success |
-| #352 | 667f7ef92d4596a773379add4c7a022242160b63 | CI 38020213874 in_progress; Standalone Pilot APK 38020213846 in_progress |
-| #353 | f54f14f5ed6d375861b086469496ecddf14718f2 | Standalone Pilot APK 38020218227 in_progress; CI 38020218093 in_progress |
-| #354 | 92651205a78181e7440375c552b933033ba7d54b | Standalone Pilot APK 38020222854 in_progress; CI 38020222859 in_progress |
-| #355 | cc4c3474afa997923c5211a5768ad745a9c77869 | CI 38020226330 in_progress; Standalone Pilot APK 38020226328 in_progress |
-| #356 | 6dd68681ec2739fbc5589fcbb68bcb4a57447510 | CI 38020277202 in_progress; Standalone Pilot APK 38020277200 in_progress |
-| #357 | 4ee8172b3ed97cff66709ac58b0f903aba8572ab | CI 38020281194 in_progress; Standalone Pilot APK 38020281206 in_progress |
-| #358 | 8523aed8d98a596a22ee2d5d762f8d05afcfa2a5 | Standalone Pilot APK 38020284890 in_progress; CI 38020284889 in_progress |
-| #359 | 99a10a406c00db62eaec784e22ec4e53cf0585d2 | Standalone Pilot APK 38020288363 in_progress; CI 38020288356 in_progress |
-| #360 | d11bbeec3ec33bf6e20145f910ad0d31f57d31cb | Standalone Pilot APK 38020292073 in_progress; CI 38020292113 in_progress |
-
-## Item independente preparado
-Branch fix/analytics-real-network-states após #360 d11bbeec3ec33bf6e20145f910ad0d31f57d31cb: Indicadores GET real/schema/loading/403/rede/retry/foco/15s/cancelamento. 6 testes novos, 107/107 locais UTC e America/Sao_Paulo. PR/gates próprios ainda não criados no instante deste snapshot; consultar branch/PR pelo nome. Nenhum merge antes de CI/APK exatos.
-
-## Próximas ações concretas
-1. Acompanhar CI/APK #3517ac5a6dace04ae120b6f8114ea87a499b0e222eb, integrar por merge commit somente verde no SHA exato/diff revisto. Conferir árvore/parents, pós-merge CI/APK; retarget #352 para main e integrar sequência até #360, cada gate próprio. Novos heads já preservam ancestrais e documentos.
-2. APK pós-merge #34538017162774 tentativa1 falhou input Broken pipe224 no emulador antes script. Retry controlado job114109902240 solicitado; acompanhar mesmo SHA a26822b172b2ffd7f012af3d9ef64ae8394bf56a. Não contornar smoke nem repetir indefinidamente sem diagnóstico.
-3. Validar/integrar Indicadores após #360, atualizar journal/checkpoint/memória com resultados finais/head/PR/runs. Rever Copilot/Privacidade/onboarding pelos contratos reais. CopilotController usa deterministic_baseline/providerConfigured false; correção de interface não autoriza fornecedor pago nem ações automáticas.
-4. Capturas/estados/jornadas/dados reais contra PNG original; aparelho físico/piloto ainda não provados nesta rodada. **Visual Truth OPEN**. PSP/FIN-RISK/providers/pentest/WEB-ARCH separados; não habilitar dinheiro/custos/infra paga. Bloqueio de item não bloqueia tarefas independentes.
-
-## Histórico preservado
-Preparação anterior integral: CHECKPOINT_PREPARACAO_FILA_2026-10-10_0324Z.md. Journals EXECUCAO_VERIFICADA_2026-10-10_0232Z.md e EXECUCAO_VERIFICADA_2026-10-10_0318Z.md mantidos como snapshots históricos. Continuidade ativa, sem exigir digitar continuar e sem alegar execução em tempo real permanente.
+## Histórico
+CHECKPOINT_ANTES_2026-10-10_0621Z.md preserva o checkpoint anterior integral; journals0232Z/0318Z e preparação0324Z continuam intactos. Memória histórica não substitui estado atual consultado.

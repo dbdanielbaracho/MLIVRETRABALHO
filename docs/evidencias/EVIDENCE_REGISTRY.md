@@ -221,3 +221,11 @@ Head original 1c1756fd20ae369a6df6855f79b873ce07ca0967; predecessor reconciliado
 | Evidence ID | Fonte | Fato | Estado |
 |---|---|---|---|
 | UI-MOBILE-COPILOT-STATES-001 | MOBILE_COPILOT_STATES_v1.52.md |6 novos testes/113 locais; sugestão schema/rota/ação crítica/manual; rede/guard | Branch; CI/APK/taps pendentes; Visual Truth OPEN |
+
+## Integrações 10/10/2026 e Privacidade v1.53
+
+Fonte: [execução verificada06:21](../conversas/EXECUCAO_VERIFICADA_2026-10-10_0621Z.md). #356–#360/#362/#363 merges confirmados com gates exatos/trees/parents. Pós-merges em acompanhamento, sem PASS antecipado.
+
+| Evidence ID | Fonte | Fato | Estado |
+|---|---|---|---|
+| UI-MOBILE-PRIVACY-REQUEST-STATES-001 | MOBILE_PRIVACY_REQUEST_STATES_v1.53.md |4 novos testes/117 locais; GET requests real/estados | Branch; CI/APK/taps pendentes; Visual Truth OPEN |
