@@ -1,0 +1,9 @@
+# Execução verificada — MLIVRETRABALHO — 2026-10-10 06:39:40 UTC
+
+Históricos0621Z/0630Z/0635Z preservados. Main177f15c92323b9bf807a6cbee1c802f5953ac907,#363/v1.52. Sete merges confirmados com gates head exactos/trees/parents. Sete CIs pós-merge success; #362 APK38030545125 success. #355 retry2APK38023598566 success,smoke/artifact journal0635Z. Demais APKs em acompanhamento.
+
+Novo diagnóstico #357 main1317f3623f74bc29457daa3b39608ef230853ba2: APK38030523164 tentativa1 falhou; job114150307665 build success; smokeaction input Broken pipe224 em2026-10-10T06:37:53.4368724Z, antes do script do projeto/install. Nenhum logcat/artefato APK validado publicado; não afirmar crash/erro do app. Retry controlado job solicitado no mesmo SHA nesta rodada, acompanhar tentativa2; sem bypass/loops cegos. #35338023554678 retry2 permanece em execução.
+
+Fila aberta: #3648031ab71459bc76ae7452adc43a7a10d65fffcfd CI38030714422 success/APK38030714543 em smoke; #36574f9023ac86052c548cc540a115d693126c8cbe1 CI38031304477 success/APK38031304499 build; #3661c4b713e02d0bba8e3ef0b7d7f970f500e834391 CI38031507265/APK38031507225 em execução. Bases364main/365364/366365; retarget em ordem após cada integração aprovada.
+
+Fatia independente agora fix/signup-verified-account-and-network-states sobre#366:133 testes locais,signupguard/timeout/ack/incerteza/empresaowner/profissionalindependente, v1.56/code/docs/memory/checkpoint juntos. PR/commit/run próprios consultar pela branch após publicação. Nenhum cadastro/DSAR/dinheiro/PSP real. Próximo: concluir gates/integrar fila/pós-merges, auditar entrar.tsx e persistência de sessão/tenant com contratos existentes. Visual Truth/capturas físicos/pentest/provider/FIN-RISK/WEB-ARCH continuam abertos e independentes; não desativar rotina por fim de rodada/espera/falha parcial.
