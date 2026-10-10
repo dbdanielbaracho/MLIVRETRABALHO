@@ -1,16 +1,18 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# Abertura com sessão e empresa pareadas — v1.73
+
+## Estado remoto
 
 Snapshot 2026-10-10 11:32 UTC. Main 516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca, árvore 27f168902ad888017df379526437690202204473. PR #383 aberta, base main, head a8c2c106068f311a64e6a303bae03d6d323df8e2, árvore 6159c19dd189fd46691df56a39fffa58a7ec993c, pai main conferidos. Reconsulta raw PR confirmou mergeable=true (snapshot inicial eventual false, sem conflito). Diff remoto #383 revisto, 17 arquivos esperados. Próprios runs: [38048556192](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/38048556192) Standalone Pilot APK in_progress; [38048556097](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/38048556097) CI success. Job114202904182 já aprovou typecheck/build/export Android; isto não substitui conclusão do run ou APK.
 
 #376–#382 já integradas; head CI/APK exatos, retarget/review/merge-base, árvores/pais/main e pós #375 success documentados no journal1129Z/v1.72. CIs pós #376–#382 success; APKs pós 376: 38047970768 in_progress; 377: 38048000637 in_progress; 378: 38048052704 in_progress; 379: 38048058091 in_progress; 380: 38048063298 in_progress; 381: 38048068335 in_progress; 382: 38048073303 in_progress. Jobs pós376/382 aprovam build e executam device smoke, portanto acompanhar e não concluir/fabricar gate. Não repetir merges/retries anteriores.
 
-## Item atual
+## Implementação e prova
 
 A abertura do app passa a usar authenticatedTenantHeaders: token e tenant são lidos no mesmo trabalho da fila de sessão. resolveStartupRoute confirma os dois campos após a leitura antes do redirect; mudança de conta ou de empresa (incluindo tenant antes ausente), blur e erro não produzem rota antiga. A tela reconsulta no foco; uma conclusão antiga não atualiza UI nem navega depois de sair. Mantém a escolha existente empresa/profissional por empresa selecionada, sem inferir papel/membership ou autorização no cliente. Sem token, um tenant órfão não abre conta. Erro/stale retorna às opções existentes de entrar/cadastrar, sem ficar em loading eterno ou inventar conta.
 
 Quatro regressões novas exercitam snapshots estáveis, interleaving real de createSessionQueue/persistVerifiedSession entre as leituras, troca só de tenant e blur/erro/recuperação. 238/238 testes mobile passaram em UTC e America/Sao_Paulo, zero falha/cancelamento/skip. JSX/StyleSheet de index.tsx idênticos à base; apenas binding de sessão/foco e novo helper/teste. SecureStore, fila, auth, backend, RLS, React19.1.4/RN0.81.6 e lockfile inalterados. Apenas fixtures, sem operações reais. CI próprio type/build/export/HTTP/APK e pós-merge pendentes.
 
-## Próxima ação
+## Retomada
 
 Publicar fix/startup-session-pair sobre o head próprio #383 a8c2c106068f311a64e6a303bae03d6d323df8e2, base fix/account-actions-timeout-origin; consultar PR/head/árvore/runs próprios após publicação, sem SHA circular. Integrar #383 somente com CI/APK próprios success no SHA exato, diff/base/main/merge-base fresh; verificar árvore/pais/main e pós. Depois retarget filho para main, reconsultar estado eventual, preservar antecessor e revalidar gates, integrar em ordem. APK running significa acompanhar, não bloqueio definitivo nem motivo para desativar a continuidade.
 

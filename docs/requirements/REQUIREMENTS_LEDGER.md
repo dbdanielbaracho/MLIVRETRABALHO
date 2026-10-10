@@ -1,5 +1,7 @@
 # Requirements Ledger — MLIVRETRABALHO
 
+**Snapshot histórico:** tabelas e estado remoto abaixo registram a verificação de 2026-09-24. Não usar campos como runner bloqueado/current probe/pending work como estado atual. Consultar README → Documento da Verdade vigente, deltas e checkpoint/Evidence Registry para requisitos/evidências posteriores. Em 2026-10-10, CIs e APKs executam; sem inferir fechamento físico/PSP/pentest.
+
 Rastreabilidade obrigatória:
 
 **Requirement → Issue/ADR → Code → Test → PR → SHA → Deploy → Evidence**

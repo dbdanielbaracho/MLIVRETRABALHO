@@ -1,26 +1,26 @@
-import { Link, router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Link, router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { getSession, getTenant } from '../lib/session';
+import { authenticatedTenantHeaders } from '../lib/session';
+import { resolveStartupRoute } from '../lib/startup-route';
 
 export default function Home() {
   const [checking, setChecking] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     let active = true;
+    setChecking(true);
     void (async () => {
-      const token = await getSession();
+      const result = await resolveStartupRoute(authenticatedTenantHeaders, () => active);
       if (!active) return;
-      if (token) {
-        const tenantId = await getTenant();
-        if (!active) return;
-        router.replace(tenantId ? '/empresa-inicio' : '/profissional-inicio');
+      if (result.status === 'ready') {
+        router.replace(result.route);
         return;
       }
       setChecking(false);
     })();
     return () => { active = false; };
-  }, []);
+  }, []));
 
   return (
     <SafeAreaView style={styles.screen}>
