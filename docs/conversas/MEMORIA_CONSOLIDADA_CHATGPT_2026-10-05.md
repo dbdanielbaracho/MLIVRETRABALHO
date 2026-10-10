@@ -483,3 +483,8 @@ Correção apenas GET /privacy/requests: loading/erro/vazio comprovado, payload/
 4 novos testes;117/117 UTC/São Paulo. Fatos/status/tipo/datas reais, vazio somente confirmado, HTTP/JSON/rede como falha e somente endpoint requests, sem GET export/POST. Guarda UI/foco/timeout revisada estaticamente, não comprova taps/aceite físico. CI/APK no head próprio e pós-merge pendentes. Visual Truth OPEN. Operações de Privacidade continuam como lacuna concreta separada para próximo ciclo com os mesmos contratos e controles humanos.
 
 Resultados de integração/pós-merges/retries em [execução verificada06:21](EXECUCAO_VERIFICADA_2026-10-10_0621Z.md). Sem transcrição inventada; fatos da execução registrados, Visual Truth OPEN.
+
+
+## Privacidade manual v1.54 — 2026-10-10 06:30:59 UTC
+
+Operações com guard/ack/sessão/15s/sem duplicar, export explícito e cópia somente em memória, desativação humana/bloqueios preservados.8 novos testes,125/125 locais UTC/São Paulo. Branch fix/privacy-manual-action-acknowledgements dependente #364; gates próprios/pós-merge ainda pendentes neste snapshot. Journal0630Z registra sete CIs pós-merge success/APKs pendentes e retries353/355. Nenhuma operação real/PSP/paid. Visual Truth OPEN; continuar auditando itens independentes.
