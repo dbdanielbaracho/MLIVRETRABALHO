@@ -2,7 +2,7 @@ export type ManualPrivacyType='correction'|'erasure'|'restriction'|'objection'|'
 export type ActionRequest=(path:string,method:'GET'|'POST',body?:{requestType:ManualPrivacyType;details?:string})=>Promise<{ok:boolean;status:number;json():Promise<unknown>}>;
 export type ActionFailure={status:'rejected'|'unknown';message?:string};
 const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
-const id=(value:unknown)=>typeof value==='string'&&value.length>0;
+const id=(value:unknown)=>typeof value==='string'&&!!value.trim();
 const date=(value:unknown)=>typeof value==='string'&&Number.isFinite(new Date(value).getTime());
 const required=new Set<ManualPrivacyType>(['correction','restriction','objection','automated_decision_review']);
 export function samePrivacySession(current:Record<string,string>,displayed:Record<string,string>):boolean{return !!displayed.Authorization&&current.Authorization===displayed.Authorization;}

@@ -13,20 +13,24 @@ const requestLabels:Record<string,string>={correction:'Solicitar correção',era
 
 export default function Privacidade(){
   const[requestState,setRequestState]=useState<PrivacyRequestResult>({status:'loading'}),[message,setMessage]=useState(''),[details,setDetails]=useState(''),[exportText,setExportText]=useState(''),[busy,setBusy]=useState(false),[uncertain,setUncertain]=useState(false);
-  const sequence=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),pending=useRef(false),confirming=useRef(false),unknown=useRef(false),snapshot=useRef<Record<string,string>|null>(null);
+  const draftAuthorization=useRef<string|null>(null),sequence=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),pending=useRef(false),confirming=useRef(false),unknown=useRef(false),snapshot=useRef<Record<string,string>|null>(null);
   const requests=requestState.status==='ready'?requestState.data:[];
   const disabled=busy||uncertain||requestState.status!=='ready';
   function markUnknown(){unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o resultado. Atualize os pedidos e confira o estado antes de tentar outra ação.');}
-  function changedContext(){snapshot.current=null;setExportText('');setRequestState({status:'error'});setMessage('A sessão mudou. Atualize os pedidos antes de continuar.');}
+  function changedContext(){snapshot.current=null;setDetails('');draftAuthorization.current=null;setExportText('');setRequestState({status:'error'});setMessage('A sessão mudou. Atualize os pedidos antes de continuar.');}
   async function load(manual=false,expected?:Record<string,string>){
     const id=++sequence.current,generation=epoch.current,controller=new AbortController();controllers.current.add(controller);snapshot.current=null;setRequestState({status:'loading'});
     const timer=setTimeout(()=>controller.abort(),15000);
     try{
       const headers=await authHeaders();
+      if(id!==sequence.current||generation!==epoch.current)return;
+      if(controller.signal.aborted){setRequestState({status:'error'});return;}
+      if(draftAuthorization.current&&draftAuthorization.current!==headers.Authorization){setDetails('');setExportText('');}draftAuthorization.current=headers.Authorization??null;
       if(expected&&!samePrivacySession(headers,expected)){if(id===sequence.current&&generation===epoch.current)changedContext();return;}
       const result=await loadPrivacyRequests(path=>fetch(apiUrl(path),{headers,signal:controller.signal}));
       const current=await authHeaders();
       if(id!==sequence.current||generation!==epoch.current)return;
+      if(controller.signal.aborted){setRequestState({status:'error'});return;}
       if(!samePrivacySession(current,headers)){changedContext();return;}
       setRequestState(result);
       if(result.status==='ready'){snapshot.current=headers;if(manual){unknown.current=false;setUncertain(false);}}
@@ -47,6 +51,7 @@ export default function Privacidade(){
       const result=await operation((path,method,body)=>{if(controller.signal.aborted||generation!==epoch.current)throw new Error('inactive');sent=true;return fetch(apiUrl(path),{method,headers:body?{...headers,'content-type':'application/json'}:headers,...(body?{body:JSON.stringify(body)}:{}),signal:controller.signal});});
       const current=await authHeaders();if(generation!==epoch.current)return;
       if(!samePrivacySession(current,expected)){changedContext();if(sent)markUnknown();return;}
+      if(controller.signal.aborted){if(sent)markUnknown();return;}
       await accept(result,headers);
     }catch{if(generation===epoch.current){if(sent)markUnknown();else setMessage('Não foi possível iniciar a ação. Atualize os pedidos.');}}
     finally{clearTimeout(timer);controllers.current.delete(controller);if(generation===epoch.current){pending.current=false;setBusy(false);}}

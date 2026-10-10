@@ -32,3 +32,32 @@ test('revocation preserves bodyless POST and requires acknowledgement for the ac
  const calls=[];assert.equal(await revokeInvitation(async(path,body,method)=>{calls.push([path,body,method]);return response({revoked:true,invitationId:'i'})},'i'),true);assert.deepEqual(calls,[['/company/members/invitations/i/revoke',undefined,'POST']]);
  assert.equal(await revokeInvitation(async()=>response({revoked:true,invitationId:'other'}),'i'),false);assert.equal(await revokeInvitation(async()=>{throw Error('offline')},'i'),false);
 });
+import {runForSession} from '../lib/session-context.ts';
+test('blank member or invitation identifiers and unauthenticated management context are rejected',async()=>{
+ assert.equal(sameManagementContext({'x-tenant-id':'t'},{'x-tenant-id':'t'}),false);
+ assert.equal((await loadManagement(async p=>response(p.endsWith('/invitations')?[{...invitation,id:' '}]:[{...member,identityId:' '}]))).members.status,'error');
+ assert.equal((await loadManagement(async()=>response([{...invitation,id:' '}]))).invitations.status,'error');
+});
+test('invalid invitation targets never transport; valid acceptance works without a selected tenant',async()=>{
+ let calls=0;const request=async()=>{calls++;return response({accepted:true,tenantId:'t',role:'manager'})};
+ assert.equal((await generateInvitation(request,' ',invitation.email,'manager')).status,'rejected');
+ assert.equal(await revokeInvitation(request,' '),false);
+ for(const code of [' ','.secret','t','t. '])assert.equal((await acceptInvitation(request,code)).status,'error');
+ assert.equal(calls,0);
+ const accepted=await runForSession(async()=>({Authorization:'Bearer fixture'}),()=>acceptInvitation(request,'t.secret'),()=>true,'Bearer fixture');
+ assert.equal(accepted.status,'ready');assert.equal(accepted.data.status,'accepted');assert.equal(calls,1);
+});
+test('invitation creation never confirms blank acknowledgement ID or secret',async()=>{
+ const ack={invitationId:'i',email:invitation.email,role:'manager',expiresAt:invitation.expiresAt,inviteCode:'t.secret'};
+ for(const d of [{...ack,invitationId:' '},{...ack,inviteCode:'t. '}])assert.deepEqual(await generateInvitation(async()=>response(d),'t',invitation.email,'manager'),{status:'unknown'});
+});
+test('late invitation acknowledgement is suppressed after deadline or account change without a duplicate POST',async()=>{
+ for(const kind of ['deadline','identity']){
+  let current=true,calls=0,authorization='Bearer fixture';
+  const result=await runForSession(async()=>({Authorization:authorization,'x-tenant-id':'t'}),h=>generateInvitation(async()=>{
+   calls++;assert.equal(h.Authorization,'Bearer fixture');if(kind==='deadline')current=false;else authorization='Bearer changed';
+   return response({invitationId:'i',email:invitation.email,role:'manager',expiresAt:invitation.expiresAt,inviteCode:'t.secret'});
+  },'t',invitation.email,'manager'),()=>current,'Bearer fixture','t');
+  assert.deepEqual(result,{status:'stale'});assert.equal(calls,1);
+ }
+});
