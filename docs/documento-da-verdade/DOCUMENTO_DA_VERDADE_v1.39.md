@@ -19,3 +19,6 @@ Quatro novos testes; 40/40 locais UTC e São Paulo. Cobrem schema, dados ausente
 Main aee58e7776eee0dc211713edcbe29075f841ecb1; #341 pós-merge CI/APK aprovados. #342 pós-merge CI 38014015303 aprovado/APK 38014015274 aguardando. #343 reconciliado head 4f39c2c92750c3a5c70bae21986d823a1eeff637, CI 38014252721 aprovado/APK 38014252773 executando. #344 CI 38013195821/APK 38013195786 aprovados; depende #343. #348 corrigido head 4b1cb40d093acc578da1629388c260889bedb0f7 após TS18048: novos CI 38014454751/APK 38014454871 em acompanhamento. Gates antigos de heads diferentes não autorizam merge.
 
 Próximos itens independentes verificados: Equipe/Interessados com respostas de seleção concorrente, ausência de estados/catch/guard. Confrontar contratos antes de corrigir. Nenhum gate global fechado por esta fatia.
+
+## Evidência de integração — 2026-10-10 02:32 UTC
+#343–#349 integrados com gates pré-merge aprovados no head exato. Estado verificado: main 83872fc1dbfd89165ae45376a08b56f53414c432; pós-merge em acompanhamento. Registro completo em ../conversas/EXECUCAO_VERIFICADA_2026-10-10_0232Z.md. Visual Truth continua OPEN; pendências em PRs até v1.50/101 testes não estão declaradas entregues em main. Reconsultar GitHub antes de agir.
