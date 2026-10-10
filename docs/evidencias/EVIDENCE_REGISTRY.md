@@ -96,3 +96,9 @@ Cada evidência material futura deve registrar: Evidence ID, concorrente/fonte, 
 | Evidence ID | Fonte | Fato | Estado | Próxima ação |
 |---|---|---|---|---|
 | UI-MOBILE-JOBS-STATES-001 | MOBILE_JOBS_STATES_v1.39.md | Foco/schema/timeout/ack interesse; 40 testes locais | Branch encadeada após #348 corrigido | CI/APK exatos, revisão, merge e pós-merge |
+
+## Interessados — v1.40
+
+| Evidence ID | Fonte | Fato | Estado | Próxima ação |
+|---|---|---|---|---|
+| UI-MOBILE-CANDIDATES-STATES-001 | MOBILE_CANDIDATES_STATES_v1.40.md | Estados/seleção/contexto/ack; 45 testes locais | Implementado branch após #349 | Gates exatos, integração, pós-merge; taps/Visual Truth OPEN |
