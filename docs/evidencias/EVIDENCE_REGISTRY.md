@@ -783,3 +783,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [PROFILE_ANALYTICS_READ_DEADLINE_v1.99.md](PROFILE_ANALYTICS_READ_DEADLINE_v1.99.md):10falhas/2pass antes ePASS58 após correção de leitura; campos privados condicionados a perfilready; sem mudança de escrita. CI408mobile/140API+APK próprios pendentes.
 - [EXECUCAO_VERIFICADA_2026-10-10_1903Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1903Z.md): #409CI38077842127/job114288445864 aprovado396mobile/140API/4web/3CLI; APKs401retry/408/409 em execução. Issue214closed, dependências externas aindaopen; ledger histórico não redefinido.
+
+
+## 2026-10-10 — v1.100
+
+- [PROFESSIONAL_WEEK_CHRONOLOGY_v1.100.md](PROFESSIONAL_WEEK_CHRONOLOGY_v1.100.md): comparator por timestamp, cinco regressões novas e PASS67 local; HTTP/PostgreSQL/CI próprio pendentes antes da publicação. Provas completas dos gates/merges401–410 e pós401/402CI; pós-APKs em acompanhamento.
+- [EXECUCAO_VERIFICADA_2026-10-10_2313Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2313Z.md): SHAs reais, pais/árvores, runs e próxima ação; checkpoint anterior arquivado. Visual Truth físico/gates externos abertos.

@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada — 2026-10-10 23:13:23 UTC
 
 Consulta em 2026-10-10 23:13:23 UTC. Main 104fdd9aef14eec9530d5df609da3d4f498c03d7, árvore 5eb3869df0179f5b724e9f08253143f29ef4ecf5, Documento da Verdade v1.99. #401–410 integradas em ordem nesta execução. Antes de cada merge: main/head/base frescos; retarget main; merge-base tree equivalente à main; diff fresco igual ao revisado; CI no SHA exato com todos os passos/logs/testes e native aplicável aprovado. mergeable=null imediato foi reconsultado, sem conflito real ou overwrite. Após cada merge: PR/main/pais [main anterior, head aprovado] e árvore idêntica ao head aprovado confirmados.
 
@@ -34,8 +32,6 @@ Consulta em 2026-10-10 23:13:23 UTC. Main 104fdd9aef14eec9530d5df609da3d4f498c03
 
 #396–400 e demais predecessores já integradas; históricos/evidências em v1.99 e journals anteriores. Pós400CI38075689047 e APK38075689034 aprovados no SHA5675327972869b16b0641a738d88f99cfb1a53b0, prova anterior conferida às18:50UTC; não repetir merges/retroceder à checkpoint antiga351–355.
 
-## Item atual
-
 # Ordem cronológica da semana profissional
 
 A API GET /v1/planner/my-week ordenava o resultado final por String(startsAt).localeCompare. Datas do driver PostgreSQL podem ser objetos Date: os nomes dos dias na string ordenavam quinta antes de terça. Strings ISO com offsets diferentes também não ordenam instantes corretamente. A comparação final passa a usar new Date(startsAt).getTime(), preservando os valores originais enviados, seleção/buildWeek, limite de sete, roleFit/score, disponibilidade, lookup da identidade e consulta NETWORK_SHARED existente.
@@ -46,12 +42,8 @@ A fixture HTTP existente e restrita a localhost/banco efêmero agora cria duas o
 
 Escopo: comparator do controller, cinco testes API, bloco de fixture HTTP e documentação. React 19.1.4, React Native 0.81.6, lockfile, mobile, navegação, tenant/RLS e autorização existentes preservados. APK próprio N/A somente após confirmar paths efetivos e árvore apps/mobile idêntica à main aprovada; APKs pós-merge dos predecessores não dispensados. Nenhuma chamada de produção, PSP, dinheiro real, custo novo ou deploy pago. Visual Truth físico e demais gates externos permanecem abertos.
 
-## Dependências verificadas
-
 Visual Truth físico (desenho original, dados e todos os estados, cobertura completa), Native/SecureStore/teclado/payload/restart e piloto/distribuição, pentest independente, providers/TRUST, PSP/FIN-RISK e WEB-ARCH permanecem separados e abertos. Não confundir CI/emulador/merge com deploy ou conclusão integral. Sem dinheiro real, PSP habilitado, nova cobrança, infraestrutura ou deploy pago.
 Preferências: falta contrato de campos/semântica/escopo/persistência/efeito de matching; não inventar defaults nem renomear capacidades como preferências. Ajuda nova sem membership: falta autoridade por identidade/isolamento/retenção aprovada, sem tenant global arbitrário ou bypass RLS. Forecast/no-show ML depende de dados reais e validação; integrações enterprise precisam alvo/contrato. Sandbox/provider e aparelho/pentest dependem evidência externa. São impedimentos parciais, sem bloquear correções seguras independentes. Issue214closed confirmado19:00UTC;215/219/220/224/228open; ledger base já se declara snapshot histórico2026-09-24.
-
-## Próxima ação concreta
 
 Publicar esta correção de cronologia em fix/professional-week-chronology sobre main104fdd9aef14eec9530d5df609da3d4f498c03d7/tree5eb3869df0179f5b724e9f08253143f29ef4ecf5; não antecipar PR/SHA/resultado. Verificar bytes remotos/diff, CI próprio408mobile/145API/4web/3CLI e marker HTTP PostgreSQL de terça/quinta. Confirmar paths e apps/mobile equivalente antes de concluir APK próprio N/A. Integrar apenas com gates aplicáveis no SHA exato; confirmar pais/tree/main e CI pós-merge. Acompanhar todos os pós-merges401–410 acima até resultado comprovado, sem repetir merge ou rerun indiscriminado.
 Alternativas já auditadas: Perfil/passaporte/capabilities/analytics/planner, schemas/APIs de preferências, signup/membership/suporte geral, requisitos canônicos e ledger histórico, issues/provider/aparelho/pentest/Web. Talentos e Segurança têm outros handlers de leitura cujo prazo/races precisam reprodução antes de correção; CompanyConta/signout e qualquer escrita exigem preservar resultado incerto e não duplicar operações. Auditar itens independentes reais, sem inventar funcionalidades/commits para atividade. Rotina permanece ativa até conclusão integral provada ou ordem expressa; fim de rodada/pós-CI em execução não encerra projeto.
