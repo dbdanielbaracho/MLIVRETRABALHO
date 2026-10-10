@@ -29,3 +29,16 @@ test('retry recovers server data after profile/Passport failures',async()=>{
  assert.equal((await loadWorkPassport(response(p,500))).status,'error');
  assert.deepEqual(await loadWorkPassport(response(p)),{status:'ready',data:p});
 });
+
+test('profile and Passport responses decoded after deadline never become ready, including missing profile',async()=>{
+ for(const [load,data,status] of [[loadProfessionalProfile,{id:'p',displayName:'Fixture'},200],[loadProfessionalProfile,null,200],[loadWorkPassport,{displayName:'Fixture',completedWorkCount:0,averageRating:null,ratingCount:0},200],[loadWorkPassport,{message:'professional_profile_required'},404]]){
+  const controller=new AbortController();let resolve;const pending=new Promise(r=>{resolve=r});
+  const result=load(async()=>({ok:status===200,status,json:()=>pending}),()=>!controller.signal.aborted);
+  await Promise.resolve();controller.abort();resolve(data);assert.deepEqual(await result,{status:'error'});
+ }
+});
+test('profile and Passport requests do not start after their context expires',async()=>{
+ for(const load of [loadProfessionalProfile,loadWorkPassport]){
+  let calls=0;assert.deepEqual(await load(async()=>{calls++;return {ok:true,json:async()=>null}},()=>false),{status:'error'});assert.equal(calls,0);
+ }
+});
