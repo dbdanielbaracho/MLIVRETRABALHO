@@ -191,6 +191,24 @@ PLANNER_AFTER="$(request GET /v1/company/planner "$TOKEN_A" "$TENANT_A")"
 node -e 'const a=JSON.parse(process.argv[1]),b=JSON.parse(process.argv[2]);if(JSON.stringify(a)!==JSON.stringify(b))throw Error("planner_changed_work_state");' -- "$PLANNER_BEFORE" "$PLANNER_AFTER"
 echo 'PASS: team-plan malformed inputs/auth/role/cross-tenant rejected; valid real-job plan preserves unfilled and work state'
 
+# Real PostgreSQL timestamps must remain chronological across two public company opportunities.
+PLAN_ROLE="ChronologyFixture$STAMP"
+PROFILE_BODY="$(node -e 'process.stdout.write(JSON.stringify({displayName:"Planner chronology fixture",primaryRole:process.argv[1]}))' -- "$PLAN_ROLE")"
+request PUT /v1/professional-profile "$TOKEN_P" '' "$PROFILE_BODY" >/dev/null
+WEEK_WINDOWS="$(node -e 'const t=new Date();t.setUTCDate(t.getUTCDate()+((2-t.getUTCDay()+7)%7||7));t.setUTCHours(12,0,0,0);const h=new Date(t);h.setUTCDate(h.getUTCDate()+2);const window=d=>({startsAt:d.toISOString(),endsAt:new Date(d.getTime()+3600000).toISOString()});process.stdout.write(JSON.stringify({early:window(t),later:window(h)}))')"
+WEEK_IDS=()
+for slot in early later; do
+ WINDOW="$(printf '%s' "$WEEK_WINDOWS" | node -e 'process.stdout.write(JSON.stringify(JSON.parse(require("fs").readFileSync(0,"utf8"))[process.argv[1]]))' -- "$slot")"
+ request POST /v1/availability/mine "$TOKEN_P" '' "$WINDOW" >/dev/null
+ JOB="$(node -e 'const w=JSON.parse(process.argv[1]);process.stdout.write(JSON.stringify({...w,title:"Planner chronology fixture "+process.argv[2],requiredRole:process.argv[3],payCents:10000}))' -- "$WINDOW" "$slot" "$PLAN_ROLE")"
+ if [[ "$slot" == early ]]; then SLOT_TOKEN="$TOKEN_A"; SLOT_TENANT="$TENANT_A"; else SLOT_TOKEN="$TOKEN_B"; SLOT_TENANT="$TENANT_B"; fi
+ WEEK_IDS+=("$(request POST /v1/company/jobs "$SLOT_TOKEN" "$SLOT_TENANT" "$JOB" | json_field id)")
+done
+request GET /v1/planner/my-week "$TOKEN_P" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!Array.isArray(x)||x.length!==2||x[0].id!==process.argv[1]||x[1].id!==process.argv[2]||!(Date.parse(x[0].startsAt)<Date.parse(x[1].startsAt)))throw Error("professional_week_chronology_failed");' -- "${WEEK_IDS[0]}" "${WEEK_IDS[1]}"
+expect_status week-auth 401 GET /v1/planner/my-week invalid-token '' ''
+echo 'PASS: professional week returns real PostgreSQL opportunity timestamps in chronological Tuesday/Thursday order across companies'
+
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
 expect_status contexts-revoked 401 GET /v1/me/support-contexts "$TOKEN_P" '' ''
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'
+

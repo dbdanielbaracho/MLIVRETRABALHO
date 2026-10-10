@@ -1,4 +1,17 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.100
+
+**Status:** NORMATIVO — DELTA SOBRE v1.99
+**Data:** 2026-10-10
+
+# Ordem cronológica da semana profissional
+
+A API GET /v1/planner/my-week ordenava o resultado final por String(startsAt).localeCompare. Datas do driver PostgreSQL podem ser objetos Date: os nomes dos dias na string ordenavam quinta antes de terça. Strings ISO com offsets diferentes também não ordenam instantes corretamente. A comparação final passa a usar new Date(startsAt).getTime(), preservando os valores originais enviados, seleção/buildWeek, limite de sete, roleFit/score, disponibilidade, lookup da identidade e consulta NETWORK_SHARED existente.
+
+Cinco regressões novas: Date terça/quinta; strings ISO com offsets; binding do perfil real/disponibilidade/filtro de função sem escrita; auth negada/perfil ausente; erro de banco sem semana vazia fabricada. No código anterior, as duas regressões cronológicas falharam e as outras três passaram. Conjunto local 67/67 aprovado em 2026-10-10; adaptador explícito Node 24 com stubs Nest/decorators, sem alegar Nest/HTTP/PostgreSQL real.
+
+A fixture HTTP existente e restrita a localhost/banco efêmero agora cria duas oportunidades públicas de empresas distintas em próxima terça/quinta UTC, adiciona disponibilidade real pelo endpoint POST /availability/mine, usa uma função exclusiva da fixture no perfil e verifica IDs e instantes no GET autenticado sem header tenant. Não altera catálogo canônico, assignment/contratação/pagamento ou infraestrutura; todas as asserções anteriores de suporte/conversões/team-plan permanecem. bash -n aprovado. Prova HTTP PostgreSQL própria e CI completo ainda pendentes antes da publicação; esperado 408 mobile / 145 API / 4 web / 3 CLI, typecheck/build/export/migrations/HTTP.
+
+Escopo: comparator do controller, cinco testes API, bloco de fixture HTTP e documentação. React 19.1.4, React Native 0.81.6, lockfile, mobile, navegação, tenant/RLS e autorização existentes preservados. APK próprio N/A somente após confirmar paths efetivos e árvore apps/mobile idêntica à main aprovada; APKs pós-merge dos predecessores não dispensados. Nenhuma chamada de produção, PSP, dinheiro real, custo novo ou deploy pago. Visual Truth físico e demais gates externos permanecem abertos.
 
 ## Estado verificado
 
@@ -34,19 +47,7 @@ Consulta em 2026-10-10 23:13:23 UTC. Main 104fdd9aef14eec9530d5df609da3d4f498c03
 
 #396–400 e demais predecessores já integradas; históricos/evidências em v1.99 e journals anteriores. Pós400CI38075689047 e APK38075689034 aprovados no SHA5675327972869b16b0641a738d88f99cfb1a53b0, prova anterior conferida às18:50UTC; não repetir merges/retroceder à checkpoint antiga351–355.
 
-## Item atual
-
-# Ordem cronológica da semana profissional
-
-A API GET /v1/planner/my-week ordenava o resultado final por String(startsAt).localeCompare. Datas do driver PostgreSQL podem ser objetos Date: os nomes dos dias na string ordenavam quinta antes de terça. Strings ISO com offsets diferentes também não ordenam instantes corretamente. A comparação final passa a usar new Date(startsAt).getTime(), preservando os valores originais enviados, seleção/buildWeek, limite de sete, roleFit/score, disponibilidade, lookup da identidade e consulta NETWORK_SHARED existente.
-
-Cinco regressões novas: Date terça/quinta; strings ISO com offsets; binding do perfil real/disponibilidade/filtro de função sem escrita; auth negada/perfil ausente; erro de banco sem semana vazia fabricada. No código anterior, as duas regressões cronológicas falharam e as outras três passaram. Conjunto local 67/67 aprovado em 2026-10-10; adaptador explícito Node 24 com stubs Nest/decorators, sem alegar Nest/HTTP/PostgreSQL real.
-
-A fixture HTTP existente e restrita a localhost/banco efêmero agora cria duas oportunidades públicas de empresas distintas em próxima terça/quinta UTC, adiciona disponibilidade real pelo endpoint POST /availability/mine, usa uma função exclusiva da fixture no perfil e verifica IDs e instantes no GET autenticado sem header tenant. Não altera catálogo canônico, assignment/contratação/pagamento ou infraestrutura; todas as asserções anteriores de suporte/conversões/team-plan permanecem. bash -n aprovado. Prova HTTP PostgreSQL própria e CI completo ainda pendentes antes da publicação; esperado 408 mobile / 145 API / 4 web / 3 CLI, typecheck/build/export/migrations/HTTP.
-
-Escopo: comparator do controller, cinco testes API, bloco de fixture HTTP e documentação. React 19.1.4, React Native 0.81.6, lockfile, mobile, navegação, tenant/RLS e autorização existentes preservados. APK próprio N/A somente após confirmar paths efetivos e árvore apps/mobile idêntica à main aprovada; APKs pós-merge dos predecessores não dispensados. Nenhuma chamada de produção, PSP, dinheiro real, custo novo ou deploy pago. Visual Truth físico e demais gates externos permanecem abertos.
-
-## Dependências verificadas
+## Dependências
 
 Visual Truth físico (desenho original, dados e todos os estados, cobertura completa), Native/SecureStore/teclado/payload/restart e piloto/distribuição, pentest independente, providers/TRUST, PSP/FIN-RISK e WEB-ARCH permanecem separados e abertos. Não confundir CI/emulador/merge com deploy ou conclusão integral. Sem dinheiro real, PSP habilitado, nova cobrança, infraestrutura ou deploy pago.
 Preferências: falta contrato de campos/semântica/escopo/persistência/efeito de matching; não inventar defaults nem renomear capacidades como preferências. Ajuda nova sem membership: falta autoridade por identidade/isolamento/retenção aprovada, sem tenant global arbitrário ou bypass RLS. Forecast/no-show ML depende de dados reais e validação; integrações enterprise precisam alvo/contrato. Sandbox/provider e aparelho/pentest dependem evidência externa. São impedimentos parciais, sem bloquear correções seguras independentes. Issue214closed confirmado19:00UTC;215/219/220/224/228open; ledger base já se declara snapshot histórico2026-09-24.
