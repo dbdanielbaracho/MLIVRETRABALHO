@@ -23,12 +23,14 @@ export default function Perfil(){
   try{
    const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;if(!h.Authorization){changedContext();throw Error('session_required');}
    if(draftOwner.current!==h.Authorization){dirty.current=false;setDisplayName('');setCity('');setRole('');setNotice('');}draftOwner.current=h.Authorization;
+   const isCurrent=()=>id===requestId.current&&generation===epoch.current&&!controller.signal.aborted;
    const [nextProfile,nextPassport]=await Promise.all([
-    loadProfessionalProfile(()=>fetch(apiUrl('/professional-profile'),{headers:h,signal:controller.signal})),
-    loadWorkPassport(()=>fetch(apiUrl('/work-passport/mine'),{headers:h,signal:controller.signal}))
+    loadProfessionalProfile(()=>fetch(apiUrl('/professional-profile'),{headers:h,signal:controller.signal}),isCurrent),
+    loadWorkPassport(()=>fetch(apiUrl('/work-passport/mine'),{headers:h,signal:controller.signal}),isCurrent)
    ]);
    const current=await authHeaders();if(id!==requestId.current||generation!==epoch.current||focusSignal?.aborted)return;
    if(current.Authorization!==h.Authorization){changedContext();return;}
+   if(controller.signal.aborted){setProfile({status:'error'});setPassport({status:'error'});return;}
    if(nextProfile.status==='ready')sourceHeaders.current=h;
    setProfile(nextProfile);setPassport(nextPassport);
    if(nextProfile.status==='ready'&&!dirty.current){
@@ -48,10 +50,10 @@ export default function Perfil(){
   try{
    const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;
    if(h.Authorization!==original.Authorization){changedContext();return;}
-   const result=await submitProfile((path,body)=>fetch(apiUrl(path),{method:'PUT',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),input,expectedId);
+   const result=await submitProfile((path,body)=>fetch(apiUrl(path),{method:'PUT',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),input,expectedId,()=>generation===epoch.current&&!controller.signal.aborted);
    const current=await authHeaders();if(generation!==epoch.current)return;
    if(current.Authorization!==original.Authorization){changedContext();return;}
-   if(result.status!=='saved'){setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');return;}
+   if(controller.signal.aborted||result.status!=='saved'){setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');return;}
    ++requestId.current;dirty.current=false;setProfile({status:'ready',data:result.data});setDisplayName(result.data.displayName);setCity(result.data.homeCity??'');setRole(result.data.primaryRole??'');setNotice('Dados salvos.');void load();
   }catch{if(generation===epoch.current)setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');}
   finally{clearTimeout(timeout);controllers.current.delete(controller);if(generation===epoch.current){submitting.current=false;setSaving(false);}}

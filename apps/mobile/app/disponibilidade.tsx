@@ -21,9 +21,10 @@ export default function Disponibilidade(){
   try{
    const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;
    if(!h.Authorization){setMsg('Entre na sua conta antes de salvar a disponibilidade.');return;}
-   const result=await submitAvailability((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),window);
+   const result=await submitAvailability((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),window,()=>generation===epoch.current&&!controller.signal.aborted);
    const current=await authHeaders();if(generation!==epoch.current)return;
    if(current.Authorization!==h.Authorization){setMsg('A sessão mudou. Confira a conta antes de salvar. Seu rascunho foi mantido.');return;}
+   if(controller.signal.aborted){setUncertain(true);setMsg('Não foi possível confirmar o salvamento. Seu rascunho foi mantido.');return;}
    if(result.status==='saved'){setMsg('Disponibilidade salva.');setDate('');setStart('');setEnd('');}
    else if(result.status==='invalid')setMsg('Informe data e horários válidos.');
    else if(result.status==='rejected'){setProfileRequired(result.profileRequired);setMsg(result.profileRequired?'Complete seus dados no Perfil antes de salvar disponibilidade.':'Não foi possível salvar a disponibilidade. Seus dados foram mantidos.');}

@@ -1,6 +1,17 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.77
 
-## Último estado verificado
+**Status:** NORMATIVO — DELTA SOBRE v1.76
+**Data:** 2026-10-10
+
+## Prazo de resposta e rascunho
+
+Perfil/Disponibilidade checavam identidade/foco depois da resposta, mas ignoravam o AbortSignal do prazo nessa confirmação final. Um HTTP/JSON que resolvesse após 15s podia ser tratado como saved e limpar/substituir o rascunho. Os helpers submitProfile, submitAvailability, loadProfessionalProfile e loadWorkPassport recebem guarda opcional isCurrent (padrão compatível), conferem antes de iniciar transporte e depois de resposta/JSON; operação expirada resulta unknown nos writes/error nos reads. Disponibilidade verifica também JSON de rejeição profile-required para não confirmar motivo tardio.
+
+As duas telas fornecem geração/foco+prazo ao helper e rechecagem final após authHeaders, pois a própria releitura da sessão pode atravessar o prazo. Perfil não transforma carga expirada em ready/sourceHeaders e mantém o rascunho; salvar mantém a mensagem existente de confirmação impossível. Disponibilidade preserva data/horários, marca uncertain e mantém a ação existente de consulta no Início. Não há reenvio automático, novo endpoint, mudança de idempotência, política/contrato ou layout. Signout continua o fluxo autorizado de limpeza condicional da sessão solicitada. JSX e StyleSheet das duas telas comparados byte a byte com a base e iguais.
+
+Oito regressões novas exercitam helpers reais: cancelamento antes de transporte (zero calls), sucesso HTTP tardio sem consumir corpo, JSON tardio após aborto (inclui disponibilidade rejeitada/profile-required e leituras de perfil/passaporte nulo/404). 246 testes mobile passaram em UTC e America/Sao_Paulo; 238 anteriores preservados. A primeira rodada local detectou isCurrent ausente na assinatura do segundo loader (Passport), foi corrigida antes de publicar e ambas as suítes completas passaram sem relaxar expectativas. Prova local TS nativa não substitui typecheck/build/CI/APK próprio no novo SHA. React19.1.4/RN0.81.6/lockfile, API, tenant e desenho preservados.
+
+## Provas e continuidade
 
 Snapshot 2026-10-10 12:08 UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76), árvore29ee4cadb0a41ef7c89b8c08452d17691a66eeb3. PR387 ownhead0e45557096c025ef431c37d1f6983666b95f7962, CI38050684891/job114209015503 SUCCESS: todos os passos typecheck/build/export/tests/migration/privacy/HTTP aprovados;73API/238mobile/4Web/3CLI. HTTP catálogo/CRUD/isolation PASS2026-10-10T12:07:33.6125647Z, suporte PASS12:07:35.0650656Z. 15 conteúdos remotos byte a byte iguais ao revisado, diff integral inalterado e main/base/merge-base frescos, cleantrue, expectedhead e merge_method merge. Git merge tem árvore exata do head e pais caa275aadbb118d37696f5609c3ebe17cd4e5856 /0e45557096c025ef431c37d1f6983666b95f7962; main conferida. Pós-CI38050884981 em execução, APK N/A por path filter/mesma subtree mobileba685042c10bf42051738241601f7a2041498a7b. Não repetir merge; não alegar deploy público. v1.76/journal1206Z contém prova completa383–386 own/merge/postCI e correções históricas.
 
@@ -11,11 +22,3 @@ Esta fatia mobile exige próprio CI E APK standalone/smoke/artefato no SHA exato
 Próxima ação segura em paralelo à validação: auditar criar-conta/signupAccount. Tela final verifica foco mas não prazo; POST criação é não idempotente, logo não aplicar ACK tardio nem retransmitir automaticamente. Revalidar fonte/testes e distinguir validação local sem POST de resultado incerto depois de envio; signin/signout têm semântica própria e não devem ser alterados por analogia. Suporte UI/tenant choice depende de confronto canônico; APIs existentes e ausência de issues não provam fechamento integral.
 
 Visual Truth do desenho original/dados/estados/cobertura integral em aparelho físico OPEN. Pentest independente, piloto/device, providers/TRUST/PSP/FIN-RISK/WEB-ARCH separados. Só mocks/localCI descartável; sem operações em contas reais, dados pessoais, dinheiro, novas cobranças ou infraestrutura/deploy pago. Bloqueio parcial/transiente/CIAPKrunning não encerra projeto; rotina existente permanece, sem outra automação/alegação24h.
-
-## Item atual — prazo em Perfil e Disponibilidade
-
-Perfil/Disponibilidade checavam identidade/foco depois da resposta, mas ignoravam o AbortSignal do prazo nessa confirmação final. Um HTTP/JSON que resolvesse após 15s podia ser tratado como saved e limpar/substituir o rascunho. Os helpers submitProfile, submitAvailability, loadProfessionalProfile e loadWorkPassport recebem guarda opcional isCurrent (padrão compatível), conferem antes de iniciar transporte e depois de resposta/JSON; operação expirada resulta unknown nos writes/error nos reads. Disponibilidade verifica também JSON de rejeição profile-required para não confirmar motivo tardio.
-
-As duas telas fornecem geração/foco+prazo ao helper e rechecagem final após authHeaders, pois a própria releitura da sessão pode atravessar o prazo. Perfil não transforma carga expirada em ready/sourceHeaders e mantém o rascunho; salvar mantém a mensagem existente de confirmação impossível. Disponibilidade preserva data/horários, marca uncertain e mantém a ação existente de consulta no Início. Não há reenvio automático, novo endpoint, mudança de idempotência, política/contrato ou layout. Signout continua o fluxo autorizado de limpeza condicional da sessão solicitada. JSX e StyleSheet das duas telas comparados byte a byte com a base e iguais.
-
-Oito regressões novas exercitam helpers reais: cancelamento antes de transporte (zero calls), sucesso HTTP tardio sem consumir corpo, JSON tardio após aborto (inclui disponibilidade rejeitada/profile-required e leituras de perfil/passaporte nulo/404). 246 testes mobile passaram em UTC e America/Sao_Paulo; 238 anteriores preservados. A primeira rodada local detectou isCurrent ausente na assinatura do segundo loader (Passport), foi corrigida antes de publicar e ambas as suítes completas passaram sem relaxar expectativas. Prova local TS nativa não substitui typecheck/build/CI/APK próprio no novo SHA. React19.1.4/RN0.81.6/lockfile, API, tenant e desenho preservados.
