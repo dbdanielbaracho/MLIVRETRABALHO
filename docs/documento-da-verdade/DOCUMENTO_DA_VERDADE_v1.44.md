@@ -19,3 +19,7 @@ Seis testes novos; 63/63 locais UTC/São Paulo. Leitura/schema/403/partial succe
 
 ## Falha transitória acompanhada
 #343 APK 38014252773 tentativa 1 falhou dentro do action emulador antes da instalação/script do projeto: settings service Broken pipe exit224, boot ~472s. APK compilado/CI aprovados, sem evidência de crash do app. Job 114100922318 repetido de forma controlada no mesmo SHA 4f39c2c92750c3a5c70bae21986d823a1eeff637. Não dispensar gate nem usar aprovação do head antigo. Fila continua; demais gates verdes são preservados. Relatos de segurança ainda pendente de guards/estados sem alterar decisão humana.
+
+## Preparação #354 — 2026-10-10
+
+Head original da169b62efdc52a4e72ccdb3d2d4b77ef491ae3f; predecessor reconciliado #353 f54f14f5ed6d375861b086469496ecddf14718f2. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.

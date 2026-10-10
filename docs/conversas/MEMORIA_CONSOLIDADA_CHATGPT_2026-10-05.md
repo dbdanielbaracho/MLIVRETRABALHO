@@ -1,5 +1,7 @@
 # MLIVRETRABALHO — MEMÓRIA CONSOLIDADA DAS CONVERSAS CHATGPT
 
+> Integração/gates consolidados em 2026-10-10 02:32 UTC: [execução verificada](EXECUCAO_VERIFICADA_2026-10-10_0232Z.md). Reconsultar GitHub; estados abaixo são históricos da versão.
+
 **Data de consolidação:** 2026-10-05  
 **Escopo exclusivo:** MLIVRETRABALHO  
 **Repositório:** dbdanielbaracho/MLIVRETRABALHO  
@@ -367,33 +369,79 @@ Continuidade autorizada mantida. Contratos company/jobs/candidates/recommendatio
 
 Contratos reais reconsultados antes da correção. Equipes/membros/conhecidos/vagas/alocação loading/erro/vazio/schema/foco/retry/15s, versões/cancelamento, contexto tenant+identidade. Ações manuais guardadas/ack/releitura; criação não idempotente desconhecida exige refresh/lista antes de novo POST, sem retry automático. 51 testes UTC/São Paulo; styles/rotas/CompanyNav/backend/policies preservados. Gates próprios pendentes, branch após #350. #345 corrigido/#346 CI/APK sucesso em heads exatos, aguardam sequência. Visual Truth OPEN; não declarar conclusão integral por unidade/build.
 
+
+## Revalidação em 2026-10-10 03:18 UTC
+
+- #350 integrado por squash na main **658e335cec144ba151645719b2b3fc0bf571f9c5**; CI **38018391376** e APK **38018391418** pós-merge sucesso no SHA exato. Job APK114113728065: smoke efetivo 2026-10-10T03:13:18.8509889Z, metro_required=false; upload validado sucesso. Artefato11657718589, zipSHA256 e389527bc80b2e0facb887f643055ed3cf160ca08ffdc44f2223cc46eb2e2307.
+- #351 original **5e8fffdfee0944b1e518d9b38ec556b65d62a6b9** não era mergeável: ancestral comum edfdfb569aa232e82b34834548e4cc77b5408a39, main com squash do #350 e 12 commits adiante. Conflito README reproduzido em merge-file (v1.40 versus v1.41). Reconciliação usa árvore main e somente delta #351, preservando todos os cinco registros adicionais do #361. Merge commit incorpora main como segundo parent, sem force/rewrite e sem repetir #350.
+- Código Equipe preservado byte a byte; 51/51 testes locais UTC e America/Sao_Paulo reexecutados no conteúdo exato da branch. CI38015021179/APK38015021164 aprovavam apenas o head original: **novo SHA precisa novos gates**, ainda pendentes neste registro. Merge somente após CI/APK do novo SHA sucesso, revisão do diff e nova verificação main; pós-merge próprio obrigatório.
+- #355 APK38015874364 tentativa2 e APKs #356–#360 aprovados nos heads originais. Pós-merge APKs #343/#344/#346–#349 sucesso; CI documental #36138017570744 sucesso. APK pós-merge #34538017162774 falhou: diagnosticar logs e recuperação no mesmo SHA, sem presumir defeito do app nem fechar gate.
+- Próxima ação: acompanhar gates #351 reconciliado e recuperar APK pós-merge #345; reconciliar/retarget #352–#355 na ordem, preservando ancestralidade e documentos atuais; depois #356–#360. Uma pendência não bloqueia itens independentes.
+- Visual Truth Gate OPEN: capturas/jornadas/dados/estados reais e aparelho físico ainda necessários. Pentest, PSP/FIN-RISK, providers e WEB-ARCH separados. Sem dinheiro real, custos/infraestrutura paga, mudança React19.1.4/RN0.81.6/lockfile/RLS ou promessa de execução contínua.
+
 ## 2026-10-09 — Conta → notificações empresariais reais, v1.42
 
 Conta abria Planejamento sob label Notificações. NotificationsController verificado aceita tenant/membership e identidade; componente compartilhado agora atende Empresa com tenant ativo/CompanyNav e Profissional por identidade/ProfessionalNav. Contexto/leitura e blur guardados, sem eventos inventados. Labels Membros da empresa/Relatos de segurança correspondem aos destinos; cadastro empresarial completo não foi inventado nem declarado pronto. Signout guardado/15s/catch/finally limpa estado local offline. 51 testes locais preservados, gates próprios obrigatórios. Leitura revelou próximas falhas concretas em Planejamento/Pagamentos/Membros/Relatos; não misturar novas políticas. Visual Truth OPEN.
+
+## Preparação #352 — 2026-10-10
+
+Head original 953bdcf9426d66b0e25bc054dbfa56b83dbf2f8e; predecessor reconciliado #351 7ac5a6dace04ae120b6f8114ea87a499b0e222eb. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
 
 ## 2026-10-09 — Leituras Planejamento/Pagamentos, v1.43
 
 Contratos GET/roles/RLS reconsultados. Foco/retry/schema/15s/loading/erro/vazio e limpeza/geração no blur. NULL monetário não é zero; no_earning não é ausência de obrigação, label Sem lançamento de ganho. Nenhuma operação financeira/provider/custo. 57 testes UTC/São Paulo, styles/backend/policies mantidos. #342 pós-merge CI 38014015303/APK 38014015274 sucesso no SHA aee58e7776eee0dc211713edcbe29075f841ecb1. #343 smoke novo head em acompanhamento; #351 CI aprovado. Branch após #352, gates próprios obrigatórios. Visual Truth/FIN-RISK OPEN; Membros/Relatos pendências concretas.
 
+## Preparação #353 — 2026-10-10
+
+Head original 5560abdf3a11bbdf63800ed2767d6db7e656ff17; predecessor reconciliado #352 667f7ef92d4596a773379add4c7a022242160b63. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
 ## 2026-10-09 — Membros/convites tratados e retry Android controlado, v1.44
 
 Contratos owner-only/rotação/aceite/email/membership lidos, preservados. Estados/read schema/foco/retry/15s, guards síncronos e contexto tenant/identity. Geração unknown requer refresh explícito antes de novo POST, sem distribuir código; ack validado/limpeza blur. Aceite valida accepted/tenant/role/sessão antes do estado local; revoke preserva bodyless POST e ack. 63 testes UTC/São Paulo; gates próprios pendentes, após #353. #343 APK 38014252773 tentativa1 falhou settings Broken pipe exit224 dentro emulador antes do script; job 114100922318 repetido no mesmo SHA 4f39c2c92750c3a5c70bae21986d823a1eeff637. Não é aprovação nem crash app comprovado. Relatos ainda pendente; Visual Truth OPEN.
+
+## Preparação #354 — 2026-10-10
+
+Head original da169b62efdc52a4e72ccdb3d2d4b77ef491ae3f; predecessor reconciliado #353 f54f14f5ed6d375861b086469496ecddf14718f2. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
 
 ## 2026-10-09 — Relatos de segurança, v1.45
 
 Estados independentes/schema/foco/retry/15s/epoch/cancelamento, snapshot tenant+identity/guard/ack e releitura. Decisão continua humana manual com payloads/notas/backend/transições existentes, sem penalidade/score/acesso/pagamento automático. 69 testes UTC/São Paulo, sem relatos reais. #354 CI 38015650955 aprovado/APK 38015650952 em execução. #343 retry2 no mesmo SHA, sem bypass. Main #342 pós-merge aprovado e artefato 11655825530/zip SHA256 2b1de7f5186e03e7c9293caa3558bcb5ae50634f37137a9f5f3e9034c361a5fd provados; smoke emulador não é aceite físico. Visual Truth OPEN; próxima integração e revisão de criação/jornadas.
 
+## Preparação #355 — 2026-10-10
+
+Head original 05e2c7e6cf4ea8ef1c7553e2f9928af3b6a25d71; predecessor reconciliado #354 92651205a78181e7440375c552b933033ba7d54b. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
 ## 2026-10-09 — Publicação guardada, v1.46 (verificação UTC 10/10)
 POST existente reconsultado: não idempotente. Timeout15s/guard/inputs disabled/tenant; sucesso exige ack real compatível, ISO equivalente. 4xx e unknown distintos; formulário mantido em falha, link manual Planejamento antes de nova tentativa, nenhum retry automático. Quatro testes novos, 73 UTC/São Paulo; políticas/backend/styles/nav/dependências preservados. #355 CI 38015874275 sucesso/APK 38015874364 em andamento. #348 CI/APK exatos sucesso. #349 e #350 falharam action emulador input/settings Broken pipe exit224 antes script; retry2 controlado solicitado no mesmo SHA como #343. Manter gates e rotina, sem bypass/pausa global. Próxima integração/diagnóstico Android e auditoria restante; Visual Truth OPEN.
+
+## Preparação #356 — 2026-10-10
+
+Head original 5ddcb0d59c2bd13a49b5d4654efbcc02331699cf; predecessor reconciliado #355 cc4c3474afa997923c5211a5768ad745a9c77869. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
 
 ## 2026-10-09 — Talentos, v1.47 (verificação UTC 10/10)
 TalentPoolsController reconsultado. Estados/schema/foco/retry15s/cancelamento/403: falha não é lista vazia. Remoção manual exige item/snapshot tenant+identity/guard; bodyless DELETE/removed true reais, sem mudança otimista/retry automático/política. Seis testes novos, 79 UTC/São Paulo. #356 publicação head5ddcb0d59c2bd13a49b5d4654efbcc02331699cf, CI38016256770/APK38016256788 em andamento; #351/#352 CI/APK sucesso. #343/#349/#350 retry2 Android mesmohead, manter gate. Inspeção encontrou próximas divergências concretas em Substituições/Conversa/Segurança profissional, com contratos a reconsultar. Priorizar integração/diagnóstico, sem declarar Visual Truth fechado.
 
+## Preparação #357 — 2026-10-10
+
+Head original 449d25095c91fc63611ece504300448dd7192d50; predecessor reconciliado #356 6dd68681ec2739fbc5589fcbb68bcb4a57447510. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
 ## 2026-10-09 — Substituições, v1.48 (UTC 10/10)
 Controllers/matching/migration reconsultados. Loading/erro/vazio/schema/foco/retry15s/partial/cancel e snapshot tenant+identity/guard/ack/refresh. checked_out não permite substituição conforme backend. Auto-match400 no_replacement_available é único vazio documentado; falhas não são ausência. Matching score0–100 e UI agora82→82% em vez8200%, ranking intacto. Select manual, payload/transações/RLS/policy preservados, nenhum retry automático. Oito testes novos,87 UTC/São Paulo. #356CI38016256770sucesso/APK38016256788pendente, #357head449d25095c91fc63611ece504300448dd7192d50/CI38016412800/APK38016412662 em andamento. Próxima integração/Android e Conversa/Segurança profissional; Visual TruthOPEN.
+
+## Preparação #358 — 2026-10-10
+
+Head original 8e580893cf18ef31ef2f6aaa1ac168497fab46aa; predecessor reconciliado #357 4ee8172b3ed97cff66709ac58b0f903aba8572ab. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
 
 ## 2026-10-09 — Conversa, v1.49 (UTC10/10)
 ConversationsController relido. assignment/tenant explícitos string simples, nunca tenant genérico/array. GETloading/erro/vazio/schema/403/404/foco/retry15s/cancel/geração, mensagens roláveis. POSTmanual guard/sessão/rota/ackbody/id/data e draft em erro/unknown, sem duplicar mensagens/notificações por retry automático. Nenhuma mensagem real enviada. Seis testes novos,93 UTC/São Paulo; backend/RLS/policy/dependências mantidos. #358head8e580893cf18ef31ef2f6aaa1ac168497fab46aa CI38016571399/APK38016571422emexecução; #357CIaprovado/APKpendente. #343retry2compilou/no smoke, não autoriza merge até aprovado. Próxima integração/Android e Segurança profissional, VisualTruthOPEN.
 
+## Preparação #359 — 2026-10-10
+
+Head original d4567c39e4c113870382fbfcc9d2bc1bff71dcb7; predecessor reconciliado #358 8523aed8d98a596a22ee2d5d762f8d05afcfa2a5. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
 ## 2026-10-09 — Segurança profissional, v1.50 (UTC10/10)
 Controllers reconsultados. Reads independentes/schema/loading/erro/vazio/foco/retry15s/cancel/parcial; boolean reportedByMe real, appeals por tenant+case e falha não significa inexistência. Seleção validada em assignmentlist e sessão/tenant origem; create/report/recurso manuais guardados/disabled/ack real/limite4000. Case ack não exige campos ausentes no backend; appeal created false distinto de motivo novo salvo. Texto mantido em falha/unknown e sem retryPOST automático. Policies/contraditório humano/backend/RLS/score/dinheiro/nav/styles/dependências preservados; nenhum envio real. Oito testes novos,101 UTC/São Paulo. #359head d4567c39e4c113870382fbfcc9d2bc1bff71dcb7 CI38016694893 sucesso/APK38016694857 pendente; #358CI38016571399 sucesso. #343retry2smokeemexecução. Próxima integração/Android/inspeção restantes/capturas, sem atividades artificiais; VisualTruthOPEN.
+
+## Preparação #360 — 2026-10-10
+
+Head original 1c1756fd20ae369a6df6855f79b873ce07ca0967; predecessor reconciliado #359 99a10a406c00db62eaec784e22ec4e53cf0585d2. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
