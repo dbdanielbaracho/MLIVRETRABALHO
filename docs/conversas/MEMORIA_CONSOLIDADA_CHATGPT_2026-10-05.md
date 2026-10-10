@@ -498,3 +498,8 @@ Company agora sugere /empresa-notificacoes e professional /notificacoes conforme
 ## Cadastro v1.56 — 2026-10-10 06:39:40 UTC
 
 Signupmobile guard/15s/ackidentidade-email-tipo/ownerworkspace,7testesnovos/133locaisdoisfusos. Unknown orientaEntrar antesduplicar; passwordsomentememória/limpanoblur. Backendatômico/políticasintactos;cadastrorealnãoexecutado. Branch fix/signup-verified-account-and-network-states depende#366;gatespróprios/pós-mergependentes. #357APKpost inputBrokenpipe224diagnosticado/retrycontroladosameSHA, journal0639Z. PróximaauditoriaEntrar/sessionpersist/contexto. Visual Truth OPEN.
+
+
+## Login v1.57 — 2026-10-10 06:46:33 UTC
+
+Signinackidentity/email/token/membership verificado e guard15s/foco; saveSessionpairfila/releitura/rollbackantesfuturosleitores, sem atomicidadeOSprometida.13 novos testes/146 mobile locaisUTC/SP. Branch fix/signin-verified-session-persistence sobre#367;gatespróprios/pós-merge pendentes. PostAPK356/359/362/363success e353/355retry2success; smoke/artifacts journal0645Z. Próximo bootstrap.ts/consumidores e estados/jornadas físicos. Visual Truth OPEN.
