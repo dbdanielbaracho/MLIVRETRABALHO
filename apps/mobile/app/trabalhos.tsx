@@ -16,8 +16,8 @@ export default function Trabalhos(){
  const visibleJobs=jobs.filter(j=>{const matchText=`${j.title} ${j.location??''} ${j.workCity??''}`.toLocaleLowerCase('pt-BR').includes(query.trim().toLocaleLowerCase('pt-BR'));const matchCategory=category==='Todos'||j.title.toLocaleLowerCase('pt-BR').includes(category.toLocaleLowerCase('pt-BR'));return matchText&&matchCategory;});
  useFocusEffect(useCallback(()=>{
   const version=++generation.current,controller=new AbortController();controllers.current.add(controller);
-  const timer=setTimeout(()=>controller.abort(),15000);displayedAuthorization.current=null;setResult({status:'loading'});setMessage('');
-  void runForSession(authHeaders,headers=>loadJobs(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted).then(next=>{if(version!==generation.current)return;if(next.status==='ready'){setResult(next.data);displayedAuthorization.current=next.data.status==='ready'?next.authorization:null;}else setResult({status:'error'});}).finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
+  const timer=setTimeout(()=>{controller.abort();if(version===generation.current){displayedAuthorization.current=null;setResult({status:'error'});}},15000);displayedAuthorization.current=null;setResult({status:'loading'});setMessage('');
+  void runForSession(authHeaders,headers=>loadJobs(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted).then(next=>{if(version!==generation.current||controller.signal.aborted)return;if(next.status==='ready'){setResult(next.data);displayedAuthorization.current=next.data.status==='ready'?next.authorization:null;}else setResult({status:'error'});}).finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
   return ()=>{++generation.current;clearTimeout(timer);for(const c of controllers.current)c.abort();controllers.current.clear();displayedAuthorization.current=null;pendingInterests.current.clear();setPendingIds([]);};
  },[retry]));
  async function interest(id:string){

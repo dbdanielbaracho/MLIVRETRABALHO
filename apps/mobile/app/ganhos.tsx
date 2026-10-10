@@ -15,11 +15,11 @@ export default function Ganhos(){
   const id=++requestId.current,version=generation.current;setResult({status:'loading'});
   const controller=new AbortController(),cancel=()=>controller.abort();controllers.current.add(controller);
   focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
-  const timeout=setTimeout(()=>controller.abort(),15000);
+  const timeout=setTimeout(()=>{controller.abort();if(id===requestId.current&&version===generation.current&&!focusSignal?.aborted)setResult({status:'error'});},15000);
   try{
    const next=await runForSession(authHeaders,headers=>loadEarnings(()=>fetch(apiUrl('/earnings/mine'),{headers,signal:controller.signal})),()=>id===requestId.current&&version===generation.current&&!controller.signal.aborted&&!focusSignal?.aborted);
-   if(id===requestId.current&&version===generation.current&&!focusSignal?.aborted)setResult(next.status==='ready'?next.data:{status:'error'});
-  }catch{if(id===requestId.current&&!focusSignal?.aborted)setResult({status:'error'});}
+   if(id===requestId.current&&version===generation.current&&!controller.signal.aborted&&!focusSignal?.aborted)setResult(next.status==='ready'?next.data:{status:'error'});
+  }catch{if(id===requestId.current&&version===generation.current&&!focusSignal?.aborted)setResult({status:'error'});}
   finally{controllers.current.delete(controller);clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
  },[]);
  useFocusEffect(useCallback(()=>{++generation.current;const controller=new AbortController();void load(controller.signal);return()=>{++generation.current;++requestId.current;controller.abort();for(const c of controllers.current)c.abort();controllers.current.clear();setResult({status:'loading'});};},[load]));

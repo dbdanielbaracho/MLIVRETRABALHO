@@ -1,4 +1,17 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.102
+
+**Status:** NORMATIVO — DELTA SOBRE v1.101
+**Data:** 2026-10-10
+
+## Deadline efetivo em quatro leituras principais
+
+Início profissional, Trabalhos, Ganhos e Início da empresa apenas abortavam fetch após15s; auth, fetch, JSON ou auth final que ignorassem abort mantinham loading.28regressões dos handlers reais pré-JSX reproduziram20falhas/8pass antes da correção. O timer agora publica erro apenas no foco/request atual, invalida autorização/contexto de ação quando aplicável e impede aplicação de ready após expiração. Callback antigo após blur/retry não modifica o novo snapshot.
+
+Home marca perfil/agenda/ganhos/disponibilidade/oportunidades/passaporte indisponíveis, sem nomes, contagens, dinheiro ou listas vazias inventados. Trabalhos invalida autorização exibida e mostra erro; Ganhos mostra indisponibilidade, sem transformar falha em zero. CompanyHome invalida displayedContext/tenant e marca dashboard/ativos/concluídos indisponíveis. O timer com callback é exclusivo da leitura; operações existentes sem callback continuam apenas abortando transporte.
+
+JSX e objetos StyleSheet das quatro telas preservados. Corpos de interest/rating/prefer/signout e todas as mensagens/contratos/guardas de escrita foram comparados e preservados. Nenhum POST de interesse/avaliação/preferência/logout, pagamento ou escrita de ganhos é iniciado pela mudança. Não se reivindica solução do prazo de mutations pendentes, descarte de resultado incerto ou retry automático.
+
+PASS37/37 local:28novos +9session-context. Fixtures explícitas de hooks/auth/fetch/timer e helpers reais; cada tela cobre auth/fetch/JSON/auth final pendentes, no HTTP após auth expirada, rejeição de ready tardio, blur/novo foco/deadline antigo/retry e mudança de owner/company. Sem renderReactNative ou APIs externas. CI próprio esperado452mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP e APK standalone próprio obrigatórios; pendentes antes de publicar. React19.1.4/RN0.81.6/lockfile/tenant/RLS/scopes existentes preservados. Desenho/dados/estados no aparelho continuam Visual Truth aberto.
 
 ## Estado verificado
 
@@ -23,19 +36,7 @@ Verificação em2026-10-10 23:24:23 UTC: main4b797cb19dc9a7f498a86bd5ba98f003d32
 #412 ABERTA, base main, head2318c8606a7770ebbf0cbd3e559aa8cbbdd13686/tree8e61d924a88647eb1e24494a84ac26042fc1fbc9.12arquivos remotos byteidênticos e diff revisto. CI38094564390/job114337698890 success no SHA exato, todos os passos/log completo:424mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP. Marker23:20:49.8820572Z da cronologia real. APK próprio38094564411/job114337699062 em build na reconsulta23:23UTC; não integrada. Documento v1.101 é delta dessa branch, ainda não vigente na main.
 PósAPKs40138094002404/job114336028036;40338094055730/job114336187885;40438094078455/job114336251341;40838094159162/job114336485119;40938094180701/job114336549165: build aprovado/device smoke em execução23:23UTC.41038094197754/job114336599660 ainda build. Acompanhar sem rerun enquanto executam. Emulador e ZIPdigest não são aceite físico nem digest individual APK.
 
-## Item atual
-
-## Deadline efetivo em quatro leituras principais
-
-Início profissional, Trabalhos, Ganhos e Início da empresa apenas abortavam fetch após15s; auth, fetch, JSON ou auth final que ignorassem abort mantinham loading.28regressões dos handlers reais pré-JSX reproduziram20falhas/8pass antes da correção. O timer agora publica erro apenas no foco/request atual, invalida autorização/contexto de ação quando aplicável e impede aplicação de ready após expiração. Callback antigo após blur/retry não modifica o novo snapshot.
-
-Home marca perfil/agenda/ganhos/disponibilidade/oportunidades/passaporte indisponíveis, sem nomes, contagens, dinheiro ou listas vazias inventados. Trabalhos invalida autorização exibida e mostra erro; Ganhos mostra indisponibilidade, sem transformar falha em zero. CompanyHome invalida displayedContext/tenant e marca dashboard/ativos/concluídos indisponíveis. O timer com callback é exclusivo da leitura; operações existentes sem callback continuam apenas abortando transporte.
-
-JSX e objetos StyleSheet das quatro telas preservados. Corpos de interest/rating/prefer/signout e todas as mensagens/contratos/guardas de escrita foram comparados e preservados. Nenhum POST de interesse/avaliação/preferência/logout, pagamento ou escrita de ganhos é iniciado pela mudança. Não se reivindica solução do prazo de mutations pendentes, descarte de resultado incerto ou retry automático.
-
-PASS37/37 local:28novos +9session-context. Fixtures explícitas de hooks/auth/fetch/timer e helpers reais; cada tela cobre auth/fetch/JSON/auth final pendentes, no HTTP após auth expirada, rejeição de ready tardio, blur/novo foco/deadline antigo/retry e mudança de owner/company. Sem renderReactNative ou APIs externas. CI próprio esperado452mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP e APK standalone próprio obrigatórios; pendentes antes de publicar. React19.1.4/RN0.81.6/lockfile/tenant/RLS/scopes existentes preservados. Desenho/dados/estados no aparelho continuam Visual Truth aberto.
-
-## Dependências e alternativas
+## Dependências
 
 Visual Truth físico (desenho original, dados e todos os estados, cobertura completa), Native/SecureStore/teclado/payload/restart e piloto/distribuição, pentest independente, providers/TRUST, PSP/FIN-RISK e WEB-ARCH permanecem separados e abertos. Não confundir CI/emulador/merge com deploy ou conclusão integral. Sem dinheiro real, PSP habilitado, nova cobrança, infraestrutura ou deploy pago.
 Preferências: falta contrato de campos/semântica/escopo/persistência/efeito de matching; não inventar defaults nem renomear capacidades como preferências. Ajuda nova sem membership: falta autoridade por identidade/isolamento/retenção aprovada, sem tenant global arbitrário ou bypass RLS. Forecast/no-show ML depende de dados reais e validação; integrações enterprise precisam alvo/contrato. Sandbox/provider e aparelho/pentest dependem evidência externa. São impedimentos parciais, sem bloquear correções seguras independentes. Issue214closed confirmado19:00UTC;215/219/220/224/228open; ledger base já se declara snapshot histórico2026-09-24.

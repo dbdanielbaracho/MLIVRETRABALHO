@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada — 2026-10-10 23:24:23 UTC
 
 Verificação em2026-10-10 23:24:23 UTC: main4b797cb19dc9a7f498a86bd5ba98f003d3239991/tree8be87c3522a1f0b1b65d0e5bf30a0026f77693bf, Documento vigentev1.100. #401–411 integradas; todos os CI pós-merge aplicáveis comprovados por passos/logs/contagens/typecheck/build/export/migrations/HTTP no SHA real. Pré-merges/pais/árvores/digests em v1.100/v1.101 e evidências, sem repetir integração ou substituir pós-gates por pré-gates.
 
@@ -23,8 +21,6 @@ Verificação em2026-10-10 23:24:23 UTC: main4b797cb19dc9a7f498a86bd5ba98f003d32
 #412 ABERTA, base main, head2318c8606a7770ebbf0cbd3e559aa8cbbdd13686/tree8e61d924a88647eb1e24494a84ac26042fc1fbc9.12arquivos remotos byteidênticos e diff revisto. CI38094564390/job114337698890 success no SHA exato, todos os passos/log completo:424mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP. Marker23:20:49.8820572Z da cronologia real. APK próprio38094564411/job114337699062 em build na reconsulta23:23UTC; não integrada. Documento v1.101 é delta dessa branch, ainda não vigente na main.
 PósAPKs40138094002404/job114336028036;40338094055730/job114336187885;40438094078455/job114336251341;40838094159162/job114336485119;40938094180701/job114336549165: build aprovado/device smoke em execução23:23UTC.41038094197754/job114336599660 ainda build. Acompanhar sem rerun enquanto executam. Emulador e ZIPdigest não são aceite físico nem digest individual APK.
 
-## Item atual
-
 ## Deadline efetivo em quatro leituras principais
 
 Início profissional, Trabalhos, Ganhos e Início da empresa apenas abortavam fetch após15s; auth, fetch, JSON ou auth final que ignorassem abort mantinham loading.28regressões dos handlers reais pré-JSX reproduziram20falhas/8pass antes da correção. O timer agora publica erro apenas no foco/request atual, invalida autorização/contexto de ação quando aplicável e impede aplicação de ready após expiração. Callback antigo após blur/retry não modifica o novo snapshot.
@@ -35,12 +31,8 @@ JSX e objetos StyleSheet das quatro telas preservados. Corpos de interest/rating
 
 PASS37/37 local:28novos +9session-context. Fixtures explícitas de hooks/auth/fetch/timer e helpers reais; cada tela cobre auth/fetch/JSON/auth final pendentes, no HTTP após auth expirada, rejeição de ready tardio, blur/novo foco/deadline antigo/retry e mudança de owner/company. Sem renderReactNative ou APIs externas. CI próprio esperado452mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP e APK standalone próprio obrigatórios; pendentes antes de publicar. React19.1.4/RN0.81.6/lockfile/tenant/RLS/scopes existentes preservados. Desenho/dados/estados no aparelho continuam Visual Truth aberto.
 
-## Dependências e alternativas
-
 Visual Truth físico (desenho original, dados e todos os estados, cobertura completa), Native/SecureStore/teclado/payload/restart e piloto/distribuição, pentest independente, providers/TRUST, PSP/FIN-RISK e WEB-ARCH permanecem separados e abertos. Não confundir CI/emulador/merge com deploy ou conclusão integral. Sem dinheiro real, PSP habilitado, nova cobrança, infraestrutura ou deploy pago.
 Preferências: falta contrato de campos/semântica/escopo/persistência/efeito de matching; não inventar defaults nem renomear capacidades como preferências. Ajuda nova sem membership: falta autoridade por identidade/isolamento/retenção aprovada, sem tenant global arbitrário ou bypass RLS. Forecast/no-show ML depende de dados reais e validação; integrações enterprise precisam alvo/contrato. Sandbox/provider e aparelho/pentest dependem evidência externa. São impedimentos parciais, sem bloquear correções seguras independentes. Issue214closed confirmado19:00UTC;215/219/220/224/228open; ledger base já se declara snapshot histórico2026-09-24.
-
-## Próxima ação concreta
 
 Publicar fix/primary-read-deadline sobre head4122318c8606a7770ebbf0cbd3e559aa8cbbdd13686/tree8e61d924a88647eb1e24494a84ac26042fc1fbc9, basefix/talents-safety-read-deadline. Conferir bytes/diff/CI452mobile/145API eAPK próprios no SHA exato; não antecipar PR ou aprovação. Integrar412 somente com próprio CI/APK completos; verificar main/pais/tree e pós-gates. Depois retarget esta fatia para main, reconsultar estado eventual/merge-base tree equivalente e integrar somente com gates próprios; verificar pós-merge no SHA real. Não repetir401–411.
 Continuar pósAPKs401/403/404/408/409/410 e412native próprio enquanto executam. Próxima auditoria concreta: leitura da Agenda e três leituras de Equipes (base, membros e alocação), cujos timers somente abortam; reproduzir prazo/foco/seleção/session/tenant com handlers reais antes de alterar. Empresa loadContext é leitura de credencial sem deadline/catch: reproduzir estado/retry antes de modificar. Mutations/availability/save/logout precisam conservar resultado incerto/guardas e não duplicar escritas; nenhuma mudança de mutation está autorizada por estas provas de GET. Preferências/ajuda nova semmembership e gates físicos/providers permanecem impedimentos parciais especificados, sem inventar atividade nem encerrar rotina.
