@@ -10,3 +10,26 @@ test('preferred addition confirms actual professional and pool without requiring
 test('wrong professional or pool cannot be presented as preferred addition',async()=>{for(const data of [{professionalId:'other',pool:'preferred'},{professionalId:'professional-real',pool:'network'},{professionalId:'professional-real'},null])assert.equal((await preferProfessional(response(data),'professional-real')).status,'unknown');});
 test('preferred invalid input avoids POST and unknown outcomes are never automatically repeated',async()=>{let calls=0;const request=async()=>{calls++;throw Error('network')};assert.equal((await preferProfessional(request,'')).status,'rejected');assert.equal(calls,0);assert.equal((await preferProfessional(request,'professional-real')).status,'unknown');assert.equal(calls,1);});
 test('company action context requires both displayed identity and company, rejecting account switch within same company',()=>{const displayed={Authorization:'Bearer account-a','x-tenant-id':'company-a'};assert.equal(sameCompanyContext({...displayed},displayed),true);for(const current of [{...displayed,Authorization:'Bearer account-b'},{...displayed,'x-tenant-id':'company-b'},{Authorization:displayed.Authorization},{}])assert.equal(sameCompanyContext(current,displayed),false);assert.equal(sameCompanyContext({},{}),false);});
+
+test('expired rating/preferred context never starts a POST',async()=>{
+ let calls=0;const request=async()=>{calls++;throw Error('unexpected')};
+ assert.deepEqual(await rateCompletedAssignment(request,'a',4,()=>false),{status:'unknown'});
+ assert.deepEqual(await preferProfessional(request,'worker',()=>false),{status:'unknown'});assert.equal(calls,0);
+});
+test('late company action HTTP success never consumes an acknowledgement or resends',async()=>{
+ for(const kind of ['rating','preferred']){
+  const controller=new AbortController();let reads=0,calls=0;
+  const request=async()=>{calls++;controller.abort();return {ok:true,json:async()=>{reads++;return rating}}},current=()=>!controller.signal.aborted;
+  assert.deepEqual(await (kind==='rating'?rateCompletedAssignment(request,'a',4,current):preferProfessional(request,'worker',current)),{status:'unknown'});
+  assert.equal(calls,1);assert.equal(reads,0);
+ }
+});
+test('rating and preferred JSON after deadline remain unknown without confirming either action',async()=>{
+ for(const kind of ['rating','preferred']){
+  const controller=new AbortController();let resolve,calls=0;const pending=new Promise(r=>{resolve=r});
+  const request=async()=>{calls++;return {ok:true,json:()=>pending}},current=()=>!controller.signal.aborted;
+  const result=kind==='rating'?rateCompletedAssignment(request,'a',4,current):preferProfessional(request,'worker',current);
+  await Promise.resolve();controller.abort();resolve(kind==='rating'?rating:{professionalId:'worker',pool:'preferred'});
+  assert.deepEqual(await result,{status:'unknown'});assert.equal(calls,1);
+ }
+});

@@ -8,9 +8,9 @@ export const loadingCompany=():CompanyData=>({dashboard:{status:'loading'},activ
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const text=(x:unknown)=>x==null||typeof x==='string';
 const assignment=(x:unknown):x is Record<string,unknown>=>record(x)&&typeof x.id==='string'&&typeof x.professionalId==='string'&&typeof x.title==='string'&&typeof x.professionalName==='string'&&text(x.location);
-export async function loadCompanyDashboard(request:Request):Promise<CompanyData>{
+export async function loadCompanyDashboard(request:Request,isCurrent:()=>boolean=()=>true):Promise<CompanyData>{
  async function read<T>(path:string,valid:(data:unknown)=>data is T):Promise<Section<T>>{
-  try{const response=await request(path);if(!response.ok)return {status:'error'};const data=await response.json();return valid(data)?{status:'ready',data}:{status:'error'};}
+  try{if(!isCurrent())return {status:'error'};const response=await request(path);if(!isCurrent())return {status:'error'};if(!response.ok)return {status:'error'};const data=await response.json();if(!isCurrent())return {status:'error'};return valid(data)?{status:'ready',data}:{status:'error'};}
   catch{return {status:'error'};}
  }
  const [dashboard,active,completed]=await Promise.all([
@@ -18,5 +18,6 @@ export async function loadCompanyDashboard(request:Request):Promise<CompanyData>
   read('/company/dashboard/assignments',(x):x is ActiveAssignment[]=>Array.isArray(x)&&x.every(a=>assignment(a)&&typeof a.status==='string'&&text(a.startsAt))),
   read('/company/dashboard/completed',(x):x is CompletedAssignment[]=>Array.isArray(x)&&x.every(a=>assignment(a)&&text(a.completedAt)&&(a.ratingScore==null||(Number.isInteger(a.ratingScore)&&Number(a.ratingScore)>=1&&Number(a.ratingScore)<=5))))
  ]);
+ if(!isCurrent())return {dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}};
  return {dashboard,active,completed};
 }

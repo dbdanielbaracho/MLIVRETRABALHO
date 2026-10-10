@@ -9,3 +9,21 @@ test('optional coordinates include real zero values and absence remains an empty
 test('invalid coordinate pair/range never sends check-in',async()=>{let calls=0;for(const coords of [{lat:NaN,lng:0},{lat:91,lng:0},{lat:0,lng:-181},{lat:0}])assert.equal((await submitAgendaAction(async()=>{calls++;throw Error('unexpected')},assignment('confirmed'),undefined,coords)).status,'rejected');assert.equal(calls,0);});
 test('company rating is only for completed work and confirms actual score/id/date/comment',async()=>{const rating={id:'rating-real',score:5,comment:null,createdAt:at};let calls=0;const request=async(path,body)=>{calls++;assert.equal(path,'/assignments/assignment-real/company-rating');assert.deepEqual(body,{score:5});return {ok:true,json:async()=>rating}};assert.equal((await submitAgendaAction(request,assignment('completed'),5)).status,'confirmed');assert.equal((await submitAgendaAction(request,assignment('confirmed'),5)).status,'rejected');assert.equal((await submitAgendaAction(request,assignment('completed'),6)).status,'rejected');assert.equal(calls,1);for(const data of [{...rating,score:4},{...rating,id:''},{...rating,createdAt:'invalid'},{...rating,comment:'other'}])assert.equal((await submitAgendaAction(response(data),assignment('completed'),5)).status,'unknown');});
 test('HTTP rejection is distinct from unknown server, JSON and network outcome; no automatic repeat',async()=>{for(const [status,want] of [[400,'rejected'],[403,'rejected'],[500,'unknown']])assert.equal((await submitAgendaAction(async()=>({ok:false,status,json:async()=>{throw Error('unused')}}),assignment('checked_in'))).status,want);let calls=0;assert.equal((await submitAgendaAction(async()=>{calls++;return {ok:true,json:async()=>{throw Error('JSON')}}},assignment('checked_in'))).status,'unknown');assert.equal(calls,1);assert.equal((await submitAgendaAction(async()=>{throw Error('network')},assignment('checked_in'))).status,'unknown');});
+
+test('expired agenda action never sends a lifecycle or rating POST',async()=>{
+ let calls=0;const request=async()=>{calls++;throw Error('unexpected')};
+ for(const [status,score] of [['confirmed',undefined],['checked_in',undefined],['in_progress',undefined],['checked_out',undefined],['completed',5]])assert.deepEqual(await submitAgendaAction(request,assignment(status),score,null,()=>false),{status:'unknown'});
+ assert.equal(calls,0);
+});
+test('late agenda HTTP success cannot confirm work and its body is not consumed',async()=>{
+ const controller=new AbortController();let reads=0,calls=0;
+ assert.deepEqual(await submitAgendaAction(async()=>{calls++;controller.abort();return {ok:true,json:async()=>{reads++;return {id:'assignment-real',status:'in_progress'}}}},assignment('checked_in'),undefined,null,()=>!controller.signal.aborted),{status:'unknown'});
+ assert.equal(reads,0);assert.equal(calls,1);
+});
+test('deadline during actual lifecycle or rating JSON prevents confirmation without resending',async()=>{
+ for(const [status,score,data] of [['confirmed',undefined,{id:'assignment-real',status:'checked_in',checkedInAt:at}],['in_progress',undefined,{id:'assignment-real',status:'checked_out',checkedOutAt:at}],['completed',5,{id:'rating-real',score:5,comment:null,createdAt:at}]]){
+  const controller=new AbortController();let resolve,calls=0;const pending=new Promise(r=>{resolve=r});
+  const result=submitAgendaAction(async()=>{calls++;return {ok:true,json:()=>pending}},assignment(status),score,null,()=>!controller.signal.aborted);
+  await Promise.resolve();controller.abort();resolve(data);assert.deepEqual(await result,{status:'unknown'});assert.equal(calls,1);
+ }
+});

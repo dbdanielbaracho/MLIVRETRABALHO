@@ -28,10 +28,11 @@ export default function EmpresaInicio() {
       const headers=await authenticatedTenantHeaders();
       if(id!==requestId.current||version!==epoch.current||op.controller.signal.aborted)return;
       if(!sameCompanyContext(headers,headers))throw Error('company_context_missing');
-      const next=await loadCompanyDashboard(path=>fetch(apiUrl(path),{headers,signal:op.controller.signal}));
+      const next=await loadCompanyDashboard(path=>fetch(apiUrl(path),{headers,signal:op.controller.signal}),()=>id===requestId.current&&version===epoch.current&&!op.controller.signal.aborted);
       const current=await authenticatedTenantHeaders();
       if(id===requestId.current&&version===epoch.current){
         if(!sameCompanyContext(current,headers)){setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});setMessage('A empresa ou sessão mudou. Atualize o painel.');return;}
+        if(op.controller.signal.aborted){setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});return;}
         displayedContext.current=headers;setData(next);setTenantId(headers['x-tenant-id']);
       }
     }catch{if(id===requestId.current&&version===epoch.current)setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});}
@@ -50,9 +51,11 @@ export default function EmpresaInicio() {
       const headers=await authenticatedTenantHeaders();if(version!==epoch.current||op.controller.signal.aborted)return;
       if(!sameCompanyContext(headers,displayed)){setMessage('A empresa ou sessão mudou. Atualize o painel antes de tentar novamente.');return;}
       const request=async(path:string,body:Record<string,string|number>)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(body),signal:op.controller.signal});
-      const result=kind==='rating'?await rateCompletedAssignment(request,id,score??NaN):await preferProfessional(request,id);
+      const isCurrent=()=>version===epoch.current&&!op.controller.signal.aborted;
+      const result=kind==='rating'?await rateCompletedAssignment(request,id,score??NaN,isCurrent):await preferProfessional(request,id,isCurrent);
       const current=await authenticatedTenantHeaders();if(version!==epoch.current)return;
       if(!sameCompanyContext(current,displayed)){setMessage('A empresa ou sessão mudou. Atualize para conferir o resultado.');return;}
+      if(op.controller.signal.aborted){setMessage('Não foi possível confirmar a ação. Confira os dados antes de tentar novamente.');return;}
       if(result.status==='confirmed'){setMessage(kind==='rating'?'Avaliação salva.':'Profissional adicionado aos preferidos.');if(kind==='rating')await load();}
       else setMessage(result.status==='rejected'?'A ação não foi aceita. Atualize os dados antes de tentar novamente.':kind==='rating'?'Não foi possível confirmar a avaliação. Atualize o painel para conferir.':'Não foi possível confirmar a inclusão. Confira seus preferidos em Talentos.');
     }catch{if(version===epoch.current)setMessage('Não foi possível confirmar a ação. Confira os dados antes de tentar novamente.');}

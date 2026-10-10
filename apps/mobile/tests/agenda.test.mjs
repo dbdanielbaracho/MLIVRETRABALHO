@@ -21,3 +21,10 @@ test('completed, cancelled and unknown work do not appear as confirmed or offer 
  assert.equal(assignmentState('__proto__').label,'Status não informado');
  for(const status of ['confirmed','checked_in','in_progress','checked_out'])assert.equal(assignmentState(status).canRate,false);
 });
+
+test('expired agenda read avoids transport and late decoded assignments cannot become ready',async()=>{
+ let calls=0;assert.deepEqual(await loadAgenda(async()=>{calls++;return {ok:true,json:async()=>[row]}},()=>false),{status:'error'});assert.equal(calls,0);
+ const controller=new AbortController();let resolve;const pending=new Promise(r=>{resolve=r});
+ const result=loadAgenda(async()=>({ok:true,json:()=>pending}),()=>!controller.signal.aborted);
+ await Promise.resolve();controller.abort();resolve([row]);assert.deepEqual(await result,{status:'error'});
+});

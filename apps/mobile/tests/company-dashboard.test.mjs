@@ -31,3 +31,14 @@ test('retry preserves real assignment/profile/rating records from existing endpo
  assert.deepEqual(calls.sort(),['/company/dashboard','/company/dashboard/assignments','/company/dashboard/completed']);
  assert.deepEqual(result,{dashboard:{status:'ready',data:dashboard},active:{status:'ready',data:[active]},completed:{status:'ready',data:[completed]}});
 });
+
+test('expired company dashboard starts no endpoint request',async()=>{
+ let calls=0;const result=await loadCompanyDashboard(async()=>{calls++;return {ok:true,json:async()=>[]}},()=>false);
+ assert.deepEqual(result,{dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});assert.equal(calls,0);
+});
+test('deadline during the last company section invalidates the whole expired snapshot, including earlier ready sections',async()=>{
+ const controller=new AbortController();let resolve;const pending=new Promise(r=>{resolve=r});
+ const result=loadCompanyDashboard(async path=>({ok:true,json:()=>path.endsWith('/completed')?pending:Promise.resolve(path.endsWith('/assignments')?[active]:dashboard)}),()=>!controller.signal.aborted);
+ await Promise.resolve();await Promise.resolve();controller.abort();resolve([completed]);
+ assert.deepEqual(await result,{dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});
+});
