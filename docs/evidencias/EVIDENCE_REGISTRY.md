@@ -739,3 +739,8 @@ AGENDA_SUPPORT_CONTEXT_v1.90.md:7regressões novas/29localUTC/SP, handler escolh
 ## 2026-10-10 1812Z —v1.91
 
 NAMED_SUPPORT_CONTEXTS_v1.91.md: cinco testes novos/30localAPI, consulta selfidentity/nome real, contrato HTTP A/B/sem vínculo/header/revogado ampliado. CI próprio110API/352mobile ainda pendente; APK próprio N/A condicionado a paths/tree exatos. #399merged960d3f14c4d59018f9949569c930a6f9e4b82ef8, ownAPK aprovado, pósCIpass/log a ler/native em execução; #396 pósAPKpass/ZIP11677363296/digest9af288dce5f55b2a5ada4ec68da6b21f3421cd930e9575289dccf77faf80e0e7. #400/401 CI aprovados/APKs em execução. Sem vínculo requer decisão de autoridade, sem inventar tenant. Evidência detalhada/ checkpoint/journal1812Z.
+
+
+## 2026-10-10 1817Z —v1.92
+
+GENERAL_PROFESSIONAL_SUPPORT_v1.92.md: escolha humana de nomes reais, histórico assignmentnull, protocolo durável reutilizado.17novas regressões,65localUTC/SP +54adicionais aprovadas. CI369mobile/110API +APK próprio pendentes. #402CI38074817938/job114279486213 aprovado352/110/4/3 inclusive contrato PostgreSQL/nomes/header/revogado; mobiletreee528995c9c2f9d17d0f94ae89faaeb214742f267 igual401, APK próprioN/A. #399pósCIpass316/105/log completo; natives400/401/pós399 ainda execução. Autoridade sem membership e retomada sem escolha ativa limitadas explicitamente; VisualTruth físico aberto. Checkpoint/journal1817Z.

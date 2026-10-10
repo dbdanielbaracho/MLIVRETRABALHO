@@ -9,14 +9,14 @@ const confirmed={...pending,phase:'confirmed',acknowledgement:{id:'eeeeeeee-ffff
 const snapshot=record=>({status:record.phase,record,authorization});
 const deferred=()=>{let resolve;const promise=new Promise(r=>{resolve=r});return {promise,resolve};};
 // Real pre-JSX handlers, explicit React/router/submission fixtures; no Native render or live request.
-function panel(initial={status:'empty',authorization}){
+function panel(initial={status:'empty',authorization},context={assignment,workItems:[assignment]}){
  const source=fs.readFileSync(new URL('../components/SupportRequest.tsx',import.meta.url),'utf8'),start=source.indexOf('export function SupportRequest('),end=source.indexOf('\n const record=');
  assert.ok(start>=0&&end>start);
  const prefix=stripTypeScriptTypes(source.slice(start,end).replace('export function','function')+'\nreturn {refresh,send,retry,release};\n}',{mode:'strip'});
  const create=new Function('useState','useRef','useCallback','useMemo','useFocusEffect','createSupportSubmission','authHeaders','apiUrl','fetch','supportIntentStore',prefix+'\nreturn SupportRequest(arguments[10]);');
  const state=[],refs=[],calls=[],memo=[];let si=0,ri=0,mi=0,focus,cleanup,handlers,registered=0,contextChanged=0,nextInspect=initial,nextSend=snapshot(confirmed),nextRetry=snapshot(confirmed),nextRelease={status:'empty',authorization};
  const flow={inspect:async auth=>{calls.push(['inspect',auth]);return await nextInspect;},sendNew:async(...args)=>{calls.push(['sendNew',...args]);return await nextSend;},retry:async(...args)=>{calls.push(['retry',...args]);return await nextRetry;},releaseConfirmed:async(...args)=>{calls.push(['release',...args]);return await nextRelease;},cancel:()=>calls.push(['cancel'])};
- const props={assignment,workItems:[assignment],authorization,onRegistered:()=>{registered++;},onContextChanged:()=>{contextChanged++;}};
+ const props={...context,authorization,onRegistered:()=>{registered++;},onContextChanged:()=>{contextChanged++;}};
  const deps=[initial=>{const i=si++;if(!(i in state))state[i]=initial;return[state[i],v=>{state[i]=v}];},initial=>{const i=ri++;return refs[i]??(refs[i]={current:initial});},cb=>cb,cb=>{const i=mi++;return memo[i]??(memo[i]=cb());},cb=>{focus=cb},()=>flow,async()=>({Authorization:authorization}),p=>p,()=>{throw Error('unexpected_raw_transport')},{}];
  function render(){si=0;ri=0;mi=0;handlers=create(...deps,props);}
  render();cleanup=focus();
@@ -58,4 +58,14 @@ test('busy or failed initial inspection shows error rather than claiming an empt
 });
 test('a lost action result with confirmed storage resolves the notice and reloads actual history',async()=>{
  const h=panel();await h.pump();h.render();h.setDescription('Text');h.sendResult({status:'unknown'});h.inspectResult(snapshot(confirmed));await h.send();assert.equal(h.state[0].status,'confirmed');assert.equal(h.state[4],'');assert.equal(h.registered(),1);h.blur();
+});
+
+test('general support sends only explicit human message in the named authorized space with null assignment',async()=>{
+ const generalContext={tenantId:assignment.tenantId,displayName:'Empresa real'};
+ const h=panel({status:'empty',authorization},{generalContext,workItems:[]});await h.pump();h.render();h.setDescription('Mensagem geral');await h.send();
+ assert.deepEqual(h.calls.find(c=>c[0]==='sendNew').slice(1),[assignment.tenantId,null,{assignmentId:null,category:'schedule',description:'Mensagem geral',priority:'normal'},authorization]);h.blur();
+});
+test('a general support form cannot replace a prior work intent and explicit retry retains its original key',async()=>{
+ const h=panel(snapshot(pending),{generalContext:{tenantId:'22222222-3333-4444-5555-666666666666',displayName:'Outro espaço'},workItems:[]});await h.pump();h.render();h.setDescription('New general');await h.send();assert.equal(h.calls.some(c=>c[0]==='sendNew'),false);
+ await h.retry();assert.deepEqual(h.calls.find(c=>c[0]==='retry'),['retry',key,authorization]);h.blur();
 });

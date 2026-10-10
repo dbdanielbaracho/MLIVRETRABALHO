@@ -7,9 +7,9 @@ const valid=(value:unknown):value is SupportCase=>{
  const c=value as SupportCase;
  return nonempty(c.id)&&(c.assignmentId===null||nonempty(c.assignmentId))&&nonempty(c.category)&&nonempty(c.priority)&&nonempty(c.status)&&typeof c.description==='string'&&(c.resolutionNote==null||typeof c.resolutionNote==='string')&&typeof c.createdAt==='string'&&Number.isFinite(new Date(c.createdAt).getTime());
 };
-export async function loadSupportCases(request:()=>Promise<Response>,assignmentId:string,isCurrent:()=>boolean=()=>true):Promise<SupportResult>{
+export async function loadSupportCases(request:()=>Promise<Response>,assignmentId:string|null,isCurrent:()=>boolean=()=>true):Promise<SupportResult>{
  try{
-  if(!nonempty(assignmentId)||!isCurrent())return {status:'error'};
+  if((assignmentId!==null&&!nonempty(assignmentId))||!isCurrent())return {status:'error'};
   const response=await request();if(!isCurrent()||!response.ok)return {status:'error'};
   const data:unknown=await response.json();if(!isCurrent())return {status:'error'};
   if(!Array.isArray(data)||!data.every(valid))return {status:'error'};
