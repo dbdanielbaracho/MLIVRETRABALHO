@@ -21,9 +21,9 @@ async function optionalCoordinates():Promise<Coordinates|null>{
 export default function Agenda(){
  const[data,setData]=useState<Section<Assignment[]>>({status:'loading'}),[message,setMessage]=useState(''),[help,setHelp]=useState<Assignment|null>(null);
  const requestId=useRef(0),helpRequest=useRef(0),epoch=useRef(0),displayedAuthorization=useRef<string|null>(null),controllers=useRef(new Set<AbortController>()),pendingActions=useRef(new Set<string>()),[pending,setPending]=useState<string[]>([]);
- function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+ function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  const load=useCallback(async()=>{
-  const id=++requestId.current,version=epoch.current,op=operation();displayedAuthorization.current=null;++helpRequest.current;setHelp(null);setData({status:'loading'});
+  const id=++requestId.current,version=epoch.current,op=operation(()=>{if(id===requestId.current&&version===epoch.current){displayedAuthorization.current=null;setData({status:'error'});}});displayedAuthorization.current=null;++helpRequest.current;setHelp(null);setData({status:'loading'});
   try{
    const headers=await authHeaders();if(version!==epoch.current||id!==requestId.current||op.controller.signal.aborted)return;
    if(!headers.Authorization)throw Error('session_missing');
@@ -63,7 +63,7 @@ export default function Agenda(){
   if(!authorization||!actual)return;
   const id=++helpRequest.current;
   if(help?.id===actual.id&&help.tenantId===actual.tenantId){setHelp(null);return;}
-  const op=operation();
+  const op=operation(()=>{if(version===epoch.current&&id===helpRequest.current){displayedAuthorization.current=null;setHelp(null);setData({status:'error'});setMessage('Não foi possível verificar sua sessão a tempo. Atualize os trabalhos.');}});
   try{
    const current=await authHeaders();
    if(version!==epoch.current||id!==helpRequest.current)return;
