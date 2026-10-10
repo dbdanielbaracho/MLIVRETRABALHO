@@ -374,3 +374,7 @@ Conta abria Planejamento sob label Notificações. NotificationsController verif
 ## 2026-10-09 — Leituras Planejamento/Pagamentos, v1.43
 
 Contratos GET/roles/RLS reconsultados. Foco/retry/schema/15s/loading/erro/vazio e limpeza/geração no blur. NULL monetário não é zero; no_earning não é ausência de obrigação, label Sem lançamento de ganho. Nenhuma operação financeira/provider/custo. 57 testes UTC/São Paulo, styles/backend/policies mantidos. #342 pós-merge CI 38014015303/APK 38014015274 sucesso no SHA aee58e7776eee0dc211713edcbe29075f841ecb1. #343 smoke novo head em acompanhamento; #351 CI aprovado. Branch após #352, gates próprios obrigatórios. Visual Truth/FIN-RISK OPEN; Membros/Relatos pendências concretas.
+
+## 2026-10-09 — Membros/convites tratados e retry Android controlado, v1.44
+
+Contratos owner-only/rotação/aceite/email/membership lidos, preservados. Estados/read schema/foco/retry/15s, guards síncronos e contexto tenant/identity. Geração unknown requer refresh explícito antes de novo POST, sem distribuir código; ack validado/limpeza blur. Aceite valida accepted/tenant/role/sessão antes do estado local; revoke preserva bodyless POST e ack. 63 testes UTC/São Paulo; gates próprios pendentes, após #353. #343 APK 38014252773 tentativa1 falhou settings Broken pipe exit224 dentro emulador antes do script; job 114100922318 repetido no mesmo SHA 4f39c2c92750c3a5c70bae21986d823a1eeff637. Não é aprovação nem crash app comprovado. Relatos ainda pendente; Visual Truth OPEN.
