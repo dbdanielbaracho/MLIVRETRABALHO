@@ -35,3 +35,18 @@ test('deactivation timeout and invalid JSON remain unknown without an automatic 
  let count=0;assert.deepEqual(await deactivatePrivacyAccount(async()=>{count++;throw Error('timeout')}),{status:'unknown'});assert.equal(count,1);
  assert.deepEqual(await deactivatePrivacyAccount(async()=>({ok:true,status:200,json:async()=>{throw Error('JSON')}})),{status:'unknown'});
 });
+import {runForSession} from '../lib/session-context.ts';
+test('blank privacy acknowledgement and export ownership identifiers remain unknown',async()=>{
+ assert.deepEqual(await createPrivacyRequest(async()=>response({requestId:' ',requestType:'erasure',status:'submitted'}),'erasure',''),{status:'unknown'});
+ assert.deepEqual(await deactivatePrivacyAccount(async()=>response({requestId:' ',deactivated:true,deactivatedAt:'2026-10-10T00:00:00Z'})),{status:'unknown'});
+ for(const d of [{...copy,requestId:' '},{...copy,identity:{...copy.identity,id:' '}},{...copy,memberships:[{tenantId:' ',role:'professional'}]},{...copy,privacyRequests:[{id:' ',requestType:'access',status:'submitted',createdAt:'2026-10-10T00:00:00Z'}]}])assert.deepEqual(await exportPrivacyData(async()=>response(d)),{status:'unknown'});
+});
+test('a late explicit export cannot expose a copy after deadline or session change and is not repeated',async()=>{
+ for(const kind of ['deadline','identity']){
+  let current=true,calls=0,authorization='Bearer fixture';
+  const result=await runForSession(async()=>({Authorization:authorization}),()=>exportPrivacyData(async()=>{
+   calls++;if(kind==='deadline')current=false;else authorization='Bearer changed';return response(copy);
+  }),()=>current,'Bearer fixture');
+  assert.deepEqual(result,{status:'stale'});assert.equal(calls,1);assert.equal('data' in result,false);
+ }
+});

@@ -1,4 +1,6 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# Privacidade, Assistente e Convites — v1.72
+
+## Estado remoto e provas
 
 Snapshot verificado 2026-10-10 11:29 UTC: main 516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca, árvore 27f168902ad888017df379526437690202204473, pais ac18ca03de7a5f09ff3a626a763fadb55e699074 + de1288ddb02c2623652a2be340b32df9ff7c5004. Nenhuma PR aberta na consulta anterior à publicação desta correção. Ausência de PR não implica conclusão.
 
@@ -40,7 +42,7 @@ Pós #375 no SHA765cb2e834065f6eeaf0262ed9eedca9cbb2d52a: [38037544495](https://
 
 CI pós #376–#382 success; respectivos APKs ainda in_progress na consulta. Não usar APK pré-merge para declarar pós-merge verde ou cobertura física.
 
-## Item atual
+## Correções
 
 Privacidade recusa aplicar ACK/export/desativação depois do prazo de 15s, mesmo se o transporte completar; mantém resultado desconhecido quando a operação foi enviada e exige conferência explícita. Ler pedidos é GET sem criar DSAR; gerar export continua explícito e cria access DSAR no backend. Troca de identidade limpa detalhes/cópia da origem anterior; erros na mesma conta preservam rascunho. Desativação preserva confirmação humana, bloqueios backend e limpeza condicional da sessão.
 
@@ -50,9 +52,11 @@ Membros verifica abort/Authorization+empresa após GET/ACK e antes de selecionar
 
 Schemas recusam IDs vazios/brancos de membros, convites, DSAR, identidade e vínculos da cópia. Código sem prefixo/segredo e criação/revogação sem ID de contexto não iniciam transporte. ACK real segue o contrato existente; não se inventa tenant echo ou UUID rígido no cliente. Convites mantêm roles owner/admin/manager, e-mail/expiração/vínculo, sem alteração de política, promoção ou tenant/RLS.
 
+## Validação e limites
+
 234/234 testes mobile locais passaram em UTC e America/Sao_Paulo, zero falha/cancelamento/skip. Sete regressões novas cobrem schemas/guards antes do transporte, aceite sem empresa selecionada, ACK incompleto e composição dos helpers reais com deadline/troca de conta. Três telas, dois helpers e três testes revisados; JSX e StyleSheet canônicos são idênticos aos da base. PrivacyController, CopilotController e CompanyMembersController atuais lidos integralmente. Nenhuma DSAR, exportação de pessoa real, desativação, convite ou interpretação real executada; apenas fixtures. React19.1.4/RN0.81.6, lockfile, backend, tenant/RLS e regras financeiras preservados. Checkout local parcial não prova type/build/HTTP/DB/native; próprios CI/APK e pós-merge continuam obrigatórios.
 
-## Próxima ação concreta
+## Retomada
 
 Publicar fix/account-actions-timeout-origin, filho da main 516c7fc873dedaf5ac0294e3e1a4c1f4e12d8aca; consultar número/commit/árvore/runs próprios após publicação (snapshot anterior, sem SHA circular fictício). Revisar diff remoto e integrar apenas com CI/APK success no SHA exato e gates aplicáveis; verificar árvore/pais/main e pós-runs. Acompanhar todos os APKs pós #376–#382; falha nova exige diagnóstico, não retry automático sem causa.
 

@@ -34,3 +34,17 @@ test('notification route follows the server account type and rejects an opposite
  assert.equal(validInterpretation(professional),true);assert.equal(validInterpretation(company),true);
  for(const value of [{...company,suggestedRoute:'/notificacoes'},{...professional,suggestedRoute:'/empresa-notificacoes'},{...company,accountType:undefined},{...company,accountType:'admin'},{...data,intent:'company_analytics',suggestedRoute:'/analytics'}])assert.equal(validInterpretation(value),false);
 });
+import {runForSession} from '../lib/session-context.ts';
+test('assisted interpretation keeps original authorization and suppresses suggestions after deadline or identity change',async()=>{
+ for(const kind of ['same','deadline','identity']){
+  let current=true,calls=0,authorization='Bearer fixture';
+  const result=await runForSession(async()=>({Authorization:authorization}),h=>interpretRequest(async(path,body)=>{
+   calls++;assert.equal(h.Authorization,'Bearer fixture');assert.equal(body.mode,'assisted');
+   if(kind==='deadline')current=false;else if(kind==='identity')authorization='Bearer changed';
+   return response(data);
+  },'ver agenda'),()=>current,'Bearer fixture');
+  if(kind==='same'){assert.equal(result.status,'ready');assert.deepEqual(result.data,{status:'ready',data});}
+  else assert.deepEqual(result,{status:'stale'});
+  assert.equal(calls,1);
+ }
+});

@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { authHeaders } from '../lib/session';
+import {runForSession} from '../lib/session-context';
 import { apiUrl } from '../lib/api';
 
 import {interpretRequest} from '../lib/copilot-response';
@@ -27,8 +28,10 @@ export default function Copilot() {
     try{
       const headers=await authHeaders();
       if(version!==epoch.current||operation.signal.aborted)return;
-      const next=await interpretRequest((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),text);
+      const outcome=await runForSession(authHeaders,origin=>interpretRequest((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...origin,'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),text),()=>version===epoch.current&&!operation.signal.aborted,headers.Authorization);
       if(version!==epoch.current)return;
+      if(outcome.status!=='ready'){sourceAuthorization.current=undefined;setMessage('A sessão ou conexão mudou. Interprete o pedido novamente.');return;}
+      const next=outcome.data;
       if(next.status==='ready'){sourceAuthorization.current=headers.Authorization;setResult(next.data);setMessage('');}
       else setMessage(next.status==='invalid'?'Escreva um pedido de até 2000 caracteres.':'Não foi possível interpretar o pedido. Tente novamente.');
     }catch{if(version===epoch.current)setMessage('Não foi possível interpretar o pedido. Tente novamente.');}
