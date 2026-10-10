@@ -744,3 +744,8 @@ NAMED_SUPPORT_CONTEXTS_v1.91.md: cinco testes novos/30localAPI, consulta selfide
 ## 2026-10-10 1817Z —v1.92
 
 GENERAL_PROFESSIONAL_SUPPORT_v1.92.md: escolha humana de nomes reais, histórico assignmentnull, protocolo durável reutilizado.17novas regressões,65localUTC/SP +54adicionais aprovadas. CI369mobile/110API +APK próprio pendentes. #402CI38074817938/job114279486213 aprovado352/110/4/3 inclusive contrato PostgreSQL/nomes/header/revogado; mobiletreee528995c9c2f9d17d0f94ae89faaeb214742f267 igual401, APK próprioN/A. #399pósCIpass316/105/log completo; natives400/401/pós399 ainda execução. Autoridade sem membership e retomada sem escolha ativa limitadas explicitamente; VisualTruth físico aberto. Checkpoint/journal1817Z.
+
+
+## 2026-10-10 1821Z —v1.93
+
+SUPPORT_RECOVERY_WITHOUT_CONTEXT_v1.93.md: retomada independente de listas, modo sem nova preparação/envio, retry humano e release confirmed originais.8novas regressões;73localUTC/20SP aprovadas; CI377mobile/110API +APK próprios pendentes. #403CI38075196323/job114280600176 aprovado369/110/4/3/log completo, APK38075196283 pendente; natives400/401/pós399 pendentes. Sem bypass membership/RLS; novo suporte sem vínculo requer autoridade aprovada, gate físico aberto. Checkpoint/journal1821Z.

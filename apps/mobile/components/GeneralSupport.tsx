@@ -6,6 +6,7 @@ import {apiUrl} from '../lib/api';
 import {loadSupportContexts,type SupportContext,type ContextResult} from '../lib/support-contexts';
 import {loadSupportCases,supportStatus,type SupportResult} from '../lib/professional-support';
 import {SupportRequest} from './SupportRequest';
+import {SupportRecovery} from './SupportRecovery';
 
 export function GeneralSupport(){
  const[contexts,setContexts]=useState<ContextResult>({status:'loading'}),[selected,setSelected]=useState<SupportContext|null>(null),[cases,setCases]=useState<SupportResult>({status:'loading'});
@@ -49,6 +50,7 @@ export function GeneralSupport(){
  }
  const items=contexts.status==='ready'?contexts.data:[];
  return <View style={s.section}>
+ {!selected?<SupportRecovery/>:null}
  <Text style={s.heading}>Ajuda geral</Text><Text style={s.text}>Escolha um espaço com vínculo autorizado para enviar uma mensagem sem associá-la a um trabalho.</Text>
  {contexts.status==='loading'?<Text style={s.text}>Carregando seus espaços…</Text>:contexts.status==='error'?<View><Text style={s.text}>Não foi possível verificar seus espaços nesta sessão.</Text><Pressable accessibilityRole="button" onPress={()=>void loadContexts()}><Text style={s.action}>Tentar novamente</Text></Pressable></View>:items.length===0?<Text style={s.text}>Sua conta ainda não tem um espaço autorizado para enviar uma solicitação de suporte. O envio geral sem vínculo ainda não está disponível.</Text>:items.map(context=><Pressable key={context.tenantId} style={s.choice} accessibilityRole="button" accessibilityState={{selected:selected?.tenantId===context.tenantId}} onPress={()=>void selectContext(context)}><Text style={s.heading}>{context.displayName}</Text><Text style={s.action}>{selected?.tenantId===context.tenantId?'Espaço selecionado':'Selecionar este espaço'}</Text></Pressable>)}
  {selected&&owner.current?<View style={s.section}>
