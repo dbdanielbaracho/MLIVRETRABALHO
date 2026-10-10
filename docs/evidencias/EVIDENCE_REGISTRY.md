@@ -70,3 +70,9 @@ Cada evidência material futura deve registrar: Evidence ID, concorrente/fonte, 
 | Evidence ID | Fonte | Fato | Status | Próxima ação |
 |---|---|---|---|---|
 | UI-MOBILE-EARNINGS-TRUTH-001 | MOBILE_EARNINGS_STATES_v1.35.md | Semana/status/loading corrigidos; quatro testes novos, 23 totais locais | Implementado na branch; CI/APK pendentes | Integrar após #344 e gates exatos, pós-merge; Visual Truth OPEN |
+
+## Painel Empresa — v1.36
+
+| Evidence ID | Fonte | Fato | Status | Próxima ação |
+|---|---|---|---|---|
+| UI-MOBILE-COMPANY-STATES-001 | MOBILE_COMPANY_STATES_v1.36.md | Estados independentes/ações tratadas/tenant consistente; quatro novos testes, 27 totais locais | Implementado na branch, gates pendentes | Integrar após #345 corrigido e gates exatos/pós-merge; Visual Truth OPEN |
