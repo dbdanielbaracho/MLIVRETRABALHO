@@ -1,0 +1,23 @@
+export type Result<T>={status:'loading'}|{status:'error'}|{status:'ready';data:T[]};
+export type Assignment={id:string;tenantId:string;title:string;status:string;location?:string|null;startsAt?:string|null};
+export type SafetyCase={id:string;tenantId:string;assignmentId?:string|null;category:string;description:string;status:string;createdAt:string;reportedByMe:boolean};
+export type SafetyAppeal={id:string;tenantId:string;safetyCaseId:string;reason:string;status:string;createdAt:string};
+export type SafetyData={assignments:Result<Assignment>;cases:Result<SafetyCase>;appeals:Result<SafetyAppeal>};
+export type Request=(path:string,tenantId?:string,body?:Record<string,string>)=>Promise<{ok:boolean;status?:number;json():Promise<unknown>}>;
+export type Submission={status:'created'|'existing'}|{status:'rejected'|'unknown'};
+export const categories=['unsafe_work','harassment','violence','discrimination','fraud','other'];
+const caseStatuses=['open','reviewing','resolved','dismissed'],appealStatuses=['submitted','reviewing','upheld','modified','reversed'];
+const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
+const id=(x:unknown)=>typeof x==='string'&&x.length>0;
+const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(new Date(x).getTime());
+const validAssignment=(x:unknown):x is Assignment=>record(x)&&id(x.id)&&id(x.tenantId)&&typeof x.title==='string'&&typeof x.status==='string'&&(x.location==null||typeof x.location==='string')&&(x.startsAt==null||date(x.startsAt));
+const validCase=(x:unknown):x is SafetyCase=>record(x)&&id(x.id)&&id(x.tenantId)&&(x.assignmentId==null||id(x.assignmentId))&&typeof x.category==='string'&&categories.includes(x.category)&&typeof x.description==='string'&&typeof x.status==='string'&&caseStatuses.includes(x.status)&&date(x.createdAt)&&typeof x.reportedByMe==='boolean';
+const validAppeal=(x:unknown):x is SafetyAppeal=>record(x)&&id(x.id)&&id(x.tenantId)&&id(x.safetyCaseId)&&typeof x.reason==='string'&&typeof x.status==='string'&&appealStatuses.includes(x.status)&&date(x.createdAt);
+async function read<T>(request:Request,path:string,valid:(x:unknown)=>x is T):Promise<Result<T>>{try{const r=await request(path);if(!r.ok)return {status:'error'};const d:unknown=await r.json();return Array.isArray(d)&&d.every(valid)?{status:'ready',data:d}:{status:'error'};}catch{return {status:'error'};}}
+export const loadingSafety=():SafetyData=>({assignments:{status:'loading'},cases:{status:'loading'},appeals:{status:'loading'}});
+export async function loadSafety(request:Request):Promise<SafetyData>{const [assignments,cases,appeals]=await Promise.all([read(request,'/assignments/mine',validAssignment),read(request,'/safety-cases/mine',validCase),read(request,'/safety-appeals/mine',validAppeal)]);return {assignments,cases,appeals};}
+export const safetyKey=(tenantId:string,id:string)=>tenantId+':'+id;
+export function canRequestReview(item:SafetyCase,appeals:Result<SafetyAppeal>):boolean{return appeals.status==='ready'&&!appeals.data.some(a=>a.tenantId===item.tenantId&&a.safetyCaseId===item.id)&&(!item.reportedByMe||item.status==='resolved'||item.status==='dismissed');}
+export function sameSafetySession(a:Record<string,string>,b:Record<string,string>):boolean{return !!b.Authorization&&a.Authorization===b.Authorization;}
+export async function submitSafetyCase(request:Request,assignment:Assignment,category:string,description:string):Promise<Submission>{try{const r=await request('/safety-cases',assignment.tenantId,{assignmentId:assignment.id,category,description});if(!r.ok)return {status:r.status!=null&&r.status>=400&&r.status<500?'rejected':'unknown'};const d:unknown=await r.json();return record(d)&&id(d.id)&&d.category===category&&d.status==='open'&&date(d.createdAt)?{status:'created'}:{status:'unknown'};}catch{return {status:'unknown'};}}
+export async function submitSafetyAppeal(request:Request,item:SafetyCase,reason:string):Promise<Submission>{try{const r=await request('/safety-appeals',item.tenantId,{safetyCaseId:item.id,reason});if(!r.ok)return {status:r.status!=null&&r.status>=400&&r.status<500?'rejected':'unknown'};const d:unknown=await r.json();if(!record(d)||!id(d.id)||d.safetyCaseId!==item.id||typeof d.reason!=='string'||!date(d.createdAt)||typeof d.status!=='string'||!appealStatuses.includes(d.status))return {status:'unknown'};return d.created===true&&d.reason===reason.trim()&&d.status==='submitted'?{status:'created'}:d.created===false?{status:'existing'}:{status:'unknown'};}catch{return {status:'unknown'};}}
