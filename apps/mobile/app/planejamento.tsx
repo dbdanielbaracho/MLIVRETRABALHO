@@ -3,6 +3,7 @@ import {useFocusEffect} from 'expo-router';
 import {Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View} from 'react-native';
 import {authenticatedTenantHeaders} from '../lib/session';
 import {apiUrl} from '../lib/api';
+import {runForSession} from '../lib/session-context';
 import {loadPlanner,moneyOrMissing} from '../lib/company-readonly';
 import type {PlannerItem,ReadResult} from '../lib/company-readonly';
 function operationLabel(item: PlannerItem) {
@@ -25,7 +26,7 @@ export default function Planejamento(){
  const items=result.status==='ready'?result.data:[];
  useFocusEffect(useCallback(()=>{
   const version=++generation.current,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);setResult({status:'loading'});
-  void (async()=>{const next=await loadPlanner(async path=>{const headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return fetch(apiUrl(path),{headers,signal:controller.signal});});if(version===generation.current)setResult(next);})().finally(()=>clearTimeout(timer));
+  void (async()=>{const origin=await authenticatedTenantHeaders();const next=await runForSession(authenticatedTenantHeaders,headers=>loadPlanner(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted,origin.Authorization,origin['x-tenant-id']??'');if(version===generation.current)setResult(next.status==='ready'?next.data:{status:'error'});})().catch(()=>{if(version===generation.current)setResult({status:'error'});}).finally(()=>clearTimeout(timer));
   return ()=>{++generation.current;clearTimeout(timer);controller.abort();setResult({status:'loading'});};
  },[retry]));
   return (
