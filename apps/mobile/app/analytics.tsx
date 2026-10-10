@@ -3,6 +3,7 @@ import { useFocusEffect } from 'expo-router';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import {runForSession} from '../lib/session-context';
 
 import { loadAnalytics, percentOrMissing as percent } from '../lib/company-analytics';
 import type { AnalyticsResult } from '../lib/company-analytics';
@@ -17,13 +18,10 @@ export default function Analytics() {
     const timer=setTimeout(()=>controller.abort(),15000),abort=()=>controller.abort();
     signal?.addEventListener('abort',abort);if(signal?.aborted)controller.abort();
     try {
-      const result=await loadAnalytics(async path=>{
-        const headers=await authenticatedTenantHeaders();
-        if(!headers['x-tenant-id'])throw Error('tenant_required');
-        return fetch(apiUrl(path),{headers,signal:controller.signal});
-      });
-      if(id===sequence.current&&!signal?.aborted)setState(result);
-    } finally {
+      const origin=await authenticatedTenantHeaders();
+      const result=await runForSession(authenticatedTenantHeaders,headers=>loadAnalytics(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>id===sequence.current&&!controller.signal.aborted&&!signal?.aborted,origin.Authorization,origin['x-tenant-id']??'');
+      if(id===sequence.current&&!signal?.aborted)setState(result.status==='ready'?result.data:{status:'error'});
+    } catch {if(id===sequence.current&&!signal?.aborted)setState({status:'error'});} finally {
       clearTimeout(timer);controllers.current.delete(controller);signal?.removeEventListener('abort',abort);
     }
   }
