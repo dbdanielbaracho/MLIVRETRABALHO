@@ -7,4 +7,5 @@ export const CANONICAL_ROLES:CanonicalRole[]=[
 {vertical:'logistics_warehouse',family:'warehouse',role:'warehouse_associate',specializations:['picking','packing'],skills:['picking','packing','inventory_handling'],certifications:[]},
 {vertical:'retail',family:'store',role:'store_associate',specializations:['sales_floor','stock'],skills:['customer_service','stocking','checkout'],certifications:[]}
 ];
-export function taxonomySearch(q?:string){const n=q?.trim().toLowerCase();return n?CANONICAL_ROLES.filter(x=>JSON.stringify(x).toLowerCase().includes(n)):CANONICAL_ROLES}
+export function searchRoles<T extends CanonicalRole>(roles:T[],q?:string):T[]{const n=typeof q==='string'?q.trim().toLowerCase():'';return n?roles.filter(x=>JSON.stringify(x).toLowerCase().includes(n)):roles}
+export function taxonomySearch(q?:string){return searchRoles(CANONICAL_ROLES,q)}
