@@ -29,10 +29,15 @@ export default function Empresa(){
  function clearDraft(){setTitle('');setLocation('');setWorkCity('');setDate('');setStartTime('');setEndTime('');setPay('');}
  async function loadContext(){
   const version=generation.current,seq=++contextRequest.current;context.current=null;setContextReady(false);
-  const headers=await authenticatedTenantHeaders();if(!active.current||version!==generation.current||seq!==contextRequest.current)return;
-  if(!sameCompanyContext(headers,headers)){setMessage('Não foi possível identificar a empresa ativa. Atualize antes de publicar.');return;}
-  if(draftContext.current&&!sameCompanyContext(headers,draftContext.current)){clearDraft();uncertain.current=false;}
-  draftContext.current={...headers};context.current={...headers};setContextReady(true);setMessage(uncertain.current?'Publicação anterior sem confirmação. Confira o Planejamento antes de tentar novamente.':'');
+  const controller=new AbortController();controllers.current.add(controller);
+  const timer=setTimeout(()=>{controller.abort();if(active.current&&version===generation.current&&seq===contextRequest.current){context.current=null;setContextReady(false);setMessage('Não foi possível verificar a empresa a tempo. Atualize antes de publicar.');}},15000);
+  try{
+   const headers=await authenticatedTenantHeaders();if(controller.signal.aborted||!active.current||version!==generation.current||seq!==contextRequest.current)return;
+   if(!sameCompanyContext(headers,headers)){setMessage('Não foi possível identificar a empresa ativa. Atualize antes de publicar.');return;}
+   if(draftContext.current&&!sameCompanyContext(headers,draftContext.current)){clearDraft();uncertain.current=false;}
+   draftContext.current={...headers};context.current={...headers};setContextReady(true);setMessage(uncertain.current?'Publicação anterior sem confirmação. Confira o Planejamento antes de tentar novamente.':'');
+  }catch{if(!controller.signal.aborted&&active.current&&version===generation.current&&seq===contextRequest.current)setMessage('Não foi possível verificar a empresa. Atualize antes de publicar.');}
+  finally{clearTimeout(timer);controllers.current.delete(controller);}
  }
  useFocusEffect(useCallback(()=>{active.current=true;++generation.current;void loadContext();return()=>{active.current=false;++generation.current;++contextRequest.current;for(const c of controllers.current)c.abort();controllers.current.clear();context.current=null;setContextReady(false);submittingRef.current=false;setSubmitting(false);};},[]));
  async function create(){

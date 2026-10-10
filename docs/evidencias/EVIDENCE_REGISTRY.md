@@ -801,3 +801,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [PRIMARY_READ_DEADLINE_v1.102.md](PRIMARY_READ_DEADLINE_v1.102.md):20falhas/8pass antes;28novos testes/PASS37 local explícito; JSX/StyleSheet/escritas preservados. CI452mobile/145API+APK próprios pendentes antes de publicar.
 - [EXECUCAO_VERIFICADA_2026-10-10_2324Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2324Z.md):todos os pós-CI401–411 comprovados, inclusiveHTTPreal de cronologia;412CI424/145 aprovado, ownAPK pendente. Pós-APKs independentes em execução.
+
+
+## 2026-10-10 — v1.103
+
+- [COMPANY_PUBLICATION_CONTEXT_DEADLINE_v1.103.md](COMPANY_PUBLICATION_CONTEXT_DEADLINE_v1.103.md):5falhas/1pass antes;6novos/PASS12 local após prazo/catch; publicação/JSX/draft/uncertain preservados. CI458mobile/145API +APK próprios pendentes.
+- [EXECUCAO_VERIFICADA_2026-10-10_2329Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2329Z.md):413CI452mobile/145API/HTTPreal comprovado,412CI424/145 aprovado; natives próprios/pós em execução.
