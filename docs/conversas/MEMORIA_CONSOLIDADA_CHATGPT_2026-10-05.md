@@ -445,3 +445,15 @@ Controllers reconsultados. Reads independentes/schema/loading/erro/vazio/foco/re
 ## Preparação #360 — 2026-10-10
 
 Head original 1c1756fd20ae369a6df6855f79b873ce07ca0967; predecessor reconciliado #359 99a10a406c00db62eaec784e22ec4e53cf0585d2. Reconciliação preserva código original desta fatia e todos os registros main/#361 e #351; predecessor novo é segundo parent. CI/APK do **novo SHA** obrigatórios, ainda pendentes neste snapshot. Integração na ordem #351–#360, apenas com gates exatos/revisão e pós-merge. Main verificada 658e335cec144ba151645719b2b3fc0bf571f9c5, #350 pós-merge CI38018391376/APK38018391418 sucesso. Código/RLS/React/RN/lockfile/backend/PSP inalterados pela reconciliação. Visual Truth OPEN. Próxima ação concreta: acompanhar gates novos e retarget main somente após predecessor integrado.
+
+## 2026-10-10 — Indicadores reais, v1.51
+
+# Indicadores: dados reais e estados de rede — v1.51
+
+**Verificação:** 2026-10-10. **Base:** #360 reconciliado d11bbeec3ec33bf6e20145f910ad0d31f57d31cb.
+
+Fonte primária: apps/api/src/company-analytics.controller.ts e apps/mobile/app/analytics.tsx. UI anterior só carregava na montagem, fetch/JSON podiam rejeitar sem catch, sem limite/retry/foco/schema. Correção somente GET/schema e estados de UI, sem consultas/definições/backend/RLS/policy novas.
+
+6 testes novos, 107/107 em UTC/São Paulo. Zero somente após resposta válida; null distinto de0%, taxa de confirmação200% preservada conforme universos do controlador; contagens/rates inválidas e HTTP403/rede/JSON não viram vazio; explicit retry pode recuperar. Foco/generation/abort15s revisados, unidade não comprova UI nativa. Novo CI/APK exato/merge/pós-merge pendentes, Visual Truth OPEN.
+
+Fila e prova #350 atualizadas no checkpoint nesta alteração. #351–#360 código byte-idêntico às respectivas branches originais, documentos main/#361 preservados e ancestrais reconciliados; gates obrigatórios em novos SHAs. Nenhum custo, fornecedor de IA, dinheiro, mensagem real, política financeira ou enforcement habilitado.
