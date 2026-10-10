@@ -471,3 +471,15 @@ Correção mantém pedido manual em mode assisted, texto até2000, guard síncro
 6 novos testes;113/113 locais UTC e America/Sao_Paulo, incluindo suíte anterior107. Cobrem limite sem request, payload assisted/chamada única, rota desconhecida/incompatível, ação automática/modo inválido, confirmação humana, facts/schema/HTTP/JSON/rede sem retry. Revisão estática de guard/draft/epoch/session, sem alegar taps/aparelho/Visual Truth. Styles/APIs/backend/policies/RLS/React19.1.4/RN0.81.6/lockfile preservados. CI/APK head exato/merge/pós-merge ainda pendentes; cadeia após#362. Visual Truth OPEN.
 
 Próxima ação: acompanhar gates #351–#360/#362 e deste item, integrar em ordem com revisão e pós-merge. Revalidar Privacidade/onboarding e comportamento company/professional das sugestões contra requisitos; não inferir cobertura total por essas correções.
+
+## 2026-10-10 — Integrações reais e leitura Privacidade v1.53
+
+# Privacidade: leitura real dos pedidos — v1.53
+
+**Data:** 2026-10-10. **Base:** main177f15c92323b9bf807a6cbee1c802f5953ac907. Fontes: PrivacyController GET requests, privacy-requests-ops.ts, DSAR_RUNBOOK_v1.13, PRIVACY_NOTICE_BASELINE_v1.13, TRUST_DATA_RETENTION_OPERATIONAL_BASELINE_v1.13 e app atual.
+
+Correção apenas GET /privacy/requests: loading/erro/vazio comprovado, payload/types/status/dates validados, identidade via authHeaders existente, foco/retry/15s/geração/cancelamento. Não apresenta Nenhum pedido em falha/loading. Nenhuma exportação automática: GET /privacy/export registra pedido access e está fora desta leitura. Create/export/deactivate byte-idênticos; backend/alerta/desativação/hold/retention/RLS/styles intactos. Nenhum pedido/cópia/desativação real executado pelo agente.
+
+4 novos testes;117/117 UTC/São Paulo. Fatos/status/tipo/datas reais, vazio somente confirmado, HTTP/JSON/rede como falha e somente endpoint requests, sem GET export/POST. Guarda UI/foco/timeout revisada estaticamente, não comprova taps/aceite físico. CI/APK no head próprio e pós-merge pendentes. Visual Truth OPEN. Operações de Privacidade continuam como lacuna concreta separada para próximo ciclo com os mesmos contratos e controles humanos.
+
+Resultados de integração/pós-merges/retries em [execução verificada06:21](EXECUCAO_VERIFICADA_2026-10-10_0621Z.md). Sem transcrição inventada; fatos da execução registrados, Visual Truth OPEN.
