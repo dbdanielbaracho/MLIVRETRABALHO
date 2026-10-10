@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadEarnings,earningsWeek,earningStatus} from '../lib/earnings.ts';
+import {weeklyEarnings} from '../lib/professional-home.ts';
 const now=new Date(2026,9,9,14),row=(id,status,day,amountCents=1000)=>({id,tenantId:'real-tenant',title:'Real job',status,amountCents,createdAt:new Date(2026,9,day,12).toISOString()});
 test('earnings empty success is distinct from HTTP/network/schema/date failure',async()=>{
  assert.deepEqual(await loadEarnings(async()=>({ok:true,json:async()=>[]})),{status:'ready',data:[]});
@@ -11,6 +12,7 @@ test('weekly total and daily graph include payable/paid only, in local week thro
  const result=earningsWeek(items,now);
  assert.deepEqual(result,{total:3500,daily:[1200,0,0,0,2300,0,0]});
  assert.equal(result.daily.reduce((a,b)=>a+b,0),result.total);
+ assert.equal(result.total,weeklyEarnings(items,now));
 });
 test('ledger states do not pretend every entry is completed or paid',()=>{
  assert.equal(earningStatus('pending'),'Em processamento');assert.equal(earningStatus('payable'),'A receber');assert.equal(earningStatus('paid'),'Pago');assert.equal(earningStatus('reversed'),'Estornado');assert.equal(earningStatus('unknown'),'Status não identificado');

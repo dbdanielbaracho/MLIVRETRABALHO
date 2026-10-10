@@ -1,4 +1,4 @@
-import {weeklyEarnings,type Earning as HomeEarning,type Section} from './professional-home.ts';
+import type {Earning as HomeEarning,Section} from './professional-home';
 export type Earning=HomeEarning & {id:string;tenantId:string;title:string};
 type Response={ok:boolean;json():Promise<unknown>};
 export async function loadEarnings(request:()=>Promise<Response>):Promise<Section<Earning[]>>{
@@ -16,7 +16,7 @@ export function earningsWeek(items:Earning[],now=new Date()){
   const date=new Date(item.createdAt);
   if(['payable','paid'].includes(item.status)&&Number.isSafeInteger(item.amountCents)&&date>=start&&date<=now)daily[(date.getDay()+6)%7]+=item.amountCents;
  }
- return {total:weeklyEarnings(items,now),daily};
+ return {total:daily.reduce((sum,value)=>sum+value,0),daily};
 }
 export function earningStatus(status:string){
  return ({pending:'Em processamento',payable:'A receber',paid:'Pago',reversed:'Estornado'} as Record<string,string>)[status]??'Status não identificado';
