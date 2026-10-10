@@ -1,4 +1,6 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# Interessados, Substituições e Pagamentos — v1.70
+
+## Estado remoto
 
 Estado verificado em 2026-10-10 08:25:56 UTC: main 765cb2e834065f6eeaf0262ed9eedca9cbb2d52a (#375/v1.64), árvore c0ce45ba92c04ae69de8271f110d1a6c6c9cc301. #375 já integrado com head CI/APK e árvore/pais comprovados; pós-CI 38037544495 success, pós-APK 38037544424 ainda não concluído no último snapshot. #372/#373 pós-CI/APK e provas efetivas registrados no journal0822Z. #374 pós-CI 38036515564 success / APK 38036515570 em execução.
 
@@ -12,13 +14,15 @@ Estado verificado em 2026-10-10 08:25:56 UTC: main 765cb2e834065f6eeaf0262ed9eed
 
 #380 publicado e conferido: árvore 2ce77b59d09dc03f2602e29f9f4e1259bd3b6a59, pai 31ed3bfed81b0bb43b49a7b4a7810d2026a9c44d, 15 arquivos no diff. Próprio CI success não aprova APK/físico nem o filho seguinte. #376 retry único continua em execução; não repetir. #378 CI retry único recuperado e falha histórica #370 permanecem registrados sem reclassificação do passado.
 
-## Item atual
+## Correção por contrato
 
 Interessados captura e verifica Authorization/empresa na carga de trabalhos, nas leituras paralelas de candidatos/recomendações e após o ACK da confirmação. Substituições revalida o par após GET, recomendação, pedido e seleção, antes de aplicar dados/mensagens; motivos antigos são limpos quando uma nova origem é confirmada. Pagamentos usa a mesma verificação antes/depois da consulta somente leitura. Abort, foco e gerações continuam obrigatórios.
 
 IDs vazios/brancos não geram registros acionáveis, rotas mutantes ou ACKs positivos; confirmação exige assignment/job/profissional/tenant reais. Erro de contexto não é sucesso, lista vazia ou valor zero. Preserva falhas parciais no mesmo contexto e dados financeiros nulos distintos de agregados zero comprovados. Não há repetição automática de POST.
 
 Controllers atuais lidos: CompanyJobsController, ReplacementController e PaymentEventsController. Matching/recomendação continua apoio à decisão humana; confirm/selection/pedidos preservam contratos, elegibilidade e idempotência existentes. Roles, tenant/RLS, ledger/PSP, ranking/fórmulas, UI/desenho/rotas, React19.1.4/RN0.81.6 e lockfile intactos. Nenhuma confirmação, substituição ou pagamento real executado.
+
+## Validação
 
 221/221 testes mobile locais passaram em UTC e America/Sao_Paulo, sem falha/cancelamento/skip. Sete regressões novas: IDs de dados/ACKs/rotas, contexto sem Auth e composições reais dos helpers com runForSession simulando troca de conta/empresa durante GET/recomendação. Diff de três telas, três helpers e três testes revisado. Não alega typecheck/build/taps/aparelho local; próprios CI/API/HTTP/APK e pós-merge ainda obrigatórios.
 

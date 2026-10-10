@@ -7,7 +7,7 @@ import {loadingReplacements,loadReplacements,replaceable,sameReplacementContext,
 import type {ReplacementData,Request,MatchResult} from '../lib/company-replacements';
 export default function Substituicoes(){
  const [data,setData]=useState(loadingReplacements),[reasons,setReasons]=useState<Record<string,string>>({}),[recommendations,setRecommendations]=useState<Record<string,MatchResult>>({}),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
- const generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;data:ReplacementData}|null>(null);
+ const draftContext=useRef<Record<string,string>|null>(null),generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;data:ReplacementData}|null>(null);
  const assignments=data.assignments.status==='ready'?data.assignments.data:[],replacements=data.replacements.status==='ready'?data.replacements.data:[];
  const openByAssignment=new Map(replacements.filter(x=>x.status==='open').map(x=>[x.assignmentId,x]));
  function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
@@ -15,7 +15,8 @@ export default function Substituicoes(){
  async function load(manual=false,expected?:Record<string,string>){
   if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData(loadingReplacements());setRecommendations({});
   try{const headers=await authenticatedTenantHeaders();const result=await loadReplacements((path,method,body)=>{if(!headers['x-tenant-id']||(expected&&!sameReplacementContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,method,body);});
-   if(version===generation.current&&seq===sequence.current){setData(result);snapshot.current=result.assignments.status==='ready'&&result.replacements.status==='ready'?{headers,data:result}:null;if(manual)setMessage('');}
+   const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameReplacementContext(current,headers))throw Error('company_context_changed');
+   if(version===generation.current&&seq===sequence.current){if(draftContext.current&&!sameReplacementContext(headers,draftContext.current))setReasons({});draftContext.current={...headers};setData(result);snapshot.current=result.assignments.status==='ready'&&result.replacements.status==='ready'?{headers,data:result}:null;if(manual)setMessage('');}
   }catch{if(version===generation.current&&seq===sequence.current)setData({assignments:{status:'error'},replacements:{status:'error'}});}
   finally{op.finish();}
  }
@@ -28,10 +29,11 @@ export default function Substituicoes(){
   if(kind!=='create'&&!replacement)return;
   const recommendation=recommendations[id];if(kind==='select'&&(recommendation?.status!=='ready'||recommendation.data.recommendedProfessionalId!==professionalId))return;
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current)return;if(!sameReplacementContext(headers,displayed.headers)){setMessage('A empresa ou sessão mudou. Atualize as substituições.');return;}
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameReplacementContext(headers,displayed.headers)){setMessage('A empresa ou sessão mudou. Atualize as substituições.');return;}
    const request=requestWith(headers,op.controller.signal);
-   if(kind==='match'){const result=await matchReplacement(request,id);if(version===generation.current){setRecommendations(current=>({...current,[id]:result}));setMessage(result.status==='ready'?'Substituto recomendado encontrado.':result.status==='empty'?'Nenhum substituto disponível no momento.':'Não foi possível buscar uma recomendação. Tente novamente.');}}
+   if(kind==='match'){const result=await matchReplacement(request,id);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameReplacementContext(current,displayed.headers))throw Error('company_context_changed');if(version===generation.current){setRecommendations(current=>({...current,[id]:result}));setMessage(result.status==='ready'?'Substituto recomendado encontrado.':result.status==='empty'?'Nenhum substituto disponível no momento.':'Não foi possível buscar uma recomendação. Tente novamente.');}}
    else {const ok=kind==='create'?await createRequest(request,id,reasons[id]?.trim()||undefined):await selectReplacement(request,replacement!,professionalId!);
+    const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameReplacementContext(current,displayed.headers))throw Error('company_context_changed');
     if(version===generation.current){setMessage(ok?(kind==='create'?'Substituição solicitada.':'Substituto confirmado.'):'O resultado não foi confirmado. Atualize as substituições para conferir.');await load(false,displayed.headers);}}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize as substituições para conferir.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}

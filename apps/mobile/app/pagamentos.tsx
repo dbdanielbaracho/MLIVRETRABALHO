@@ -2,6 +2,7 @@ import {useCallback,useRef,useState} from 'react';
 import {useFocusEffect} from 'expo-router';
 import {Pressable,SafeAreaView,ScrollView,StyleSheet,Text,View} from 'react-native';
 import {authenticatedTenantHeaders} from '../lib/session';
+import {runForSession} from '../lib/session-context';
 import {apiUrl} from '../lib/api';
 import {loadReconciliation,moneyOrMissing} from '../lib/company-readonly';
 import type {Reconciliation,ReadResult} from '../lib/company-readonly';
@@ -18,7 +19,7 @@ export default function Pagamentos(){
  const items=result.status==='ready'?result.data:[];
  useFocusEffect(useCallback(()=>{
   const version=++generation.current,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);setResult({status:'loading'});
-  void (async()=>{const next=await loadReconciliation(async path=>{const headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return fetch(apiUrl(path),{headers,signal:controller.signal});});if(version===generation.current)setResult(next);})().finally(()=>clearTimeout(timer));
+  void (async()=>{const headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return runForSession(authenticatedTenantHeaders,origin=>loadReconciliation(path=>fetch(apiUrl(path),{headers:origin,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted,headers.Authorization,headers['x-tenant-id']);})().then(next=>{if(version===generation.current)setResult(next.status==='ready'?next.data:{status:'error'});}).catch(()=>{if(version===generation.current)setResult({status:'error'});}).finally(()=>clearTimeout(timer));
   return ()=>{++generation.current;clearTimeout(timer);controller.abort();setResult({status:'loading'});};
  },[retry]));
   return (

@@ -32,3 +32,14 @@ test('confirmation requires exact job/professional/tenant ack and never fabricat
  for(const bad of [{...data,tenantId:'other'},{...data,jobId:'other'},{...data,professionalId:'other'},{...data,status:'completed'},null])assert.equal(await confirmCandidate(async()=>response(bad),'j','p','t'),false);
  assert.equal(await confirmCandidate(async()=>{throw Error('timeout')},'j','p','t'),false);assert.equal(await confirmCandidate(async()=>response(data,false),'j','p','t'),false);
 });
+test('candidate records, recommendations and jobs require a nonblank identity',async()=>{
+ for(const id of ['', ' ']){
+  assert.equal((await loadCompanyJobs(async()=>response([{id,title:'Trabalho',status:'open'}]))).status,'error');
+  const r=await loadCandidates(async p=>response(p.endsWith('/candidates')?[{professionalId:id,displayName:'Pessoa',status:'interested'}]:[{professionalId:id,score:80,reasons:[]}]),'j');assert.equal(r.candidates.status,'error');assert.equal(r.recommendations.status,'error');
+ }
+});
+test('same company without an authenticated identity cannot authorize candidate actions',()=>{assert.equal(sameCompanyContext({'x-tenant-id':'t'},{'x-tenant-id':'t'}),false);});
+test('confirmation needs nonblank route/context identities and an actual assignment ACK',async()=>{
+ let calls=0;for(const ids of [['','p','t'],['j',' ','t'],['j','p',' ']])assert.equal(await confirmCandidate(async()=>{calls++;return response({})},...ids),false);assert.equal(calls,0);
+ for(const id of ['', ' '])assert.equal(await confirmCandidate(async()=>response({id,jobId:'j',professionalId:'p',tenantId:'t',status:'confirmed'}),'j','p','t'),false);
+});
