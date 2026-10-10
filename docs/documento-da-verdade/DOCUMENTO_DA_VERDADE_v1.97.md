@@ -1,4 +1,14 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.97
+
+**Status:** NORMATIVO — DELTA SOBRE v1.96
+**Data:** 2026-10-10
+
+## Prazo real da leitura de planejamento
+
+A tela existente Planejamento abortava o transporte após15s, mas só alterava loading quando a Promise terminasse. Auth/fetch/JSON/leitura final de auth que ignorassem abort mantinham o usuário sem mensagem de erro ou retry. Regressões nos handlers reais pré-JSX reproduziram5falhas/1pass na versão anterior, com fixtures explícitas de hooks/auth/transport/timer; não são renderização React Native nem prova em aparelho.
+O prazo agora publica statuserror imediatamente apenas na geração atual e aborta transporte. Origem de sessão resolvida depois do prazo não inicia HTTP; dados tardios/validação final de sessão após prazo não são aplicados como ready. Blur/novo foco invalidam timers e resultados antigos; retry pelo fluxo existente pode carregar dados reais novamente. Sem novo endpoint, dados/políticas inventados, mudança de tenant, alocação, cálculo ou ação financeira.
+6regressões novas cobrem auth/fetch/JSON/finalauth sem resolução no prazo, nenhuma query após origem expirada, rejeição de ready tardio, blur e recuperação sem overwrite. PASS15/15 local (6novos+9session-context existentes), usando Node/handlers reais com fixtures explícitas. StyleSheet byteidêntico; JSX/menu/navegação principal/canônico preservados. CI completo esperado383mobile/140API/4web/3CLI e APK standalone no SHA próprio obrigatórios, ainda pendentes antes de publicação.
+React19.1.4/RN0.81.6, lockfile reproduzível, Android standalone e isolamento tenant/RLS preservados. Layout/estados originais e deadline em aparelho físico seguem abertos; CI/emulador não substituem Visual Truth integral. Sem nova infraestrutura, custos ou dinheiro real.
 
 ## Estado verificado
 
@@ -25,13 +35,6 @@ Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emul
 
 #407 headcfd49fa3f7d290f7847a3d1621ab0b5c73727924/tree16013272d2eb396ee2c87801dfd48773197e5c8f, basefix/career-conversion-input, mergeabletrue reconsultado. CI38077221055/job114286615558 aprovado377mobile/140API/4web/3CLI; todos os passos e logs, typecheck/build/export/migrations/HTTP PostgreSQL. Marker18:49:43.4457274Z comprova inputs/auth/role/cross-tenant rejeitados e planejamento válido sem disponibilidade com unfilled/estado de trabalho intactos. 14 arquivos remotos byteidênticos e patch revisto. apps/mobile39e121e416614fa92ce16775d19e65648492d9f3 igual406; paths API/script/docs não acionam workflow standalone: APK próprio N/A comprovado. Ainda não integrada; predecessores pendentes.
 
-## Item atual
-
-A tela existente Planejamento abortava o transporte após15s, mas só alterava loading quando a Promise terminasse. Auth/fetch/JSON/leitura final de auth que ignorassem abort mantinham o usuário sem mensagem de erro ou retry. Regressões nos handlers reais pré-JSX reproduziram5falhas/1pass na versão anterior, com fixtures explícitas de hooks/auth/transport/timer; não são renderização React Native nem prova em aparelho.
-O prazo agora publica statuserror imediatamente apenas na geração atual e aborta transporte. Origem de sessão resolvida depois do prazo não inicia HTTP; dados tardios/validação final de sessão após prazo não são aplicados como ready. Blur/novo foco invalidam timers e resultados antigos; retry pelo fluxo existente pode carregar dados reais novamente. Sem novo endpoint, dados/políticas inventados, mudança de tenant, alocação, cálculo ou ação financeira.
-6regressões novas cobrem auth/fetch/JSON/finalauth sem resolução no prazo, nenhuma query após origem expirada, rejeição de ready tardio, blur e recuperação sem overwrite. PASS15/15 local (6novos+9session-context existentes), usando Node/handlers reais com fixtures explícitas. StyleSheet byteidêntico; JSX/menu/navegação principal/canônico preservados. CI completo esperado383mobile/140API/4web/3CLI e APK standalone no SHA próprio obrigatórios, ainda pendentes antes de publicação.
-React19.1.4/RN0.81.6, lockfile reproduzível, Android standalone e isolamento tenant/RLS preservados. Layout/estados originais e deadline em aparelho físico seguem abertos; CI/emulador não substituem Visual Truth integral. Sem nova infraestrutura, custos ou dinheiro real.
-
 ## Dependências
 
 Preferências não tem contrato próprio nos schemas/APIs auditados: definir campos/semântica/escopo/persistência/efeito em matching antes de inventar modelo ou confundir fatos de perfil/availability/capabilities. Ajuda nova sem membership depende de autoridade por identidade/isolamento/retensão aprovada, sem tenant global arbitrário ou bypass RLS. Ambos são bloqueios parciais; não impedem correção de erros concretos das APIs existentes.
@@ -42,3 +45,5 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/planner-screen-deadline sobre head407cfd49fa3f7d290f7847a3d1621ab0b5c73727924/tree16013272d2eb396ee2c87801dfd48773197e5c8f, basefix/team-plan-input. Conferir bytes/patch/head/tree e próprios CI383mobile/140API +APK no SHA exato; não antecipar número/SHA/resultado.
 Acompanhar tentativa2 do APK40138074120056/job114286755368. Integrar401–407 e esta fatia na ordem, retargetmain/reconsulta eventual/diff fresco/merge-base tree idêntica main e próprios gates aprovados; verificar pais/tree/main e CI/APK pós-merge no SHA real. #400pós está aprovado e ancestrais integrados: não repetir merge/gates/retry já confirmados.
 Continuar auditoria de handlers/requisitos existentes com reprodução concreta antes de alterar. Se não houver tarefa executável independente, registrar alternativas inspecionadas/impedimento/ação requerida; CI em execução é acompanhamento, não conclusão ou bloqueio definitivo. Preferências/ajuda nova sem membership/VisualTruth físico/providers/pentest são dependências parciais separadas. Persistir checkpoint e manter continuidade até projeto integralmente comprovado ou ordem expressa.
+
+Evidência PLANNER_SCREEN_DEADLINE_v1.97.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.97.md; checkpoint/journal1851Z. Baselines anteriores vigentes.

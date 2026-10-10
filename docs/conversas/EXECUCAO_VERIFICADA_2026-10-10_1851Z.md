@@ -1,3 +1,5 @@
+# Execução verificada — 2026-10-10 18:51 UTC
+
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
 ## Estado verificado
@@ -42,3 +44,4 @@ VisualTruth físico original/dados/estados/cobertura completa, Native/SecureStor
 Publicar fix/planner-screen-deadline sobre head407cfd49fa3f7d290f7847a3d1621ab0b5c73727924/tree16013272d2eb396ee2c87801dfd48773197e5c8f, basefix/team-plan-input. Conferir bytes/patch/head/tree e próprios CI383mobile/140API +APK no SHA exato; não antecipar número/SHA/resultado.
 Acompanhar tentativa2 do APK40138074120056/job114286755368. Integrar401–407 e esta fatia na ordem, retargetmain/reconsulta eventual/diff fresco/merge-base tree idêntica main e próprios gates aprovados; verificar pais/tree/main e CI/APK pós-merge no SHA real. #400pós está aprovado e ancestrais integrados: não repetir merge/gates/retry já confirmados.
 Continuar auditoria de handlers/requisitos existentes com reprodução concreta antes de alterar. Se não houver tarefa executável independente, registrar alternativas inspecionadas/impedimento/ação requerida; CI em execução é acompanhamento, não conclusão ou bloqueio definitivo. Preferências/ajuda nova sem membership/VisualTruth físico/providers/pentest são dependências parciais separadas. Persistir checkpoint e manter continuidade até projeto integralmente comprovado ou ordem expressa.
+
