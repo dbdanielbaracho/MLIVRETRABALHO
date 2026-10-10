@@ -32,7 +32,7 @@ export default function Notificacoes(){
    const headers=await authHeaders();
    const response=await fetch(apiUrl('/notifications/'+n.id+'/read'),{method:'POST',headers:{...headers,'x-tenant-id':n.tenantId},signal:controller.signal});
    if(!response.ok){setMessage('Não foi possível marcar a notificação como lida. Tente novamente.');return;}
-   await load(controller.signal);
+   await load();
   }catch{setMessage('Falha de conexão ao marcar a notificação. Tente novamente.');}
   finally{clearTimeout(timeout);pendingReads.current.delete(key);setPending([...pendingReads.current]);}
  }
