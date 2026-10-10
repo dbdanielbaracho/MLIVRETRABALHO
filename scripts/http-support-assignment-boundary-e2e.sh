@@ -10,7 +10,7 @@ STAMP="$(date +%s)-$RANDOM"
 PASSWORD='SupportFixture123!'
 json_field(){ node -e 'let x=JSON.parse(require("fs").readFileSync(0,"utf8"));for(const p of process.argv[1].split("."))x=x?.[p];if(x==null)process.exit(2);process.stdout.write(String(x));' -- "$1"; }
 request(){ local method="$1" path="$2" token="${3:-}" tenant="${4:-}" body="${5:-}" key="${6:-}"; local args=(-sS --fail-with-body -X "$method" "$BASE_URL$path"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$key" ]] && args+=(-H "idempotency-key: $key"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
-status_only(){ local method="$1" path="$2" token="$3" tenant="$4" body="$5" key="${6:-}"; local extra=(); [[ -n "$key" ]] && extra+=(-H "idempotency-key: $key"); curl -sS -o /dev/null -w '%{http_code}' -X "$method" "$BASE_URL$path" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "$body" "${extra[@]}"; }
+status_only(){ local method="$1" path="$2" token="$3" tenant="$4" body="$5" key="${6:-}"; local extra=() json=(); [[ -n "$body" ]] && json+=(-H 'content-type: application/json' --data "$body"); [[ -n "$key" ]] && extra+=(-H "idempotency-key: $key"); curl -sS -o /dev/null -w '%{http_code}' -X "$method" "$BASE_URL$path" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" "${json[@]}" "${extra[@]}"; }
 expect_status(){ local label="$1" expected="$2"; shift 2; local actual; actual="$(status_only "$@")"; if [[ "$actual" != "$expected" ]]; then printf 'FAIL support %s: expected HTTP %s, got %s\n' "$label" "$expected" "$actual" >&2; return 1; fi; }
 signup_body(){ node -e 'process.stdout.write(JSON.stringify({email:process.argv[1],password:process.argv[2],accountType:process.argv[3],workspaceName:"Support fixture"}))' -- "$1" "$PASSWORD" "$2"; }
 signin_body(){ node -e 'process.stdout.write(JSON.stringify({email:process.argv[1],password:process.argv[2]}))' -- "$1" "$PASSWORD"; }
@@ -25,12 +25,21 @@ TOKEN_A="$(request POST /v1/auth/signin '' '' "$(signin_body "$EMAIL_A")" | json
 TOKEN_B="$(request POST /v1/auth/signin '' '' "$(signin_body "$EMAIL_B")" | json_field accessToken)"
 TOKEN_P="$(request POST /v1/auth/signin '' '' "$(signin_body "$EMAIL_P")" | json_field accessToken)"
 PROFILE_ID="$(request PUT /v1/professional-profile "$TOKEN_P" '' '{"displayName":"Support fixture","primaryRole":"Bartender"}' | json_field id)"
+assert_count(){ node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!Array.isArray(x)||x.length!==Number(process.argv[1]))process.exit(1)' -- "$1"; }
+# A new professional has no tenant until an actual membership exists.
+request GET /v1/me/support-contexts "$TOKEN_P" | assert_count 0
 JOB_BODY="$(node -e 'process.stdout.write(JSON.stringify({title:"Support fixture",requiredRole:"Bartender",startsAt:new Date(Date.now()+24*3600000).toISOString(),endsAt:new Date(Date.now()+32*3600000).toISOString(),payCents:10000}))')"
 JOB_A="$(request POST /v1/company/jobs "$TOKEN_A" "$TENANT_A" "$JOB_BODY" | json_field id)"
 request POST "/v1/jobs/$JOB_A/interest" "$TOKEN_P" >/dev/null
 CONFIRM_BODY="$(node -e 'process.stdout.write(JSON.stringify({professionalId:process.argv[1]}))' -- "$PROFILE_ID")"
 ASSIGNMENT_A="$(request POST "/v1/company/jobs/$JOB_A/confirm" "$TOKEN_A" "$TENANT_A" "$CONFIRM_BODY" | json_field id)"
-assert_count(){ node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!Array.isArray(x)||x.length!==Number(process.argv[1]))process.exit(1)' -- "$1"; }
+# Context metadata is filtered by authenticated membership, independent of a supplied tenant header.
+expect_status contexts-auth 401 GET /v1/me/support-contexts invalid-token "$TENANT_A" ''
+for fixture in A B P; do
+ if [[ "$fixture" == B ]]; then CONTEXT_TOKEN="$TOKEN_B"; EXPECTED_TENANT="$TENANT_B"; else EXPECTED_TENANT="$TENANT_A"; [[ "$fixture" == A ]] && CONTEXT_TOKEN="$TOKEN_A" || CONTEXT_TOKEN="$TOKEN_P"; fi
+ request GET /v1/me/support-contexts "$CONTEXT_TOKEN" "$TENANT_B" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!Array.isArray(x)||x.length!==1||x[0].tenantId!==process.argv[1]||x[0].displayName!=="Support fixture"||Object.keys(x[0]).sort().join(",")!=="displayName,tenantId")throw Error("support_context_isolation_failed");' -- "$EXPECTED_TENANT"
+done
+echo 'PASS: named support contexts list only authenticated memberships, without inventing a tenant for a new professional'
 request GET /v1/support-cases/mine "$TOKEN_B" "$TENANT_B" | assert_count 0
 # Company B is authorized in B but cannot attach a real assignment belonging to A.
 expect_status cross-assignment 400 POST /v1/support-cases "$TOKEN_B" "$TENANT_B" "$(case_body "$ASSIGNMENT_A")"
@@ -150,4 +159,5 @@ request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 3
 echo 'PASS: support intent sequential/concurrent retry, payload conflict, reporter/tenant isolation and immutable database guards'
 
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
+expect_status contexts-revoked 401 GET /v1/me/support-contexts "$TOKEN_P" '' ''
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'

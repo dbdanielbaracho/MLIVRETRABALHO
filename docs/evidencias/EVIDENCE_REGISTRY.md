@@ -734,3 +734,8 @@ Retry único pós-merge #388run38054154641, tentativa2/job114268524350, recupera
 #400head9eeaf89ca2e327bc756610ebd4aebb414840c21b/treec92641013a9228efe3ae44932e7ec3302438a680, basefix/support-intent-durability, mergeabletrue. CI38073733288/job114276258891 aprovado:345mobile/105API/4web/3CLI, typecheck/build/export/migrations/HTTPPostgreSQL, todos os passos/logs. 14arquivos remotos byteidênticos; patch revisto inclusive ligação SupportRequest/SupportHistory. APKpróprio38073733274/job114276258739 em build; #400nãointegrada. APK39938072921018/job114273878889 e APKpós39638072758154/job114273404967 ainda em smoke; CI399 já316/105/4/3aprovado.
 
 AGENDA_SUPPORT_CONTEXT_v1.90.md:7regressões novas/29localUTC/SP, handler escolhe row real guardado, semPOST aoabrir; reutiliza SupportRequest. StyleSheetbyteidêntico/nav/lifecyclepreservados. CI352mobile/105API eAPK próprios pendentes; físico/geral/Preferências abertos. Checkpoint/journal1800Z.
+
+
+## 2026-10-10 1812Z —v1.91
+
+NAMED_SUPPORT_CONTEXTS_v1.91.md: cinco testes novos/30localAPI, consulta selfidentity/nome real, contrato HTTP A/B/sem vínculo/header/revogado ampliado. CI próprio110API/352mobile ainda pendente; APK próprio N/A condicionado a paths/tree exatos. #399merged960d3f14c4d59018f9949569c930a6f9e4b82ef8, ownAPK aprovado, pósCIpass/log a ler/native em execução; #396 pósAPKpass/ZIP11677363296/digest9af288dce5f55b2a5ada4ec68da6b21f3421cd930e9575289dccf77faf80e0e7. #400/401 CI aprovados/APKs em execução. Sem vínculo requer decisão de autoridade, sem inventar tenant. Evidência detalhada/ checkpoint/journal1812Z.

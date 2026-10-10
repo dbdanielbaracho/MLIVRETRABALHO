@@ -1,4 +1,16 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
+# MLIVRETRABALHO —Documento da Verdade v1.91
+
+**Status:** NORMATIVO —DELTA SOBRE v1.90
+**Data:**2026-10-10
+
+## Espaços autorizados com nomes reais
+
+GET /v1/me/support-contexts autentica pelo token e lista apenas os vínculos da identidade efetiva, retornando tenantId e displayName reais do cadastro de tenants. A consulta usa WHERE m.identity_id=$1 e JOIN em tenants; não recebe identidade/tenant do cliente, não lê email/credenciais nem expande por x-tenant-id. Mantém o serviço global de identidade/vínculos já existente, sem alterar roles, grants, RLS, migrations ou a execução tenant transacional.
+GET /me mantém seu contrato anterior. Falha de banco continua erro; lista vazia significa ausência real de vínculos, sem tenant padrão/global inventado. Endpoint somente leitura; não cria chamado ou membership.
+
+Cinco testes novos cobrem identidade real, nomes reais, vazio sem namespace inventado, autenticação antes da consulta, SQL parametrizado/minimizado e erro real. PASS30/30 no conjunto local de suporte API, usando adapter Node com stubs Nest explícitos; não equivale a Nest/HTTP/PostgreSQL reais. bash -n aprovado. CI próprio esperado110API/352mobile/4web/3CLI, typecheck/build/export/migrations e contrato HTTP/PostgreSQL completos ainda pendentes.
+Contrato HTTP existente ampliado: profissional recém-cadastrado sem vínculo recebe []; após vínculo real da confirmação da assignment, empresa A/B e profissional recebem apenas espaço autorizado e nome real; header de outro tenant não amplia lista; sem token e após revogação recebe401. Mantém preparação de intent, replay, oito chamadas concorrentes e guards de banco já existentes. Helpers GET não mandam corpo JSON vazio.
+Fatia é fundamento API para escolha humana explícita com nome real, ainda sem interface de suporte geral. APK próprio é N/A somente se paths efetivos API/script/docs e árvore mobile idêntica ao predecessor forem comprovados no commit publicado; APKs400/401 e pós399 continuam obrigatórios. Não há produção/migração executada nem chamado real enviado pelo agente. React19.1.4/RN0.81.6/lockfile/standalone sem Metro/desenho original preservados.
 
 ## Estado verificado
 
@@ -10,15 +22,6 @@ Verificação em 2026-10-10, 18:10 UTC: main `960d3f14c4d59018f9949569c930a6f9e4
 #401 headc3c8fd6d8c9dff52b82490e2218a1ad5571a624f/tree58261f5ead32453c846fa92429d522adedcea1f0, basefix/professional-support-submission, mergeabletrue. CI38074120019/job114277398094 aprovado352mobile/105API/4web/3CLI, todos os passos/logs. APK38074120056/job114277398450 em build; não integrada. Bytes e diffs próprios revistos. Não substituir gates próprios por sucessos dos predecessores.
 Digests acima são dos ZIPs de artefato, não do APK individual. Sucesso em emulador não encerra validação física.
 
-## Item atual
-
-GET /v1/me/support-contexts autentica pelo token e lista apenas os vínculos da identidade efetiva, retornando tenantId e displayName reais do cadastro de tenants. A consulta usa WHERE m.identity_id=$1 e JOIN em tenants; não recebe identidade/tenant do cliente, não lê email/credenciais nem expande por x-tenant-id. Mantém o serviço global de identidade/vínculos já existente, sem alterar roles, grants, RLS, migrations ou a execução tenant transacional.
-GET /me mantém seu contrato anterior. Falha de banco continua erro; lista vazia significa ausência real de vínculos, sem tenant padrão/global inventado. Endpoint somente leitura; não cria chamado ou membership.
-
-Cinco testes novos cobrem identidade real, nomes reais, vazio sem namespace inventado, autenticação antes da consulta, SQL parametrizado/minimizado e erro real. PASS30/30 no conjunto local de suporte API, usando adapter Node com stubs Nest explícitos; não equivale a Nest/HTTP/PostgreSQL reais. bash -n aprovado. CI próprio esperado110API/352mobile/4web/3CLI, typecheck/build/export/migrations e contrato HTTP/PostgreSQL completos ainda pendentes.
-Contrato HTTP existente ampliado: profissional recém-cadastrado sem vínculo recebe []; após vínculo real da confirmação da assignment, empresa A/B e profissional recebem apenas espaço autorizado e nome real; header de outro tenant não amplia lista; sem token e após revogação recebe401. Mantém preparação de intent, replay, oito chamadas concorrentes e guards de banco já existentes. Helpers GET não mandam corpo JSON vazio.
-Fatia é fundamento API para escolha humana explícita com nome real, ainda sem interface de suporte geral. APK próprio é N/A somente se paths efetivos API/script/docs e árvore mobile idêntica ao predecessor forem comprovados no commit publicado; APKs400/401 e pós399 continuam obrigatórios. Não há produção/migração executada nem chamado real enviado pelo agente. React19.1.4/RN0.81.6/lockfile/standalone sem Metro/desenho original preservados.
-
 ## Dependências
 
 Inspeção do AuthController confirmou que signup profissional cria identidade, mas não cria tenant ou membership. Suporte atual exige vínculo de tenant e isolamento RLS. Para profissional sem qualquer vínculo, suporte geral depende de decisão de arquitetura/produto sobre autoridade de suporte por identidade e seu isolamento/retensão, ou outra solução explícita aprovada; não ligar profissional a empresa arbitrária, inventar tenant global, retirar a exigência de membership ou enfraquecer RLS.
@@ -28,3 +31,5 @@ Esse impedimento limita essa tarefa, não o projeto. Avançar na ajuda geral par
 
 Publicar fix/named-support-contexts sobre head401 c3c8fd6d8c9dff52b82490e2218a1ad5571a624f/tree58261f5ead32453c846fa92429d522adedcea1f0, basefix/agenda-support-context. Conferir bytes remotos, patch, head/tree, paths de APK e igualdade da árvore mobile; aguardar CI próprio110/352. Número do PR e SHA da própria publicação devem ser registrados depois de conhecidos, sem previsão falsa.
 Acompanhar400/401 APKs e pós399; integrar400 depois dos gates exatos aplicáveis aprovados, revisão fresca/main/head/merge-base; conferir pais/árvore/main e pós-gates reais. Retarget401main após400 integrado, reconsultar eventual mergeable, integrar só com gates próprios. Retargetesta fatia depois401 integrado e aprovar CI próprio antes de integrar. Não repetir399 ou ancestrais. Persistir novas provas no próximo delta, preservando snapshots históricos. Rotina mantida ativa até conclusão integral comprovada ou ordem explícita.
+
+Evidência NAMED_SUPPORT_CONTEXTS_v1.91.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.91.md; registro1812Z. Baselines anteriores continuam vigentes.
