@@ -765,3 +765,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [TEAM_PLAN_INPUT_v1.96.md](TEAM_PLAN_INPUT_v1.96.md): TypeError do método anterior reproduzido em fixtures, parser/bind corrigidos e PASS62 local explícito; novo CI/HTTP próprio pendentes.
 - [EXECUCAO_VERIFICADA_2026-10-10_1847Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1847Z.md): CI próprio406 comprovado377mobile/131API, APKs próprios403/404 comprovados com instalação/sem Metro/digests; native401 e pós400 em execução. Visual Truth físico segue aberto.
+
+
+## 2026-10-10 — v1.97
+
+- [PLANNER_SCREEN_DEADLINE_v1.97.md](PLANNER_SCREEN_DEADLINE_v1.97.md):5falhas/1pass anteriores e PASS15 após correção local explícita. CI/APK próprios pendentes. #407CI377mobile/140API/HTTP válido e #400pósAPK com instalação/sem Metro/digest comprovados.
+- [EXECUCAO_VERIFICADA_2026-10-10_1851Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_1851Z.md): #401 cancelada antes de boot/install; retry único no mesmo SHA solicitado e em execução. Não repetir nem interpretar cancelamento como crash do app. Gate físico aberto.
