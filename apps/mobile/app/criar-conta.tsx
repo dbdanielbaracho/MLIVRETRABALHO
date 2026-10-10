@@ -8,22 +8,24 @@ export default function CriarConta() {
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [accountType, setAccountType] = useState<'professional' | 'company'>('professional'), [workspaceName, setWorkspaceName] = useState(''), [message, setMessage] = useState('');
 
   const [busy,setBusy]=useState(false),[uncertain,setUncertain]=useState(false);
-  const pending=useRef(false),unknown=useRef(false),epoch=useRef(0),controller=useRef<AbortController|null>(null);
+  const pending=useRef(false),sent=useRef(false),unknown=useRef(false),epoch=useRef(0),controller=useRef<AbortController|null>(null);
   useFocusEffect(useCallback(()=>{
     ++epoch.current;
-    return ()=>{if(pending.current){unknown.current=true;setUncertain(true);}++epoch.current;controller.current?.abort();pending.current=false;setBusy(false);setPassword('');};
+    return ()=>{if(pending.current&&sent.current){unknown.current=true;setUncertain(true);}++epoch.current;controller.current?.abort();pending.current=false;setBusy(false);setPassword('');};
   },[]));
   async function signup() {
     if(pending.current||unknown.current)return;
-    pending.current=true;setBusy(true);setMessage('');const generation=epoch.current,operation=new AbortController();controller.current=operation;
+    pending.current=true;sent.current=false;setBusy(true);setMessage('');const generation=epoch.current,operation=new AbortController();controller.current=operation;
     const timer=setTimeout(()=>operation.abort(),15000);
     try{
-      const result=await signupAccount((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),{email,password,accountType,workspaceName});
+      const result=await signupAccount((path,body)=>{sent.current=true;unknown.current=true;return fetch(apiUrl(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal});},{email,password,accountType,workspaceName},()=>generation===epoch.current&&!operation.signal.aborted);
       if(generation!==epoch.current)return;
-      if(result.status==='created'){setPassword('');router.replace('/entrar');}
+      if(operation.signal.aborted&&sent.current){setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');return;}
+      if(result.status==='created'){pending.current=false;unknown.current=false;setUncertain(false);setPassword('');router.replace('/entrar');}
       else if(result.status==='invalid')setMessage('Preencha um e-mail válido, senha de 8 a 128 caracteres e, para empresa, nome de até 120 caracteres.');
-      else if(result.status==='rejected')setMessage(result.emailInUse?'Este e-mail já está cadastrado. Entre com sua conta.':'Não foi possível criar a conta. Confira os dados e tente novamente.');
-      else{unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');}
+      else if(result.status==='rejected'){pending.current=false;unknown.current=false;setUncertain(false);setMessage(result.emailInUse?'Este e-mail já está cadastrado. Entre com sua conta.':'Não foi possível criar a conta. Confira os dados e tente novamente.');}
+      else if(sent.current){unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');}
+      else setMessage('Não foi possível iniciar o cadastro. Confira os dados e tente novamente.');
     }finally{clearTimeout(timer);if(generation===epoch.current){pending.current=false;setBusy(false);}}
   }
 

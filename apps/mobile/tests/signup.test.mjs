@@ -27,3 +27,28 @@ test('lost signup response is unknown and never automatically creates another id
 test('invalid success JSON remains unknown while client rejection keeps its HTTP meaning',async()=>{
  assert.deepEqual(await signupAccount(async()=>({ok:true,status:201,json:async()=>{throw Error('JSON')}}),input),{status:'unknown'});assert.deepEqual(await signupAccount(async()=>({ok:false,status:401,json:async()=>{throw Error('JSON')}}),input),{status:'rejected',emailInUse:false});
 });
+
+test('expired signup context sends no non-idempotent POST and invalid input remains invalid',async()=>{
+ let calls=0;const request=async()=>{calls++;return response(professional)};
+ assert.deepEqual(await signupAccount(request,input,()=>false),{status:'unknown'});
+ assert.deepEqual(await signupAccount(request,{...input,email:''},()=>false),{status:'invalid'});assert.equal(calls,0);
+});
+test('late signup HTTP acknowledgement stays unknown without consuming its body or resending',async()=>{
+ const operation=new AbortController();let calls=0,reads=0;
+ assert.deepEqual(await signupAccount(async()=>{calls++;operation.abort();return {ok:true,status:201,json:async()=>{reads++;return professional}}},input,()=>!operation.signal.aborted),{status:'unknown'});
+ assert.equal(calls,1);assert.equal(reads,0);
+});
+test('professional and company signup JSON decoded after deadline cannot confirm creation',async()=>{
+ for(const accountType of ['professional','company']){
+  const operation=new AbortController();let resolve,calls=0;const pending=new Promise(r=>{resolve=r});
+  const result=signupAccount(async()=>{calls++;return {ok:true,status:201,json:()=>pending}},{...input,accountType,workspaceName:'Fixture'},()=>!operation.signal.aborted);
+  await Promise.resolve();operation.abort();resolve(accountType==='company'?{...professional,accountType,tenantId:'t',role:'owner'}:professional);
+  assert.deepEqual(await result,{status:'unknown'});assert.equal(calls,1);
+ }
+});
+test('signup rejection JSON after deadline stays unknown rather than authorizing another POST',async()=>{
+ const operation=new AbortController();let resolve,calls=0;const pending=new Promise(r=>{resolve=r});
+ const result=signupAccount(async()=>{calls++;return {ok:false,status:401,json:()=>pending}},input,()=>!operation.signal.aborted);
+ await Promise.resolve();operation.abort();resolve({message:'email_in_use'});
+ assert.deepEqual(await result,{status:'unknown'});assert.equal(calls,1);
+});
