@@ -6,6 +6,8 @@ on:
     paths:
       - 'apps/mobile/**'
       - 'scripts/build-android-pilot.sh'
+      - 'scripts/android-standalone-smoke.sh'
+      - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -16,6 +18,8 @@ on:
     paths:
       - 'apps/mobile/**'
       - 'scripts/build-android-pilot.sh'
+      - 'scripts/android-standalone-smoke.sh'
+      - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -46,6 +50,8 @@ jobs:
           corepack prepare pnpm@10.15.1 --activate
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Test standalone smoke gate and failure diagnostics
+        run: node --test scripts/tests/android-standalone-smoke.test.mjs
       - name: Build standalone APK
         env:
           EXPO_PUBLIC_API_URL: https://mlivretrabalho.predibeacon.com/v1
@@ -62,46 +68,20 @@ jobs:
           profile: pixel_6
           disable-animations: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
-          script: |
-            set -eu
-            # The runner action already waits for Android to boot. Give Android
-            # services a short settling period, then reconnect ADB before install.
-            sleep 10
-            adb kill-server || true
-            adb start-server
-            adb wait-for-device
-            adb shell getprop sys.boot_completed
-            test "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1"
-            # Android can report boot_completed before PackageManager is ready,
-            # especially after restarting ADB on a cold hosted emulator. Wait for
-            # the package service before attempting APK installation.
-            for i in $(seq 1 60); do if timeout 10s adb shell service check package 2>/dev/null | grep -Fq "found" && timeout 10s adb shell cmd package list packages >/dev/null 2>&1 && timeout 10s adb shell settings get global device_provisioned >/dev/null 2>&1; then break; fi; sleep 2; done
-            timeout 10s adb shell service check package 2>/dev/null | grep -Fq "found"
-            timeout 10s adb shell cmd package list packages >/dev/null
-            timeout 10s adb shell settings get global device_provisioned >/dev/null
-            adb logcat -c
-            test -f "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
-            # Some hosted emulators expose PackageManager before the backing
-            # storage service is ready. Retry the exact install for at most one
-            # minute; persistent app/package failures still fail with full output.
-            install_log=/tmp/mlivretrabalho-install.txt; install_ok=false; for i in $(seq 1 6); do if adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk" >"$install_log" 2>&1; then install_ok=true; break; fi; cat "$install_log"; sleep 10; done; cat "$install_log"; test "$install_ok" = true
-            adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
-            adb shell monkey -p "com.predibeacon.mlivretrabalho.pilot" -c android.intent.category.LAUNCHER 1
-            sleep 12
-            adb shell pidof "com.predibeacon.mlivretrabalho.pilot" | tee /tmp/app.pid
-            test -s /tmp/app.pid
-            adb shell dumpsys activity activities | grep -F "com.predibeacon.mlivretrabalho.pilot"
-            adb logcat -d > /tmp/mlivretrabalho-logcat.txt
-            ! grep -E "FATAL EXCEPTION|AndroidRuntime.*FATAL|ReactNativeJS:.*(Error|TypeError|ReferenceError)|Unable to load script" /tmp/mlivretrabalho-logcat.txt
-            echo "DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          script: bash scripts/android-standalone-smoke.sh
 
+      - name: Collect early smoke failure diagnostics
+        if: failure()
+        run: bash scripts/android-standalone-smoke.sh --diagnostics-only
       - name: Upload crash log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: MLivreTrabalho-device-smoke-logs
-          path: /tmp/mlivretrabalho-logcat.txt
-          if-no-files-found: ignore
+          path: |
+            /tmp/mlivretrabalho-logcat.txt
+            /tmp/mlivretrabalho-smoke-diagnostics/
+          if-no-files-found: error
           retention-days: 14
 
       - name: Upload validated standalone APK
