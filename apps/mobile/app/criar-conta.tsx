@@ -1,19 +1,30 @@
 import { apiUrl } from '../lib/api';
-import { Link, router } from 'expo-router';
-import { useState } from 'react';
+import { Link, router,useFocusEffect } from 'expo-router';
+import { useCallback,useRef,useState } from 'react';
+import {signupAccount} from '../lib/signup';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function CriarConta() {
   const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [accountType, setAccountType] = useState<'professional' | 'company'>('professional'), [workspaceName, setWorkspaceName] = useState(''), [message, setMessage] = useState('');
 
+  const [busy,setBusy]=useState(false),[uncertain,setUncertain]=useState(false);
+  const pending=useRef(false),unknown=useRef(false),epoch=useRef(0),controller=useRef<AbortController|null>(null);
+  useFocusEffect(useCallback(()=>{
+    ++epoch.current;
+    return ()=>{if(pending.current){unknown.current=true;setUncertain(true);}++epoch.current;controller.current?.abort();pending.current=false;setBusy(false);setPassword('');};
+  },[]));
   async function signup() {
-    setMessage('');
-    if (!email.trim() || password.length < 8 || (accountType === 'company' && !workspaceName.trim())) { setMessage('Preencha os dados obrigatórios.'); return; }
-    const body: { email: string; password: string; accountType: 'professional' | 'company'; workspaceName?: string } = { email: email.trim(), password, accountType };
-    if (accountType === 'company') body.workspaceName = workspaceName.trim();
-    const r = await fetch(apiUrl('/auth/signup'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    if (!r.ok) { setMessage('Não foi possível criar a conta. Confira os dados e tente novamente.'); return; }
-    router.replace('/entrar');
+    if(pending.current||unknown.current)return;
+    pending.current=true;setBusy(true);setMessage('');const generation=epoch.current,operation=new AbortController();controller.current=operation;
+    const timer=setTimeout(()=>operation.abort(),15000);
+    try{
+      const result=await signupAccount((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),{email,password,accountType,workspaceName});
+      if(generation!==epoch.current)return;
+      if(result.status==='created'){setPassword('');router.replace('/entrar');}
+      else if(result.status==='invalid')setMessage('Preencha um e-mail válido, senha de 8 a 128 caracteres e, para empresa, nome de até 120 caracteres.');
+      else if(result.status==='rejected')setMessage(result.emailInUse?'Este e-mail já está cadastrado. Entre com sua conta.':'Não foi possível criar a conta. Confira os dados e tente novamente.');
+      else{unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');}
+    }finally{clearTimeout(timer);if(generation===epoch.current){pending.current=false;setBusy(false);}}
   }
 
   return (
@@ -24,18 +35,19 @@ export default function CriarConta() {
         <Text style={s.title}>Criar conta</Text>
         <Text style={s.subtitle}>Escolha como você vai usar o MLIVRETRABALHO.</Text>
         <View style={s.row}>
-          <Pressable onPress={() => setAccountType('professional')} style={[s.choice, accountType === 'professional' && s.choiceActive]} accessibilityRole="button" accessibilityState={{ selected: accountType === 'professional' }}>
+          <Pressable disabled={busy} onPress={() => setAccountType('professional')} style={[s.choice, accountType === 'professional' && s.choiceActive]} accessibilityRole="button" accessibilityState={{ selected: accountType === 'professional' }}>
             <Text style={[s.choiceText, accountType === 'professional' && s.choiceTextActive]}>{accountType === 'professional' ? '✓ ' : ''}Quero trabalhar</Text>
           </Pressable>
-          <Pressable onPress={() => setAccountType('company')} style={[s.choice, accountType === 'company' && s.choiceActive]} accessibilityRole="button" accessibilityState={{ selected: accountType === 'company' }}>
+          <Pressable disabled={busy} onPress={() => setAccountType('company')} style={[s.choice, accountType === 'company' && s.choiceActive]} accessibilityRole="button" accessibilityState={{ selected: accountType === 'company' }}>
             <Text style={[s.choiceText, accountType === 'company' && s.choiceTextActive]}>{accountType === 'company' ? '✓ ' : ''}Sou empresa</Text>
           </Pressable>
         </View>
-        {accountType === 'company' ? <TextInput accessibilityLabel="Nome da empresa" value={workspaceName} onChangeText={setWorkspaceName} placeholder="Nome da empresa" placeholderTextColor="#7A8495" style={s.input} /> : null}
-        <TextInput accessibilityLabel="E-mail" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="E-mail" placeholderTextColor="#7A8495" style={s.input} />
-        <TextInput accessibilityLabel="Senha com oito ou mais caracteres" secureTextEntry value={password} onChangeText={setPassword} placeholder="Senha (8+ caracteres)" placeholderTextColor="#7A8495" style={s.input} />
-        <Pressable onPress={() => void signup()} style={s.button} accessibilityRole="button"><Text style={s.buttonText}>Criar conta</Text></Pressable>
+        {accountType === 'company' ? <TextInput accessibilityLabel="Nome da empresa" editable={!busy} maxLength={120} value={workspaceName} onChangeText={setWorkspaceName} placeholder="Nome da empresa" placeholderTextColor="#7A8495" style={s.input} /> : null}
+        <TextInput accessibilityLabel="E-mail" autoCapitalize="none" keyboardType="email-address" editable={!busy} maxLength={320} value={email} onChangeText={setEmail} placeholder="E-mail" placeholderTextColor="#7A8495" style={s.input} />
+        <TextInput accessibilityLabel="Senha com oito ou mais caracteres" secureTextEntry editable={!busy} maxLength={128} value={password} onChangeText={setPassword} placeholder="Senha (8+ caracteres)" placeholderTextColor="#7A8495" style={s.input} />
+        <Pressable disabled={busy||uncertain} accessibilityState={{disabled:busy||uncertain,busy}} onPress={() => void signup()} style={s.button} accessibilityRole="button"><Text style={s.buttonText}>{busy?'Criando conta…':'Criar conta'}</Text></Pressable>
         {message ? <Text style={s.message}>{message}</Text> : null}
+        {uncertain||message==='Este e-mail já está cadastrado. Entre com sua conta.' ? <Link href="/entrar" style={s.back}>Entrar com minha conta</Link> : null}
         <Link href="/" style={s.back}>Voltar</Link>
       </ScrollView>
     </SafeAreaView>
@@ -61,3 +73,4 @@ const s = StyleSheet.create({
   message: { color: '#B42318', fontSize: 14 },
   back: { color: '#651FFF', fontSize: 15, fontWeight: '800', textAlign: 'center', padding: 10 }
 });
+

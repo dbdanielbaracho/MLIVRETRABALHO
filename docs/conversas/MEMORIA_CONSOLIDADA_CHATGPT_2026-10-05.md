@@ -493,3 +493,8 @@ Operações com guard/ack/sessão/15s/sem duplicar, export explícito e cópia s
 ## Assistente/Notificações v1.55 — 2026-10-10 06:36:03 UTC
 
 Company agora sugere /empresa-notificacoes e professional /notificacoes conforme accountType autenticado. Plural notificações reconhecido; mobile rejeita contexto/rota inconsistentes.126 testes mobile em dois fusos+5 política API locais; runner API inclui Copilot e HTTP asserções duas contas adicionadas. Branch fix/copilot-account-notification-route sobre#365; gates próprios/integração/taps pendentes. #362 APK pós-merge success; #355 retry2 APK success com smoke/artefato comprovados no journal0635Z. Próximo: onboarding/criar-conta/entrar; Visual Truth OPEN.
+
+
+## Cadastro v1.56 — 2026-10-10 06:39:40 UTC
+
+Signupmobile guard/15s/ackidentidade-email-tipo/ownerworkspace,7testesnovos/133locaisdoisfusos. Unknown orientaEntrar antesduplicar; passwordsomentememória/limpanoblur. Backendatômico/políticasintactos;cadastrorealnãoexecutado. Branch fix/signup-verified-account-and-network-states depende#366;gatespróprios/pós-mergependentes. #357APKpost inputBrokenpipe224diagnosticado/retrycontroladosameSHA, journal0639Z. PróximaauditoriaEntrar/sessionpersist/contexto. Visual Truth OPEN.
