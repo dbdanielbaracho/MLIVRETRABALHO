@@ -524,3 +524,8 @@ Membroscorrige seleção local do tenant de convite antigo após login/troca emp
 ## Painel Empresa v1.61 — 2026-10-10 07:18:22 UTC
 
 Rating e preferred apenas ack real + Authorization/tenant antes/depois; GET/conversa contextual e signout condicional, refresh manual.8 novos testes/176 locais UTC/SP; branchfix/company-dashboard-verified-actions após371, gates próprios pendentes. #371head1e3b9f0d6bbce76d7f693be91fa4faba1c8d529d CI38033728516success/APK38033728471running. #364 pósCIAPKsuccess/artefato/smokejournal0717Z. #368retry2running, alternativas continuam; próximaAgenda contrato/ACK. Backend/policy/RLS/deps preservados;nenhumaoperaçãoreal. VisualTruthOPEN.
+
+
+## Agenda v1.62 — 2026-10-10 07:23:59 UTC
+
+ACKid/status/stamp/ratingreal,Authda lista antes/depois/foco/15s,coordforegroundopcional e rotas contexto.7novostestes/183locaisUTCSP, branchfix/agenda-verified-lifecycle-and-session após372;gatesprópriospendentes. #372headbd6d67180392558f9a97f5821bd71ca788e3d3b3 CI38033993074success/APK38033993076running. #365pósCIAPKsuccesscomsmoke/artefatojournal0723Z. #368retry2running,semmergeantecipado/alternativascontinuam. PróximoauditarPerfilEmpresa/menus/APIs/canônico. RLS/ledger/policies/depsintactos,nenhumaopreal. VisualTruthOPEN.
