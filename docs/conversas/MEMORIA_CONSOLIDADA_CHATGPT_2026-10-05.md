@@ -351,3 +351,10 @@ Branch fix/home-original-data-cards sobre #347 a6a78dd3623fa75800d72e67e271f727e
 
 ### Gate v1.38 corrigido
 CI 38014176712 falhou TS18048 no render oportunidades. Condição ready explícita corrige narrowing mantendo loading/error/vazio reais; gates novos obrigatórios. #343 reconciliado com main, head 4f39c2c92750c3a5c70bae21986d823a1eeff637, CI 38014252721/APK 38014252773 em validação.
+
+## 2026-10-09 — Continuidade Trabalhos, v1.39
+
+Registro literal disponível — usuário:
+> -ok
+
+GET catálogo agora foco/retry/timeout/schema; POST interesse guard/idempotência existente/ack correto e falhas honestas. Estrutura/categorias/estilos/API mantidos. 40 testes locais UTC/São Paulo. #348 falha TS18048 corrigida head 4b1cb40d093acc578da1629388c260889bedb0f7, novos gates CI 38014454751/APK 38014454871. #343 conflito pós-squash resolvido por parent main sem mudar árvore, head 4f39c2c92750c3a5c70bae21986d823a1eeff637, novos gates obrigatórios. #344 gates próprios aprovados, dependente #343. Nenhum merge sem gates exatos; Visual Truth OPEN. Próximos independentes: Equipe/Interessados.
