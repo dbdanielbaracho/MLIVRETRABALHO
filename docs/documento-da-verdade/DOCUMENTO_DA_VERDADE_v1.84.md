@@ -1,6 +1,19 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.84
 
-## Estado verificado
+**Status:** NORMATIVO — DELTA SOBRE v1.83
+**Data:**2026-10-10
+
+## Disponibilidade — entrada/identidade/intervalo
+
+Durante o confronto da home com contratos reais, AvailabilityController.add recebeu body tipado em TypeScript sem validação de tipo runtime. Execução do método real com auth/db simulados provou body null→TypeError zeroqueries, e startsAt42/endsAt43→parâmetros numéricos encaminhados ao INSERT após Date coerção epoch. Essa entrada não satisfaz o contrato timestamps string e pode resultar falha de banco, jamais disponibilidade factual.
+
+availabilityInput recebe unknown, exige objeto não array e duas strings de datas interpretáveis com ends>starts. Preserva valores/offsets originais; sem formato/limite novo nem regra future-only/duração imposta. Controller autentica antes de validar e responde BadRequestException('availability_range_invalid')400 antes de consultar perfil ou escrever. Perfil inexistente conserva professional_profile_required400; fonte identity→profile exclusiva da sessão, INSERT ON CONFLICT(professional_id,starts_at,ends_at) idempotente e GET/network-shared existentes inalterados. Bodyextra professionalId/tenantId ignorado, não sobrescreve contexto.
+
+7novas regressões (4helper+3controller) PASS7/7local via adaptador explícito TypeScript/decorators/exceptions Nest; controller verifica400semquery,401primeiro, binding/timestamps/ACK/ONCONFLICT e perfil ausente. Não é Nest/DB completo local. Novo fixture HTTP sólocalhost/DBefêmeroCI cria2identidades/perfis, verifica null/array/tipos/datas/range invalidos400semjanelas,401primeiro, criação com valoresreais, segunda criação mesmointervalo retorna mesmoid e outraidentidade não vê janela. bash-nPASS; HTTP/Nest/DB próprios pendentesCI. Próprio88API esperado (81anteriores+7), só confirmado após run/log sucesso no próprioSHA. Nenhum dado/perfil/disponibilidade real alterado.
+
+Mudança API/helper/tests/scriptHTTP/CI/docs apenas. APK próprio N/A pelos paths do workflow e mobiletree deve permanecer idêntica à394; não isenta APK394 nem implica APK aprovado deste código mobile herdado. React19.1.4/RN0.81.6/lockfile/tenant/RLS preservados.
+
+## Evidência e continuidade
 
 Snapshot 2026-10-10 12:57UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76) na última leitura, openPRs388–394 e próprioshead/gates atuais consultados. README/Documento vigente/memória/checkpoint do mesmoSHA main já lidos. Nenhum merge dessas fatias presumido;351–387 integradas, não repetir.
 
@@ -21,18 +34,6 @@ Reconsulta histórica pós-merge351–355 em12:54UTC: CI/jobsteps SUCCESS nos SH
 
 Digests ZIP, não APK individual. Não refazer antigosmerges/retries históricos; revalidar o produto integrado com gates atuais e manter VisualTruth aberto.
 
-## Item atual — validação de disponibilidade antes da escrita
-
-Durante o confronto da home com contratos reais, AvailabilityController.add recebeu body tipado em TypeScript sem validação de tipo runtime. Execução do método real com auth/db simulados provou body null→TypeError zeroqueries, e startsAt42/endsAt43→parâmetros numéricos encaminhados ao INSERT após Date coerção epoch. Essa entrada não satisfaz o contrato timestamps string e pode resultar falha de banco, jamais disponibilidade factual.
-
-availabilityInput recebe unknown, exige objeto não array e duas strings de datas interpretáveis com ends>starts. Preserva valores/offsets originais; sem formato/limite novo nem regra future-only/duração imposta. Controller autentica antes de validar e responde BadRequestException('availability_range_invalid')400 antes de consultar perfil ou escrever. Perfil inexistente conserva professional_profile_required400; fonte identity→profile exclusiva da sessão, INSERT ON CONFLICT(professional_id,starts_at,ends_at) idempotente e GET/network-shared existentes inalterados. Bodyextra professionalId/tenantId ignorado, não sobrescreve contexto.
-
-7novas regressões (4helper+3controller) PASS7/7local via adaptador explícito TypeScript/decorators/exceptions Nest; controller verifica400semquery,401primeiro, binding/timestamps/ACK/ONCONFLICT e perfil ausente. Não é Nest/DB completo local. Novo fixture HTTP sólocalhost/DBefêmeroCI cria2identidades/perfis, verifica null/array/tipos/datas/range invalidos400semjanelas,401primeiro, criação com valoresreais, segunda criação mesmointervalo retorna mesmoid e outraidentidade não vê janela. bash-nPASS; HTTP/Nest/DB próprios pendentesCI. Próprio88API esperado (81anteriores+7), só confirmado após run/log sucesso no próprioSHA. Nenhum dado/perfil/disponibilidade real alterado.
-
-Mudança API/helper/tests/scriptHTTP/CI/docs apenas. APK próprio N/A pelos paths do workflow e mobiletree deve permanecer idêntica à394; não isenta APK394 nem implica APK aprovado deste código mobile herdado. React19.1.4/RN0.81.6/lockfile/tenant/RLS preservados.
-
-## Próxima ação concreta e retomada
-
 Publicar fix/availability-input-validation sobre ownhead3946ea665db2c88e878a6fa967d6b2188a3f0b246da/treefe5dd9dd1cd2a108809348d9645f2486efafd375, PRbasefix/home-response-schema. Consultar próprioSHA/tree/PR/runs depois de publicar; revisar diff e arquivos remotos, mobiletreeidêntica394 e próprioCI88API/286mobileesperado/HTTPfixture real aprovado. N/A APK específico por paths, semdispensar APK predecessor.
 
 Integrar388→389→390→391→392→393→394→esta fatia em ordem após própriosgatesaplicáveis no SHAexato; freshmain/base/mergebase/árvore/diff/expectedhead. Acompanhar retry388/APK393/394. Retargetmain só após pai; mergeableeventualfalse reconsultar; conflito real reconcileancestral+novosgates sem perda. Verificar pósmerge tree/pais/main eCI/APK aplicáveis, registrar provas contemporâneas emcheckpoint; running não conclusão/bloqueiodefinitivo.
@@ -40,3 +41,5 @@ Integrar388→389→390→391→392→393→394→esta fatia em ordem após pró
 Próxima capacidade de produto a tratar continua Ajuda e suporte: placeholder Perfil/ausênciatela mobile, endpoints supportcases tenant/reporter existentes. Reconsultar requisitosv1.5§22.1/referência original/Agenda/SupportController, desenhar seleção humana de assignment real sem tenantdefault/UUIDdigitado, loading/erro/vazio e resultado incerto sem criação duplicada; não prometer24/7. Não executar chamados reais nem mensagens a terceiros. Preferências também pendente de confronto com role/capabilities/career existentes. Não declarar integralidade estática ou ausência de alternativas.
 
 VisualTruth desenho original/dados/estados/cobertura completa emaparelho físico OPEN; piloto/device/pentest/providers/TRUST/PSP/FIN-RISK/WEB-ARCH separados. Sem dinheiro/PSP/custos/deployinfra paga; rotina existente mantida até conclusão integral comprovada/ordem explícita, sem nova rotina nem promessa24h. Bloqueio parcial/transiente/fimderodada não encerra projeto.
+
+Evidência AVAILABILITY_INPUT_VALIDATION_v1.84.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.84.md; journal EXECUCAO_VERIFICADA_2026-10-10_1257Z.md. Baselines anteriores seguem vigentes.
