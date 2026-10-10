@@ -1,29 +1,27 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
-Snapshot 2026-10-10 07:52 UTC. Main comprovada 4ff59618d6813890c438be234c86cca3ced496cc (#373/v1.62). Merges #356–360/362–373 já verificados; não repetir. Todos #356–360/362/363/364–367 pós-CI/APK success com jobs/smoke/artefatos em journals anteriores. #368–373 pre-CI/APK próprios success, diffs e merge-base revisados, árvores idênticas aos heads aprovados e ambos pais/main confirmados.
+Snapshot 2026-10-10 07:55:16 UTC. Main 4ff59618d6813890c438be234c86cca3ced496cc/#373/v1.62, tree1334e87367562a0691376373819ff9178ccf2b88; README/verdade/memória/checkpoint atuais relidos. Merges356–360/362–373 já confirmados; não repetir. Pós356–360/362/363/364–367CIAPKsuccess comsmoke/jobs/artefatos nos históricos. Pós369 agoraCIAPKsuccess; job114163883844/smoke2026-10-10T07:53:56.8301765Z/artifact11663896319 ZIPsha256a7214ec9762f49dadcb4cfae97eefc2ad1120e1546ddb9d9a5c9a3c9101d920f headbe8c02d2c813533ae0a9b8a29446410ecac48d82. Digest é arquivo ZIP, não hash de APK isolado.
 
-|PR|Merge confirmado|Árvore verificada|
-|---|---|---|
-|368|c221a0b4ca00b70368c3287ecaf55b0f190e31ab|73b688019e6634150610baa18d9c67b51769b8a3|
-|369|be8c02d2c813533ae0a9b8a29446410ecac48d82|3ee56d772199260cbf9734b96070bd0541cb38cb|
-|370|c381dec921be51b0aa76e98bac244277f85f7384|5ecd75bd3431cb26ec87fbd99268da50fa789f77|
-|371|a6267c8947711d6cfa6b76de9bfa0c6c783815da|a265ba893da6c12178752ac354d1de793a7c7f5e|
-|372|f3305abaef4c144ce2fe0a89a6531e098e43d923|fb661b0232d5d61707781c61ee36a15ad5a0e9d7|
-|373|4ff59618d6813890c438be234c86cca3ced496cc|1334e87367562a0691376373819ff9178ccf2b88|
-
-|PR|Pós-CI|Pós-APK|SHA|
+|PR|Merge SHA|Pós-CI|Pós-APK|
 |---|---|---|---|
-|368|38035076767 success|38035076771 em execução|c221a0b4ca00b70368c3287ecaf55b0f190e31ab|
-|369|38035132058 success|38035131936 em execução|be8c02d2c813533ae0a9b8a29446410ecac48d82|
-|370|38035165889 FAILURE: argumento token interpretado como opção Node; correção neste filho|38035165785 em execução|c381dec921be51b0aa76e98bac244277f85f7384|
-|371|38035191248 success|38035191261 em execução|a6267c8947711d6cfa6b76de9bfa0c6c783815da|
-|372|38035692664 success|38035692677 em execução|f3305abaef4c144ce2fe0a89a6531e098e43d923|
-|373|38035748570 em execução|38035748523 em execução|4ff59618d6813890c438be234c86cca3ced496cc|
+|368|c221a0b4ca00b70368c3287ecaf55b0f190e31ab|38035076767 success|38035076771 in_progress|
+|369|be8c02d2c813533ae0a9b8a29446410ecac48d82|38035132058 success|38035131936 success|
+|370|c381dec921be51b0aa76e98bac244277f85f7384|38035165889 failure|38035165785 in_progress|
+|371|a6267c8947711d6cfa6b76de9bfa0c6c783815da|38035191248 success|38035191261 in_progress|
+|372|f3305abaef4c144ce2fe0a89a6531e098e43d923|38035692664 success|38035692677 in_progress|
+|373|4ff59618d6813890c438be234c86cca3ced496cc|38035748570 success|38035748523 in_progress|
 
-#374 head d986972cdd6ab9b96e393d85ccfa5a4e510e8d03/base main após373; CI38034863081success/APK38034863018em execução. Retarget pode mostrar mergeable=false eventual: reconsultar raw; não presumir conflito nem sobrescrever ancestral. Próximo filho fix/professional-originating-session-context sobre374 inclui v1.64, seis arquivos mobile + correção/regressão do gate HTTP/CI,191mobile+3CLI locais aprovados. PR/head/runs próprios consultar após publicação; este arquivo precede o próprio commit.
+#370 CI tentativa1 FAILURE mantém-se registrado: Node interpretou tokenfixture iniciando por hífen como opção em FIRST_HASH. Correção#375 usa-- e 3regressões; #375CI38035883488success headf31422e45165dd8eeaa276d15142bab83a343176, job114166084838, RunTests e HTTP/ProductionTruth step14success. Isso comprova correção/jornada no novo SHA; não muda status do run antigo. Não houve rerun cego.
 
-Próxima ação: acompanhar374APK/smoke/artefato e rever diff/main/base exacta, integrar apenas gates próprios aprovados; depois retarget deste filho main e CI/APK no SHA exato, revisar e integrar; conferir árvores/pais/pós-runs. Falha histórica370 permanece FAILURE na tentativa1; correção do harness não é aprovação daquele run. Não retry cego; suite HTTP completa obrigatória no novo SHA. Acompanhar todos pós-APKs368–373. Enquanto CI/APK executam, auditar outras rotas/contratos atuais por defeitos demonstráveis e canônico, sem inventar atividade ou produto.
+|PR|Head|Base|CI|APK|
+|---|---|---|---|---|
+|374|d986972cdd6ab9b96e393d85ccfa5a4e510e8d03|main|38034863081 success|38034863018 in_progress|
+|375|f31422e45165dd8eeaa276d15142bab83a343176|fix/android-smoke-failure-diagnostics|38035883488 success|38035883538 in_progress|
 
-Home antigo não tinha validação final de identidade; não afirmar reprodução física de mistura entre GETs após fila da v1.57. Snapshot único reforça consistência; diferença comprovada é supressão de resposta antiga. Menus indisponíveis não autorizam política/rotas fictícias. Documento vigente mainv1.62 até merges futuros; versões v1.63/v1.64 neste encadeamento de PRs.
+Novo filho fix/notifications-verified-read-and-context após375 inclui3arquivos mobile+v1.65/evidências/ledger/memória/checkpoint,198locaisUTCSP. Próprios PR/head/runs consultar após publicação (snapshot antecede commit).
 
-Visual Truth OPEN até físico/cobertura integral com PNG original/dados/estados. Piloto/pentest#220, provider/PSP/FIN-RISK#215/#219/#228 eWEB-ARCH#224 independentes. Sem operações de conta/DSAR/convite/dinheiro/PSP/custo reais. Bloqueio parcial/fim de rodada não encerram projeto; manter rotina até conclusão comprovada ou ordem explícita. Provas [journal0752Z](EXECUCAO_VERIFICADA_2026-10-10_0752Z.md), históricos preservados.
+Próximo: acompanhar374/375APKs e pós368/370/371/372/373, sem tratar running como bloqueio/conclusão. Merge374 somente ownCIAPKsuccess SHAinalterado + freshmain/rawPR/mergebase tree/diff revisão; confirmar árvore/pais/main/pós-runs; retarget375 e estefilho main em ordem. mergeable=false apósretarget pode sereventual, reconsultar; conflito real reconciliarpreservandoancestrais+novosgates, semforce/gateemprestado. Falha conexão reconsultarantesrepetir. Falha370diagnosticada/corrigida375, nunca declarar antigoHTTPpass por novoSHA.
+
+Próxima auditoria segura independente: Ganhos e Conversa contra endpoints/ACK/contexto/foco atuais e desenho canônico; só alterar se defeito concreto demonstrado, sem inventar feature ou mexer em policy financeira. Preferências/Ajuda/Experiência permanecem conforme auditoria registrada, sem contrato criado por suposição.
+
+Visual Truth original/cobertura completa/aparelho OPEN; piloto/pentest#220,providers/PSP/FIN-RISK#215/#219/#228,WEB-ARCH#224 independentes. Sem operações reais de conta/DSAR/convite/interest/reading/pagamentos, nova cobrança ou paiddeploy. Bloqueio parcial/fim de rodada não encerra projeto. Manter rotina até conclusão integral provada ou ordem explícita; não exigir continuar. Históricos preservados; provas [journal0756Z](EXECUCAO_VERIFICADA_2026-10-10_0756Z.md).
