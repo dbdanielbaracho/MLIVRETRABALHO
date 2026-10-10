@@ -1,6 +1,4 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada —2026-10-10 17:53UTC
 
 Verificação de 2026-10-10, 17:53 UTC: main60759a41bfb6a90aed80d85045b9ec837c50a3ad/treef222de6ba92646e70d3aa99b5bcd513097768d5f, Documento da Verdade v1.87. #396–398 já integradas e pais/árvores iguais aos heads aprovados conferidos em1742Z/v1.88; não repetir.
 
@@ -31,6 +29,8 @@ Só uma tentativa confirmed pode ser liberada pela ação Escrever outra solicit
 PASS local59/59 testes de suporte no conjunto (12histórico+18storage+29novos) em UTC e America/Sao_Paulo. Total mobile esperado345 (316+29), API105/4web/3CLI, a confirmar no CI próprio. Typecheck/export Android/Nest/PostgreSQL e APK standalone no SHA exato ainda pendentes antes de publicar. UI/layout/keyboard/SecureStore/payload grande/restart físico não foram aceitos em aparelho. Não afirmar Visual Truth completo ou suporte24/7/prazo real.
 
 Somente mobile e docs; sem mudar React19.1.4/RN0.81.6, dependências, lockfile, RLS/tenant ou APIs/infra. Agente executou apenas fixtures locais; nenhum chamado real/PSP/dinheiro/cobrança/deploy pago. Merge não é prova de deploy nem de produção; implantação/aceite aplicáveis precisam de evidência própria.
+
+Fontes de contrato confrontadas: support-input.ts, GET/me real, session.ts, SupportHistory corrigido e storage399. Nenhuma mensagem real foi enviada; transport em memória e fixtures locais somente. Não confundir testes de handlers/striptypes com Native render ou Nest real; Nest/PostgreSQL predecessor está registrado pelos CI/logs exatos. Pais/tree/main após396–398 e logs de pós-merges foram conferidos.
 
 ## Próxima ação concreta
 

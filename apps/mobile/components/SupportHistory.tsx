@@ -1,4 +1,5 @@
 import {useFocusEffect} from 'expo-router';
+import {SupportRequest} from './SupportRequest';
 import {useCallback,useRef,useState} from 'react';
 import {Pressable,StyleSheet,Text,View} from 'react-native';
 import {authHeaders} from '../lib/session';
@@ -7,7 +8,7 @@ import {loadAgenda,type Assignment} from '../lib/agenda';
 import {assignmentSchedule,type Section} from '../lib/professional-home';
 import {loadSupportCases,supportStatus,type SupportResult} from '../lib/professional-support';
 
-// This panel only reads existing requests; it never creates or updates a support case.
+// History remains GET-only. The child sends only after an explicit human action.
 export function SupportHistory(){
  const[work,setWork]=useState<Section<Assignment[]>>({status:'loading'}),[selected,setSelected]=useState<Assignment|null>(null),[cases,setCases]=useState<SupportResult>({status:'loading'});
  const epoch=useRef(0),workRequest=useRef(0),caseRequest=useRef(0),owner=useRef<string|null>(null),controllers=useRef(new Set<AbortController>());
@@ -49,7 +50,7 @@ export function SupportHistory(){
  {selected?<View style={s.section}><Text style={s.heading}>Solicitações de {selected.title}</Text>
  {cases.status==='loading'?<Text style={s.text}>Carregando solicitações…</Text>:cases.status==='error'?<View><Text style={s.text}>Não foi possível carregar as solicitações. Nenhuma ausência de registros foi confirmada.</Text><Pressable accessibilityRole="button" onPress={()=>void selectWork(selected)}><Text style={s.action}>Tentar novamente</Text></Pressable></View>:cases.data.length===0?<Text style={s.text}>Nenhuma solicitação registrada para este trabalho.</Text>:cases.data.map(c=><View key={c.id} style={s.choice}><Text style={s.heading}>{supportStatus(c.status)}</Text><Text style={s.text}>{c.description}</Text><Text style={s.text}>{new Date(c.createdAt).toLocaleString('pt-BR')}</Text>{c.resolutionNote?.trim()?<View><Text style={s.heading}>Resposta registrada</Text><Text style={s.text}>{c.resolutionNote}</Text></View>:null}</View>)}
  </View>:null}
- <Text style={s.text}>O envio de novas solicitações ainda não está disponível nesta área.</Text>
+ {selected&&owner.current?<SupportRequest key={selected.tenantId+':'+selected.id} assignment={selected} workItems={items} authorization={owner.current} onRegistered={()=>void selectWork(selected)} onContextChanged={()=>void loadWork()}/>:null}
  </View>;
 }
 const s=StyleSheet.create({section:{gap:10},text:{fontSize:14,color:'#53617A'},heading:{fontSize:16,fontWeight:'800',color:'#111A35'},action:{fontSize:14,fontWeight:'700',color:'#651FFF'},choice:{gap:4,borderTopWidth:1,borderTopColor:'#E7EAF0',paddingTop:10}});
