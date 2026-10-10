@@ -327,3 +327,10 @@ Reconsulta: #341 pós-merge CI 38012421142 sucesso, APK 38012421105 em andamento
 Branch fix/earnings-real-ledger-states encadeada após #344 b2f81a5e5c8e7151e16edcaf4345739c1aba4a67. Ganhos corrigido: total/gráfico somente payable/paid entre segunda local e agora; sem pending/reversed/desconhecido/futuro. Total não mostra zero durante loading/falha; histórico mostra estado real, tenant:id, retry/foco/timeout e payload validado. EarningsController lido; API/autenticação/RLS/backend preservados. Quatro testes novos, **23/23 UTC/São Paulo**, sem claim UI nativa.
 
 Documentos v1.35/evidência/requisitos/registry/checkpoint no mesmo ciclo; gates próprios pendentes antes de integrar após #344. APK #341 pós-merge e #342 chegaram ao smoke sem Metro, ainda sem PASS no registro inicial. CI #343 sucesso, APK em andamento; #344 CI/APK em andamento. Visual Truth OPEN. Próxima pendência real lida: EmpresaInicio vazios prematuros/falhas e ações rate/addPreferred sem catch/guard; validar controladores.
+
+---
+## 2026-10-09 — Painel Empresa durante gates
+
+Branch fix/company-dashboard-network-states parte do head corrigido #345 58b3b9455b1406923a2676d9cc8b0ec0916a7d4c. Dashboard/listas com estados independentes, partial success, payload validado, foco/timeout/geração e limpeza no blur. Contagens do controlador não são só de hoje; subtitle corrigido. Rating/preferred catch/guard/timeout/HTTP; ID de conversa dos mesmos headers da leitura e check tenant antes do POST. Signout limpa offline. Contratos/backend/policies/RLS/desenho preservados.
+
+Quatro testes novos, **27/27 UTC/São Paulo**; CI/APK próprios pendentes. v1.36, evidências, requisitos, registry/checkpoint no ciclo. #344 CI aprovado. #345 CI antigo 38013341406 falhou TS5097 no import; corrigido sem relaxar tsconfig, novo head acima deve passar próprios gates. Não usar run antigo para merge. APKs anteriores ainda em acompanhamento, sem PASS antecipado. Visual Truth OPEN. Próximo item verificável: Trabalhos só carrega na montagem/sem timeout; revalidar APIs e estados/agenda.

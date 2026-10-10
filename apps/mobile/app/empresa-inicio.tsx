@@ -1,36 +1,11 @@
-import { Link, router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Link, router, useFocusEffect } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { authenticatedTenantHeaders, clearSession, clearTenant, getTenant } from '../lib/session';
+import { authenticatedTenantHeaders, clearSession, clearTenant } from '../lib/session';
 import { apiUrl } from '../lib/api';
 import { CompanyNav } from '../components/CompanyNav';
 
-type Dashboard = {
-  openJobs: number;
-  confirmedWorkers: number;
-  activeWorkers: number;
-  completedAssignments: number;
-};
-
-type ActiveAssignment = {
-  id: string;
-  professionalId: string;
-  status: string;
-  title: string;
-  location?: string | null;
-  startsAt?: string | null;
-  professionalName: string;
-};
-
-type CompletedAssignment = {
-  id: string;
-  professionalId: string;
-  title: string;
-  location?: string | null;
-  professionalName: string;
-  completedAt?: string | null;
-  ratingScore?: number | null;
-};
+import { loadCompanyDashboard,loadingCompany } from '../lib/company-dashboard';
 
 const statusLabel: Record<string, string> = {
   confirmed: 'Confirmado',
@@ -40,70 +15,47 @@ const statusLabel: Record<string, string> = {
 };
 
 export default function EmpresaInicio() {
-  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
-  const [active, setActive] = useState<ActiveAssignment[]>([]);
-  const [completed, setCompleted] = useState<CompletedAssignment[]>([]);
-  const [tenantId, setTenantId] = useState('');
-  const [message, setMessage] = useState('');
-  const [loadError, setLoadError] = useState(false);
-
-  useEffect(() => { void load(); }, []);
-
-  async function load() {
-    setLoadError(false);
-    try {
-      const headers = await authenticatedTenantHeaders();
-      const currentTenant = await getTenant();
-      if (currentTenant) setTenantId(currentTenant);
-      const [dashboardResponse, activeResponse, completedResponse] = await Promise.all([
-        fetch(apiUrl('/company/dashboard'), { headers }),
-        fetch(apiUrl('/company/dashboard/assignments'), { headers }),
-        fetch(apiUrl('/company/dashboard/completed'), { headers })
-      ]);
-      if (dashboardResponse.ok) setDashboard(await dashboardResponse.json());
-      else setDashboard(null);
-      if (activeResponse.ok) setActive(await activeResponse.json());
-      else setActive([]);
-      if (completedResponse.ok) setCompleted(await completedResponse.json());
-      else setCompleted([]);
-      if (!dashboardResponse.ok || !activeResponse.ok || !completedResponse.ok) setLoadError(true);
-    } catch {
-      setDashboard(null);
-      setActive([]);
-      setCompleted([]);
-      setLoadError(true);
-    }
+  const [data,setData]=useState(loadingCompany);
+  const [tenantId,setTenantId]=useState('');
+  const [message,setMessage]=useState('');
+  const pendingActions=useRef(new Set<string>()),requestId=useRef(0),exiting=useRef(false);
+  const [pending,setPending]=useState<string[]>([]),[signingOut,setSigningOut]=useState(false);
+  const load=useCallback(async(focusSignal?:AbortSignal)=>{
+    const id=++requestId.current;setData(loadingCompany());setTenantId('');
+    const controller=new AbortController(),cancel=()=>controller.abort();
+    focusSignal?.addEventListener('abort',cancel);if(focusSignal?.aborted)controller.abort();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    try{
+      const headers=await authenticatedTenantHeaders();
+      const next=await loadCompanyDashboard(path=>fetch(apiUrl(path),{headers,signal:controller.signal}));
+      if(id===requestId.current&&!focusSignal?.aborted){setData(next);setTenantId(headers['x-tenant-id']??'');}
+    }catch{
+      if(id===requestId.current&&!focusSignal?.aborted)setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});
+    }finally{clearTimeout(timeout);focusSignal?.removeEventListener('abort',cancel);}
+  },[]);
+  useFocusEffect(useCallback(()=>{const controller=new AbortController();void load(controller.signal);return()=>{requestId.current++;controller.abort();setData(loadingCompany());setTenantId('');};},[load]));
+  const dashboard=data.dashboard.status==='ready'?data.dashboard.data:null;
+  const active=data.active.status==='ready'?data.active.data:[];
+  const completed=data.completed.status==='ready'?data.completed.data:[];
+  async function action(key:string,path:string,body:object,success:string,reload=false){
+    if(pendingActions.current.has(key)||exiting.current||!tenantId)return;
+    pendingActions.current.add(key);setPending([...pendingActions.current]);setMessage('');
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+    try{
+      const headers=await authenticatedTenantHeaders();
+      if(headers['x-tenant-id']!==tenantId){setMessage('A empresa ativa mudou. Atualize o painel antes de tentar novamente.');return;}
+      const response=await fetch(apiUrl(path),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
+      if(!response.ok){setMessage('Não foi possível confirmar a ação. Tente novamente.');return;}
+      setMessage(success);if(reload)await load();
+    }catch{setMessage('Falha de conexão. Não foi possível confirmar a ação. Tente novamente.');}
+    finally{clearTimeout(timeout);pendingActions.current.delete(key);setPending([...pendingActions.current]);}
   }
-
-  async function rate(assignmentId: string, score: number) {
-    const headers = await authenticatedTenantHeaders();
-    const response = await fetch(apiUrl(`/assignments/${assignmentId}/rating`), {
-      method: 'POST',
-      headers: { ...headers, 'content-type': 'application/json' },
-      body: JSON.stringify({ score })
-    });
-    setMessage(response.ok ? 'Avaliação salva.' : 'Não foi possível salvar a avaliação.');
-    if (response.ok) await load();
-  }
-
-  async function addPreferred(professionalId: string) {
-    const headers = await authenticatedTenantHeaders();
-    const response = await fetch(apiUrl('/company/talent-pools'), {
-      method: 'POST',
-      headers: { ...headers, 'content-type': 'application/json' },
-      body: JSON.stringify({ professionalId, pool: 'preferred' })
-    });
-    setMessage(response.ok ? 'Profissional adicionado aos preferidos.' : 'Não foi possível adicionar aos preferidos.');
-  }
-
-  async function signout() {
-    const headers = await authenticatedTenantHeaders();
-    try {
-      await fetch(apiUrl('/auth/signout'), { method: 'POST', headers });
-    } finally {
-      await Promise.all([clearSession(), clearTenant()]);
-      router.replace('/');
-    }
+  async function signout(){
+    if(exiting.current||pendingActions.current.size)return;exiting.current=true;setSigningOut(true);
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+    try{const headers=await authenticatedTenantHeaders();await fetch(apiUrl('/auth/signout'),{method:'POST',headers,signal:controller.signal});}
+    catch{ /* Local credentials are cleared even offline. */ }
+    finally{clearTimeout(timeout);await Promise.all([clearSession(),clearTenant()]);router.replace('/');}
   }
 
   function openConversation(assignmentId: string) {
@@ -117,12 +69,12 @@ export default function EmpresaInicio() {
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
-        <Text style={s.brand}>MLIVRE<Text style={s.purple}>TRABALHO</Text></Text><Text style={s.title}>Painel da empresa</Text><Text style={s.subtitle}>Resumo da sua operação hoje</Text>
-        {loadError ? <Pressable accessibilityRole="button" onPress={() => void load()}><Text>Falha ao carregar dados. Tocar para tentar novamente.</Text></Pressable> : null}
+        <Text style={s.brand}>MLIVRE<Text style={s.purple}>TRABALHO</Text></Text><Text style={s.title}>Painel da empresa</Text><Text style={s.subtitle}>Resumo da sua operação</Text>
+        {[data.dashboard,data.active,data.completed].some(section=>section.status==='error') ? <Pressable accessibilityRole="button" onPress={()=>void load()}><Text>Falha ao carregar parte do painel. Toque para tentar novamente.</Text></Pressable> : null}
         <View style={s.summaryCard}>
           <Text style={s.summaryLabel}>TRABALHOS ABERTOS</Text>
           <Text style={s.summaryValue}>{dashboard?.openJobs ?? '—'}</Text>
-          <Text style={s.summaryText}>{dashboard ? `${dashboard.confirmedWorkers} confirmados · ${dashboard.activeWorkers} trabalhando agora` : 'Carregando sua operação...'}</Text>
+          <Text style={s.summaryText}>{dashboard ? `${dashboard.confirmedWorkers} confirmados · ${dashboard.activeWorkers} trabalhando agora`  : data.dashboard.status==='loading'?'Carregando sua operação…':'Resumo indisponível.'}</Text>
         </View>
         <View style={s.primaryActions}>
           <Link href="/empresa" style={s.primaryAction}>+ Publicar trabalho</Link>
@@ -137,7 +89,8 @@ export default function EmpresaInicio() {
         </View>
 
         <Text style={s.heading}>Trabalhos ativos</Text>
-        {active.length === 0 ? <Text>Nenhum profissional confirmado ou trabalhando agora.</Text> : active.map(item => (
+        {data.active.status==='loading'?<Text>Carregando trabalhos ativos…</Text>:data.active.status==='error'?<Text>Não foi possível carregar trabalhos ativos.</Text>:active.length===0?<Text>Nenhum profissional confirmado ou trabalhando agora.</Text>:null}
+        {active.map(item => (
           <View key={item.id} style={s.card}>
             <Text style={s.bold}>{item.professionalName}</Text>
             <Text>{item.title}</Text>
@@ -151,8 +104,8 @@ export default function EmpresaInicio() {
         ))}
 
         <Text style={s.heading}>Trabalhos concluídos</Text>
-        {message ? <Text>{message}</Text> : null}
-        {completed.length === 0 ? <Text>Nenhum trabalho concluído.</Text> : null}
+        {message ? <Text accessibilityLiveRegion="polite">{message}</Text> : null}
+        {data.completed.status==='loading'?<Text>Carregando trabalhos concluídos…</Text>:data.completed.status==='error'?<Text>Não foi possível carregar trabalhos concluídos.</Text>:completed.length===0?<Text>Nenhum trabalho concluído.</Text>:null}
         {completed.map(item => (
           <View key={item.id} style={s.card}>
             <Text style={s.bold}>{item.professionalName}</Text>
@@ -161,18 +114,18 @@ export default function EmpresaInicio() {
             <Text>{item.ratingScore ? `Sua avaliação: ${item.ratingScore} ★` : 'Ainda não avaliado'}</Text>
             <View style={s.ratingRow}>
               {[1, 2, 3, 4, 5].map(score => (
-                <Pressable key={score} style={s.ratingButton} onPress={() => void rate(item.id, score)}>
+                <Pressable key={score} style={s.ratingButton} accessibilityRole="button" disabled={!tenantId||pending.includes('rating:'+item.id)||signingOut} accessibilityState={{disabled:!tenantId||pending.includes('rating:'+item.id)||signingOut,busy:pending.includes('rating:'+item.id)}} onPress={()=>void action('rating:'+item.id,'/assignments/'+item.id+'/rating',{score},'Avaliação salva.',true)}>
                   <Text style={s.bold}>{score} ★</Text>
                 </Pressable>
               ))}
             </View>
-            <Pressable style={s.preferredButton} onPress={() => void addPreferred(item.professionalId)}>
+            <Pressable style={s.preferredButton} accessibilityRole="button" disabled={!tenantId||pending.includes('preferred:'+item.professionalId)||signingOut} accessibilityState={{disabled:!tenantId||pending.includes('preferred:'+item.professionalId)||signingOut,busy:pending.includes('preferred:'+item.professionalId)}} onPress={()=>void action('preferred:'+item.professionalId,'/company/talent-pools',{professionalId:item.professionalId,pool:'preferred'},'Profissional adicionado aos preferidos.')}>
               <Text style={s.bold}>Adicionar aos preferidos</Text>
             </Pressable>
           </View>
         ))}
-        <Pressable style={s.signout} onPress={() => void signout()}>
-          <Text style={s.bold}>Sair da conta</Text>
+        <Pressable style={s.signout} accessibilityRole="button" disabled={signingOut||pending.length>0} accessibilityState={{disabled:signingOut||pending.length>0,busy:signingOut}} onPress={() => void signout()}>
+          <Text style={s.bold}>{signingOut?'Saindo…':'Sair da conta'}</Text>
         </Pressable>
       </ScrollView><CompanyNav/>
     </SafeAreaView>
