@@ -1,14 +1,9 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.82
 
-## Estado verificado
+**Status:** NORMATIVO — DELTA SOBRE v1.81
+**Data:**2026-10-10
 
-Snapshot 2026-10-10 12:46UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76) revalidada; README/Documento vigente/memória/checkpoint do mesmoSHA já lidos. OpenPRs388–392 enumeradas, base/head/runs confrontados. Não repetir351–387merges nem retries históricos recuperados.
-
-PR388 head af42616736b1850d7549073d89cd5500dbe13880/base main: CI38050976291 SUCCESS; APK38050976276 tentativa2/job114214397242 smoke em execução, buildPASS. Falha1input Broken pipe anterior aoapp/job114209868114/diagnóstico11669444402 e único retry permanecem no journal1235Z. PR389 head71987cb7beebfba1f64a15a3dcbb6e00471fc6ea/basefix/profile-availability-response-deadline: CI38051472605 SUCCESS, ownAPK38051472614/job114211305922 SUCCESS todos passos, smoke2026-10-10T12:43:49.3543960Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false. Upload ZIP11670726043/digest sha256:e900ee4c656428fca988278e291782482a2e00b5e50dedcfae8308f8d05ddcc3/headexato/não-expiração/jobsteps conferidos. PR390 head97bfd3f8344cc5447b6b0eae1e83a2e098ad9a65/basefix/signup-response-deadline: ownCI38051941067 eAPK38051941014 SUCCESS, smoke/upload/artefato11670101921 provados no journal1240Z. PR391 head d3811eb5bbcb119b59fb2e9d769f1c242a0e5c6e/basefix/agenda-company-response-deadline: CI38052634310 SUCCESS275mobile73API, APK38052634388 em execução. Nenhuma dessas PRs integrada até este snapshot;388precede a cadeia, não aceitar gate de outroSHA.
-
-PR392 basefix/assignment-response-schema: primeiro head35abdc0e8919288b44da1302f720cdb3a0727558 CI38052927578 FAILTS2532 histórico. Correção estrita guardando call no teste publicada no head35119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/treebaf1d92ab9185e6b34eae0dffb9540f97e8791c0/pai35abdc0e8919288b44da1302f720cdb3a0727558. OwnCI38053028411/job114215844372 SUCCESS todos passos,81API275mobile4Web3CLI; novoHTTP perfil/Nest/DB local PASS2026-10-10T12:45:27.3421765Z (400semwrites/authprimeiro/trim/null/isolamento), catálogo12:45:27.8413178Z, suporte12:45:28.6822392Z, ProductionTruth12:45:32.5587659Z. APK próprio N/A por paths e árvore mobile01ebadd68b56c3239bde95db27a690a3cc0f6875 idêntica à391; não equivale aoAPKpendente391. Novohead392 exige nova conferência remota de arquivos/diff antes do merge. Nenhummerge/deploy público presumido.
-
-## Item atual — experiência profissional verificável
+## Work Passport — experiência real no Perfil
 
 Documento normativo v1.5§10 exige experiência/histórico verificável no Work Passport. Endpoint /work-passport/mine já devolve verifiedHistory global das memberships profissionais, ordenado no servidor e limitado aos50registros mais recentes. A área Experiência profissional de perfil.tsx mostrava somente completedWorkCount. Agora exibe os registros reais fornecidos: título, local quando existente e data de conclusão em pt-BR/no fuso do aparelho. Fonte única da API, sem fabricar empresa/função/horas/pagamento ou gerar entradas a partir da contagem. MesmosIDs de assignment em tenants distintos possuem keycomposta tenantId+id; IDs internos não aparecem na UI. Não há novas ações/mutações/rotas.
 
@@ -16,7 +11,13 @@ Tipo Passport passa a incluir verifiedHistory opcional para compatibilidade de r
 
 5novas regressões:2loadWorkPassport (malformed/dados multiempresa/opaque/null/offset preservados),3passportHistory/completionDate (todos estados, ordem/contagemsemexpansão, data local/ausência). Suite mobile completa280/280 PASSUTC e America/Sao_Paulo,275anteriores+5. StyleSheet/perfil byteidêntico; hierarquia do painel existente e barra canônica permanecem. Alteração de conteúdo precisa próprioCI/typecheck/build/export/APK/smoke no SHAexato e validação física. Referência original PNG foi relida visualmente nesta rodada: não cobre detalhamento dessa área extra; não inferir fechamento físico/fidelidade total. Nenhuma captura RN/aparelho foi obtida. Sem alterações backend/tenant/RLS/deps/React19.1.4/RN0.81.6/lockfile e sem perfil/assignment/rating reais.
 
-## Próxima ação concreta e retomada
+## Evidência e continuidade
+
+Snapshot 2026-10-10 12:46UTC: main738073540f7ff6f9156b704a95c7a5616643307e (#387/v1.76) revalidada; README/Documento vigente/memória/checkpoint do mesmoSHA já lidos. OpenPRs388–392 enumeradas, base/head/runs confrontados. Não repetir351–387merges nem retries históricos recuperados.
+
+PR388 head af42616736b1850d7549073d89cd5500dbe13880/base main: CI38050976291 SUCCESS; APK38050976276 tentativa2/job114214397242 smoke em execução, buildPASS. Falha1input Broken pipe anterior aoapp/job114209868114/diagnóstico11669444402 e único retry permanecem no journal1235Z. PR389 head71987cb7beebfba1f64a15a3dcbb6e00471fc6ea/basefix/profile-availability-response-deadline: CI38051472605 SUCCESS, ownAPK38051472614/job114211305922 SUCCESS todos passos, smoke2026-10-10T12:43:49.3543960Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false. Upload ZIP11670726043/digest sha256:e900ee4c656428fca988278e291782482a2e00b5e50dedcfae8308f8d05ddcc3/headexato/não-expiração/jobsteps conferidos. PR390 head97bfd3f8344cc5447b6b0eae1e83a2e098ad9a65/basefix/signup-response-deadline: ownCI38051941067 eAPK38051941014 SUCCESS, smoke/upload/artefato11670101921 provados no journal1240Z. PR391 head d3811eb5bbcb119b59fb2e9d769f1c242a0e5c6e/basefix/agenda-company-response-deadline: CI38052634310 SUCCESS275mobile73API, APK38052634388 em execução. Nenhuma dessas PRs integrada até este snapshot;388precede a cadeia, não aceitar gate de outroSHA.
+
+PR392 basefix/assignment-response-schema: primeiro head35abdc0e8919288b44da1302f720cdb3a0727558 CI38052927578 FAILTS2532 histórico. Correção estrita guardando call no teste publicada no head35119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/treebaf1d92ab9185e6b34eae0dffb9540f97e8791c0/pai35abdc0e8919288b44da1302f720cdb3a0727558. OwnCI38053028411/job114215844372 SUCCESS todos passos,81API275mobile4Web3CLI; novoHTTP perfil/Nest/DB local PASS2026-10-10T12:45:27.3421765Z (400semwrites/authprimeiro/trim/null/isolamento), catálogo12:45:27.8413178Z, suporte12:45:28.6822392Z, ProductionTruth12:45:32.5587659Z. APK próprio N/A por paths e árvore mobile01ebadd68b56c3239bde95db27a690a3cc0f6875 idêntica à391; não equivale aoAPKpendente391. Novohead392 exige nova conferência remota de arquivos/diff antes do merge. Nenhummerge/deploy público presumido.
 
 Publicar fix/passport-verified-history sobre ownhead39235119ff2da17f3b71876ebd48f3f93cf9a5a1ed8/treebaf1d92ab9185e6b34eae0dffb9540f97e8791c0, PRbasefix/profile-input-validation. Consultar próprioSHA/tree/PR/runs após publicar,280mobile81API esperado só confirmado quando próprioCI/gates reais. Revisar diff/bytes remotos.
 
@@ -25,3 +26,5 @@ Acompanhar retry388/APK391 e deste filho; integrar388→389→390→391→392→
 Próximo confronto seguro: carregar dados reais da home com schema robusto/estados corretos. Fonteprofessional-home.ts aceita IDs/títulos/status vazios e datas malformed como ready; home-cards.ts usa a mesma permissividade nas oportunidades. Revalidar contracts/actualprofessional-inicio guards antes de corrigir, mantendo optionalnulls/statusfuturos/contagens0/falhaindependente e sem inventar horários/distâncias/disponibilidade. Não criar atividade por analogia onde guarda efetiva já existe.
 
 VisualTruth físico original/dados/estados/cobertura completa OPEN; piloto/device/pentest/providers/TRUST/PSP/FIN-RISK/WEB-ARCH separados. Sem dinheiro/PSP real/custos/deployinfra paga. Rotina existente permanece até conclusão integral provada ou ordem explícita, sem nova rotina/promessa24h; bloqueio parcial/transiente/fim de rodada não interrompe projeto.
+
+Evidência PASSPORT_VERIFIED_HISTORY_v1.82.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.82.md; journal EXECUCAO_VERIFICADA_2026-10-10_1246Z.md. Baselines anteriores permanecem vigentes.
