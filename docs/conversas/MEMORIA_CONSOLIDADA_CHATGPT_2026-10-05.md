@@ -370,3 +370,7 @@ Contratos reais reconsultados antes da correção. Equipes/membros/conhecidos/va
 ## 2026-10-09 — Conta → notificações empresariais reais, v1.42
 
 Conta abria Planejamento sob label Notificações. NotificationsController verificado aceita tenant/membership e identidade; componente compartilhado agora atende Empresa com tenant ativo/CompanyNav e Profissional por identidade/ProfessionalNav. Contexto/leitura e blur guardados, sem eventos inventados. Labels Membros da empresa/Relatos de segurança correspondem aos destinos; cadastro empresarial completo não foi inventado nem declarado pronto. Signout guardado/15s/catch/finally limpa estado local offline. 51 testes locais preservados, gates próprios obrigatórios. Leitura revelou próximas falhas concretas em Planejamento/Pagamentos/Membros/Relatos; não misturar novas políticas. Visual Truth OPEN.
+
+## 2026-10-09 — Leituras Planejamento/Pagamentos, v1.43
+
+Contratos GET/roles/RLS reconsultados. Foco/retry/schema/15s/loading/erro/vazio e limpeza/geração no blur. NULL monetário não é zero; no_earning não é ausência de obrigação, label Sem lançamento de ganho. Nenhuma operação financeira/provider/custo. 57 testes UTC/São Paulo, styles/backend/policies mantidos. #342 pós-merge CI 38014015303/APK 38014015274 sucesso no SHA aee58e7776eee0dc211713edcbe29075f841ecb1. #343 smoke novo head em acompanhamento; #351 CI aprovado. Branch após #352, gates próprios obrigatórios. Visual Truth/FIN-RISK OPEN; Membros/Relatos pendências concretas.
