@@ -1,4 +1,17 @@
-# Checkpoint de execução autônoma — MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.101
+
+**Status:** NORMATIVO — DELTA SOBRE v1.100
+**Data:** 2026-10-10
+
+## Prazo real nas leituras de Talentos e Segurança
+
+Os handlers existentes só abortavam o transporte após 15s; auth/fetch/JSON/auth final sem resolução mantinham loading. Novas 16 regressões dos handlers reais pré-JSX reproduziram 10 falhas/6pass no código anterior. Agora o timer publica erro e invalida o snapshot somente para request/foco atual. Talentos marca a lista indisponível; Segurança marca trabalhos/relatos/recursos indisponíveis. Auth que chega após deadline/blur/reload não inicia transporte; resposta final ainda exige sessão/tenant atual e sinal não abortado.
+
+Callbacks de deadline são exclusivos das leituras. Os corpos de remove e submit, contratos DELETE/POST, canRequestReview, tratamento de ACK criado/existing/rejected/unknown, bloqueios de mutation e limpeza de foco existentes permanecem byteidênticos. A operação sem callback continua apenas abortando após15s; nenhum reenviar/descartar resultado incerto foi introduzido. Nenhuma remoção, relato ou recurso real foi enviado.
+
+PASS34/34 local:16novos handlers +7company-talents +11professional-safety. Fixtures explícitas de hooks/auth/transport/timer; incluem todas as fases pendentes, resposta/deadline antigos após blur, retry GET com fatos reais, troca de owner/company e refresh manual bloqueado durante mutation. Não renderizam React Native nem exercitam APIs externas. JSX completo e StyleSheets de ambas as telas foram comparados byte a byte e preservados, incluindo navegação/textos existentes.
+
+CI próprio esperado424mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP e APK standalone próprios no SHA exato obrigatórios; ainda pendentes antes da publicação. React19.1.4/RN0.81.6, lockfile, tenant/RLS, scopes das queries, helpers e escrita existentes preservados. Não alegar aceite visual/físico integral ou que mutations pendentes têm um novo timeout resolvido.
 
 ## Estado verificado
 
@@ -22,19 +35,7 @@ Verificado em 2026-10-10 23:17:54 UTC: main4b797cb19dc9a7f498a86bd5ba98f003d3239
 
 401 retry próprio recuperado e400/ancestrais pós-gates comprovados nos registros anteriores; nenhum novo retry solicitado.
 
-## Item atual
-
-## Prazo real nas leituras de Talentos e Segurança
-
-Os handlers existentes só abortavam o transporte após 15s; auth/fetch/JSON/auth final sem resolução mantinham loading. Novas 16 regressões dos handlers reais pré-JSX reproduziram 10 falhas/6pass no código anterior. Agora o timer publica erro e invalida o snapshot somente para request/foco atual. Talentos marca a lista indisponível; Segurança marca trabalhos/relatos/recursos indisponíveis. Auth que chega após deadline/blur/reload não inicia transporte; resposta final ainda exige sessão/tenant atual e sinal não abortado.
-
-Callbacks de deadline são exclusivos das leituras. Os corpos de remove e submit, contratos DELETE/POST, canRequestReview, tratamento de ACK criado/existing/rejected/unknown, bloqueios de mutation e limpeza de foco existentes permanecem byteidênticos. A operação sem callback continua apenas abortando após15s; nenhum reenviar/descartar resultado incerto foi introduzido. Nenhuma remoção, relato ou recurso real foi enviado.
-
-PASS34/34 local:16novos handlers +7company-talents +11professional-safety. Fixtures explícitas de hooks/auth/transport/timer; incluem todas as fases pendentes, resposta/deadline antigos após blur, retry GET com fatos reais, troca de owner/company e refresh manual bloqueado durante mutation. Não renderizam React Native nem exercitam APIs externas. JSX completo e StyleSheets de ambas as telas foram comparados byte a byte e preservados, incluindo navegação/textos existentes.
-
-CI próprio esperado424mobile/145API/4web/3CLI, typecheck/build/export/migrations/HTTP e APK standalone próprios no SHA exato obrigatórios; ainda pendentes antes da publicação. React19.1.4/RN0.81.6, lockfile, tenant/RLS, scopes das queries, helpers e escrita existentes preservados. Não alegar aceite visual/físico integral ou que mutations pendentes têm um novo timeout resolvido.
-
-## Dependências e alternativas verificadas
+## Dependências
 
 Visual Truth físico (desenho original, dados e todos os estados, cobertura completa), Native/SecureStore/teclado/payload/restart e piloto/distribuição, pentest independente, providers/TRUST, PSP/FIN-RISK e WEB-ARCH permanecem separados e abertos. Não confundir CI/emulador/merge com deploy ou conclusão integral. Sem dinheiro real, PSP habilitado, nova cobrança, infraestrutura ou deploy pago.
 Preferências: falta contrato de campos/semântica/escopo/persistência/efeito de matching; não inventar defaults nem renomear capacidades como preferências. Ajuda nova sem membership: falta autoridade por identidade/isolamento/retenção aprovada, sem tenant global arbitrário ou bypass RLS. Forecast/no-show ML depende de dados reais e validação; integrações enterprise precisam alvo/contrato. Sandbox/provider e aparelho/pentest dependem evidência externa. São impedimentos parciais, sem bloquear correções seguras independentes. Issue214closed confirmado19:00UTC;215/219/220/224/228open; ledger base já se declara snapshot histórico2026-09-24.
