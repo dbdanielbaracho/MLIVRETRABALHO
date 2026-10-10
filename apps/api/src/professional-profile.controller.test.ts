@@ -24,7 +24,7 @@ test('profile authentication failure precedes malformed input and no query is ex
 });
 test('profile write binds only the authenticated identity and preserves trimmed/null values and database acknowledgement',async()=>{
  const h=setup();assert.deepEqual(await h.controller.upsert({displayName:' Name ',homeCity:' ',primaryRole:null,identityId:'other-identity',id:'other-profile'},'Bearer fixture'),h.row);
- assert.equal(h.calls.length,1);assert.deepEqual(h.calls[0].params,['authenticated-identity','Name',null,null]);assert.match(h.calls[0].sql,/ON CONFLICT\(identity_id\)/);
+ assert.equal(h.calls.length,1);const call=h.calls[0];assert.ok(call);assert.deepEqual(call.params,['authenticated-identity','Name',null,null]);assert.match(call.sql,/ON CONFLICT\(identity_id\)/);
 });
 test('profile database failure remains an uncertain server failure instead of being reported as invalid input',async()=>{
  const failure=new Error('fixture_database_failure');const auth={identityFromAuthorization:async()=>({id:'fixture'})};const db={query:async()=>{throw failure;}};
