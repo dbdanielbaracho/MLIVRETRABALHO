@@ -362,3 +362,7 @@ GET catálogo agora foco/retry/timeout/schema; POST interesse guard/idempotênci
 ## 2026-10-09 — Interessados reais e proteção de seleção, v1.40
 
 Continuidade autorizada mantida. Contratos company/jobs/candidates/recommendations/confirm reconsultados antes da correção. Loading/erro/vazio, partial success, ranking API, seleção cancelável com versão e snapshot tenant/identidade. Confirmação continua manual/guard/ack correto, sem sucesso otimista em timeout. Botão Atualizar trabalhos recompõe contexto. 45 testes UTC/São Paulo, sem afirmar prova de taps/Visual Truth. Branch encadeada após #349; acompanhar gates/retarget/revisão/merge/pós-merge. Equipe ainda pendente; projeto não encerrado por espera de APK.
+
+## 2026-10-09 — Equipe com seleção e rede tratadas, v1.41
+
+Contratos reais reconsultados antes da correção. Equipes/membros/conhecidos/vagas/alocação loading/erro/vazio/schema/foco/retry/15s, versões/cancelamento, contexto tenant+identidade. Ações manuais guardadas/ack/releitura; criação não idempotente desconhecida exige refresh/lista antes de novo POST, sem retry automático. 51 testes UTC/São Paulo; styles/rotas/CompanyNav/backend/policies preservados. Gates próprios pendentes, branch após #350. #345 corrigido/#346 CI/APK sucesso em heads exatos, aguardam sequência. Visual Truth OPEN; não declarar conclusão integral por unidade/build.
