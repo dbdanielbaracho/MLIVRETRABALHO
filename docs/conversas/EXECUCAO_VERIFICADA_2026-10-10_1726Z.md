@@ -1,12 +1,8 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
-
-## Estado verificado
+# Execução verificada —2026-10-10 17:26UTC
 
 Snapshot2026-10-10 17:26UTC: main9ed1859ee28b1ba50e84bda0d4357d22760a59f3/v1.84 permanece;README→Documento/memória/checkpoint consultados. PR396base main/head26b3fb2365200415366e12da76710a0ad629725b/tree87ac6719b538d92a2b1843e9954cee80de0aece4, próprioCI38071421868/job114269432957SUCCESStodossteps/298mobile88API4Web3CLI. PróprioAPK38071421849 em execução; primeiroheadbe08.../CI38071227829TS18048FAILpreservado, corrigido readyprojection semafrouxartestes/TS.15conteúdos remotos corrigidos396byteidênticos e patch íntegro revisado.396nãointegrada até snapshot.
 
 388–395jáintegradas, CI pós de todas e APKpós389–391/393/394SUCCESScomjobs/smoke/artefatos/digests no journal1717Z/v1.85. Pós388run38054154641tentativa1infraBrokenpipe32/exit224antesapp, diagnósticoZIP11671065789/digest78996502e4e43543f065ec334594068669c0dc7a7acc523b33aa780681f250bd. Único retry do job114219065904pedido17:17:11UTC, tentativa2emexecução; não repetir. Pré-merge388retryhistórico recuperado é distinto, não refazer. Não repetirmerges351–395.
-
-## Item atual
 
 ## Suporte — idempotência opcional de criação
 

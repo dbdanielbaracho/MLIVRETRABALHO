@@ -1,12 +1,7 @@
-# Checkpoint de execução autônoma —MLIVRETRABALHO
+# MLIVRETRABALHO — Documento da Verdade v1.86
 
-## Estado verificado
-
-Snapshot2026-10-10 17:26UTC: main9ed1859ee28b1ba50e84bda0d4357d22760a59f3/v1.84 permanece;README→Documento/memória/checkpoint consultados. PR396base main/head26b3fb2365200415366e12da76710a0ad629725b/tree87ac6719b538d92a2b1843e9954cee80de0aece4, próprioCI38071421868/job114269432957SUCCESStodossteps/298mobile88API4Web3CLI. PróprioAPK38071421849 em execução; primeiroheadbe08.../CI38071227829TS18048FAILpreservado, corrigido readyprojection semafrouxartestes/TS.15conteúdos remotos corrigidos396byteidênticos e patch íntegro revisado.396nãointegrada até snapshot.
-
-388–395jáintegradas, CI pós de todas e APKpós389–391/393/394SUCCESScomjobs/smoke/artefatos/digests no journal1717Z/v1.85. Pós388run38054154641tentativa1infraBrokenpipe32/exit224antesapp, diagnósticoZIP11671065789/digest78996502e4e43543f065ec334594068669c0dc7a7acc523b33aa780681f250bd. Único retry do job114219065904pedido17:17:11UTC, tentativa2emexecução; não repetir. Pré-merge388retryhistórico recuperado é distinto, não refazer. Não repetirmerges351–395.
-
-## Item atual
+**Status:** NORMATIVO — DELTA SOBRE v1.85
+**Data:**2026-10-10
 
 ## Suporte — idempotência opcional de criação
 
@@ -24,6 +19,12 @@ FixtureHTTPjáexistente expandido somente localhost+databaseefêmeraCI, bash-nPA
 
 API/helper/tests/migration/fixtureCI/docs apenas. APK próprioN/Aporpathfilterstandalone-pilot-apk.yml efetivo; árvoremobile deve ser byteidêntica ao corrected396. APK396continua obrigatório, N/Anãoaprova predecessor. React19.1.4/RN0.81.6/lockfile/UI/canônico/RLS preservados. Não envia chamado real nem habilita envio móvel, PSP/dinheiro/custos/deploy pago.
 
+## Estado verificado
+
+Snapshot2026-10-10 17:26UTC: main9ed1859ee28b1ba50e84bda0d4357d22760a59f3/v1.84 permanece;README→Documento/memória/checkpoint consultados. PR396base main/head26b3fb2365200415366e12da76710a0ad629725b/tree87ac6719b538d92a2b1843e9954cee80de0aece4, próprioCI38071421868/job114269432957SUCCESStodossteps/298mobile88API4Web3CLI. PróprioAPK38071421849 em execução; primeiroheadbe08.../CI38071227829TS18048FAILpreservado, corrigido readyprojection semafrouxartestes/TS.15conteúdos remotos corrigidos396byteidênticos e patch íntegro revisado.396nãointegrada até snapshot.
+
+388–395jáintegradas, CI pós de todas e APKpós389–391/393/394SUCCESScomjobs/smoke/artefatos/digests no journal1717Z/v1.85. Pós388run38054154641tentativa1infraBrokenpipe32/exit224antesapp, diagnósticoZIP11671065789/digest78996502e4e43543f065ec334594068669c0dc7a7acc523b33aa780681f250bd. Único retry do job114219065904pedido17:17:11UTC, tentativa2emexecução; não repetir. Pré-merge388retryhistórico recuperado é distinto, não refazer. Não repetirmerges351–395.
+
 ## Próxima ação concreta
 
 Publicar fix/support-intent-idempotency sobre ownhead39626b3fb2365200415366e12da76710a0ad629725b/tree87ac6719b538d92a2b1843e9954cee80de0aece4, PRbasefix/professional-support-history. Conferir SHA/tree/PR/runs/diff/bytes remotos e mobiletreeidêntica após publicar; não antecipar número ou gate. PróprioCI/typecheck/build/Nest98API/298mobile/migrationdupla/SQLguards/HTTPconcorrência obrigatório. N/AAPK específico sóapósconferirpaths/árvore, semdispensarAPK396.
@@ -33,3 +34,5 @@ Acompanhar único retrypós388 e ownAPK396; integrar396primeiro sóapósCI/APK/s
 Próximo produto: envio humano de suporte no contexto do trabalho com intent estável, draftpreservado e resultadoincerto seguro. Mobile não possui geradorUUIDcriptográfico disponível nas dependências atuais: confrontar API/emissão deintent ou dependência correta antes de implementar, sem Math.random, mudar React/RN/lockfile sem reprodução, tenantdefault ou chave manual. Intent de criação não é credencial; não executar chamados reais. Casos gerais/contextodiadotrabalho e Preferências permanecem pendentes de requisitos/APIs reais.
 
 VisualTruth físico original/dados/estados/cobertura completa, piloto/device/pentest/distribuição, providers/TRUST/PSP/FIN-RISK/WEB-ARCH separadosOPEN. Não declarar suporte/projeto completo por fatia/CI/PRausente. Bloqueioparcial/transiente/fimderodada não encerra projeto; manterrotinaatéconclusãointegralcomprovada/ordemexpressa, semnova rotina/promessa24h.
+
+Evidência SUPPORT_INTENT_IDEMPOTENCY_v1.86.md; requisitos REQUIREMENTS_LEDGER_DELTA_v1.86.md; journal1726Z. Baselines anteriores vigentes.

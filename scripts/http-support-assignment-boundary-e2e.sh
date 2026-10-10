@@ -2,11 +2,15 @@
 # Disposable HTTP fixtures; CI supplies the local API and ephemeral database.
 set -euo pipefail
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+case "$BASE_URL" in http://127.0.0.1:*|http://localhost:*) ;; *) echo 'This fixture only runs against localhost' >&2; exit 2;; esac
+case "${DATABASE_URL:-}" in postgresql://*@localhost:*|postgresql://*@127.0.0.1:*) ;; *) echo 'This fixture requires a local ephemeral database' >&2; exit 2;; esac
+FIXTURE_DIR="$(mktemp -d)"
+trap 'rm -rf "$FIXTURE_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
 PASSWORD='SupportFixture123!'
 json_field(){ node -e 'let x=JSON.parse(require("fs").readFileSync(0,"utf8"));for(const p of process.argv[1].split("."))x=x?.[p];if(x==null)process.exit(2);process.stdout.write(String(x));' -- "$1"; }
-request(){ local method="$1" path="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "$BASE_URL$path"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
-status_only(){ local method="$1" path="$2" token="$3" tenant="$4" body="$5"; curl -sS -o /dev/null -w '%{http_code}' -X "$method" "$BASE_URL$path" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "$body"; }
+request(){ local method="$1" path="$2" token="${3:-}" tenant="${4:-}" body="${5:-}" key="${6:-}"; local args=(-sS --fail-with-body -X "$method" "$BASE_URL$path"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$key" ]] && args+=(-H "idempotency-key: $key"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
+status_only(){ local method="$1" path="$2" token="$3" tenant="$4" body="$5" key="${6:-}"; local extra=(); [[ -n "$key" ]] && extra+=(-H "idempotency-key: $key"); curl -sS -o /dev/null -w '%{http_code}' -X "$method" "$BASE_URL$path" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "$body" "${extra[@]}"; }
 expect_status(){ local label="$1" expected="$2"; shift 2; local actual; actual="$(status_only "$@")"; if [[ "$actual" != "$expected" ]]; then printf 'FAIL support %s: expected HTTP %s, got %s\n' "$label" "$expected" "$actual" >&2; return 1; fi; }
 signup_body(){ node -e 'process.stdout.write(JSON.stringify({email:process.argv[1],password:process.argv[2],accountType:process.argv[3],workspaceName:"Support fixture"}))' -- "$1" "$PASSWORD" "$2"; }
 signin_body(){ node -e 'process.stdout.write(JSON.stringify({email:process.argv[1],password:process.argv[2]}))' -- "$1" "$PASSWORD"; }
@@ -54,5 +58,75 @@ request GET /v1/support-cases/mine "$TOKEN_B" "$TENANT_B" | assert_count 0
 expect_status cross-review 400 POST "/v1/company/support-cases/$CASE_A_ID/status" "$TOKEN_B" "$TENANT_B" '{"status":"reviewing","note":"fixture"}'
 UPDATED="$(request POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Revisão humana fixture"}')"
 test "$(printf '%s' "$UPDATED" | json_field status)" = reviewing
+# Keyed requests keep one intent per tenant + authenticated reporter.
+INTENT_KEY='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+CONCURRENT_KEY='bbbbbbbb-cccc-dddd-eeee-ffffffffffff'
+CASE_BODY="$(case_body "$ASSIGNMENT_A")"
+KEYED_CASE="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY")"
+KEYED_ID="$(printf '%s' "$KEYED_CASE" | json_field id)"
+REPLAY="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY")"
+test "$(printf '%s' "$REPLAY" | json_field id)" = "$KEYED_ID"
+request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 2
+for key in bad-key "$INTENT_KEY-x"; do expect_status invalid-key 400 POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$key"; done
+DIFFERENT_BODY="$(node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],category:"schedule",description:"Different fixture",priority:"normal"}))' -- "$ASSIGNMENT_A")"
+expect_status intent-conflict 409 POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$DIFFERENT_BODY" "$INTENT_KEY"
+request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 2
+expect_status key-auth-first 401 POST /v1/support-cases invalid-token "$TENANT_A" "$CASE_BODY" bad-key
+expect_status key-membership-first 401 POST /v1/support-cases "$TOKEN_P" "$TENANT_B" "$CASE_BODY" "$INTENT_KEY"
+# Human review does not reset on replay, and the internal hash/key are not exposed.
+request POST "/v1/company/support-cases/$KEYED_ID/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Real fixture review"}' >/dev/null
+REPLAY="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY")"
+test "$(printf '%s' "$REPLAY" | json_field id)" = "$KEYED_ID"
+test "$(printf '%s' "$REPLAY" | json_field status)" = reviewing
+printf '%s' "$REPLAY" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if("requestHash"in x||"requestKey"in x||"request_payload_hash"in x)process.exit(1)'
+# Same UUID in another reporter or another tenant is an independent intent.
+OWNER_ID="$(request POST /v1/support-cases "$TOKEN_A" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY" | json_field id)"
+test "$OWNER_ID" != "$KEYED_ID"
+request GET /v1/support-cases/mine "$TOKEN_A" "$TENANT_A" | assert_count 3
+B_CASE_BODY="$(case_body '')"
+B_ID="$(request POST /v1/support-cases "$TOKEN_B" "$TENANT_B" "$B_CASE_BODY" "$INTENT_KEY" | json_field id)"
+test "$B_ID" != "$KEYED_ID"
+test "$(request POST /v1/support-cases "$TOKEN_B" "$TENANT_B" "$B_CASE_BODY" "$INTENT_KEY" | json_field id)" = "$B_ID"
+request GET /v1/support-cases/mine "$TOKEN_B" "$TENANT_B" | assert_count 1
+# A real concurrent first-use race produces one case and one shared acknowledgement.
+PIDS=()
+for i in $(seq 1 8); do
+ request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$CONCURRENT_KEY" > "$FIXTURE_DIR/reply-$i.json" &
+ PIDS+=("$!")
+done
+for pid in "${PIDS[@]}"; do wait "$pid"; done
+node - "$FIXTURE_DIR" <<'JS'
+const fs=require('fs'),path=require('path'),folder=process.argv[2];
+const ids=fs.readdirSync(folder).filter(n=>n.startsWith('reply-')).map(n=>JSON.parse(fs.readFileSync(path.join(folder,n),'utf8')).id);
+if(ids.length!==8||ids.some(id=>typeof id!=='string'||!id)||new Set(ids).size!==1)throw Error('support_concurrency_failed');
+JS
+request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 3
+# Database guards prevent changing intent identity or inserting an incomplete pair.
+expect_sql_failure(){
+ local kind="$1" error
+ if error="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v case_id="$KEYED_ID" -f "$FIXTURE_DIR/$kind.sql" 2>&1)"; then echo "FAIL support database guard $kind" >&2; return 1; fi
+ [[ "$error" == *support_request_identity_immutable* || "$error" == *support_cases_request_pair* ]]
+}
+cat > "$FIXTURE_DIR/key-change.sql" <<'SQL'
+UPDATE support_cases SET request_key='cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa' WHERE id=:'case_id'::uuid;
+SQL
+cat > "$FIXTURE_DIR/hash-change.sql" <<'SQL'
+UPDATE support_cases SET request_payload_hash=repeat('0',64) WHERE id=:'case_id'::uuid;
+SQL
+cat > "$FIXTURE_DIR/incomplete-pair.sql" <<'SQL'
+INSERT INTO support_cases(tenant_id,reporter_identity_id,category,description,request_key)
+ SELECT tenant_id,reporter_identity_id,'other','Invalid fixture',gen_random_uuid() FROM support_cases WHERE id=:'case_id'::uuid;
+SQL
+for guard in key-change hash-change incomplete-pair; do expect_sql_failure "$guard"; done
+# Deleting an assignment may null its case link; the original normalized intent stays immutable.
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v case_id="$KEYED_ID" > /dev/null <<'SQL'
+UPDATE support_cases SET assignment_id=NULL WHERE id=:'case_id'::uuid;
+SQL
+REPLAY="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY")"
+test "$(printf '%s' "$REPLAY" | json_field id)" = "$KEYED_ID"
+test "$(printf '%s' "$REPLAY" | json_field status)" = reviewing
+request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 3
+echo 'PASS: support intent sequential/concurrent retry, payload conflict, reporter/tenant isolation and immutable database guards'
+
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'
