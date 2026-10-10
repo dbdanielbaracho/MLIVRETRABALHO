@@ -42,3 +42,13 @@ test('profile and Passport requests do not start after their context expires',as
   let calls=0;assert.deepEqual(await load(async()=>{calls++;return {ok:true,json:async()=>null}},()=>false),{status:'error'});assert.equal(calls,0);
  }
 });
+
+test('Passport rejects blank displayed identity and malformed verified history instead of presenting real-looking experience',async()=>{
+ const p={displayName:'Fixture',completedWorkCount:1,averageRating:null,ratingCount:0},work={id:'work',tenantId:'company',title:'Actual fixture',completedAt:'2026-10-10T12:00:00Z',location:null};
+ for(const patch of [{displayName:''},{displayName:' '},{verifiedHistory:null},{verifiedHistory:{}},{verifiedHistory:[null]},{verifiedHistory:[{...work,id:''}]},{verifiedHistory:[{...work,tenantId:' '}]},{verifiedHistory:[{...work,title:''}]},{verifiedHistory:[{...work,completedAt:'bad-date'}]},{verifiedHistory:[{...work,location:42}]}])assert.deepEqual(await loadWorkPassport(response({...p,...patch})),{status:'error'});
+});
+test('Passport preserves real multi-company history, optional dates/null and opaque identifiers without normalization',async()=>{
+ const data={displayName:'Fixture',completedWorkCount:2,averageRating:4.5,ratingCount:2,verifiedHistory:[{id:'opaque:1',tenantId:'a',title:'A',completedAt:'2026-10-10T18:00:00-03:00',location:'Local A'},{id:'opaque:1',tenantId:'b',title:'B',completedAt:null,location:null}]};
+ assert.deepEqual(await loadWorkPassport(response(data)),{status:'ready',data});
+ assert.deepEqual(await loadWorkPassport(response({...data,verifiedHistory:[]})),{status:'ready',data:{...data,verifiedHistory:[]}});
+});

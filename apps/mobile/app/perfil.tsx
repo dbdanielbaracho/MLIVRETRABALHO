@@ -4,6 +4,7 @@ import { Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View } from
 import { ProfessionalNav } from '../components/ProfessionalNav';
 import { authHeaders,clearSessionForAuthorization } from '../lib/session';
 import { apiUrl } from '../lib/api';
+import {passportHistory,completionDate} from '../lib/passport-history';
 import {submitProfile} from '../lib/profile-submit';
 import { loadProfessionalProfile,loadWorkPassport,type Profile,type Passport,type Resource } from '../lib/professional-profile';
 
@@ -71,6 +72,7 @@ export default function Perfil(){
   }
  }
  const rows=[['👤','Meus dados'],['▣','Experiência profissional'],['♡','Preferências'],['◷','Disponibilidade'],['♢','Notificações'],['?','Ajuda e suporte'],['▤','Termos e privacidade']];
+ const history=passportHistory(passport);
  const p=passport.status==='ready'?passport.data:null;
  const canEdit=profile.status==='ready'&&!saving&&!signingOut;
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
@@ -95,7 +97,10 @@ export default function Perfil(){
  <Pressable accessibilityRole="button" onPress={()=>router.push('/membros')}><Text style={s.close}>Aceitar convite</Text></Pressable>
  <Pressable accessibilityRole="button" disabled={saving||signingOut} accessibilityState={{disabled:saving||signingOut,busy:signingOut}} onPress={()=>void signout()}><Text style={s.close}>{signingOut?'Saindo…':'Sair da conta'}</Text></Pressable>
  {notice?<Text accessibilityLiveRegion="polite">{notice}</Text>:null}
- </View>:<Text style={s.panelText}>{expanded==='Experiência profissional'?(passport.status==='loading'?'Carregando histórico…':passport.status==='error'?'Não foi possível carregar seu histórico. Tente novamente acima.':!p?'Complete seus dados para criar seu passaporte.':p.completedWorkCount===0?'Nenhum trabalho concluído registrado no passaporte profissional.':p.completedWorkCount+' trabalhos concluídos registrados no passaporte profissional.'):'Esta área ainda não está disponível nesta versão do aplicativo.'}</Text>}
+ </View>:expanded==='Experiência profissional'?<View style={{gap:10}}>
+ <Text style={s.panelText}>{passport.status==='loading'?'Carregando histórico…':passport.status==='error'?'Não foi possível carregar seu histórico. Tente novamente acima.':!p?'Complete seus dados para criar seu passaporte.':p.completedWorkCount===0?'Nenhum trabalho concluído registrado no passaporte profissional.':p.completedWorkCount+' trabalhos concluídos registrados no passaporte profissional.'}</Text>
+ {history.status==='unavailable'?<Text style={s.panelText}>Histórico detalhado não fornecido nesta resposta.</Text>:history.status==='empty'?<Text style={s.panelText}>Nenhum registro disponível no histórico verificado.</Text>:history.status==='ready'?<View style={{gap:12}}><Text style={s.panelText}>Histórico verificado recente</Text>{history.data.map(work=><View key={work.tenantId+':'+work.id} style={{gap:4}}><Text style={s.panelTitle}>{work.title}</Text><Text style={s.panelText}>{work.location?.trim()?work.location:'Local não informado'}</Text><Text style={s.panelText}>{completionDate(work.completedAt)}</Text></View>)}</View>:null}
+ </View>:<Text style={s.panelText}>Esta área ainda não está disponível nesta versão do aplicativo.</Text>}
  <Pressable accessibilityRole="button" onPress={()=>setExpanded(null)}><Text style={s.close}>Fechar</Text></Pressable></View>:null}
  </ScrollView><ProfessionalNav/></SafeAreaView>;
 }
