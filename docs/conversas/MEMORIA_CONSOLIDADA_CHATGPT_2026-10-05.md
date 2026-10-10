@@ -311,3 +311,12 @@ O workflow passou a reconectar o ADB, confirmar boot, aguardar serviço e consul
 **Teste:** seis novos testes de calendário/notificações mais oito do Início: 14/14 locais UTC/São Paulo. Não apresentados como E2E nativo nem prova do guard/UI. CI/APK da nova fatia pendentes no registro inicial; integração só após #342 e diff/gates próprios.
 
 **Gates reconsultados:** #341 pós-merge CI `38012421142` sucesso, APK `38012421105` em andamento. #342 CI/APK `38012515909`/`38012515803` em andamento. Documentos v1.33, requisitos, evidência, registry/checkpoint no mesmo ciclo. Próxima lacuna concreta: Perfil ignora HTTP não-ok de Passport e exibe 0 avaliações antes de carregar. Visual Truth Gate OPEN e continuidade ativa.
+
+---
+## 2026-10-09 — Perfil e desenho original recuperado
+
+Branch fix/profile-honest-network-states preparada sobre #343 (31f546868356775b993dc69bff2f08ef42998001). Perfil distingue HTTP/rede/schema inválido de ausência real e loading; sem estatísticas 0 antes da resposta; retry/foco e 15s; rascunho preservado/save com guard; signout mantém limpeza offline. Cinco testes novos, **19/19 UTC/São Paulo**. CI/APK desta fatia pendentes; integrar após #343, diff próprio e gates.
+
+Desenho original recuperado no DOCX v1.2 de 20/09/2026, página 26, word/media/image1.png. PNG intacto/proveniência/hashes em docs/referencias. Inspeção da imagem confirma dez situações de profissional/empresa e quatro áreas; valores/nomes/promessas são ilustrativos, não dados/capacidades reais. Visual Truth Gate permanece OPEN até comparação da aplicação real e estados completos.
+
+Reconsulta: #341 pós-merge CI 38012421142 sucesso, APK 38012421105 em andamento. #342 CI 38012515909 sucesso/APK 38012515803 em andamento. #343 head exato CI 38012742580 sucesso/APK 38012742579 em andamento. README/v1.34, requisitos/evidência/registry/checkpoint atualizados no mesmo ciclo. Não considerar espera dos runs como bloqueio ou conclusão.
