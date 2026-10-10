@@ -12,3 +12,6 @@ Cinco testes novos: APIs/dados reais, vazio/404 conhecido, payload/falhas, parti
 
 ## Integração em andamento
 #342 integrado main aee58e7776eee0dc211713edcbe29075f841ecb1, CI 38012515909/APK 38012515803 sucesso no head exato. Pós-merge runs 38014015303/38014015274 em acompanhamento. #343 retarget main; merge previsto árvore igual ao head testado b4583e2d9aa1e6bb784c3345157f589a85ce99a8. Esta fatia encadeada após #347; retarget/revisão/gates próprios/pós-merge antes de entrega.
+
+## Correção do gate de tipagem
+CI 38014176712 no head dce89f851b341a529c95c495b36d27effa00c5d5 falhou TS18048: a união Section agrupa loading/error, e excluir ambos separadamente não garantiu narrowing. Render de oportunidades agora exige status ready explicitamente antes de acessar data. Sem tornar falha uma lista vazia; validação obrigatória no novo SHA, nenhum merge autorizado pelo run anterior.

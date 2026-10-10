@@ -7,12 +7,12 @@
 - Main atual: aee58e7776eee0dc211713edcbe29075f841ecb1, #342 integrado após #341.
 - #341 head 1a58d538b89269a89662cbf48ce12f3102293149: CI 38006447169 e APK 38006447148 aprovados. Pós-merge CI 38012421142 e APK 38012421105 sucesso; smoke sem Metro e artefato 11654492684 comprovados.
 - #342 head 516643aa07d5c80acd965c63788d5358a3eee703: CI 38012515909/APK 38012515803 sucesso, integrado; pós-merge CI 38014015303/APK 38014015274 em acompanhamento.
-- #343 head 31f546868356775b993dc69bff2f08ef42998001: CI 38012742580 sucesso; APK 38012742579 em andamento. Base já retargetada main depois #342; árvore prevista de merge b4583e2d9aa1e6bb784c3345157f589a85ce99a8 igual à testada.
+- #343 head reconciliado 4f39c2c92750c3a5c70bae21986d823a1eeff637: conflito após squash #342 resolvido incorporando main como segundo parent; árvore b4583e2d9aa1e6bb784c3345157f589a85ce99a8 preservada. Novos gates CI 38014252721/APK 38014252773; gates antigos não autorizam merge.
 - #344 head b2f81a5e5c8e7151e16edcaf4345739c1aba4a67: Perfil honesto/referência original, 19 testes locais; CI 38013195821 e APK 38013195786 em andamento. Base #343; retarget depois integração.
 - #345 head corrigido 58b3b9455b1406923a2676d9cc8b0ec0916a7d4c: Ganhos reais, 23 testes locais. CI 38013501602 sucesso, APK 38013501605 em andamento. CI antigo 38013341406 falhou TS5097 e foi corrigido, não habilita merge. Base #344.
 - #346 head ea36faf73c22a533cb5461cb561c248412d9a0b0: Painel Empresa, 27 testes locais. CI 38013571739 sucesso/APK 38013571804 em andamento. Base #345.
 - #347 head a6a78dd3623fa75800d72e67e271f727e534a5c8: Agenda real, 31 testes locais, CI 38013852204 sucesso/APK 38013852251 em andamento. Base #346.
-- Branch fix/home-original-data-cards sobre #347: Início confrontado com desenho, dados reais oportunidades/passaporte/pay, 36 testes; PR/gates próprios pendentes. Integrar após #347.
+- #348 fix/home-original-data-cards: Início com oportunidades/passaporte/pay reais, 36 testes. CI 38014176712 falhou TS18048 no head dce89f; narrowing explícito corrigido neste commit. Exigir novos CI/APK no SHA corrigido; base #347.
 - Uma rotina de continuidade ativa; não desativar por fim de rodada, bloqueio parcial ou espera de CI/APK.
 
 ## Próxima ação concreta
