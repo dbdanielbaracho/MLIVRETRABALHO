@@ -39,6 +39,7 @@ export default function CasosSeguranca(){
  async function load(manual=false,expected?:Record<string,string>){
   if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData(loadingSafety());
   try{const headers=await authenticatedTenantHeaders();const result=await loadSafety(async(path,body)=>{if(!headers['x-tenant-id']||(expected&&!sameSafetyContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,body);});
+   const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameSafetyContext(current,headers))throw Error('company_context_changed');
    if(version===generation.current&&seq===sequence.current){setData(result);snapshot.current=result.cases.status==='ready'||result.appeals.status==='ready'?{headers,data:result}:null;if(manual)setMessage('');}
   }catch{if(version===generation.current&&seq===sequence.current)setData({cases:{status:'error'},appeals:{status:'error'}});}
   finally{op.finish();}
@@ -47,8 +48,9 @@ export default function CasosSeguranca(){
  async function update(id:string,status:CaseStatus|AppealStatus,appeal:boolean){
   const displayed=snapshot.current;if(pending.current||!displayed)return;const section=appeal?displayed.data.appeals:displayed.data.cases;if(section.status!=='ready'||!section.data.some(x=>x.id===id))return;
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const headers=await authenticatedTenantHeaders();if(!sameSafetyContext(headers,displayed.headers)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize relatos e pedidos.');return;}
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameSafetyContext(headers,displayed.headers)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize relatos e pedidos.');return;}
    const request=requestWith(headers,op.controller.signal),ok=appeal?await changeAppeal(request,id,status as AppealStatus):await changeCase(request,id,status as CaseStatus);
+   const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameSafetyContext(current,displayed.headers))throw Error('company_context_changed');
    if(version===generation.current){setMessage(ok?(appeal?'Recurso atualizado com trilha de auditoria.':'Status do relato atualizado.'):'Não foi possível confirmar o resultado. Atualize relatos e pedidos para conferir.');await load(false,displayed.headers);}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize relatos e pedidos para conferir o resultado.');}
   finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}

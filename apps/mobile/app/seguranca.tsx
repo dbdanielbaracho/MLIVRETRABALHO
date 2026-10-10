@@ -29,7 +29,7 @@ export default function Seguranca(){
  const params=useLocalSearchParams<{assignmentId?:string|string[];tenantId?:string|string[]}>();
  const paramAssignment=routeId(params.assignmentId),paramTenant=routeId(params.tenantId);
  const [data,setData]=useState(loadingSafety),[selectedAssignmentId,setSelectedAssignmentId]=useState(''),[selectedTenantId,setSelectedTenantId]=useState(''),[description,setDescription]=useState(''),[appealCaseId,setAppealCaseId]=useState(''),[appealReason,setAppealReason]=useState(''),[message,setMessage]=useState(''),[category,setCategory]=useState<(typeof categories)[number][0]>('unsafe_work'),[busy,setBusy]=useState(false);
- const generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;data:SafetyData}|null>(null);
+ const draftAuthorization=useRef<string|null>(null),generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;data:SafetyData}|null>(null);
  const assignments=data.assignments.status==='ready'?data.assignments.data:[],cases=data.cases.status==='ready'?data.cases.data:[],appeals=data.appeals.status==='ready'?data.appeals.data:[];
  const appealByCase=useMemo(()=>new Map(appeals.map(item=>[safetyKey(item.tenantId,item.safetyCaseId),item])),[appeals]);
  function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
@@ -37,7 +37,8 @@ export default function Seguranca(){
  async function load(manual=false,expected?:Record<string,string>){
   if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData(loadingSafety());
   try{const headers=await authHeaders();const result=await loadSafety((path,tenantId,body)=>{if(!headers.Authorization||(expected&&!sameSafetySession(headers,expected)))throw Error('session_changed');return requestWith(headers,op.controller.signal)(path,tenantId,body);});
-   if(version===generation.current&&seq===sequence.current){setData(result);snapshot.current={headers,data:result};if(result.assignments.status==='ready'&&paramAssignment&&paramTenant&&result.assignments.data.some(x=>x.id===paramAssignment&&x.tenantId===paramTenant)){setSelectedAssignmentId(paramAssignment);setSelectedTenantId(paramTenant);}if(manual)setMessage('');}
+   const current=await authHeaders();if(op.controller.signal.aborted||!sameSafetySession(current,headers))throw Error('session_changed');
+   if(version===generation.current&&seq===sequence.current){if(draftAuthorization.current&&draftAuthorization.current!==headers.Authorization){setDescription('');setAppealReason('');setAppealCaseId('');setSelectedAssignmentId('');setSelectedTenantId('');}draftAuthorization.current=headers.Authorization;setData(result);snapshot.current={headers,data:result};if(result.assignments.status==='ready'&&paramAssignment&&paramTenant&&result.assignments.data.some(x=>x.id===paramAssignment&&x.tenantId===paramTenant)){setSelectedAssignmentId(paramAssignment);setSelectedTenantId(paramTenant);}if(manual)setMessage('');}
   }catch{if(version===generation.current&&seq===sequence.current)setData({assignments:{status:'error'},cases:{status:'error'},appeals:{status:'error'}});}
   finally{op.finish();}
  }
@@ -50,8 +51,9 @@ export default function Seguranca(){
   if(item){if(displayed.data.cases.status!=='ready'||!displayed.data.cases.data.some(x=>x.id===item.id&&x.tenantId===item.tenantId)||!canRequestReview(item,displayed.data.appeals))return;}
   else if(!assignment){setMessage('Escolha um trabalho válido após atualizar a lista.');return;}
   pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const headers=await authHeaders();if(version!==generation.current)return;if(!sameSafetySession(headers,displayed.headers)){setMessage('A sessão mudou. Atualize os trabalhos, relatos e pedidos.');return;}
+  try{const headers=await authHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameSafetySession(headers,displayed.headers)){setMessage('A sessão mudou. Atualize os trabalhos, relatos e pedidos.');return;}
    const request=requestWith(headers,op.controller.signal),result=item?await submitSafetyAppeal(request,item,text):await submitSafetyCase(request,assignment!,category,text);
+   const current=await authHeaders();if(op.controller.signal.aborted||!sameSafetySession(current,displayed.headers))throw Error('session_changed');
    if(version===generation.current){setMessage(result.status==='created'?(item?'Pedido de revisão registrado para análise humana.':'Relato enviado para análise.'):result.status==='existing'?'Já existe um pedido de revisão. Consulte o motivo e status registrados.':result.status==='rejected'?'Não foi possível registrar. Seu texto foi mantido.':'O registro não foi confirmado. Confira seus relatos e pedidos antes de tentar novamente.');
     if(result.status==='created'||result.status==='existing'){if(item){setAppealCaseId('');if(result.status==='created')setAppealReason('');}else setDescription('');}await load(false,displayed.headers);}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Confira seus relatos e pedidos antes de tentar novamente.');}

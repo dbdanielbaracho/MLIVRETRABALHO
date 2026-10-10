@@ -28,3 +28,15 @@ test('appeal update preserves the existing human-review note/ack and does not in
  const calls=[];assert.equal(await changeAppeal(async(p,b)=>{calls.push([p,b]);return response({id:'a',status:'modified',changed:true})},'a','modified'),true);assert.deepEqual(calls,[['/company/safety-appeals/a/status',{status:'modified',note:'Decisão modificada após revisão humana.'}]]);
  assert.equal(await changeAppeal(async()=>response({id:'a',status:'reviewing'}),'a','reversed'),false);assert.equal(await changeAppeal(async()=>response({},false),'a','upheld'),false);
 });
+import {runForSession} from '../lib/session-context.ts';
+test('sensitive company records require nonblank IDs and an authenticated context',async()=>{
+ for(const d of [{...report,id:' '},{...report,assignmentId:''}])assert.equal((await loadSafety(async()=>response([d]))).cases.status,'error');
+ for(const d of [{...appeal,id:''},{...appeal,safetyCaseId:' '},{...appeal,appellantIdentityId:''}])assert.equal((await loadSafety(async()=>response([d]))).appeals.status,'error');
+ assert.equal(sameSafetyContext({'x-tenant-id':'t'},{'x-tenant-id':'t'}),false);
+});
+test('missing case/appeal identifiers never call manual decision endpoints',async()=>{
+ let calls=0;const request=async()=>{calls++;return response({id:'',status:'reviewing'})};assert.equal(await changeCase(request,'','reviewing'),false);assert.equal(await changeAppeal(request,' ','reviewing'),false);assert.equal(calls,0);
+});
+test('a verified company status ACK is discarded when the selected company changes',async()=>{
+ let tenant='t',calls=0;const result=await runForSession(async()=>({Authorization:'Bearer a','x-tenant-id':tenant}),()=>changeCase(async()=>{calls++;tenant='other';return response({id:'c',status:'reviewing'})},'c','reviewing'),()=>true,'Bearer a','t');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+});

@@ -36,3 +36,17 @@ test('HTTP rejection and server failure do not create a safety report or infer a
 test('lost submission response stays unknown without automatically duplicating sensitive reports or appeals',async()=>{
  let calls=0;const request=async()=>{calls++;throw Error('timeout')};assert.deepEqual(await submitSafetyCase(request,assignment,'unsafe_work','Relato'),{status:'unknown'});assert.deepEqual(await submitSafetyAppeal(request,report,'Pedido'),{status:'unknown'});assert.equal(calls,2);
 });
+import {runForSession} from '../lib/session-context.ts';
+test('professional safety records and ACKs reject whitespace identities without inventing tenant echoes',async()=>{
+ assert.equal((await loadSafety(async()=>response([{...report,tenantId:' '}]))).cases.status,'error');
+ assert.equal((await loadSafety(async()=>response([{...appeal,safetyCaseId:' '}]))).appeals.status,'error');
+ assert.deepEqual(await submitSafetyCase(async()=>response({id:' ',category:'unsafe_work',status:'open',createdAt:report.createdAt}),assignment,'unsafe_work','Relato'),{status:'unknown'});
+});
+test('missing assignment/case/tenant IDs prevent sensitive submission transport',async()=>{
+ let calls=0;const request=async()=>{calls++;return response({})};
+ for(const a of [{...assignment,id:''},{...assignment,tenantId:' '}])assert.deepEqual(await submitSafetyCase(request,a,'unsafe_work','Relato'),{status:'rejected'});
+ for(const item of [{...report,id:' '},{...report,tenantId:''}])assert.deepEqual(await submitSafetyAppeal(request,item,'Pedido'),{status:'rejected'});assert.equal(calls,0);
+});
+test('a successful report ACK cannot confirm submission in a new account or repeat POST',async()=>{
+ let authorization='Bearer a',calls=0;const result=await runForSession(async()=>({Authorization:authorization}),()=>submitSafetyCase(async(path,tenant)=>{calls++;assert.equal(tenant,'t');authorization='Bearer b';return response({id:'c',category:'unsafe_work',status:'open',createdAt:report.createdAt})},assignment,'unsafe_work','Relato'),()=>true,'Bearer a');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+});
