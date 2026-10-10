@@ -320,3 +320,10 @@ Branch fix/profile-honest-network-states preparada sobre #343 (31f546868356775b9
 Desenho original recuperado no DOCX v1.2 de 20/09/2026, página 26, word/media/image1.png. PNG intacto/proveniência/hashes em docs/referencias. Inspeção da imagem confirma dez situações de profissional/empresa e quatro áreas; valores/nomes/promessas são ilustrativos, não dados/capacidades reais. Visual Truth Gate permanece OPEN até comparação da aplicação real e estados completos.
 
 Reconsulta: #341 pós-merge CI 38012421142 sucesso, APK 38012421105 em andamento. #342 CI 38012515909 sucesso/APK 38012515803 em andamento. #343 head exato CI 38012742580 sucesso/APK 38012742579 em andamento. README/v1.34, requisitos/evidência/registry/checkpoint atualizados no mesmo ciclo. Não considerar espera dos runs como bloqueio ou conclusão.
+
+---
+## 2026-10-09 — Ganhos: ledger e semana coerentes com Início
+
+Branch fix/earnings-real-ledger-states encadeada após #344 b2f81a5e5c8e7151e16edcaf4345739c1aba4a67. Ganhos corrigido: total/gráfico somente payable/paid entre segunda local e agora; sem pending/reversed/desconhecido/futuro. Total não mostra zero durante loading/falha; histórico mostra estado real, tenant:id, retry/foco/timeout e payload validado. EarningsController lido; API/autenticação/RLS/backend preservados. Quatro testes novos, **23/23 UTC/São Paulo**, sem claim UI nativa.
+
+Documentos v1.35/evidência/requisitos/registry/checkpoint no mesmo ciclo; gates próprios pendentes antes de integrar após #344. APK #341 pós-merge e #342 chegaram ao smoke sem Metro, ainda sem PASS no registro inicial. CI #343 sucesso, APK em andamento; #344 CI/APK em andamento. Visual Truth OPEN. Próxima pendência real lida: EmpresaInicio vazios prematuros/falhas e ações rate/addPreferred sem catch/guard; validar controladores.
