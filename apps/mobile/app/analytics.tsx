@@ -1,44 +1,45 @@
-import { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 import { authenticatedTenantHeaders } from '../lib/session';
 import { apiUrl } from '../lib/api';
 
-type Analytics = {
-  jobsCreated: number;
-  openJobs: number;
-  jobsWithInterest: number;
-  jobsWithConfirmation: number;
-  completedAssignments: number;
-  cancelledAssignments: number;
-  interestToConfirmationRate: number | null;
-  assignmentCompletionRate: number | null;
-};
-
-const percent = (value: number | null) => value == null ? 'Sem base suficiente' : `${value}%`;
+import { loadAnalytics, percentOrMissing as percent } from '../lib/company-analytics';
+import type { AnalyticsResult } from '../lib/company-analytics';
 
 export default function Analytics() {
-  const [data, setData] = useState<Analytics | null>(null);
-  const [message, setMessage] = useState('Carregando indicadores...');
-
-  useEffect(() => { void load(); }, []);
-
-  async function load() {
-    const headers = await authenticatedTenantHeaders();
-    const response = await fetch(apiUrl('/company/analytics'), { headers });
-    if (!response.ok) {
-      setMessage('Não foi possível carregar os indicadores agora.');
-      return;
+  const [state,setState]=useState<AnalyticsResult>({status:'loading'});
+  const sequence=useRef(0),controllers=useRef(new Set<AbortController>());
+  const data=state.status==='ready'?state.data:null;
+  async function load(signal?:AbortSignal) {
+    const id=++sequence.current,controller=new AbortController();
+    controllers.current.add(controller);setState({status:'loading'});
+    const timer=setTimeout(()=>controller.abort(),15000),abort=()=>controller.abort();
+    signal?.addEventListener('abort',abort);if(signal?.aborted)controller.abort();
+    try {
+      const result=await loadAnalytics(async path=>{
+        const headers=await authenticatedTenantHeaders();
+        if(!headers['x-tenant-id'])throw Error('tenant_required');
+        return fetch(apiUrl(path),{headers,signal:controller.signal});
+      });
+      if(id===sequence.current&&!signal?.aborted)setState(result);
+    } finally {
+      clearTimeout(timer);controllers.current.delete(controller);signal?.removeEventListener('abort',abort);
     }
-    setData(await response.json());
-    setMessage('');
   }
+  useFocusEffect(useCallback(()=>{
+    const controller=new AbortController();void load(controller.signal);
+    return ()=>{++sequence.current;controller.abort();for(const pending of controllers.current)pending.abort();controllers.current.clear();};
+  },[]));
 
   return (
     <SafeAreaView style={s.screen}>
       <ScrollView contentContainerStyle={s.content}>
         <Text style={s.title}>Indicadores</Text>
         <Text>Visão factual da operação. As taxas abaixo usam somente eventos já registrados e não são previsões.</Text>
-        {message ? <Text>{message}</Text> : null}
+        <Pressable accessibilityRole="button" onPress={()=>void load()}><Text>Atualizar indicadores</Text></Pressable>
+        {state.status==='loading'?<Text>Carregando indicadores…</Text>:null}
+        {state.status==='error'?<Text>{state.forbidden?'Seu acesso não permite consultar indicadores desta empresa.':'Não foi possível carregar indicadores. Use Atualizar indicadores para tentar novamente.'}</Text>:null}
         {data ? (
           <>
             <View style={s.grid}>
