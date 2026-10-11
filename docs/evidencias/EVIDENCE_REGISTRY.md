@@ -823,3 +823,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — Conversa
 
 - [CONVERSATION_READ_DEADLINE_2026-10-11.md](CONVERSATION_READ_DEADLINE_2026-10-11.md):7falhas/6sucessos antes,13novas/PASS24local. Send/rascunho/layout preservados; CI510mobile/145API eAPK próprios pendentes. #420 gates em execução, pós419 comprovado.
+
+
+## 2026-10-11 — Notificações
+
+- [NOTIFICATIONS_READ_DEADLINE_2026-10-11.md](NOTIFICATIONS_READ_DEADLINE_2026-10-11.md): 10falhas/8sucessos antes,18novas/PASS28local. MarcarPOST/layout/nav preservados; CI528mobile/145API eAPK próprios pendentes. #420 CI497/145 comprovado, APK em execução.

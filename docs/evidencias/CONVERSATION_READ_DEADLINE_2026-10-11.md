@@ -1,6 +1,6 @@
 # Evidência — leitura da Conversa
 
-## Atualização incremental — Conversa (2026-10-11 04:53 UTC)
+## Atualização incremental — Conversa (2026-10-11 04:49 UTC)
 
 No load de Conversa, o timer abort-only mantinha loading quando auth, fetch, JSON ou autenticação final não resolviam. A leitura adicional de auth após runForSession error também podia rejeitar sem catch. Treze regressões dos handlers pré-JSX e helpers reais reproduziram7falhas/6sucessos antes da correção. Após: PASS24/24 local (13novos +11conversation existentes), Node24, fixtures explícitas de hooks/auth/transport/timers; sem renderRN, SecureStore nativo ou rede externa.
 
@@ -9,7 +9,7 @@ operation ganha callback opcional; somente load usa callback de prazo15s que inv
 Documento da Verdade v1.104 EXISTENTE recebe este apêndice, preservando todo histórico, sem nova versão/substituto resumido. React19.1.4/RN0.81.6, lockfile e tenant/RLS preservados. CI próprio esperado4web/510mobile/145API/3CLI eAPK standalone no SHA exato obrigatórios; pendentes antes de publicação. Gate físico/E2E/VisualTruth, pentest, PSP/KYC sandbox, FIN-RISK/providers e Web eventualmente pago continuam separados e abertos; sem custo/contratação/dinheiro real/deploy pago.
 
 Estado: main83d5df28f11395522aa5e8e776a38bab491e0a91/tree075aad2062eecde202f9b7850c07858b79c9f85c. Pós419 comprovado CI38110152658/job114383862793 (4/476/145/3), APK38110152707/job114383862785, ZIP11691234225/digestad45c1776fb81c0a0b47b81fc3ace2a1298f59afa217ec9e3c0f49b6fb980276, instalação04:24:44.9591307Z/semMetro04:25:39.3146153Z; não equivalem a físico.
-#420 aberta head56e8229ada3bdb44042b9d208357f10ef91cdad8/treef7c9a8ae4947125d38ca87c892412a15fa271f84, base main;8arquivos remotos byteidênticos e diff revisto. CI38112711675/job114391414713 em execução (typecheck/build aprovados, export em execução na consulta04:52); APK38112711679 em execução. Não integrada nem rerun solicitada.
+#420 aberta head56e8229ada3bdb44042b9d208357f10ef91cdad8/treef7c9a8ae4947125d38ca87c892412a15fa271f84, base main;8arquivos remotos byteidênticos e diff revisto. CI38112711675/job114391414713 em execução (typecheck/build aprovados, export em execução na consulta04:49); APK38112711679 em execução. Não integrada nem rerun solicitada.
 
 Publicar esta fatia sobre head420 acima em fix/conversation-read-deadline, basefix/candidates-read-deadline. Conferir bytes/diff e próprios CI510/145/APK exatos. Integrar420 e depois esta fatia somente com gates aplicáveis aprovados, retarget main em ordem/reconsulta eventual, árvore/pais/main e pós-gates reais. Próxima leitura independente auditada: NotificationsScreen operation abort-only pode manter status loading e desabilitar o retry quando auth/fetch/JSON/auth final não resolvem; reproduzir nos contextos profissional e empresa, guardas de tenant/foco e preservar marcação POST. Não repetir Equipes/#419 ou inventar tarefas para atividade. Rotina permanece ativa até conclusão integral comprovada ou ordem expressa.
 
