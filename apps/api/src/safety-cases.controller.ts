@@ -57,22 +57,26 @@ export class SafetyCasesController {
 
   @Post()
   async create(
-    @Body() body: { assignmentId?: string; category?: string; description?: string },
+    @Body() body: unknown,
     @Headers('authorization') authorization?: string,
     @Headers('x-tenant-id') tenantId?: string
   ) {
     const context = await this.context(authorization, tenantId);
-    const description = body.description?.trim();
-    if (!body.category || !categories.includes(body.category) || !description || description.length > 4000) {
+    const input = body && typeof body === 'object' && !Array.isArray(body) ? body as Record<string, unknown> : null;
+    const description = typeof input?.description === 'string' ? input.description.trim() : '';
+    if (typeof input?.category !== 'string' || !categories.includes(input.category) || !description || description.length > 4000) {
       throw new BadRequestException('safety_case_invalid');
     }
 
+    const assignmentId = input?.assignmentId;
+    if (assignmentId != null && (typeof assignmentId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(assignmentId))) throw new BadRequestException('assignment_invalid');
+
     return this.db.tenant(context.tenantId, async db => {
-      if (body.assignmentId) {
+      if (assignmentId) {
         const assignment = (
           await db.query<{ professionalIdentityId: string }>(
             'SELECT p.identity_id AS "professionalIdentityId" FROM work_assignments wa JOIN professional_profiles p ON p.id=wa.professional_id WHERE wa.id=$1 AND wa.tenant_id=$2',
-            [body.assignmentId, context.tenantId]
+            [assignmentId, context.tenantId]
           )
         ).rows[0];
         if (!assignment) throw new BadRequestException('assignment_not_found');
@@ -89,7 +93,7 @@ export class SafetyCasesController {
       return (
         await db.query(
           'INSERT INTO safety_cases(tenant_id,reporter_identity_id,assignment_id,category,description) VALUES($1,$2,$3,$4,$5) RETURNING id,category,status,created_at AS "createdAt"',
-          [context.tenantId, context.identity.id, body.assignmentId ?? null, body.category, description]
+          [context.tenantId, context.identity.id, assignmentId ?? null, input.category, description]
         )
       ).rows[0];
     });
