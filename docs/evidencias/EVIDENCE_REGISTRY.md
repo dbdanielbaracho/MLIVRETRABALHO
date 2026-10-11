@@ -884,3 +884,7 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 05:43:41 UTC
 
 - [CONVERSATION_SEND_UI_DEADLINE_2026-10-11.md](./CONVERSATION_SEND_UI_DEADLINE_2026-10-11.md): sendConversa: antes9falhas/5sucessos, depois47/47locais. Prazo conserva draft quandounknown e separaACKsent confirmado de falha noGET posterior; nãoháautoPOST/ACKtardio/finally antigo. Semidempotência nova/renderRN/E2Efísico. Registra pós420integral/CI432/APKs426–429aprovados e dependência425pendente.
+
+## 2026-10-11 05:50:14 UTC
+
+- [COMPANY_JOB_INPUT_RUNTIME_VALIDATION_2026-10-11.md](./COMPANY_JOB_INPUT_RUNTIME_VALIDATION_2026-10-11.md): CompanyJobCreateController runtime JSON: antes5falhas/3sucessos, depois8/8 locais; HTTPlocalhost34entradas malformadas integrado aoCI, ainda aguarda prova real no head. Auth/membership primeiro, 400semINSERT, trim/null/defaults/tenant e integer representável preservados. APK N/A condicionado paths/mobiletree/predecessor434; gatespós420/421/423/424 comprovados,422/425pendentes.
