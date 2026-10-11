@@ -1369,6 +1369,27 @@ Estado pós predecessores às17:59UTC: post464CI38160409539/job114531932443 SUCC
 Preservados React19.1.4/RN0.81.6/lockfrozen/standalone semMetro/tenantRLS/desenho/histórico. Sem custo/serviçonovo/PSP/dinheiroreal/deploypago/produçãoRailsRailwaydireta. AndroidFÍSICO/E2E/VisualTruth/SecureStore/piloto, pentest independente, TRUSTproviders, PSPKYCsandbox/FIN-RISK/Webeventualpago seguem OPEN separados; emulador não físico. Projeto em andamento; nenhuma obrigação de digitar continuar nem alegação24h contínua. Próximaação: acompanhar gates próprios/anteriores, diagnóstico primário se falhar, integrar sóPASS e confirmar pós; depois consolidar recibos e auditar próximo ponto factual com contrato, sem inventar atividade. Preferências dependecontrato; roleId taxonomyTEXT não UUID.
 
 
+## Infraestrutura Android independente — KVM sem integrar código pendente — 2026-10-11
+
+Main relida682f0849b5861af0dc2b571c9024b1062743d8b1/tree6b5ef1978c0a7557c6d351e97361ea5a55977cd4. #468–472 permanecem PRs não integrados nesta fotografia; não alegar novo merge/gates pós inexistentes. #470stack headf25b8d50e94f16e52fd0c6c09207be46813a37e3 tem próprioCI38178173114SUCCESS4/727/367/3 eAPK38178173119/job114584886736attempt1SUCCESS, mas herdava código468/469 e não pode adiantar gates pendentes dessesPRs. Para eliminar dependência circular de infraestrutura, esta branch isola SOMENTE workflowKVM e docs na main atual, sem importar app/helpers/tests/API de PR pendente. Não usar o APK de470 como gate desta novaSHA: própriosCI4/722/367/3 eAPK obrigatórios; preservar snapshots/árvores/refs de predecessores. Sem force, reset, downgradeoualteração de runnerpago.
+
+Falha real469ownAPK38177958961attempt1/job114584255869 no head5e29cacde3742b28e8c36a179b535dfa4294d075: buildSUCCESS, boot505514ms, serviço settings/inputBrokenpipe32/adbexit22422:09:45Z antesAPKinstall e antes executar customscript do app. Logsprimários guardados; nãofalha comprovada do app, nãoPASS. Failedjobs-only rerun solicitado1vez, aguardar attempt2/novo job, não rerunrunning. #468ownAPK38177844411aindaexecução. KVM ajuda o runnersemaceleração, não declarar únicoresponsável por todo erro/ANR/GPU.
+
+Workflow isolado é bytea byte aqueletestado no470: regraudevKVM recomendadoREADMEoficial/GitHub2024-04-02, test-c/read/write/devKVM, KVM_READY, disable-linux-hw-accel:false. Não relaxar timeout/install/crashgates/upload/Metrofalse; falha seKVMindisponível. No own470 houve KVM_READY22:03:42.6506216Z, comandoemulatorsem-acceloff, boot32693ms22:04:43.2524223Z, install22:04:55.9188086Z/DEVICE_SMOKE_OK22:05:08.3364025Zmetrofalse. Apenas comparaçãoobservacional com post467boot471902ms; não prova causalestatísticaouequivalência físicadispositivo.
+
+Artefato470ZIP11717017692size28911048 SHA256f9e0ed5973872b3388edc09ed59b5310fc3d5545781b880e81c1e013761153ab/expires2026-10-25T22:05:10Z downloaded/CRCvalid/digestmatchesAPI. APK66160320bytes SHA256f14a0fda9afa09f336e02212c2fc3e4c092206b0b1e25418667b5e7af6d62922matchesSHA256SUMS, APKCRCvalid, assets/index.android.bundle. BUILDINFOcommitd6bae6494eebff05ae04fdeb52d95eb5b5a36447 ésyntheticrefsPRmerge pais[5e29cacde3742b28e8c36a179b535dfa4294d075,f25b8d50e94f16e52fd0c6c09207be46813a37e3], tree5722ee7dc56fb323d0c4875e69641d777a34e79e igualcandidato confirmadoREST. NãoalegarBUILDINFOheadliteralouAPKprovandooutroSHA.
+
+Após próprioCI/APKverdeexactHEAD desta infra, review9paths/bytes/todosapp/lock/build/smoke blobsinalterados, mergeindependente e comprovar orderedparents/tree/main e ambospostCI/APK actualSHA. A seguir reconciliar468/469 COMNOVAMAINvia mergesdeancestral sem perda e sem force; novosheads exigem própriosgatesCI/APKnovos. Fechar470 apenascomoSUPERSEDED após provar workflowblob idêntico e infraindependenteintegrada/gates, semalegar470merged. Reconciliar471/472 com predecessorreal/retargetmain emordem, preservando códigotestado e novosdocs, nãoemprestarAPK/outdatedheads ou repetirmerges.
+
+Auditoria de continuidade: docs/evidencias/INTERNAL_EXHAUSTION_PROOF_2026-09-28.md e INTERNAL_COMPLETION_CHECKPOINT_2026-09-24.md são snapshots históricos1.15, não documento normativo atual1.104 nem autorização de parar. A inspeção atual encontrou falhasreais internas e PRs468–472; aviso adicionadoa essesoriginais preservando TODOcorpo/história/datas. PRvazia/TODOausente/aparelhoindisponível não prova todasáreasinternas completas. Uma dependência élocal; continuar auditoria fachadas/dados reais/auth/API/tenant/finance/notificações/matching/navegação/segurança documentadafontecanônica. Não declarar cobertura integralVisualTruthestática ou interna por smoke único.
+
+DVT ORIGINAL integral/histórico+memória/checkpoint/ledger/registry+evidência no ciclo. Source/workflow gatejátestadono470, YAML/bashtargetedPASS e nenhuma semânticaapp nova. CI/APK próprios/pós destaPR PENDENTES neste commit, nãoPASS. FísicoAndroid/E2E/VisualTruth/SecureStore/piloto/pentestindependente/TRUSTprovider/PSPKYCsandbox/FIN-RISK/Webpagodeploy continuam OPEN. PreserveReact19.1.4/RN0.81.6/frozenlock/tenantRLS/standalone/desenho, no PSP/money/custo/produção/deploypago. Próximo concretamente: própriosinfraCI/APKnewSHA, merge pós, incorporarKVMmain nosheads de candidatos e retestar sem relaxargates, depois pagamentos/UUIDACKtestados e consolidarrecibos, continuarfrentesinternas.
+
+
+## Notas historicas da branch #468 preservadas integralmente
+
+
+
 ## PR #468 — confirmação de candidato: regressão comportamental e recibo vigente — 2026-10-11
 
 Base main `682f0849b5861af0dc2b571c9024b1062743d8b1` (merge467), tree`6b5ef1978c0a7557c6d351e97361ea5a55977cd4`, pais[`e8a4d0764a3527bb525e797a00b0ca1251529dff`,`b6b66b7925855fac67dfdc65782c13a97209697a`]. README/DVT ORIGINALv1.104/memória/checkpoint/PRs/issues/GitHub/código reconsultados. Pós467CI38165293516/job114546488872 SUCCESS4/722/367/3/todossteps/HTTP real; pós467APK38165293489/job114546488627 SUCCESS install19:10:51.3358475Z/DEVICE_SMOKE_OK19:11:44.4987192Zmetrofalse, ZIP11712008074/28911009bytes digestsha256:383b50b43b5f862ab70b6e0e9d6a2fad92c7d776c34cef8860d5c3a900db7015/expires2026-10-25T19:11:54Z/expiredfalse. Não repetir merge467 nem confundir emuladorcomfísico/ZIPdigestcomAPKindividual.
@@ -1380,6 +1401,19 @@ Head anterior468a1643edfeb2981e27ef50d53792a49a547308a8a passouCI38165495573/job
 O DVT ORIGINAL inteiro preservado em lugar; adendo+memória/checkpoint/ledger/registry+evidência no mesmo ciclo. React19.1.4/RN0.81.6/lockfrozen/tenantRLS/standalone semMetro/desenho preservados. Sem custo/serviço/PSP/dinheiro/deploypago/produçãoRailsRailway. FísicoAndroid/E2E/VisualTruth/SecureStore/piloto, pentestindependente, TRUSTproviders, PSPKYCsandbox/FIN-RISK e WEB-ARCHprovisionamentoeventualpago permanecem OPEN separados. #224 interno existente não exige provisionar. Próximo: completar468/469 e consolidar recibos completos464–469; auditar áreas internas da referência canônica e corrigir sófalhascomprovadas com regressões, sem declarar conclusão pornenhumPR ou inventaratividade. Não encerrar rotina por bloqueioisolado/fimrodada, nem pedir continuar.
 
 
+## Reconciliacao de #468 com candidato de infraestrutura independente #473 — 2026-10-11
+
+Merge de ancestrais preserva pais[5888455ace44c6eb8b26201fe4a3a88ca54ab441,21d7567b9bfa8df660765ad2382fec6d836b141e], semforce/sobrescrita de app. Codigo468 e seus3testesreais/evidencia mantidos bytea byte; importa SOMENTE workflowKVM+notices/documentos473 da fonte main. DVT/memoria/ledger/registry começam com TODOoriginal473 e acrescentam notas anteriores468 integralmente. Checkpointconserva cabecalho/corpooriginalcomnotas historicasrealocadas/integrais.
+
+Own468 anterior588 CI38177844414 SUCCESS4/725/367/3; APK38177844411/job114583912063SUCCESS install22:10:25.8247404Z/DEVICE_SMOKE_OK22:11:38.0601986Zmetrofalse/ZIP11716433370size28911013digestsha256:f4ba99b16054b7a2ea5df733b7951ac13682caac422007891df5b9351b3361c5expires2026-10-25T22:11:49Z. Historico valido SOMENTE588, nao autoriza novoSHA. PropriosCI4/725/367/3 eAPK novos obrigatorios no headresultante, KVM_READY/install/smoke/artifact exatos.
+
+Infra473 deveintegrarprimeiro com propriosCI/APKgreen eposreal; entao main equivale a fonte473, diff468volta8paths e tree deveequivaler ao candidato. Nenhum merge468real nestecommit. #469readguard/#471finance/#472UUIDACK ficambranchesposteriores; progressosegueautonomo semloanAPK, semrerunrunning, semcusto/PSP/producaofisicofalso. ConfirmarHEAD/main/mergeable/bytes/diff/pais/tree/gates frescos antesmerge, verificarpostCI/APKactual e consolidarrecibos.
+
+
+## Notas historicas da branch #469 preservadas integralmente
+
+
+
 ## PR #469 — leitura cancelada: isolamento comportamental com ancestral468 — 2026-10-11
 
 Main observada682f0849b5861af0dc2b571c9024b1062743d8b1. #468 novohead5888455ace44c6eb8b26201fe4a3a88ca54ab441/tree d920442a816aa7679a482bccb45c999c6cafc49e é predecessor necessário e ainda exige CI/APK próprios novos. #469 foi reconciliada com MERGE DE ANCESTRAL468, parent85afb28bb4db8babcda45d5b42d5a125584f6141 e additionalparent5888455ace44c6eb8b26201fe4a3a88ca54ab441, sem force/reset/rebase destrutivo. Resolver manualmente source/DVT preservando literalmente as duas mudanças, notas históricas e todos arquivos de468; comparar delta469 somente contra árvore468, e integração apenasdepois468na main.
@@ -1389,6 +1423,19 @@ selectJob já mostrava erro no timer15s, mas o catch da autenticação rejeitada
 Head anterior46985afb28bb4db8babcda45d5b42d5a125584f6141 passou ownCI38166077594/job1145488108674/723/367/3 e ownAPK38166077651/job114548810629 install19:21:29.5354420Z/DEVICE_SMOKE_OK19:22:18.1357217Zmetrofalse/ZIP11712399046sha256:4d46079f0b2618adb6742b5a049105bd35cd7bfa7a395ac938ff074a1c385198. Essesgates históricos NÃO autorizamnovoheadreconciliado. Novo esperadoCI4web/727mobile/367API/3CLI(1101)/zero failures/todossteps/HTTP real/ProductionTruth e todos5tituloscomportamentais. APKstandalone próprio novoSHAobrigatório, install/DEVICE_SMOKE_OKsemMetro/artefatoprório nãoexpirado; nuncaemprestar468/old469. Esperar gatesgreen/reverbytes/diff/lease/head/main/mergeable/tree, integrar sóapós468 e verificar pais/tree/main/CIAPKinclusivepós SHArealo. Se conflitoapós468merge, reconsultar GitHubestadoeventual e reconciliar preservandoambos; nunca sobrescreverpredecessor.
 
 DVT ORIGINALv1.104/histórico/memória/checkpoint/ledger/registry/evidência no mesmo ciclo porappend e checkpointnovo topo, sem substitutos. React19.1.4/RN0.81.6/lockfrozen/tenantRLS/standalone semMetro/canônico intactos. Sem custos/serviços/dinheiroreal/PSP/deploypago/produçãoRailsRailwaydireta. GatesfísicosAndroid/E2E/VisualTruth/SecureStore/piloto/pentestindependente/providers/TRUST/PSPKYCsandbox/FIN-RISK/Webprovisionamentoeventualpago separados OPEN; #224 internojáexistente não contratar. Próximo completar gates468→469 +ambospós, consolidar recibos464–469docssomentedocs CIpróprio/pós+APKN/Asópathsárvorelockworkflows idênticos provados; enquantoexecutam auditar frentesinternas e implementarfalhascomprovadas. Rotinaativa atéconclusãoINTEGRALcomprovada/ordemexpressa; fimrodada ou gateisolado nãoencerra projeto, sem pedircontinuar/nem24hcontínuo.
+
+
+## Reconciliacao de #469 com #468/KVM independentes — 2026-10-11
+
+Pais ordenados[5e29cacde3742b28e8c36a179b535dfa4294d075,fd13d5b70faf4093a2824f904723b6fedc42ab82], semforce/reset. Arvore parte de #468novo com473workflow/devKVM e conserva bytea byte o app combinado de confirmaçao/catch469 e2regressoesreais, mais3regressoes468. DVT ORIGINAL/memoria/checkpoint/ledger/registry conservam TODOdocumento do ancestralnovo e notas469 integrais.
+
+Head469anterior5e29: CI38177958982SUCCESS4/727/367/3; APK38177958961attempt1FAILservicesettings/inputBrokenpipe32 antesinstall, buildSUCCESS. 1failedjobs-only retry doheadantigo emexecuçaoattempt2, nao rerunrunning/não declararPASS/nãoemprestar470APK. Gate novohead469 obrigatórioCI4/727/367/3 epróprioAPK KVM_READY/install/DEVICE_SMOKE_OKmetrofalse/artifactmesmoSHA. Rerun antigo serve sóhistorico5e29, nao autoriza novohead.
+
+Integraçãoinfra473primeiro, depois468, retarget469main jáapontada/reconsultar eventual/diff8paths/bytes/gates/mergebase/equivalencia semperder predecessors. PosCI eAPK devemser conferidos nos SHA reais após cada merge, naoinventarruns[]/running. APIfinance471 eUUIDACK472seguembranches posteriores, trabalhoindependente semcusto/PSP/produção/físicofalso, documentarrecibos e continuar todasfrentesinternas.
+
+
+## Notas historicas de #470/#471 preservadas integralmente
+
 
 
 ## APK em emulador — KVM no runner existente, sem reduzir gates — 2026-10-11
@@ -1419,3 +1466,12 @@ Testes originais de assinatura/segurança e HTTP de finance-reconciliation prese
 Base da branch é head470f25b8d50e94f16e52fd0c6c09207be46813a37e3/tree5722ee7dc56fb323d0c4875e69641d777a34e79e. Ordem468→469→470→estaPR, retargetmain depois470 e revisar10paths/bytes/ancestralidade. CI próprio esperado4/727/374/3(1108), todos testes/HTTP/novos marcadores PASS no SHAexato antesmerge, pósCI real obrigatório. APK N/A somente após comprovar árvore mobile/lockfiles/rootworkspace/workflows/build/smoke bytea byte idênticos ao predecessor470 já aprovado, e paths10restritosAPI/scriptsfinance/docs; não emprestarAPK de SHA distinto como se fosse destaAPI. Se workflowAPK gerar run, verificar próprio em vezdeafirmar inexistência. Não relaxarRLS/tenant/auth/HMAC/PSP/externalbindings/moneyrisk, não tocarprodução nem custos.
 
 DVT ORIGINAL integral/histórico+memória/checkpoint/ledger/registry+evidência no mesmo ciclo. FísicoAndroid/E2E/VisualTruth/SecureStore/piloto/pentestindependente/TRUSTproviders/PSPKYCsandbox/FIN-RISK/Webpagodeploy continuam OPEN separados. Não declarar todasfrentesinternas completas por cobertura desta falha. Próximaação: próprioCI exactSHA com testeNest e duas barreirasHTTPPG, revisar/retarget/integrar após predecessores, verificarpós, consolidarrecibos reais e continuar auditoria independente de todasáreas canônicas.
+
+
+## Reconciliacao de #471 com predecessores novos e KVM473 — 2026-10-11
+
+Pais ordenados[44bb92dcaaaf9e15aa9f5804637bcf2a34ac06ef,9f8af7e78ce748bded2bc1a3c0ab55ff41d48506], semforce/reset/perda. Conserva bytea byte4pathsAPI/finance e7regressoescontrollerHMAC/duasbarreirasHTTPPostgres. CIanterior38178800341/job114586754292SUCCESS4/727/374/3 ePASSbarreiras22:05:21Z pertencemSOMENTE44bb, naoautoriza novoSHA. OwnCI novo obrigatório4/727/374/3 +7títulos/ambosHTTPbarreira, depoispostCIactualreal.
+
+Fonte tree é469novo com473workflowKVM/apps dospredecessores, importsAPIfinance+dosevidências471 e470historica. 470nãointegradacomoapp, note/evidência preserved apenasfotografia de sourceKVMtestadooldf25/syntheticd6bae, seráSUPERSEDED por infra473 apósgates. Nãoalegar470merged ou emprestarbinary. DVToriginal5docs mantem integrodoc doantecessornovo+notasoriginais470/471; semresumoouapagardatas/falhas.
+
+Ordem473→468→469→471; retarget471main sóapós469einfra473integrados, revisar11paths(API4+5docs+2evidencias), verificar todosmobile/rootlock/workspace/workflows/build/smoke blobSHAs/modes idênticos469. APK N/A por escopoapenasAPI/finance/docs somenteapósown+postAPKinfra epredecessorconfirmados; se run existirchecarpróprioSHA. Não usarEMPTY/runningcomoPASS. Preservar RLS/HMAC/auth/recipient/replay/moneyrisk/layout/ReactRN/frozenlock. Sem PSP/dinheiroreal/custos/deploypaid/produção; físicos/provider/pentestcontinuamOPEN. Atualizarrecibos reais apósmerges, continuartodasfrentesinternas.
