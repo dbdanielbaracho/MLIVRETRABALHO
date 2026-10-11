@@ -807,3 +807,9 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [COMPANY_PUBLICATION_CONTEXT_DEADLINE_v1.103.md](COMPANY_PUBLICATION_CONTEXT_DEADLINE_v1.103.md):5falhas/1pass antes;6novos/PASS12 local após prazo/catch; publicação/JSX/draft/uncertain preservados. CI458mobile/145API +APK próprios pendentes.
 - [EXECUCAO_VERIFICADA_2026-10-10_2329Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2329Z.md):413CI452mobile/145API/HTTPreal comprovado,412CI424/145 aprovado; natives próprios/pós em execução.
+
+
+## 2026-10-10 — v1.104
+
+- [AGENDA_READ_DEADLINE_v1.104.md](AGENDA_READ_DEADLINE_v1.104.md): seis falhas/três sucessos anteriores; nove regressões novas/PASS24 local; lifecycle/geo/JSX preservados. CI467mobile/145API eAPK próprios pendentes antes da publicação.
+- [EXECUCAO_VERIFICADA_2026-10-10_2343Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2343Z.md): pós-CI401–411 e todos os pós-APKs aplicáveis comprovados no SHA real; CI412–414 comprovados, ownAPKs em execução. Visual Truth físico/gates externos abertos.
