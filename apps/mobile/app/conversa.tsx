@@ -11,21 +11,22 @@ export default function Conversa(){
  const assignmentId=routeId(params.assignmentId),tenantId=routeId(params.tenantId);
  const [data,setData]=useState<Messages>({status:'loading'}),[body,setBody]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
  const draftAuthorization=useRef<string|null>(null),generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;assignmentId:string;tenantId:string}|null>(null);
- function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+ function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  function requestWith(headers:Record<string,string>,signal:AbortSignal):Request{return (path,payload)=>fetch(apiUrl(path),{method:payload?'POST':'GET',headers:{...headers,'x-tenant-id':tenantId,...(payload?{'content-type':'application/json'}:{})},...(payload?{body:JSON.stringify(payload)}:{}),signal});}
  async function load(manual=false,expected?:Record<string,string>){
-  if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData({status:'loading'});
+  if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation(()=>{if(version===generation.current&&seq===sequence.current){snapshot.current=null;setData({status:'error'});setMessage('Não foi possível carregar mensagens no prazo. Atualize para tentar novamente.');}});snapshot.current=null;setData({status:'loading'});
   try{
    if(!assignmentId||!tenantId){setData({status:'error'});return;}
    let originatingHeaders:Record<string,string>|null=null;
    const result=await runForSession(authHeaders,headers=>{originatingHeaders=headers;return loadMessages(requestWith(headers,op.controller.signal),assignmentId);},()=>version===generation.current&&seq===sequence.current&&!op.controller.signal.aborted,expected?.Authorization);
-   if(version!==generation.current||seq!==sequence.current)return;
+   if(version!==generation.current||seq!==sequence.current||op.controller.signal.aborted)return;
    if(result.status==='ready'){
     if(draftAuthorization.current&&draftAuthorization.current!==result.authorization)setBody('');
     draftAuthorization.current=result.authorization;setData(result.data);
     snapshot.current=result.data.status==='ready'&&originatingHeaders?{headers:originatingHeaders,assignmentId,tenantId}:null;if(manual)setMessage('');
    }else{const current=await authHeaders();if(version!==generation.current||seq!==sequence.current)return;setData({status:'error'});if(draftAuthorization.current&&current.Authorization!==draftAuthorization.current){setBody('');draftAuthorization.current=null;}setMessage('A sessão ou conexão mudou. Atualize as mensagens antes de agir.');}
-  }finally{op.finish();}
+  }catch{if(version===generation.current&&seq===sequence.current){snapshot.current=null;setData({status:'error'});setMessage('Não foi possível verificar sua sessão. Atualize as mensagens antes de agir.');}}
+  finally{op.finish();}
  }
  useFocusEffect(useCallback(()=>{++generation.current;draftAuthorization.current=null;setBody('');setMessage('');void load();return()=>{++generation.current;++sequence.current;for(const c of controllers.current)c.abort();controllers.current.clear();snapshot.current=null;draftAuthorization.current=null;pending.current=false;setBusy(false);setBody('');setData({status:'loading'});};},[assignmentId,tenantId]));
  async function send(){

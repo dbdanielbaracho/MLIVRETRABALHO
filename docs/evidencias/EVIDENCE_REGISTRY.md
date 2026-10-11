@@ -818,3 +818,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — Interessados / pós-merge #419
 
 - [CANDIDATES_READ_DEADLINE_2026-10-11.md](CANDIDATES_READ_DEADLINE_2026-10-11.md): 12falhas/9sucessos anteriores;21regressões novas/PASS29local, escritas/layout preservados. CI497mobile/145API eAPK próprios pendentes antes de publicação. Prova completa pós-merge419 no SHA real; gates físicos separados.
+
+
+## 2026-10-11 — Conversa
+
+- [CONVERSATION_READ_DEADLINE_2026-10-11.md](CONVERSATION_READ_DEADLINE_2026-10-11.md):7falhas/6sucessos antes,13novas/PASS24local. Send/rascunho/layout preservados; CI510mobile/145API eAPK próprios pendentes. #420 gates em execução, pós419 comprovado.
