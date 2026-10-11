@@ -37,7 +37,7 @@ export default function Candidatos(){
    const current=await authenticatedTenantHeaders();
    if(version!==generation.current||controller.signal.aborted)return;
    if(!sameCompanyContext(current,headers)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize a lista de trabalhos.');return;}
-   const ok=await confirmCandidate(async(path,options)=>fetch(apiUrl(path),{...options,headers:{...headers,'content-type':'application/json'},signal:controller.signal}),id,professionalId,headers['x-tenant-id']);
+   const ok=await confirmCandidate(async(path,options)=>{const active=await authenticatedTenantHeaders();if(controller.signal.aborted||version!==generation.current||!sameCompanyContext(active,headers))throw Error('company_context_changed');return fetch(apiUrl(path),{...options,headers:{...headers,'content-type':'application/json'},signal:controller.signal});},id,professionalId,headers['x-tenant-id']);
    const final=await authenticatedTenantHeaders();if(controller.signal.aborted||!sameCompanyContext(final,headers))throw Error('company_context_changed');
    if(version===generation.current){setMessage(ok?'Profissional confirmado.':'Não foi possível confirmar o resultado. Atualize os interessados antes de tentar novamente.');await selectJob(id,true);}
   }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize os interessados para conferir o resultado.');}
