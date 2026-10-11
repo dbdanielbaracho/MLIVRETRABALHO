@@ -1,32 +1,23 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {BadRequestException,ForbiddenException,UnauthorizedException} from '@nestjs/common';
 import {SupportController} from './support.controller';
 import type {DatabaseService} from './database.service';
 import type {AuthService} from './auth.service';
-const assignmentId='11111111-2222-3333-4444-555555555555';
-const body={assignmentId,category:'schedule',description:'  fixture  '};
-function fixture(found=true,authorized=true){
- const calls:Array<{sql:string;values:unknown[]}>=[],tenants:string[]=[];
- const auth={identityFromAuthorization:async()=>({id:'reporter'}),requireMembership:async()=>{if(!authorized)throw Error('membership_denied');return {role:'professional'};}};
- const db={tenant:async(tenant:string,work:(client:unknown)=>Promise<unknown>)=>{tenants.push(tenant);return work({query:async(sql:string,values:unknown[])=>{calls.push({sql,values});return {rows:sql.startsWith('SELECT')?(found?[{id:assignmentId}]:[]):[{id:'case',status:'open'}]};}});}};
- return {controller:new SupportController(db as unknown as DatabaseService,auth as unknown as AuthService),calls,tenants};
+const ID='11111111-2222-3333-4444-555555555555';
+function setup(options:{authorized?:boolean;membership?:boolean;role?:string;found?:boolean;error?:Error}={}){
+ const contexts:string[]=[],queries:{sql:string;params:unknown[]}[]=[],memberships:unknown[][]=[];
+ const auth={identityFromAuthorization:async()=>{if(options.authorized===false)throw new UnauthorizedException();return {id:'trusted-identity'}},requireMembership:async(...args:unknown[])=>{memberships.push(args);if(options.membership===false)throw new UnauthorizedException();return {role:options.role??'owner'};}};
+ const db={tenant:async(tenant:string,op:(db:unknown)=>Promise<unknown>)=>{contexts.push(tenant);if(options.error)throw options.error;return op({query:async(sql:string,params:unknown[]=[])=>{queries.push({sql,params});return {rows:options.found===false?[]:[{id:ID,status:params[2],resolutionNote:params[3],resolvedAt:params[2]==='reviewing'?null:'fixture-date'}]};}});}};
+ return {controller:new SupportController(db as unknown as DatabaseService,auth as unknown as AuthService),contexts,queries,memberships};
 }
-test('support insertion checks the actual assignment in the tenant transaction before writing and binds all parameters',async()=>{
- const f=fixture();assert.deepEqual(await f.controller.create(body,'Bearer fixture','tenant-a'),{id:'case',status:'open'});
- assert.deepEqual(f.tenants,['tenant-a']);assert.equal(f.calls.length,2);
- assert.match(f.calls[0]!.sql,/WHERE tenant_id=\$1 AND id=\$2/);assert.deepEqual(f.calls[0]!.values,['tenant-a',assignmentId]);
- assert.deepEqual(f.calls[1]!.values,['tenant-a','reporter',assignmentId,'schedule','fixture','normal']);
-});
-test('an assignment hidden by tenant RLS cannot produce a support INSERT or acknowledgement',async()=>{
- const f=fixture(false);await assert.rejects(f.controller.create(body,'Bearer fixture','tenant-b'),/support_assignment_not_found/);
- assert.deepEqual(f.tenants,['tenant-b']);assert.equal(f.calls.length,1);assert.equal(f.calls.some(x=>x.sql.startsWith('INSERT')),false);
-});
-test('invalid support input and denied membership never start the tenant transaction',async()=>{
- const f=fixture();for(const input of [{...body,assignmentId:' '},{...body,description:'x'.repeat(4001)},null])await assert.rejects(f.controller.create(input,'Bearer fixture','tenant-a'),/support_case_invalid/);
- assert.equal(f.tenants.length,0);assert.equal(f.calls.length,0);
- const denied=fixture(true,false);await assert.rejects(denied.controller.create(body,'Bearer fixture','tenant-a'),/membership_denied/);assert.equal(denied.tenants.length,0);
-});
-test('a legitimate unlinked request remains allowed without querying an assignment',async()=>{
- const f=fixture();await f.controller.create({category:'other',description:'unlinked'},'Bearer fixture','tenant-a');
- assert.equal(f.calls.length,1);assert.match(f.calls[0]!.sql,/^INSERT/);assert.deepEqual(f.calls[0]!.values,['tenant-a','reporter',null,'other','unlinked','normal']);
-});
+async function invalid(body:unknown,id=ID){const h=setup();await assert.rejects(h.controller.status(id,body as never,'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof BadRequestException&&e.message==='support_status_invalid');assert.equal(h.contexts.length,0);assert.equal(h.queries.length,0);}
+test('support status rejects non-object JSON before accessing note or tenant SQL',async()=>{for(const b of [null,undefined,[],42,true,'text'])await invalid(b);});
+test('support status requires a real text note without coercing non-text values',async()=>{for(const note of [null,undefined,42,true,false,{},[],['note'],'','   '])await invalid({status:'reviewing',note});});
+test('support status enum remains reviewing resolved or dismissed',async()=>{for(const status of [null,undefined,42,true,{},[],'open','invalid',' Reviewing '])await invalid({status,note:'Real note'});});
+test('support status rejects malformed case UUID before tenant reads or updates',async()=>{for(const id of ['bad','42','',ID+'x'])await invalid({status:'reviewing',note:'Note'},id);});
+test('support status authentication and missing tenant still precede payload or UUID validation',async()=>{const h=setup({authorized:false});await assert.rejects(h.controller.status('bad',null as never,undefined,'trusted-tenant'),(e:unknown)=>e instanceof UnauthorizedException);assert.equal(h.contexts.length,0);assert.equal(h.memberships.length,0);const t=setup();await assert.rejects(t.controller.status('bad',null as never,'Bearer fixture',undefined),(e:unknown)=>e instanceof BadRequestException&&e.message==='tenant_required');assert.equal(t.memberships.length,0);assert.equal(t.contexts.length,0);});
+test('support status membership and admin authority remain required before malformed input checks',async()=>{const a=setup({membership:false});await assert.rejects(a.controller.status('bad',null as never,'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof UnauthorizedException);assert.equal(a.contexts.length,0);for(const role of ['professional','member','manager']){const h=setup({role});await assert.rejects(h.controller.status('bad',null as never,'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof ForbiddenException&&e.message==='admin_required');assert.equal(h.contexts.length,0);}});
+test('valid support review retains trusted tenant membership and actual database acknowledgement for each status',async()=>{for(const role of ['owner','admin'])for(const status of ['reviewing','resolved','dismissed']){const h=setup({role});const r=await h.controller.status(ID,{status,note:' Note ',tenantId:'untrusted',reporterIdentityId:'untrusted'} as never,'Bearer fixture','trusted-tenant');assert.deepEqual(h.memberships,[['trusted-identity','trusted-tenant']]);assert.deepEqual(h.contexts,['trusted-tenant']);assert.deepEqual(h.queries[0]!.params,['trusted-tenant',ID,status,'Note']);assert.deepEqual(r,{id:ID,status,resolutionNote:'Note',resolvedAt:status==='reviewing'?null:'fixture-date'});assert.ok(h.queries[0]!.sql.includes("CASE WHEN $3 IN('resolved','dismissed') THEN now() ELSE NULL END"));}});
+test('support status real missing or cross-tenant case keeps not-found response without invented ACK',async()=>{const h=setup({found:false});await assert.rejects(h.controller.status(ID,{status:'reviewing',note:'Note'},'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof BadRequestException&&e.message==='support_case_not_found');assert.equal(h.queries.length,1);assert.deepEqual(h.queries[0]!.params,['trusted-tenant',ID,'reviewing','Note']);});
+test('support status database failures remain uncertain rather than successful or input errors',async()=>{const error=new Error('fixture_db'),h=setup({error});await assert.rejects(h.controller.status(ID,{status:'reviewing',note:'Note'},'Bearer fixture','trusted-tenant'),e=>e===error);});
