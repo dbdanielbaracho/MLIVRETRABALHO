@@ -863,3 +863,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — login com fila/rollback preservados
 
 - [SIGNIN_SESSION_DEADLINE_2026-10-11.md](SIGNIN_SESSION_DEADLINE_2026-10-11.md):7falhas/4sucessos antes;11novos/PASS24local. Prazo libera tela, preserva fila e rollback/par atual antes de login posterior. Storage nativo/físico não comprovado. CI637mobile/145API+APK próprios pendentes; ownCIs420–428 aprovados, pós420CI aprovado/APK em execução.
+
+
+## 2026-10-11 — saída local preservando sessão posterior
+
+- [SIGNOUT_LOCAL_DEADLINE_2026-10-11.md](SIGNOUT_LOCAL_DEADLINE_2026-10-11.md):12falhas/6sucessos antes;18novos/PASS29local. Prazo inclui storage e permite fallbacklocal offline mantendo expectedToken/fila/readback, sem apagar novo login/alegar revogação remota. Perfilsave/layouts/helpers preservados. CI655mobile/145API+APK próprios pendentes;420–423mergedowncompletos, pós420/421CI aprovados/APKs pendentes.

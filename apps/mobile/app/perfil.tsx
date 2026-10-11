@@ -18,6 +18,7 @@ export default function Perfil(){
  const[expanded,setExpanded]=useState<string|null>(null),[notice,setNotice]=useState('');
  const[saving,setSaving]=useState(false),[signingOut,setSigningOut]=useState(false);
  const dirty=useRef(false),submitting=useRef(false),exiting=useRef(false),requestId=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),sourceHeaders=useRef<Record<string,string>|null>(null),draftOwner=useRef<string|undefined>(undefined);
+ const exitController=useRef<AbortController|null>(null);
  function changedContext(){sourceHeaders.current=null;dirty.current=false;setDisplayName('');setCity('');setRole('');setProfile({status:'error'});setPassport({status:'error'});setNotice('A sessão mudou. Atualize seus dados antes de continuar.');}
  const load=useCallback(async(focusSignal?:AbortSignal)=>{
   const id=++requestId.current,generation=epoch.current;sourceHeaders.current=null;setProfile({status:'loading'});setPassport({status:'loading'});
@@ -65,13 +66,14 @@ export default function Perfil(){
  async function signout(){
   if(exiting.current||submitting.current)return;
   exiting.current=true;setSigningOut(true);const generation=epoch.current;
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);controllers.current.add(controller);let authorization:string|undefined,started=false;
-  try{const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;authorization=h.Authorization;started=true;await fetch(apiUrl('/auth/signout'),{method:'POST',headers:h,signal:controller.signal});}
+  const controller=new AbortController();controllers.current.add(controller);exitController.current=controller;let authorization:string|undefined,started=false,releaseDeadline:()=>void=()=>{};
+  const current=()=>generation===epoch.current&&exitController.current===controller,deadline=new Promise<void>(resolve=>{releaseDeadline=resolve;});
+  const timeout=setTimeout(()=>{controller.abort();releaseDeadline();if(current()){exiting.current=false;setSigningOut(false);setNotice('Não foi possível confirmar a saída em 15 segundos. A limpeza local ainda pode estar pendente. Tente novamente.');}},15000);
+  try{const h=await authHeaders();if(!current()||controller.signal.aborted)return;authorization=h.Authorization;started=true;await Promise.race([fetch(apiUrl('/auth/signout'),{method:'POST',headers:h,signal:controller.signal}),deadline]);}
   catch{ /* Clear the requested local session even when offline. */ }
   finally{
-   clearTimeout(timeout);controllers.current.delete(controller);
-   if(started){const cleared=await clearSessionForAuthorization(authorization);if(generation===epoch.current){if(cleared==='cleared')router.replace('/');else{setNotice(cleared==='stale'?'A sessão mudou. Atualize seus dados antes de sair novamente.':'Não foi possível limpar o acesso neste aparelho. Tente novamente.');void load();}}}
-   if(generation===epoch.current){exiting.current=false;setSigningOut(false);}
+   try{if(started){const cleared=await clearSessionForAuthorization(authorization);if(current()){if(cleared==='cleared')router.replace('/');else{setNotice(cleared==='stale'?'A sessão mudou. Atualize seus dados antes de sair novamente.':'Não foi possível limpar o acesso neste aparelho. Tente novamente.');void load();}}}}
+   finally{clearTimeout(timeout);controllers.current.delete(controller);if(current()){exitController.current=null;exiting.current=false;setSigningOut(false);}}
   }
  }
  const rows=[['👤','Meus dados'],['▣','Experiência profissional'],['♡','Preferências'],['◷','Disponibilidade'],['♢','Notificações'],['?','Ajuda e suporte'],['▤','Termos e privacidade']];
