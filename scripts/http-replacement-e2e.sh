@@ -2,6 +2,12 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+if [[ ! "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]]; then
+  echo "HTTP replacement/cancellation fixtures require a local API on an explicit port" >&2
+  exit 1
+fi
+CANCEL_INPUT_DIR="$(mktemp -d)"
+trap 'rm -rf "$CANCEL_INPUT_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
 PASSWORD="ReplacementPass123!"
 PRO1_EMAIL="replacement-pro1-${STAMP}@example.test"
@@ -16,6 +22,8 @@ AVAIL_END="$(node -e 'process.stdout.write(new Date(Date.now()+81*60*60*1000).to
 
 json_field(){ node -e 'const fs=require("fs");let x=JSON.parse(fs.readFileSync(0,"utf8"));for(const p of process.argv[1].split(".")){if(/^\d+$/.test(p))x=x[Number(p)];else x=x?.[p]}if(x===undefined||x===null)process.exit(2);process.stdout.write(String(x));' "$1"; }
 request(){ local method="$1" url="$2" token="${3:-}" tenant="${4:-}" body="${5:-}"; local args=(-sS --fail-with-body -X "$method" "${BASE_URL%/}$url"); [[ -n "$token" ]] && args+=(-H "authorization: Bearer $token"); [[ -n "$tenant" ]] && args+=(-H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
+
+status_only(){ local method="$1" url="$2" token="$3" tenant="$4" body="${5:-}"; local args=(-sS -o "$CANCEL_INPUT_DIR/negative.json" -w '%{http_code}' -X "$method" "${BASE_URL%/}$url" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant"); [[ -n "$body" ]] && args+=(-H 'content-type: application/json' --data "$body"); curl "${args[@]}"; }
 
 request POST /v1/auth/signup '' '' "{\"email\":\"$PRO1_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" >/dev/null
 request POST /v1/auth/signup '' '' "{\"email\":\"$PRO2_EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" >/dev/null
@@ -51,6 +59,27 @@ SEED_ASSIGNMENT_ID="$(printf '%s' "$SEED_CONFIRM" | json_field id)"
 POOL="$(request POST /v1/company/talent-pools "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PRO2_ID\",\"pool\":\"preferred\"}")"
 test "$(printf '%s' "$POOL" | json_field professionalId)" = "$PRO2_ID"
 
+# Invalid cancellation must not mutate either professional's real assignments.
+CANCEL_PRO1_BEFORE="$(request GET /v1/assignments/mine "$PRO1_TOKEN")"
+CANCEL_PRO2_BEFORE="$(request GET /v1/assignments/mine "$PRO2_TOKEN")"
+CANCEL_REPLACEMENTS_BEFORE="$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")"
+node - "$CANCEL_INPUT_DIR" <<'NODE'
+const fs=require('fs'),dir=process.argv[2];
+const bodies=[null,[],true,false,42,'text',{},...[null,true,false,42,{},[],['Fixture'],'','   ','x'.repeat(1001)].map(reason=>({reason}))];
+bodies.forEach((b,i)=>fs.writeFileSync(dir+'/cancel-'+i+'.json',JSON.stringify(b)));
+NODE
+for payload in "$CANCEL_INPUT_DIR"/cancel-*.json; do
+ test "$(status_only POST "/v1/assignments/$ORIGINAL_ASSIGNMENT_ID/cancel" "$COMPANY_TOKEN" "$TENANT_ID" "$(cat "$payload")")" = "400"
+done
+test "$(status_only POST /v1/assignments/not-a-uuid/cancel "$COMPANY_TOKEN" "$TENANT_ID" '{"reason":"Fixture"}')" = "400"
+test "$(status_only POST "/v1/assignments/$ORIGINAL_ASSIGNMENT_ID/cancel" '' "$TENANT_ID" 'null')" = "401"
+# Both professionals have tenant membership; an unrelated professional still cannot cancel.
+test "$(status_only POST "/v1/assignments/$ORIGINAL_ASSIGNMENT_ID/cancel" "$PRO2_TOKEN" "$TENANT_ID" '{"reason":"Fixture"}')" = "400"
+test "$(request GET /v1/assignments/mine "$PRO1_TOKEN")" = "$CANCEL_PRO1_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO2_TOKEN")" = "$CANCEL_PRO2_BEFORE"
+test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$CANCEL_REPLACEMENTS_BEFORE"
+echo "PASS: cancellation malformed JSON reason UUID and unauthorized actor leave real assignments unchanged"
+
 REPLACEMENT="$(request POST "/v1/company/replacements/$ORIGINAL_ASSIGNMENT_ID" "$COMPANY_TOKEN" "$TENANT_ID" '{"reason":"Troca operacional"}')"
 REPLACEMENT_ID="$(printf '%s' "$REPLACEMENT" | json_field id)"
 
@@ -71,6 +100,24 @@ node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const t
 
 REPLACEMENTS="$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const pro=process.argv[3];const item=rows.find(x=>x.id===id);if(!item||item.status!=="matched"||item.replacementProfessionalId!==pro){console.error("replacement request not resolved",JSON.stringify(item));process.exit(1)}' "$REPLACEMENTS" "$REPLACEMENT_ID" "$PRO2_ID"
+
+# These CI-only assignments were already verified confirmed by the original replacement flow.
+PRO_CANCEL_BODY="$(node -e 'process.stdout.write(JSON.stringify({reason:"  "+"x".repeat(1000)+"  ",initiator_identity_id:"forged",tenant_id:"forged"}))')"
+PRO_CANCEL="$(request POST "/v1/assignments/$SEED_ASSIGNMENT_ID/cancel" "$PRO2_TOKEN" "$TENANT_ID" "$PRO_CANCEL_BODY")"
+COMPANY_CANCEL="$(request POST "/v1/assignments/$NEW_ASSIGNMENT_ID/cancel" "$COMPANY_TOKEN" "$TENANT_ID" '{"reason":"  Fixture company cancellation  ","initiator_identity_id":"forged"}')"
+node - "$PRO_CANCEL" "$COMPANY_CANCEL" "$SEED_ASSIGNMENT_ID" "$NEW_ASSIGNMENT_ID" <<'NODE'
+const rows=[JSON.parse(process.argv[2]),JSON.parse(process.argv[3])],ids=[process.argv[4],process.argv[5]];
+for(const [i,row] of rows.entries()){
+ if(row.id!==ids[i]||row.status!=='cancelled'||row.initiatorKind!==['professional','company'][i]||row.compensationPolicy!=='none_until_fin_risk_policy_approved')throw Error('real cancellation ACK or policy changed');
+}
+NODE
+test "$(status_only POST "/v1/assignments/$SEED_ASSIGNMENT_ID/cancel" "$PRO2_TOKEN" "$TENANT_ID" '{"reason":"Retry must keep existing policy"}')" = "400"
+AFTER_CANCEL="$(request GET /v1/assignments/mine "$PRO2_TOKEN")"
+node - "$AFTER_CANCEL" "$SEED_ASSIGNMENT_ID" "$NEW_ASSIGNMENT_ID" "$TENANT_ID" <<'NODE'
+const rows=JSON.parse(process.argv[2]);for(const id of [process.argv[3],process.argv[4]]){const row=rows.find(r=>r.id===id);if(!row||row.status!=='cancelled'||row.tenantId!==process.argv[5])throw Error('actual tenant assignment was not cancelled');}
+NODE
+test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$REPLACEMENTS"
+echo "PASS: professional and company cancellation retain real ACKs tenant scope and no financial compensation"
 
 request POST /v1/auth/signout "$PRO1_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$PRO2_TOKEN" '' '{}' >/dev/null
