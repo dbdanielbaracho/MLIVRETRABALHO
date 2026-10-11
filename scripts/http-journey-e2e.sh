@@ -3,6 +3,8 @@ set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
 [[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
+GPS_INPUT_DIR="$(mktemp -d)"
+trap 'rm -rf "$GPS_INPUT_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
 PRO_EMAIL="pro-${STAMP}@example.test"
 COMPANY_EMAIL="company-${STAMP}@example.test"
@@ -144,6 +146,34 @@ test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$TRANSITION_MINE_BEFO
 test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$TRANSITION_EARNINGS_BEFORE"
 echo 'PASS: assignment malformed UUID and tenant or actor failures preserve real assignments and earnings'
 
+# Invalid GPS types must never become invented 0,0 coordinates or mutate operational state.
+GPS_MINE_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+GPS_EARNINGS_BEFORE="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+node - "$GPS_INPUT_DIR" <<'NODE'
+const fs=require('fs'),dir=process.argv[2];
+const cases=[
+ ...[false,true,42,'text',[],[{lat:1,lng:1}]].map(body=>({body,error:'location_invalid'})),
+ ...[false,true,'','0',[],[0],{}].map(lat=>({body:{lat,lng:1},error:'latitude_invalid'})),
+ ...[false,true,'','0',[],[0],{}].map(lng=>({body:{lat:1,lng},error:'longitude_invalid'})),
+ ...[{lat:1},{lng:1},{lat:null,lng:1},{lat:1,lng:null}].map(body=>({body,error:'location_pair_required'})),
+ ...[{lat:91,lng:1},{lat:-91,lng:1}].map(body=>({body,error:'latitude_invalid'})),
+ ...[{lat:1,lng:181},{lat:1,lng:-181}].map(body=>({body,error:'longitude_invalid'}))
+];
+cases.forEach((value,i)=>fs.writeFileSync(dir+'/gps-'+i+'.json',JSON.stringify(value)));
+NODE
+for step in check-in check-out; do
+ for payload in "$GPS_INPUT_DIR"/gps-*.json; do
+  body="$(node -e 'process.stdout.write(JSON.stringify(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).body))' "$payload")"
+  expected="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).error)' "$payload")"
+  code="$(curl -sS -o "$GPS_INPUT_DIR/response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/assignments/$ASSIGNMENT_ID/$step" -H "authorization: Bearer $PRO_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data "$body")"
+  test "$code" = "400"
+  test "$(json_field message < "$GPS_INPUT_DIR/response.json")" = "$expected"
+ done
+done
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$GPS_MINE_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$GPS_EARNINGS_BEFORE"
+echo 'PASS: malformed GPS JSON and non-numeric coordinates reject without invented coordinates or real assignment mutations'
+
 for STEP in check-in start check-out complete; do
   STATUS="$(case "$STEP" in check-in) echo checked_in;; start) echo in_progress;; check-out) echo checked_out;; complete) echo completed;; esac)"
   TRANSITION_ACK="$(request POST "/v1/assignments/$ASSIGNMENT_ID/$STEP" "$PRO_TOKEN" "$TENANT_ID" '{}')"
@@ -164,6 +194,18 @@ contains "$EARNINGS" "$TENANT_ID"
 EARNINGS_AFTER_REPLAY="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
 test "$EARNINGS_AFTER_REPLAY" = "$EARNINGS"
 echo 'PASS: assignment lifecycle returns real timestamps without GPS and rejects replay without duplicate earnings'
+
+# Separate company-B fixture verifies numerical zero and bounds; company-A flow above remained GPS-optional.
+GPS_VALID_IN="$(request POST "/v1/assignments/$ASSIGNMENT2_ID/check-in" "$PRO_TOKEN" "$TENANT2_ID" '{"lat":0,"lng":0}')"
+GPS_VALID_OUT="$(request POST "/v1/assignments/$ASSIGNMENT2_ID/check-out" "$PRO_TOKEN" "$TENANT2_ID" '{"lat":90,"lng":180}')"
+node - "$GPS_VALID_IN" "$GPS_VALID_OUT" "$ASSIGNMENT2_ID" <<'NODE'
+const rows=[JSON.parse(process.argv[2]),JSON.parse(process.argv[3])],id=process.argv[4];
+for(const [i,row] of rows.entries()){
+ if(row.id!==id||row.status!==['checked_in','checked_out'][i]||!Number.isFinite(Date.parse(row[['checkedInAt','checkedOutAt'][i]])))throw Error('valid numerical GPS lost actual ACK or timestamp');
+}
+NODE
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$EARNINGS"
+echo 'PASS: GPS remains optional while numerical zero and bounds retain real lifecycle ACKs without new earnings'
 
 RATING="$(request POST "/v1/assignments/$ASSIGNMENT_ID/rating" "$COMPANY_TOKEN" "$TENANT_ID" '{"score":5,"comment":"Excelente"}')"
 test "$(printf '%s' "$RATING" | json_field score)" = "5"
