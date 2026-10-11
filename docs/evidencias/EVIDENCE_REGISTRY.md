@@ -914,3 +914,8 @@ Três testes adicionais dos handlers reais: matriz anterior 9 testes, 2 FAIL/7 P
 ## Talentos / recibo #438 — 2026-10-11
 
 [TALENT_INPUT_RUNTIME_VALIDATION_2026-10-11.md](TALENT_INPUT_RUNTIME_VALIDATION_2026-10-11.md): ANTES3FAIL/5PASS, DEPOIS8PASS; novo HTTP/CI177API a provar; merge438/CI pós-merge provados, APK pós438/retry427 pendentes. Originalv1.104/histórico preservados. Gate físico/provider independente e aberto.
+
+
+## Avaliações / recibo #439 — 2026-10-11
+
+[RATING_INPUT_RUNTIME_VALIDATION_2026-10-11.md](RATING_INPUT_RUNTIME_VALIDATION_2026-10-11.md): 9novos testes ANTES3FAIL/6PASS, DEPOIS9PASS; 12locais com política existente; HTTP38requests/CI186API pendentes antes de publicação. #439 integrado com CI177API completo; native próprio N/A, pós-CI439/pósAPK438/retry427 separados pendentes.
