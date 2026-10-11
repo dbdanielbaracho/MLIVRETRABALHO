@@ -909,3 +909,8 @@ Três testes adicionais dos handlers reais: matriz anterior 9 testes, 2 FAIL/7 P
 - [MEMBERS_INPUT_RUNTIME_VALIDATION_2026-10-11.md](MEMBERS_INPUT_RUNTIME_VALIDATION_2026-10-11.md): convites Body/string/UUID, sem coerção/escrita/consumo inválido; 7 regressões locais PASS, CI/HTTP próprio pendente; native N/A condicional.
 
 - [MEMBER_REVOKE_SCREEN_DEADLINE_2026-10-11.md](MEMBER_REVOKE_SCREEN_DEADLINE_2026-10-11.md):14 regressões novas/67local PASS, prazo Membros.revoke; recibos exatos de merge/pre/post420–437, native post425–434 pendente, gates próprios novos713/169+APK pendentes.
+
+
+## Talentos / recibo #438 — 2026-10-11
+
+[TALENT_INPUT_RUNTIME_VALIDATION_2026-10-11.md](TALENT_INPUT_RUNTIME_VALIDATION_2026-10-11.md): ANTES3FAIL/5PASS, DEPOIS8PASS; novo HTTP/CI177API a provar; merge438/CI pós-merge provados, APK pós438/retry427 pendentes. Originalv1.104/histórico preservados. Gate físico/provider independente e aberto.
