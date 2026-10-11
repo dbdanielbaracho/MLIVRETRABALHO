@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, NotFoundException, Body, Contr
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
+const caseUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const statuses = ['open', 'reviewing', 'resolved', 'dismissed'];
 
 @Controller('company/safety-cases')
@@ -37,6 +38,7 @@ export class SafetyAdminController {
     @Headers('x-tenant-id') tenantId?: string
   ) {
     const context = await this.context(authorization, tenantId);
+    if (!caseUuid.test(id)) throw new BadRequestException('safety_case_invalid');
     return this.db.tenant(context.tenantId, async db => {
       const safetyCase = (
         await db.query('SELECT id FROM safety_cases WHERE id=$1 AND tenant_id=$2', [id, context.tenantId])
@@ -55,14 +57,18 @@ export class SafetyAdminController {
   @Post(':id/status')
   async status(
     @Param('id') id: string,
-    @Body() body: { status?: string; note?: string },
+    @Body() body: unknown,
     @Headers('authorization') authorization?: string,
     @Headers('x-tenant-id') tenantId?: string
   ) {
     const context = await this.context(authorization, tenantId);
-    if (!body.status || !statuses.includes(body.status)) throw new BadRequestException('safety_status_invalid');
-    const note = body.note?.trim() || null;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new BadRequestException('safety_status_invalid');
+    const input = body as Record<string, unknown>;
+    if (typeof input.status !== 'string' || !statuses.includes(input.status)) throw new BadRequestException('safety_status_invalid');
+    if (input.note != null && typeof input.note !== 'string') throw new BadRequestException('safety_note_invalid');
+    const note = typeof input.note === 'string' ? input.note.trim() || null : null;
     if (note && note.length > 2000) throw new BadRequestException('safety_note_invalid');
+    if (!caseUuid.test(id)) throw new BadRequestException('safety_case_invalid');
 
     return this.db.tenant(context.tenantId, async db => {
       const current = (
@@ -72,18 +78,18 @@ export class SafetyAdminController {
         )
       ).rows[0];
       if (!current) throw new NotFoundException('safety_case_not_found');
-      if (current.status === body.status) return { ...current, changed: false };
+      if (current.status === input.status) return { ...current, changed: false };
 
       const updated = (
         await db.query<{ id: string; status: string; resolvedAt: string | null }>(
           "UPDATE safety_cases SET status=$2,resolved_at=CASE WHEN $2 IN ('resolved','dismissed') THEN now() ELSE NULL END WHERE id=$1 AND tenant_id=$3 RETURNING id,status,resolved_at AS \"resolvedAt\"",
-          [id, body.status, context.tenantId]
+          [id, input.status, context.tenantId]
         )
       ).rows[0];
 
       await db.query(
         'INSERT INTO safety_case_events(tenant_id,safety_case_id,actor_identity_id,from_status,to_status,note) VALUES($1,$2,$3,$4,$5,$6)',
-        [context.tenantId, id, context.identity.id, current.status, body.status, note]
+        [context.tenantId, id, context.identity.id, current.status, input.status, note]
       );
 
       return { ...updated, changed: true };
