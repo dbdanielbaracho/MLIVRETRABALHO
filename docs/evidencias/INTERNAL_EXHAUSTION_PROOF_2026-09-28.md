@@ -1,3 +1,5 @@
+> Aviso operacional — 2026-10-11: snapshot histórico preservado abaixo. As declarações de exaustão/conclusão interna correspondem somente à data e ao baseline ali indicado. O DVT ORIGINAL v1.104, README, código, PRs e checkpoint atuais governam a execução; falhas internas verificadas em #468–472 demonstram que ausência de TODO/PR aberta ou um gate externo não prova conclusão nem justifica parar tarefas independentes. Não substituir prova externa por CI/emulador ou contratar serviço sem autorização.
+
 # Internal Exhaustion Proof — 2026-09-28
 
 This checkpoint records why autonomous no-cost execution stops here without claiming external completion.
@@ -35,3 +37,4 @@ Autonomous execution resumes immediately when any one of these becomes available
 4. explicit authorization to create the metered Railway Web service.
 
 Until then, additional code churn would be scope expansion rather than completion of the frozen baseline.
+
