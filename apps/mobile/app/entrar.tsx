@@ -14,18 +14,19 @@ export default function Entrar() {
   async function signin() {
     if(pending.current)return;
     pending.current=true;setBusy(true);setMessage('');const generation=epoch.current,operation=new AbortController();controller.current=operation;
-    const timer=setTimeout(()=>operation.abort(),15000);
+    const current=()=>generation===epoch.current&&controller.current===operation;
+    const timer=setTimeout(()=>{operation.abort();if(current()){pending.current=false;setBusy(false);setMessage('Não foi possível confirmar o acesso em 15 segundos. Tente novamente.');}},15000);
     try{
-      const expectedToken=await getSession();if(generation!==epoch.current||operation.signal.aborted)return;
+      const expectedToken=await getSession();if(!current()||operation.signal.aborted)return;
       const result=await signinAccount((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),email,password);
-      if(generation!==epoch.current)return;
+      if(!current()||operation.signal.aborted)return;
       if(result.status!=='ready'){setMessage(result.status==='limited'?'Muitas tentativas. Aguarde antes de entrar novamente.':result.status==='invalid'||result.status==='rejected'?'Confira seu e-mail e senha':'Não foi possível confirmar o acesso. Tente novamente.');return;}
-      const saved=await saveVerifiedSignin({token:result.data.accessToken,tenantId:result.data.tenantId},expectedToken,()=>generation===epoch.current&&!operation.signal.aborted);
-      if(generation!==epoch.current)return;
+      const saved=await saveVerifiedSignin({token:result.data.accessToken,tenantId:result.data.tenantId},expectedToken,()=>current()&&!operation.signal.aborted);
+      if(!current()||operation.signal.aborted)return;
       if(saved!=='saved'){setMessage(saved==='stale'?'A sessão mudou. Entre novamente.':'Não foi possível salvar o acesso neste aparelho. Tente novamente.');return;}
       setPassword('');router.replace(result.data.tenantId?'/empresa-inicio':'/trabalhos');
-    }catch{if(generation===epoch.current)setMessage('Não foi possível confirmar o acesso. Tente novamente.');}
-    finally{clearTimeout(timer);if(generation===epoch.current){pending.current=false;setBusy(false);}}
+    }catch{if(current()&&!operation.signal.aborted)setMessage('Não foi possível confirmar o acesso. Tente novamente.');}
+    finally{clearTimeout(timer);if(current()){controller.current=null;pending.current=false;setBusy(false);}}
   }
 
   return (

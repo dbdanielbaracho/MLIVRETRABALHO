@@ -858,3 +858,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — recuperação de cadastro incerto
 
 - [SIGNUP_UNCERTAIN_DEADLINE_2026-10-11.md](SIGNUP_UNCERTAIN_DEADLINE_2026-10-11.md):6falhas/3sucessos antes;9novos/PASS20local. Prazo revela link Entrar sem desbloquear unknown/segundoPOST; drafts/ACK/layout preservados. CI626mobile/145API+APK próprios pendentes. #420merged apósCI/nativeown completos; pós420emexecução,421–427ownAPKs pendentes.
+
+
+## 2026-10-11 — login com fila/rollback preservados
+
+- [SIGNIN_SESSION_DEADLINE_2026-10-11.md](SIGNIN_SESSION_DEADLINE_2026-10-11.md):7falhas/4sucessos antes;11novos/PASS24local. Prazo libera tela, preserva fila e rollback/par atual antes de login posterior. Storage nativo/físico não comprovado. CI637mobile/145API+APK próprios pendentes; ownCIs420–428 aprovados, pós420CI aprovado/APK em execução.
