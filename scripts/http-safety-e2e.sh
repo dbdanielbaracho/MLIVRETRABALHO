@@ -38,6 +38,37 @@ request POST "/v1/jobs/$JOB_ID/interest" "$PRO_TOKEN" >/dev/null
 ASSIGNMENT="$(request POST "/v1/company/jobs/$JOB_ID/confirm" "$COMPANY_A_TOKEN" "$TENANT_A" "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
 ASSIGNMENT_ID="$(printf '%s' "$ASSIGNMENT" | json_field id)"
 
+
+# Invalid report payloads reject before creating a safety case, including malformed assignment UUIDs.
+REPORT_MINE_BEFORE="$(request GET /v1/safety-cases/mine "$PRO_TOKEN")"
+REPORT_COMPANY_BEFORE="$(request GET /v1/company/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A")"
+node - "$SAFETY_INPUT_DIR" "$ASSIGNMENT_ID" <<'NODE'
+const fs=require('fs'),dir=process.argv[2],id=process.argv[3],base={category:'other',description:'fixture'};
+const rows=[
+ ...[null,false,true,42,'text',[],{}].map(body=>({body,error:'safety_case_invalid'})),
+ ...[null,false,true,42,[],{},['text'],'','  ','x'.repeat(4001)].map(description=>({body:{...base,description},error:'safety_case_invalid'})),
+ ...[null,false,42,[],{},['other'],'unknown'].map(category=>({body:{...base,category},error:'safety_case_invalid'})),
+ ...['','invalid',false,42,[],{},[id]].map(assignmentId=>({body:{...base,assignmentId},error:'assignment_invalid'}))
+];rows.forEach((x,i)=>fs.writeFileSync(dir+'/bad-report-'+i+'.json',JSON.stringify(x)));
+NODE
+for token in "$PRO_TOKEN" "$COMPANY_A_TOKEN"; do
+ for payload in "$SAFETY_INPUT_DIR"/bad-report-*.json; do
+  body="$(node -e 'process.stdout.write(JSON.stringify(JSON.parse(require("fs").readFileSync(process.argv[1])).body))' "$payload")"
+  error="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1])).error)' "$payload")"
+  code="$(curl -sS -o "$SAFETY_INPUT_DIR/report-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/safety-cases" -H "authorization: Bearer $token" -H "x-tenant-id: $TENANT_A" -H 'content-type: application/json' --data "$body")"
+  test "$code" = 400
+  test "$(json_field message < "$SAFETY_INPUT_DIR/report-response.json")" = "$error"
+ done
+done
+test "$(status_only POST /v1/safety-cases invalid-token "$TENANT_A" null)" = 401
+test "$(status_only POST /v1/safety-cases "$PRO_TOKEN" '' null)" = 400
+test "$(status_only POST /v1/safety-cases "$PRO_TOKEN" "$TENANT_B" null)" = 401
+test "$(status_only POST /v1/safety-cases "$COMPANY_A_TOKEN" "$TENANT_B" null)" = 401
+test "$(status_only POST /v1/safety-cases "$PRO_TOKEN" "$TENANT_A" '{"assignmentId":"00000000-0000-0000-0000-000000000000","category":"other","description":"fixture"}')" = 400
+test "$(request GET /v1/safety-cases/mine "$PRO_TOKEN")" = "$REPORT_MINE_BEFORE"
+test "$(request GET /v1/company/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A")" = "$REPORT_COMPANY_BEFORE"
+echo 'PASS: malformed safety reports and assignment UUIDs reject without creating real cases'
+
 CASE="$(request POST /v1/safety-cases "$PRO_TOKEN" "$TENANT_A" "{\"assignmentId\":\"$ASSIGNMENT_ID\",\"category\":\"unsafe_work\",\"description\":\"Condição insegura no local do trabalho\"}")"
 CASE_ID="$(printf '%s' "$CASE" | json_field id)"
 test "$(printf '%s' "$CASE" | json_field status)" = "open"
@@ -126,6 +157,28 @@ const notes=["Revisão humana iniciada",null,null,null,"Fixture"];
 if(x.length!==5||x.some((e,i)=>e.toStatus!==targets[i]||e.fromStatus!==from[i]||e.note!==notes[i]||e.actorIdentityId!==actor))throw Error("safety_optional_note_or_event_history_invalid");
 NODE
 echo 'PASS: safety admin optional notes and four statuses retain real dates trusted actors and idempotent audit events'
+
+
+# Optional assignment, every original category, trusted actor and actual ACK timestamps stay valid.
+for category in harassment violence fraud discrimination unsafe_work other; do
+ body="$(node -e 'const x={category:process.argv[1],description:"  "+"x".repeat(4000)+"  ",reporterIdentityId:"spoof",tenantId:"spoof"};if(x.category==="other")x.assignmentId=null;process.stdout.write(JSON.stringify(x));' "$category")"
+ ack="$(request POST /v1/safety-cases "$PRO_TOKEN" "$TENANT_A" "$body")"
+ mine="$(request GET /v1/safety-cases/mine "$PRO_TOKEN" "$TENANT_A")"
+ owner="$(request GET /v1/company/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A")"
+ node - "$ack" "$mine" "$owner" "$category" "$TENANT_A" <<'NODE'
+const ack=JSON.parse(process.argv[2]),mine=JSON.parse(process.argv[3]),owner=JSON.parse(process.argv[4]),category=process.argv[5],tenant=process.argv[6],row=mine.find(x=>x.id===ack.id);
+if(!ack.id||ack.category!==category||ack.status!=='open'||!Number.isFinite(Date.parse(ack.createdAt))||!row||row.assignmentId!==null||row.category!==category||row.description!=='x'.repeat(4000)||row.tenantId!==tenant||row.reportedByMe!==true||!owner.some(x=>x.id===ack.id))throw Error('optional safety report lost actual trimmed text, actor, tenant or ACK');
+NODE
+done
+owner_ack="$(request POST /v1/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A" "{\"assignmentId\":\"$ASSIGNMENT_ID\",\"category\":\"other\",\"description\":\"owner fixture\"}")"
+test "$(printf '%s' "$owner_ack" | json_field status)" = open
+test "$(printf '%s' "$owner_ack" | json_field category)" = other
+node - "$owner_ack" "$(request GET /v1/safety-cases/mine "$PRO_TOKEN" "$TENANT_A")" "$ASSIGNMENT_ID" <<'NODE'
+const ack=JSON.parse(process.argv[2]),rows=JSON.parse(process.argv[3]),id=process.argv[4],row=rows.find(x=>x.id===ack.id);
+if(!ack.id||!Number.isFinite(Date.parse(ack.createdAt))||!row||row.assignmentId!==id||row.reportedByMe!==false)throw Error('company report lost linked professional visibility or real ACK');
+NODE
+not_contains "$(request GET /v1/company/safety-cases "$COMPANY_B_TOKEN" "$TENANT_B")" "$(printf '%s' "$owner_ack" | json_field id)"
+echo 'PASS: optional safety assignments and original categories retain real scoped report ACKs and dates'
 
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_A_TOKEN" '' '{}' >/dev/null
