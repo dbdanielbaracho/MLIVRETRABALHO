@@ -18,3 +18,7 @@ Próxima ação segura após integração: reconsultar main/PRs/gates e auditar 
 ### Correção do teste após CI própria
 
 Head inicial 76a08b4e421ec5b8c91ec2c73b249a44f54d8e05, CI38138064763/job114465949006 FAILED no typecheck: TS2532 em safety-appeals-input.controller.test.ts linha87, query[0] possivelmente ausente. Log completo inspecionado; build/testes/HTTP posteriores SKIPPED não são aprovação. Corrigida somente asserção: obter lock, assert.ok(lock), então conferir SQL. Sem mudar controller/policy/SQL/expectativas nem remover testes. Testes locais repetidos e nova CI inteira obrigatória em novo SHA; não rerun cego, não reutilizar gate do head falho. Histórico de falha preservado.
+
+## Recibo final posterior — 2026-10-11
+
+PR #447 merged `dc3b70d61153c6e8a1d14ca0f6678f4586667ffa`, tree`e42ed66bb9d8664f81076320c487cb67f1451b24` e pais`3de10488b64a90139386fc2b6f5617744b35100c`,`88da0e014bbbc74cef13b860aa6fa60595564f73` confirmados; CI própria 38138158446/job114466235501 no head`88da0e014bbbc74cef13b860aa6fa60595564f73`, pós38138345123/job114466789634 no merge exato, SUCCESS4web/713mobile/241API/3CLI e zero falhas, todos steps/HTTP específicos completos. Não inferido de pré-merge. Pendência de CI/merge descrita anteriormente é snapshot histórico resolvido por esta evidência posterior. Recibo completo e timestamps primários: [API_RUNTIME_RECEIPTS_446_452_2026-10-11.md](API_RUNTIME_RECEIPTS_446_452_2026-10-11.md). APKpróprio/pósN/A no escopoAPI/docs/árvoremobileinalterada, não gatefísico. Projeto não concluído.
