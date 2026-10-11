@@ -2,6 +2,9 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
+PLAN_INPUT_DIR="$(mktemp -d)"
+trap 'rm -rf "$PLAN_INPUT_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
 PASSWORD='PlannerPass123!'
 
@@ -51,6 +54,47 @@ if(!e||!c){console.error("planner jobs missing",rows);process.exit(1)}
 if(e.interestCount!==0||e.confirmedCount!==0||e.activeCount!==0||e.completedCount!==0){console.error("empty planner counts wrong",e);process.exit(1)}
 if(c.interestCount!==1||c.confirmedCount!==1||c.activeCount!==0||c.completedCount!==0){console.error("confirmed planner counts wrong",c);process.exit(1)}
 ' "$PLANNER" "$EMPTY_ID" "$CONF_ID" "$B_JOB_ID"
+
+
+# Local disposable fixtures only: malformed plans cannot alter persisted journey facts.
+PLAN_ASSIGN_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+PLAN_EARNINGS_BEFORE="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+PLAN_NOTIFICATIONS_BEFORE="$(request GET /v1/notifications/mine "$PRO_TOKEN")"
+plan_status(){ local id="$1" token="$2" tenant="$3" body="$4"; curl -sS -o "$PLAN_INPUT_DIR/response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/planner/$id/team-plan" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "$body"; }
+PLAN_BODY='{"requirements":[{"role":"Bartender","count":1}]}'
+for id in not-a-uuid 42 "$CONF_ID"x; do
+ test "$(plan_status "$id" "$A_TOKEN" "$TENANT_A" "$PLAN_BODY")" = 400
+ test "$(json_field message < "$PLAN_INPUT_DIR/response.json")" = job_invalid
+done
+for spec in "bad|$TENANT_A|401" "$A_TOKEN||400" "$A_TOKEN|$TENANT_B|401" "$PRO_TOKEN|$TENANT_A|403"; do
+ IFS='|' read -r token tenant expected <<< "$spec"
+ test "$(plan_status not-a-uuid "$token" "$tenant" "$PLAN_BODY")" = "$expected"
+done
+test "$(plan_status not-a-uuid "$A_TOKEN" "$TENANT_A" null)" = 400
+test "$(json_field message < "$PLAN_INPUT_DIR/response.json")" = requirements_invalid
+for id in 00000000-0000-0000-0000-000000000000 "$B_JOB_ID"; do
+ test "$(plan_status "$id" "$A_TOKEN" "$TENANT_A" "$PLAN_BODY")" = 400
+ test "$(json_field message < "$PLAN_INPUT_DIR/response.json")" = job_not_found
+done
+test "$(request GET /v1/company/planner "$A_TOKEN" "$TENANT_A")" = "$PLANNER"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$PLAN_ASSIGN_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$PLAN_EARNINGS_BEFORE"
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$PLAN_NOTIFICATIONS_BEFORE"
+echo 'PASS: malformed team-plan job UUIDs reject after authority and requirements without changing real planner or assignment facts'
+
+PLAN_REAL="$(request POST "/v1/company/planner/$CONF_ID/team-plan" "$A_TOKEN" "$TENANT_A" "$PLAN_BODY")"
+PLAN_UNFILLED="$(request POST "/v1/company/planner/$CONF_ID/team-plan" "$A_TOKEN" "$TENANT_A" '{"requirements":[{"role":"Cleaning fixture","count":1}]}')"
+PLAN_OTHER="$(request POST "/v1/company/planner/$B_JOB_ID/team-plan" "$B_TOKEN" "$TENANT_B" "$PLAN_BODY")"
+node - "$PLAN_REAL" "$PLAN_UNFILLED" "$PLAN_OTHER" "$PRO_ID" <<'NODE'
+const real=JSON.parse(process.argv[2]),empty=JSON.parse(process.argv[3]),other=JSON.parse(process.argv[4]),id=process.argv[5];
+if(real.selected.length!==1||real.selected[0].professionalId!==id||!real.selected[0].available||!real.selected[0].roles.includes('Bartender')||real.unfilled.length!==0||!Number.isFinite(real.score))throw Error('lost real tenant candidate or availability');
+for(const [plan,role] of [[empty,'Cleaning fixture'],[other,'Bartender']])if(plan.selected.length!==0||plan.unfilled.length!==1||plan.unfilled[0].role!==role||plan.unfilled[0].count!==1||plan.score!==0)throw Error('invented eligible candidates or leaked tenant professional');
+NODE
+test "$(request GET /v1/company/planner "$A_TOKEN" "$TENANT_A")" = "$PLANNER"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$PLAN_ASSIGN_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$PLAN_EARNINGS_BEFORE"
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$PLAN_NOTIFICATIONS_BEFORE"
+echo 'PASS: team plans retain real tenant candidates availability optimizer results and empty unfilled positions without writes'
 
 request POST "/v1/assignments/$ASSIGNMENT_ID/check-in" "$PRO_TOKEN" "$TENANT_A" '{}' >/dev/null
 request POST "/v1/assignments/$ASSIGNMENT_ID/start" "$PRO_TOKEN" "$TENANT_A" '{}' >/dev/null
