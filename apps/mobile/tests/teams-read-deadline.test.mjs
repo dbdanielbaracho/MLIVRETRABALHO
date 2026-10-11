@@ -30,3 +30,21 @@ for(const stage of ['auth','fetch','final-auth']){
   t.blur();
  });
 }
+
+for(const stage of ['auth','fetch','final-auth']){
+ test('Equipes ignores an expired read deadline after blur during '+stage,async()=>{
+  const t=fixture(stage);await t.pump();t.blur();t.deadline();
+  assert.equal(t.state[0].teams.status,'loading','blurred screen must not receive stale deadline error');
+  t.resume();await t.pump();
+  assert.equal(t.state[0].teams.status,'loading','late response after blur must not show data');
+ });
+}
+test('Equipes keeps create/changeMember on the default timeout contract',()=>{
+ const src=fs.readFileSync(new URL('../app/equipes.tsx',import.meta.url),'utf8');
+ for(const handler of ['async function create()','async function changeMember(']){
+  const i=src.indexOf(handler);assert.ok(i>=0);
+  const until=src.indexOf('async function ',i+handler.length);
+  const body=src.slice(i,until<0?undefined:until);
+  assert.match(body,/op=operation\(\)/,'mutations must not silently inherit read-only deadline state');
+ }
+});
