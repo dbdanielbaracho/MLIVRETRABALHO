@@ -32,10 +32,14 @@ export class CompanyMembersController{
   }
 
   @Post('invitations')
-  async invite(@Body() body:{email?:string;role?:string},@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){
+  async invite(@Body() value:unknown,@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){
     const c=await this.ownerContext(authorization,tenantId);
-    const email=String(body?.email??'').trim().toLowerCase();
-    const role=String(body?.role??'');
+    if(!value||typeof value!=='object'||Array.isArray(value))throw new BadRequestException('invitation_email_invalid');
+    const body=value as Record<string,unknown>;
+    if(typeof body.email!=='string')throw new BadRequestException('invitation_email_invalid');
+    if(typeof body.role!=='string')throw new BadRequestException('invitation_role_invalid');
+    const email=body.email.trim().toLowerCase();
+    const role=body.role;
     if(email.length<3||email.length>320||!email.includes('@')||/\s/.test(email))throw new BadRequestException('invitation_email_invalid');
     if(!MANAGEMENT_ROLES.has(role))throw new BadRequestException('invitation_role_invalid');
     const secret=randomBytes(32).toString('base64url');
@@ -55,6 +59,7 @@ export class CompanyMembersController{
   @Post('invitations/:id/revoke')
   async revoke(@Param('id') id:string,@Headers('authorization') authorization?:string,@Headers('x-tenant-id') tenantId?:string){
     const c=await this.ownerContext(authorization,tenantId);
+    if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))throw new BadRequestException('invitation_not_revocable');
     return this.db.tenant(c.tenantId,async db=>{
       const row=(await db.query<{id:string}>(`UPDATE company_member_invitations SET revoked_at=COALESCE(revoked_at,now())
         WHERE id=$1 AND tenant_id=$2 AND accepted_at IS NULL RETURNING id`,[id,c.tenantId])).rows[0];
@@ -64,9 +69,12 @@ export class CompanyMembersController{
   }
 
   @Post('invitations/accept')
-  async accept(@Body() body:{inviteCode?:string},@Headers('authorization') authorization?:string){
+  async accept(@Body() value:unknown,@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
-    const inviteCode=String(body?.inviteCode??'').trim();
+    if(!value||typeof value!=='object'||Array.isArray(value))throw new BadRequestException('invitation_invalid');
+    const body=value as Record<string,unknown>;
+    if(typeof body.inviteCode!=='string')throw new BadRequestException('invitation_invalid');
+    const inviteCode=body.inviteCode.trim();
     if(inviteCode.length<1||inviteCode.length>256)throw new BadRequestException('invitation_invalid');
     const dot=inviteCode.indexOf('.');
     if(dot<1)throw new BadRequestException('invitation_invalid');
