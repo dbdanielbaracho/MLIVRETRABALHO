@@ -80,8 +80,63 @@ test "$(request GET /v1/assignments/mine "$PRO2_TOKEN")" = "$CANCEL_PRO2_BEFORE"
 test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$CANCEL_REPLACEMENTS_BEFORE"
 echo "PASS: cancellation malformed JSON reason UUID and unauthorized actor leave real assignments unchanged"
 
+# Replacement input validation must precede creation without changing either assignment.
+CREATE_REPLACEMENTS_BEFORE="$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")"
+CREATE_PRO1_BEFORE="$(request GET /v1/assignments/mine "$PRO1_TOKEN")"
+CREATE_PRO2_BEFORE="$(request GET /v1/assignments/mine "$PRO2_TOKEN")"
+node - "$CANCEL_INPUT_DIR" <<'NODE'
+const fs=require('fs'),dir=process.argv[2];
+const bodies=[null,[],true,false,42,'text',...[42,true,false,{},[],['Fixture']].map(reason=>({reason}))];
+bodies.forEach((body,i)=>fs.writeFileSync(dir+'/replacement-create-'+i+'.json',JSON.stringify(body)));
+NODE
+for payload in "$CANCEL_INPUT_DIR"/replacement-create-*.json; do
+ test "$(status_only POST "/v1/company/replacements/$ORIGINAL_ASSIGNMENT_ID" "$COMPANY_TOKEN" "$TENANT_ID" "$(cat "$payload")")" = "400"
+done
+test "$(status_only POST /v1/company/replacements/not-a-uuid "$COMPANY_TOKEN" "$TENANT_ID" '{}')" = "400"
+test "$(status_only POST "/v1/company/replacements/$ORIGINAL_ASSIGNMENT_ID" '' "$TENANT_ID" '{}')" = "401"
+test "$(status_only POST "/v1/company/replacements/$ORIGINAL_ASSIGNMENT_ID" "$PRO1_TOKEN" "$TENANT_ID" '{}')" = "403"
+test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$CREATE_REPLACEMENTS_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO1_TOKEN")" = "$CREATE_PRO1_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO2_TOKEN")" = "$CREATE_PRO2_BEFORE"
+echo "PASS: replacement malformed creation rejects before changing real requests or assignments"
+
 REPLACEMENT="$(request POST "/v1/company/replacements/$ORIGINAL_ASSIGNMENT_ID" "$COMPANY_TOKEN" "$TENANT_ID" '{"reason":"Troca operacional"}')"
 REPLACEMENT_ID="$(printf '%s' "$REPLACEMENT" | json_field id)"
+
+# Existing upsert semantics retain optional notes and have no invented length limit.
+node - "$CANCEL_INPUT_DIR" <<'NODE'
+const fs=require('fs'),dir=process.argv[2];
+const bodies=[{}, {reason:null},{reason:''},{reason:'   '},{reason:'  Fixture '},{reason:'  '+'x'.repeat(5000)+'  '}];
+bodies.forEach((b,i)=>fs.writeFileSync(dir+'/replacement-valid-'+i+'.json',JSON.stringify(b)));
+NODE
+for payload in "$CANCEL_INPUT_DIR"/replacement-valid-*.json; do
+ VALID_UPSERT="$(request POST "/v1/company/replacements/$ORIGINAL_ASSIGNMENT_ID" "$COMPANY_TOKEN" "$TENANT_ID" "$(cat "$payload")")"
+ node - "$VALID_UPSERT" "$payload" "$REPLACEMENT_ID" "$ORIGINAL_ASSIGNMENT_ID" <<'NODE'
+const fs=require('fs'),row=JSON.parse(process.argv[2]),input=JSON.parse(fs.readFileSync(process.argv[3],'utf8'));
+const expected=typeof input.reason==='string'?input.reason.trim()||null:null;
+if(row.id!==process.argv[4]||row.assignmentId!==process.argv[5]||row.status!=='open'||row.reason!==expected)throw Error('replacement optional reason upsert contract lost');
+NODE
+done
+SELECT_REPLACEMENTS_BEFORE="$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")"
+SELECT_PRO1_BEFORE="$(request GET /v1/assignments/mine "$PRO1_TOKEN")"
+SELECT_PRO2_BEFORE="$(request GET /v1/assignments/mine "$PRO2_TOKEN")"
+node - "$PRO2_ID" "$CANCEL_INPUT_DIR" <<'NODE'
+const fs=require('fs'),id=process.argv[2],dir=process.argv[3];
+const bodies=[null,[],true,false,42,'text',{},...[null,true,42,{},[],['Fixture'],'','bad',id+'x'].map(professionalId=>({professionalId}))];
+bodies.forEach((b,i)=>fs.writeFileSync(dir+'/replacement-select-'+i+'.json',JSON.stringify(b)));
+NODE
+for payload in "$CANCEL_INPUT_DIR"/replacement-select-*.json; do
+ test "$(status_only POST "/v1/company/replacements/$REPLACEMENT_ID/select" "$COMPANY_TOKEN" "$TENANT_ID" "$(cat "$payload")")" = "400"
+done
+test "$(status_only POST /v1/company/replacements/not-a-uuid/select "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PRO2_ID\"}")" = "400"
+test "$(status_only GET /v1/company/replacements/not-a-uuid/candidates "$COMPANY_TOKEN" "$TENANT_ID")" = "400"
+test "$(status_only POST /v1/company/replacements/not-a-uuid/auto-match "$COMPANY_TOKEN" "$TENANT_ID")" = "400"
+test "$(status_only POST "/v1/company/replacements/$REPLACEMENT_ID/select" '' "$TENANT_ID" 'null')" = "401"
+test "$(status_only POST "/v1/company/replacements/$REPLACEMENT_ID/select" "$PRO2_TOKEN" "$TENANT_ID" 'null')" = "403"
+test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$SELECT_REPLACEMENTS_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO1_TOKEN")" = "$SELECT_PRO1_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO2_TOKEN")" = "$SELECT_PRO2_BEFORE"
+echo "PASS: replacement optional reasons and malformed selection UUIDs preserve real requests and assignments"
 
 AUTO="$(request POST "/v1/company/replacements/$REPLACEMENT_ID/auto-match" "$COMPANY_TOKEN" "$TENANT_ID")"
 test "$(printf '%s' "$AUTO" | json_field recommendedProfessionalId)" = "$PRO2_ID"
