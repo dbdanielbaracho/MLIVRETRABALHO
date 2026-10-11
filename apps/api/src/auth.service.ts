@@ -12,7 +12,7 @@ export class AuthService {
  }
  async memberships(identityId:string){return (await this.db.query<{tenant_id:string;role:string}>('SELECT tenant_id,role FROM tenant_memberships WHERE identity_id=$1',[identityId])).rows;}
  async supportContexts(identityId:string){return (await this.db.query<{tenantId:string;displayName:string}>('SELECT t.id AS "tenantId",t.display_name AS "displayName" FROM tenant_memberships m JOIN tenants t ON t.id=m.tenant_id WHERE m.identity_id=$1 ORDER BY t.display_name,t.id',[identityId])).rows;}
- async requireMembership(identityId:string,tenantId:string){const r=await this.db.query<{role:string}>('SELECT role FROM tenant_memberships WHERE identity_id=$1 AND tenant_id=$2',[identityId,tenantId]);if(!r.rows[0])throw new UnauthorizedException('tenant_membership_required');return r.rows[0];}
+ async requireMembership(identityId:string,tenantId:string){if(typeof tenantId!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId))throw new UnauthorizedException('tenant_membership_required');const r=await this.db.query<{role:string}>('SELECT role FROM tenant_memberships WHERE identity_id=$1 AND tenant_id=$2',[identityId,tenantId]);if(!r.rows[0])throw new UnauthorizedException('tenant_membership_required');return r.rows[0];}
  async revoke(token:string){await this.db.query('DELETE FROM sessions WHERE token_hash=$1',[this.hash(token)]);}
  async revokeAll(identityId:string){await this.db.query('DELETE FROM sessions WHERE identity_id=$1',[identityId]);}
 }

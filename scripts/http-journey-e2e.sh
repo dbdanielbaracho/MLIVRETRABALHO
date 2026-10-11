@@ -98,6 +98,31 @@ RECOMMENDATIONS2="$(request GET "/v1/company/jobs/$JOB2_ID/recommendations" "$CO
 contains "$RECOMMENDATIONS2" "$PROFESSIONAL_ID"
 
 
+
+# Tenant IDs are untrusted header input; deny malformed/missing membership without changing facts.
+HEADER_ME_BEFORE="$(request GET /v1/me "$COMPANY_TOKEN")"
+HEADER_MINE_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+HEADER_EARNINGS_BEFORE="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+HEADER_ALERTS_BEFORE="$(request GET /v1/notifications/mine "$PRO_TOKEN")"
+for tenant in not-a-uuid 42 "$TENANT_ID"x 00000000-0000-0000-0000-000000000000; do
+ for path in /v1/company/planner /v1/company/teams /v1/company/dashboard/assignments "/v1/company/jobs/$JOB_ID/candidates" "/v1/company/jobs/$JOB_ID/recommendations"; do
+  code="$(curl -sS -o "$GPS_INPUT_DIR/header-response.json" -w '%{http_code}' "$BASE_URL$path" -H "authorization: Bearer $COMPANY_TOKEN" -H "x-tenant-id: $tenant")"
+  test "$code" = 401
+  test "$(json_field message < "$GPS_INPUT_DIR/header-response.json")" = tenant_membership_required
+ done
+ code="$(curl -sS -o "$GPS_INPUT_DIR/header-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/jobs/$JOB_ID/confirm" -H "authorization: Bearer $COMPANY_TOKEN" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
+ test "$code" = 401
+ test "$(json_field message < "$GPS_INPUT_DIR/header-response.json")" = tenant_membership_required
+ test "$(status_only GET /v1/company/planner invalid-token "$tenant")" = 401
+done
+test "$(status_only GET /v1/company/planner "$COMPANY_TOKEN" '')" = 400
+test "$(status_only GET /v1/company/planner "$COMPANY_TOKEN" "$TENANT2_ID")" = 401
+test "$(request GET /v1/me "$COMPANY_TOKEN")" = "$HEADER_ME_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$HEADER_MINE_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$HEADER_EARNINGS_BEFORE"
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$HEADER_ALERTS_BEFORE"
+echo 'PASS: malformed tenant headers retain authenticated membership denial across real company routes without changing membership assignments earnings or notifications'
+
 # Malformed confirmations cannot create assignments, memberships or notifications.
 CONFIRM_MEMBERS_BEFORE="$(request GET /v1/me "$PRO_TOKEN")"
 CONFIRM_ASSIGN_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
