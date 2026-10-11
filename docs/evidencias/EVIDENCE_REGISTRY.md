@@ -843,3 +843,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — prazo do Copilot assistido
 
 - [COPILOT_INTERPRETATION_DEADLINE_2026-10-11.md](COPILOT_INTERPRETATION_DEADLINE_2026-10-11.md):8falhas/3sucessos antes;11novos/PASS28local. Backend interpreta sem mutations/provider pago. Prazo libera interpretação para retry humano com guard controller/foco e sem rota/POST automático; nextStep/layout preservados. CI599mobile/145API eAPK próprios pendentes;420–423CI comprovados,424CI/APKs em execução.
+
+
+## 2026-10-11 — Disponibilidade com resultado incerto
+
+- [AVAILABILITY_SAVE_DEADLINE_2026-10-11.md](AVAILABILITY_SAVE_DEADLINE_2026-10-11.md):8falhas/3sucessos antes;11novos/PASS23local. Prazo distingue não-envio/unknown, mantém draft e só retry humano. Idempotência existente exata auditada em controller/migration0026/HTTP real CI; JSX/schema preservados. CI610mobile/145API+APK próprios pendentes;420–424CI comprovados,425CI/APKs em execução.

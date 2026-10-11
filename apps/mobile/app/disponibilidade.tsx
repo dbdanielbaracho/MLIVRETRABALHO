@@ -17,20 +17,22 @@ export default function Disponibilidade(){
   const window=availabilityWindow(date,start,end);
   if(!window){setMsg('Informe data e horários válidos.');return;}
   submitting.current=true;setSaving(true);setMsg('');
-  const generation=epoch.current,controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);controllerRef.current=controller;setProfileRequired(false);setUncertain(false);
+  const generation=epoch.current,controller=new AbortController();controllerRef.current=controller;setProfileRequired(false);setUncertain(false);
+  const current=()=>generation===epoch.current&&controllerRef.current===controller;let dispatched=false;
+  const timeout=setTimeout(()=>{controller.abort();if(current()){submitting.current=false;setSaving(false);setUncertain(dispatched);setMsg(dispatched?'Não foi possível confirmar o salvamento. Confira sua disponibilidade no Início ou tente novamente. Seu rascunho foi mantido.':'Não foi possível verificar sua sessão em 15 segundos. Nenhum salvamento foi enviado. Tente novamente.');}},15000);
   try{
-   const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;
+   const h=await authHeaders();if(!current()||controller.signal.aborted)return;
    if(!h.Authorization){setMsg('Entre na sua conta antes de salvar a disponibilidade.');return;}
-   const result=await submitAvailability((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),window,()=>generation===epoch.current&&!controller.signal.aborted);
-   const current=await authHeaders();if(generation!==epoch.current)return;
-   if(current.Authorization!==h.Authorization){setMsg('A sessão mudou. Confira a conta antes de salvar. Seu rascunho foi mantido.');return;}
-   if(controller.signal.aborted){setUncertain(true);setMsg('Não foi possível confirmar o salvamento. Seu rascunho foi mantido.');return;}
+   const result=await submitAvailability((path,body)=>{dispatched=true;return fetch(apiUrl(path),{method:'POST',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal});},window,()=>current()&&!controller.signal.aborted);
+   if(!current()||controller.signal.aborted)return;
+   const latest=await authHeaders();if(!current()||controller.signal.aborted)return;
+   if(latest.Authorization!==h.Authorization){setMsg('A sessão mudou. Confira a conta antes de salvar. Seu rascunho foi mantido.');return;}
    if(result.status==='saved'){setMsg('Disponibilidade salva.');setDate('');setStart('');setEnd('');}
    else if(result.status==='invalid')setMsg('Informe data e horários válidos.');
    else if(result.status==='rejected'){setProfileRequired(result.profileRequired);setMsg(result.profileRequired?'Complete seus dados no Perfil antes de salvar disponibilidade.':'Não foi possível salvar a disponibilidade. Seus dados foram mantidos.');}
    else{setUncertain(true);setMsg('Não foi possível confirmar o salvamento. Confira sua disponibilidade no Início ou tente novamente. Seu rascunho foi mantido.');}
-  }catch{if(generation===epoch.current){setUncertain(true);setMsg('Não foi possível confirmar o salvamento. Seu rascunho foi mantido.');}}
-  finally{clearTimeout(timeout);if(generation===epoch.current){submitting.current=false;setSaving(false);}}
+  }catch{if(current()&&!controller.signal.aborted){setUncertain(dispatched);setMsg(dispatched?'Não foi possível confirmar o salvamento. Seu rascunho foi mantido.':'Não foi possível verificar sua sessão. Nenhum salvamento foi enviado. Tente novamente.');}}
+  finally{clearTimeout(timeout);if(current()){controllerRef.current=null;submitting.current=false;setSaving(false);}}
 
  }
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
