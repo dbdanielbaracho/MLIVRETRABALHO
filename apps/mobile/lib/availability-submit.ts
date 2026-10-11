@@ -7,6 +7,6 @@ export async function submitAvailability(request:Request,window:AvailabilityWind
  const starts=instant(window.startsAt),ends=instant(window.endsAt);if(!Number.isFinite(starts)||!Number.isFinite(ends)||ends<=starts)return {status:'invalid'};
  try{if(!isCurrent())return {status:'unknown'};const response=await request('/availability/mine',window);if(!isCurrent())return {status:'unknown'};
   if(!response.ok){if(response.status>=400&&response.status<500){let profileRequired=false;try{const data:unknown=await response.json();profileRequired=record(data)&&data.message==='professional_profile_required';}catch{/* Keep rejection without inventing a backend reason. */}if(!isCurrent())return {status:'unknown'};return {status:'rejected',profileRequired};}return {status:'unknown'};}
-  const data:unknown=await response.json();if(!isCurrent())return {status:'unknown'};return record(data)&&typeof data.id==='string'&&data.id.length>0&&instant(data.startsAt)===starts&&instant(data.endsAt)===ends?{status:'saved',id:data.id}:{status:'unknown'};
+  const data:unknown=await response.json();if(!isCurrent())return {status:'unknown'};return record(data)&&typeof data.id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.id)&&instant(data.startsAt)===starts&&instant(data.endsAt)===ends?{status:'saved',id:data.id}:{status:'unknown'};
  }catch{return {status:'unknown'};}
 }
