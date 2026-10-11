@@ -64,3 +64,8 @@ Issue #416 e PR #417. Testes de regressão dos handlers pré-JSX foram incluído
 ## Pendente
 
 Completar os testes de regressão de seleção de equipe/alocação, foco e tenant para a mesma classe de defeito, conferir resultado final de CI/APK e efetuar merge só com gates concluídos. Validar visualmente no Android físico e preservar os demais bloqueios externos (pentest, PSP/KYC, Web Railway) como separados. A continuidade automática não substitui provas físicas nem autorização de despesas.
+
+
+### Cobertura adicional — timeout de Equipes e foco (2026-10-10)
+
+Regressões adicionais propostas: deadline anterior depois do blur não publica estado nem aceita resultados tardios nos cenários de autenticação inicial, fetch e autenticação final. Teste de contrato preserva `operation()` sem callback nas ações de escrita de equipe, evitando converter resultado incerto em reenvio. Referência ao teste `apps/mobile/tests/teams-read-deadline.test.mjs`. Validação de CI/APK no SHA final e pós-merge ainda pendente; estes testes não provam E2E físico nem isolam todos os estados de equipe/vaga.
