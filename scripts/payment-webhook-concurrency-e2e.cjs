@@ -85,13 +85,34 @@ async function race(different) {
  assert.equal(mismatch.status,400);assert.equal(mismatch.body.message,'idempotency_conflict');
  console.log('PASS: payment webhook '+(different?'conflicting':'identical')+' concurrent callbacks crossed PostgreSQL insert barrier, one stored event, exact ACK/conflict');
 }
+
+async function amountBounds(){
+ const key='finance-amount-bounds-'+stamp;
+ const payload={tenantId,assignmentId,eventType:'authorized',amountCents:77,providerReference:key,idempotencyKey:key};
+ for(const amountCents of [2_147_483_648,Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER+1,1e100,0.5,'77',null]){
+  const result=await callback({...payload,amountCents});
+  assert.equal(result.status,400);assert.equal(result.body.message,'payment_event_invalid');
+ }
+ const rejected=await client.query('SELECT count(*)::int AS n FROM payment_events WHERE tenant_id=$1 AND idempotency_key=$2',[tenantId,key]);
+ assert.equal(rejected.rows[0].n,0,'invalid amounts cannot store an event');
+ for(const amountCents of [0,2_147_483_647]){
+  const factual={...payload,amountCents,idempotencyKey:key+'-'+amountCents};
+  const result=await callback(factual);
+  assert.equal(result.status,201);assert.equal(result.body.amountCents,amountCents);
+  const rows=await client.query('SELECT id,amount_cents FROM payment_events WHERE tenant_id=$1 AND idempotency_key=$2',[tenantId,factual.idempotencyKey]);
+  assert.equal(rows.rows.length,1);assert.equal(rows.rows[0].id,result.body.id);assert.equal(rows.rows[0].amount_cents,amountCents);
+  assert.deepEqual(await callback(factual),result,'valid endpoint replay must return exact stored ACK');
+ }
+ console.log('PASS: signed amount integer bounds HTTP400 without events, exact zero/max PostgreSQL ACK and idempotent replay');
+}
+
 (async()=>{
  await client.connect();
  try{
   const invalid=await callback(null);
   assert.equal(invalid.status,400);assert.equal(invalid.body.message,'payment_event_invalid');
   console.log('PASS: signed null payment JSON returns controlled HTTP400 before financial writes');
-  await race(false);await race(true);
+  await amountBounds();await race(false);await race(true);
  }
  finally{await client.end();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

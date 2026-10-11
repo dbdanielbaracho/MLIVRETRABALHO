@@ -79,3 +79,16 @@ test('signed null webhook is an invalid event before any tenant lookup or financ
  await assert.rejects(f.run(null as unknown as Record<string,unknown>),/payment_event_invalid/);
  assert.equal(f.tenants.length,0);assert.equal(f.calls.length,0);
 });
+
+test('out of range signed payment amounts reject before tenant access while exact integer endpoints retain actual ACK',async()=>{
+ for(const amountCents of [2_147_483_648,Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER+1,1e100,0.5,'77',null]){
+  const f=fixture([]);await assert.rejects(f.run({...payload,amountCents}),/payment_event_invalid/);
+  assert.equal(f.tenants.length,0);assert.equal(f.calls.length,0);
+ }
+ for(const amountCents of [0,2_147_483_647]){
+  const actual={...ack,amountCents},f=fixture([[{professionalId:professional}],[],[actual]]);
+  assert.deepEqual(await f.run({...payload,amountCents}),actual);
+  assert.deepEqual(f.tenants,[tenant]);assert.equal(f.calls.length,3);
+  assert.equal(f.calls[2]?.values[4],amountCents);
+ }
+});

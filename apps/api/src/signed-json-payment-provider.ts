@@ -80,7 +80,7 @@ export class SignedJsonPaymentProviderAdapter implements PaymentProviderAdapter 
       typeof tenantId !== 'string' || !tenantId ||
       typeof assignmentId !== 'string' || !assignmentId ||
       typeof eventType !== 'string' || !eventTypes.has(eventType as PaymentEventType) ||
-      typeof amountCents !== 'number' || !Number.isInteger(amountCents) || amountCents < 0 ||
+      typeof amountCents !== 'number' || !Number.isSafeInteger(amountCents) || amountCents < 0 || amountCents > 2_147_483_647 ||
       (providerReference !== undefined && typeof providerReference !== 'string') ||
       (recipientProfessionalId !== undefined && typeof recipientProfessionalId !== 'string') ||
       typeof idempotencyKey !== 'string' || !idempotencyKey
