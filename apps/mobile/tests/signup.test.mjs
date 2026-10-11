@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import {signupAccount} from '../lib/signup.ts';
 const input={email:'  PERSON@EXAMPLE.TEST  ',password:'Password123!',accountType:'professional',workspaceName:''};
 const response=(data,ok=true,status=ok?201:500)=>({ok,status,json:async()=>data});
-const professional={id:'i',email:'person@example.test',accountType:'professional'};
+const professional={id:'aaaaaaaa-1111-4222-8333-444444444444',email:'person@example.test',accountType:'professional'};
 test('professional signup uses normalized email and preserves the actual independent-account contract',async()=>{
- const calls=[];assert.deepEqual(await signupAccount(async(...args)=>{calls.push(args);return response(professional)},input),{status:'created',id:'i'});assert.deepEqual(calls,[['/auth/signup',{email:'person@example.test',password:'Password123!',accountType:'professional'}]]);
+ const calls=[];assert.deepEqual(await signupAccount(async(...args)=>{calls.push(args);return response(professional)},input),{status:'created',id:'aaaaaaaa-1111-4222-8333-444444444444'});assert.deepEqual(calls,[['/auth/signup',{email:'person@example.test',password:'Password123!',accountType:'professional'}]]);
 });
 test('company signup needs the matching identity and real owner workspace acknowledgement',async()=>{
- const calls=[];assert.deepEqual(await signupAccount(async(...args)=>{calls.push(args);return response({...professional,accountType:'company',tenantId:'t',role:'owner'})},{...input,accountType:'company',workspaceName:'  Empresa  '}),{status:'created',id:'i',tenantId:'t'});assert.equal(calls[0][1].workspaceName,'Empresa');
- for(const data of [{...professional,accountType:'company'},{...professional,accountType:'company',tenantId:'t',role:'professional'}])assert.deepEqual(await signupAccount(async()=>response(data),{...input,accountType:'company',workspaceName:'Empresa'}),{status:'unknown'});
+ const calls=[];assert.deepEqual(await signupAccount(async(...args)=>{calls.push(args);return response({...professional,accountType:'company',tenantId:'bbbbbbbb-1111-4222-8333-444444444444',role:'owner'})},{...input,accountType:'company',workspaceName:'  Empresa  '}),{status:'created',id:'aaaaaaaa-1111-4222-8333-444444444444',tenantId:'bbbbbbbb-1111-4222-8333-444444444444'});assert.equal(calls[0][1].workspaceName,'Empresa');
+ for(const data of [{...professional,accountType:'company'},{...professional,accountType:'company',tenantId:'bbbbbbbb-1111-4222-8333-444444444444',role:'professional'}])assert.deepEqual(await signupAccount(async()=>response(data),{...input,accountType:'company',workspaceName:'Empresa'}),{status:'unknown'});
 });
 test('invalid email/password/workspace boundaries prevent signup before sending anything',async()=>{
  let calls=0;const request=async()=>{calls++;return response(professional)};
@@ -42,7 +42,7 @@ test('professional and company signup JSON decoded after deadline cannot confirm
  for(const accountType of ['professional','company']){
   const operation=new AbortController();let resolve,calls=0;const pending=new Promise(r=>{resolve=r});
   const result=signupAccount(async()=>{calls++;return {ok:true,status:201,json:()=>pending}},{...input,accountType,workspaceName:'Fixture'},()=>!operation.signal.aborted);
-  await Promise.resolve();operation.abort();resolve(accountType==='company'?{...professional,accountType,tenantId:'t',role:'owner'}:professional);
+  await Promise.resolve();operation.abort();resolve(accountType==='company'?{...professional,accountType,tenantId:'bbbbbbbb-1111-4222-8333-444444444444',role:'owner'}:professional);
   assert.deepEqual(await result,{status:'unknown'});assert.equal(calls,1);
  }
 });
@@ -51,4 +51,13 @@ test('signup rejection JSON after deadline stays unknown rather than authorizing
  const result=signupAccount(async()=>{calls++;return {ok:false,status:401,json:()=>pending}},input,()=>!operation.signal.aborted);
  await Promise.resolve();operation.abort();resolve({message:'email_in_use'});
  assert.deepEqual(await result,{status:'unknown'});assert.equal(calls,1);
+});
+
+const identity='aaaaaaaa-1111-4222-8333-444444444444',tenant='bbbbbbbb-1111-4222-8333-444444444444';
+test('signup cannot confirm malformed identity or company workspace UUID despite matching acknowledgement fields',async()=>{
+ for(const bad of ['identity',' ','aaaaaaaa-1111-4222-8333-444444444444x',' aaaaaaaa-1111-4222-8333-444444444444 ',null,undefined,false,42,[],{},[identity]]){
+  for(const type of ['professional','company']){let calls=0;assert.deepEqual(await signupAccount(async()=>{calls++;return response({id:bad,email:professional.email,accountType:type,...(type==='company'?{tenantId:tenant,role:'owner'}:{})})},{...input,accountType:type,workspaceName:'Empresa'}),{status:'unknown'});assert.equal(calls,1);}
+  let calls=0;assert.deepEqual(await signupAccount(async()=>{calls++;return response({id:identity,email:professional.email,accountType:'company',tenantId:bad,role:'owner'})},{...input,accountType:'company',workspaceName:'Empresa'}),{status:'unknown'});assert.equal(calls,1);
+ }
+ for(const type of ['professional','company']){const data={id:identity.toUpperCase(),email:professional.email,accountType:type,...(type==='company'?{tenantId:tenant.toUpperCase(),role:'owner'}:{})};assert.deepEqual(await signupAccount(async()=>response(data),{...input,accountType:type,workspaceName:'Empresa'}),{status:'created',id:data.id,...(type==='company'?{tenantId:data.tenantId}:{})});}
 });

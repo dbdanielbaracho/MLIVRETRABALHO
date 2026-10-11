@@ -3,7 +3,7 @@ export type SignupBody={email:string;password:string;accountType:'professional'|
 export type SignupResult={status:'created';id:string;tenantId?:string}|{status:'invalid'}|{status:'rejected';emailInUse:boolean}|{status:'unknown'};
 type Request=(path:string,body:SignupBody)=>Promise<{ok:boolean;status:number;json():Promise<unknown>}>;
 const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
-const id=(value:unknown):value is string=>typeof value==='string'&&value.length>0;
+const id=(value:unknown):value is string=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 export async function signupAccount(request:Request,input:SignupInput,isCurrent:()=>boolean=()=>true):Promise<SignupResult>{
  const email=input.email.trim().toLowerCase(),workspaceName=input.workspaceName.trim();
  if(email.length<3||email.length>320||!email.includes('@')||/\s/.test(email)||input.password.length<8||input.password.length>128||(input.accountType!=='professional'&&input.accountType!=='company')||(input.accountType==='company'&&(!workspaceName||workspaceName.length>120)))return {status:'invalid'};
