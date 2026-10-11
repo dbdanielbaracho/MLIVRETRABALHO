@@ -6,6 +6,7 @@ export type CandidateData={candidates:Result<Candidate[]>;recommendations:Result
 type Request=(path:string,options?:{method:'POST';body:string})=>Promise<{ok:boolean;json():Promise<unknown>}>;
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const nonempty=(x:unknown):x is string=>typeof x==='string'&&!!x.trim();
+const uuid=(x:unknown):x is string=>typeof x==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x);
 const text=(x:unknown)=>x==null||typeof x==='string';
 const validJob=(x:unknown):x is CompanyJob=>record(x)&&nonempty(x.id)&&typeof x.title==='string'&&typeof x.status==='string'&&text(x.location)&&text(x.workCity);
 const validCandidate=(x:unknown):x is Candidate=>record(x)&&nonempty(x.professionalId)&&typeof x.displayName==='string'&&typeof x.status==='string'&&text(x.homeCity);
@@ -18,5 +19,5 @@ export function orderedCandidates(data:CandidateData):Candidate[]{if(data.candid
 export function sameCompanyContext(current:Record<string,string>,displayed:Record<string,string>):boolean{return !!displayed.Authorization&&!!displayed['x-tenant-id']&&current['x-tenant-id']===displayed['x-tenant-id']&&current.Authorization===displayed.Authorization;}
 export async function confirmCandidate(request:Request,jobId:string,professionalId:string,tenantId:string):Promise<boolean>{
  if(!jobId.trim()||!professionalId.trim()||!tenantId.trim())return false;
- try{const r=await request('/company/jobs/'+encodeURIComponent(jobId)+'/confirm',{method:'POST',body:JSON.stringify({professionalId})});if(!r.ok)return false;const d:unknown=await r.json();return record(d)&&nonempty(d.id)&&d.jobId===jobId&&d.professionalId===professionalId&&d.tenantId===tenantId&&d.status==='confirmed';}catch{return false;}
+ try{const r=await request('/company/jobs/'+encodeURIComponent(jobId)+'/confirm',{method:'POST',body:JSON.stringify({professionalId})});if(!r.ok)return false;const d:unknown=await r.json();return record(d)&&uuid(d.id)&&d.jobId===jobId&&d.professionalId===professionalId&&d.tenantId===tenantId&&d.status==='confirmed';}catch{return false;}
 }
