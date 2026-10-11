@@ -1,5 +1,22 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+## Revisão de suporte: validação runtime — 2026-10-11 11:35:12 UTC
+
+Base verificada mainc6e63c060e1f4edcffdf16cc7dc492a412f15c71/treea1a1e593a7fc2194bc81201d6ce3eda54e072c48; README/DVT ORIGINALv1.104/memória/checkpoint reconsultados e história preservada. Auth#443 integrado após CI38135838666/job114459394668 PASS no heada17451ad4cffafe09d6eedae6a2b425795e7a5cf:4web/713mobile/207API/3CLI e markers62inputs+antibruteforce/cap10 PostgreSQL. Mergec6e63c060e1f4edcffdf16cc7dc492a412f15c71, pais[e3f6d58221d92a461852c98db3accb0549186d38,a17451ad4cffafe09d6eedae6a2b425795e7a5cf], tree aprovadoa1a1e593a7fc2194bc81201d6ce3eda54e072c48 conferidos. Pós-CI38136044075 ainda em execução neste snapshot, NÃO PASS antecipado; finalizar recibo na PR443 quando realproof. APKauthN/A por pathsAPI/docs/mobiletree4cb705aeb39244f46649bc5c569459ef9b0c5b7d. Falha de tipagem no primeiro head443 permanece histórica, não bypass.
+
+SupportController.status b.note?.trim gerava TypeError com null/note não textual; UUID inválido chegava a UPDATE uuid. Bodyunknown exige objeto não array, statusstring reviewing/resolved/dismissed e note textual não vazia; caseUuid canônico genérico sem restringir versão. Mantém support_status_invalid400 e support_case_not_found400 reais. Autenticação/membership/admin(owner/admin)/tenant continuam ANTES da validação, sem mudar autoridade. Dez expressões SQL BYTE-IDÊNTICAS; prepare/create duráveis byte-idênticos, sem alterar chaves/digest/replay/concurrency/reporter ou assignment. mine/exceptions/admin/retention/protocolo preservados. Não altera política/transições autorizadas.
+
+Nove regressões do controller real, antes6PASS/3FAIL → depois9PASS. Cobrem null/não-objeto, nota textual sem coerção, enum, UUID antes de SQL, prioridade auth/tenant/membership/admin, estados válidos com owner/admin e parâmetros tenanttrusted, resultado real incluindo resolução, ausência/cross-tenant sem ACK e DBerrors incertos. Local Node24 transform TS, stubs explícitos Nest/DB/Auth/helpers reais; não prova Nest HTTP/PostgreSQL/native.
+
+Script HTTP EXISTENTE http-support-assignment-boundary-e2e.sh estendido:22JSONs inválidos400, UUID400, auth401/membership401/admin403; GETs reais antes/depois das listas owner e reporter devem ficar IDÊNTICOS. Fluxos positivos de reviewing/resolved/dismissed verificam ACK/resolutionNote trim/resolvedAt timestamp real vs null, deixando estado final reviewing. Scripts originais de intent/key/8concurrentretries/payloadconflict/tenant+reporter isolation/guardDB/replay após linknull e todos demaisfixtures preservados. Guardlocalhost/porta antes de DB/rede endurecido; bash-n e4URLs externas/host-confuso/path PASS local. Nenhum chamado de produção ou mensagem externa. HTTP real depende da CI própria, NÃO aprovado neste snapshot.
+
+Head ainda a gerar em branch/PR: esperar CI4web/713mobile/216API/3CLI (9API novos), frozen-lockfile/typecheck/build/export/migrations/retention/todosHTTP/ProductionTruth e2markerssupport. APK próprio/pós N/A condicionado a pathsAPI/docs e mesma mobiletree aprovada#438; não atribuir APK outroSHA. Próxima ação: conferir diff/bytes/lease/gateshead exato, integrar uma vez se PASS e confirmar pais/tree/main/pós-CI; recibo final de hashes/runs pós-snapshot na própria PR e consolidar docs em mesmo ciclo.
+
+Próxima falha concreta auditada: SafetyAdminController.status body null/note não textual e UUID em events/status; preservar note opcional/null (diferente do suporte), enumopen/reviewing/resolved/dismissed, owner/admin, FOR UPDATE, eventactor/status/changedfalse e SQL/canonical. Em seguida SafetyAppealsController.create e adminstatus JSONtipos/UUID com política/advisory lock/reporterACL íntegros; CancellationController.cancel reason e ReplacementController.select/create runtime também tipados sem guard. Fontes consultadas no SHAe3f6d582; revalidar novasmain antes de qualquer próxima mudança, reproduzirRED e testarHTTPreal. Não decidir compensação ou política financeira nem alterar scheduling/race sem prova.
+
+React19.1.4/RN0.81.6/lockfile/tenant/RLS/desenho preservados. Gates físicos/VisualTruth/E2E/SecureStore/piloto/pentest/providers/PSP/KYC/FIN-RISK/Web pago permanecem OPEN; projeto em andamento e rotina mantida sem solicitar continuar/custo/deploy/PSP.
+
+
 ## Validação runtime de signup/signin — 2026-10-11 11:28:10 UTC
 
 Base verificada maine3f6d58221d92a461852c98db3accb0549186d38, tree8ddc306d6965f0ac5619f7dc5b438b0d803be5a5, README aponta ORIGINAL Documento da Verdadev1.104; zero PR aberto não implica conclusão. #442 integrado e pós-CI38135416532/job114458169133 PASS4web/713mobile/195API/3CLI no SHAexatoe3f6d58221d92a461852c98db3accb0549186d38. Recibo final de #442 está na própria PR com SHA/pais/tree/logs; snapshot anterior preservado.
@@ -548,3 +565,8 @@ Próxima correção independente a reproduzir: Equipes loadBase/selectTeam/selec
 ## Correção da tipagem do teste de token — 2026-10-11 11:30:35 UTC
 
 CI38135705986/job114459009267 no headab3da139ef6ea42dd9a20792089251ca6a362f1c falhou em Typecheck por TS2345 no teste novo: retorno accessToken inferido string|undefined. Log integral lido; build/export/testes/HTTP seguintes SKIPPED, NÃO PASS. Teste agora extrai token e assert.ok(typeof token==='string') antes de regex/SHA256, estreitando tipo sem non-null fictício. Controller/política/SQL sem nova mudança; fixtures locais12PASS novamente. Novo commit requer CI no novo SHA, sem rerun do SHA inválido nem reutilizar gates. Evidência histórica de falha preservada; merge proibido até CI4/713/207/3 completo e markersauth HTTP reais.
+
+
+## Diff revisado: testes de criação preservados — 2026-10-11 11:36:36 UTC
+
+Antes de integrar, review do patch identificou que o primeiro heada50e5a61798c17fcab622a57a0cf8ede915c8600 substituía o arquivo EXISTENTE support.controller.test.ts (4testes de criação/tenant) pelos9novos de status. Corrigido: original restaurado BYTE-IDÊNTICO à mainbase e9novos em arquivo separado support-status.controller.test.ts. Local13PASS (4anteriores+9novos), sem apagar cobertura de criação. Head anterior/CI38136142135 não autorizam merge; SHA novo precisa CI4/713/216/3 completo. Diff final contra main NÃO deve alterar support.controller.test.ts original. História preservada e falha corrigida antes de gate/merge; sem bypass/rerun.

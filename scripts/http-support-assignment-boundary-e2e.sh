@@ -2,7 +2,8 @@
 # Disposable HTTP fixtures; CI supplies the local API and ephemeral database.
 set -euo pipefail
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
-case "$BASE_URL" in http://127.0.0.1:*|http://localhost:*) ;; *) echo 'This fixture only runs against localhost' >&2; exit 2;; esac
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo "local_http_required" >&2; exit 2; }
+BASE_URL="${BASE_URL%/}"
 case "${DATABASE_URL:-}" in postgresql://*@localhost:*|postgresql://*@127.0.0.1:*) ;; *) echo 'This fixture requires a local ephemeral database' >&2; exit 2;; esac
 FIXTURE_DIR="$(mktemp -d)"
 trap 'rm -rf "$FIXTURE_DIR"' EXIT
@@ -86,8 +87,39 @@ request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | assert_count 1
 request GET /v1/support-cases/mine "$TOKEN_A" "$TENANT_A" | assert_count 2
 request GET /v1/support-cases/mine "$TOKEN_B" "$TENANT_B" | assert_count 0
 expect_status cross-review 400 POST "/v1/company/support-cases/$CASE_A_ID/status" "$TOKEN_B" "$TENANT_B" '{"status":"reviewing","note":"fixture"}'
+
+# Review body/path validation must preserve the actual support rows, with auth/admin
+# checks first. Existing keyed creation/replay and assignment boundary remain below.
+SUPPORT_A_BEFORE="$(request GET /v1/support-cases/mine "$TOKEN_A" "$TENANT_A")"
+SUPPORT_P_BEFORE="$(request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A")"
+node >"$FIXTURE_DIR/status-inputs.jsonl" <<'NODE'
+const rows=[null,[],true,42,"text",{}, {status:"reviewing",note:""}, {status:"reviewing",note:"   "}];
+for(const note of [null,42,true,false,{},[],["note"]])rows.push({status:"reviewing",note});
+for(const status of [null,42,true,{},[],"open","invalid"])rows.push({status,note:"Fixture"});
+for(const row of rows)console.log(JSON.stringify(row));
+NODE
+while IFS= read -r body; do
+ expect_status status-malformed 400 POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_A" "$TENANT_A" "$body"
+done <"$FIXTURE_DIR/status-inputs.jsonl"
+expect_status status-invalid-id 400 POST /v1/company/support-cases/not-a-uuid/status "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Fixture"}'
+expect_status status-auth-first 401 POST /v1/company/support-cases/not-a-uuid/status invalid-token "$TENANT_A" 'null'
+expect_status status-membership-first 401 POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_A" "$TENANT_B" 'null'
+expect_status status-admin-first 403 POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_P" "$TENANT_A" 'null'
+node - "$SUPPORT_A_BEFORE" "$(request GET /v1/support-cases/mine "$TOKEN_A" "$TENANT_A")" "$SUPPORT_P_BEFORE" "$(request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A")" <<'NODE'
+const [a,b,p,q]=process.argv.slice(2).map(JSON.parse);
+if(JSON.stringify(a)!==JSON.stringify(b)||JSON.stringify(p)!==JSON.stringify(q))throw Error("support_status_changed_on_invalid_input");
+NODE
+echo 'PASS: support status malformed JSON/path and unauthorized review cannot change real cases'
+
 UPDATED="$(request POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Revisão humana fixture"}')"
 test "$(printf '%s' "$UPDATED" | json_field status)" = reviewing
+
+for review_status in resolved dismissed reviewing; do
+ REVIEW_BODY="$(node -e 'process.stdout.write(JSON.stringify({status:process.argv[1],note:" Fixture review ",tenantId:"untrusted",reporterIdentityId:"untrusted"}))' -- "$review_status")"
+ request POST "/v1/company/support-cases/$PRO_CASE_ID/status" "$TOKEN_A" "$TENANT_A" "$REVIEW_BODY" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(x.id!==process.argv[1]||x.status!==process.argv[2]||x.resolutionNote!=="Fixture review")throw Error("support_status_ack_invalid");if(x.status==="reviewing"?x.resolvedAt!==null:!Number.isFinite(Date.parse(x.resolvedAt)))throw Error("support_status_resolution_date_invalid");' -- "$PRO_CASE_ID" "$review_status"
+done
+echo 'PASS: support status real reviewing resolved dismissed acknowledgements preserve resolution dates'
+
 # Keyed requests keep one intent per tenant + authenticated reporter.
 INTENT_KEY="$PREPARED_KEY"
 CONCURRENT_KEY='bbbbbbbb-cccc-dddd-eeee-ffffffffffff'
