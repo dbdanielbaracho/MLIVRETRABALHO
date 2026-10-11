@@ -56,18 +56,19 @@ export class PaymentWebhookController {
         throw new BadRequestException('payout_recipient_mismatch');
       }
 
-      const existing = (
+      const lookup = async () => (
         await db.query(
           'SELECT id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",recipient_professional_id AS "recipientProfessionalId",idempotency_key AS "idempotencyKey",created_at AS "createdAt" FROM payment_events WHERE idempotency_key=$1',
           [event.idempotencyKey],
         )
       ).rows[0];
+      const existing = await lookup();
       if (existing) {
         if (!samePaymentEvent(existing, event)) throw new BadRequestException('idempotency_conflict');
         return existing;
       }
 
-      return (
+      const inserted = (
         await db.query(
           'INSERT INTO payment_events(tenant_id,provider,assignment_id,event_type,amount_cents,provider_reference,recipient_professional_id,idempotency_key) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(tenant_id,idempotency_key) DO NOTHING RETURNING id,provider,assignment_id AS "assignmentId",event_type AS "eventType",amount_cents AS "amountCents",provider_reference AS "providerReference",recipient_professional_id AS "recipientProfessionalId",idempotency_key AS "idempotencyKey",created_at AS "createdAt"',
           [
@@ -82,6 +83,14 @@ export class PaymentWebhookController {
           ],
         )
       ).rows[0];
+      if (inserted) return inserted;
+
+      // ON CONFLICT may wait for a concurrent transaction whose row was not
+      // visible to the first SELECT. Re-read its committed facts in this tenant.
+      const replay = await lookup();
+      if (!replay) throw new Error('payment_event_replay_missing');
+      if (!samePaymentEvent(replay, event)) throw new BadRequestException('idempotency_conflict');
+      return replay;
     });
   }
 }

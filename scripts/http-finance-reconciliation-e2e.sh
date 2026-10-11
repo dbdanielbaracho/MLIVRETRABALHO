@@ -50,6 +50,9 @@ EVENTS_A="$(request GET /v1/company/payment-events "$A_TOKEN" "$TENANT_A")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2],pro=process.argv[3];const own=rows.filter(v=>v.assignmentId===id);const payouts=own.filter(v=>v.eventType==="payout_paid");const p=payouts[0];if(own.length!==2||payouts.length!==1||!p||p.recipientProfessionalId!==pro){console.error("duplicate payout/idempotency assertion failed",own);process.exit(1)}' "$EVENTS_A" "$ASSIGNMENT_ID" "$PRO_ID"
 RECON_AFTER="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const x=rows.find(v=>v.assignmentId===id);if(!x||x.capturedCents!==25000||x.paidOutCents!==25000||x.reconciliationStatus!=="reconciled"){process.exit(1)}' "$RECON_AFTER" "$ASSIGNMENT_ID"
+# Deterministic concurrent signed callbacks against only the isolated CI HTTP/Postgres fixture.
+node "$(dirname "$0")/payment-webhook-concurrency-e2e.cjs" "$TENANT_A" "$ASSIGNMENT_ID" "$STAMP"
+
 EVENTS_B="$(request GET /v1/company/payment-events "$B_TOKEN" "$TENANT_B")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];if(rows.some(v=>v.assignmentId===id))process.exit(1)' "$EVENTS_B" "$ASSIGNMENT_ID"
 
