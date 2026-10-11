@@ -8,18 +8,19 @@ export default function Home() {
   const [checking, setChecking] = useState(true);
 
   useFocusEffect(useCallback(() => {
-    let active = true;
+    let active = true, expired = false;
     setChecking(true);
+    const timeout=setTimeout(()=>{if(active){expired=true;setChecking(false);}},15000);
     void (async () => {
-      const result = await resolveStartupRoute(authenticatedTenantHeaders, () => active);
-      if (!active) return;
+      const result = await resolveStartupRoute(authenticatedTenantHeaders, () => active && !expired);
+      if (!active || expired) return;
       if (result.status === 'ready') {
         router.replace(result.route);
         return;
       }
       setChecking(false);
-    })();
-    return () => { active = false; };
+    })().finally(()=>clearTimeout(timeout));
+    return () => { active = false; clearTimeout(timeout); };
   }, []));
 
   return (
