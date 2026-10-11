@@ -27,7 +27,7 @@ export default function Candidatos(){
    const result=await loadCandidates(async(path,options)=>{const active=await authenticatedTenantHeaders();if(controller.signal.aborted||!sameCompanyContext(active,headers))throw Error('company_context_changed');return fetch(apiUrl(path),{...options,headers,signal:controller.signal});},id);
    const final=await authenticatedTenantHeaders();if(controller.signal.aborted||!sameCompanyContext(final,headers))throw Error('company_context_changed');
    if(version===generation.current&&selectedVersion===selection.current.version)setData(result);
-  }catch{if(version===generation.current&&selectedVersion===selection.current.version)setData({candidates:{status:'error'},recommendations:{status:'error'}});}
+  }catch{if(!controller.signal.aborted&&version===generation.current&&selectedVersion===selection.current.version)setData({candidates:{status:'error'},recommendations:{status:'error'}});}
   finally{clearTimeout(timer);controllers.current.delete(controller);}
  }
  async function confirm(professionalId:string){
