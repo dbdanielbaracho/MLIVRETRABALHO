@@ -813,3 +813,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 
 - [AGENDA_READ_DEADLINE_v1.104.md](AGENDA_READ_DEADLINE_v1.104.md): seis falhas/três sucessos anteriores; nove regressões novas/PASS24 local; lifecycle/geo/JSX preservados. CI467mobile/145API eAPK próprios pendentes antes da publicação.
 - [EXECUCAO_VERIFICADA_2026-10-10_2343Z.md](../conversas/EXECUCAO_VERIFICADA_2026-10-10_2343Z.md): pós-CI401–411 e todos os pós-APKs aplicáveis comprovados no SHA real; CI412–414 comprovados, ownAPKs em execução. Visual Truth físico/gates externos abertos.
+
+
+## 2026-10-11 — Interessados / pós-merge #419
+
+- [CANDIDATES_READ_DEADLINE_2026-10-11.md](CANDIDATES_READ_DEADLINE_2026-10-11.md): 12falhas/9sucessos anteriores;21regressões novas/PASS29local, escritas/layout preservados. CI497mobile/145API eAPK próprios pendentes antes de publicação. Prova completa pós-merge419 no SHA real; gates físicos separados.
