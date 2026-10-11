@@ -868,3 +868,7 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — saída local preservando sessão posterior
 
 - [SIGNOUT_LOCAL_DEADLINE_2026-10-11.md](SIGNOUT_LOCAL_DEADLINE_2026-10-11.md):12falhas/6sucessos antes;18novos/PASS29local. Prazo inclui storage e permite fallbacklocal offline mantendo expectedToken/fila/readback, sem apagar novo login/alegar revogação remota. Perfilsave/layouts/helpers preservados. CI655mobile/145API+APK próprios pendentes;420–423mergedowncompletos, pós420/421CI aprovados/APKs pendentes.
+
+## 2026-10-11 05:32:18 UTC
+
+- [PROFILE_SAVE_SCREEN_DEADLINE_2026-10-11.md](./PROFILE_SAVE_SCREEN_DEADLINE_2026-10-11.md): Perfil.saveProfile: 5 falhas/6 sucessos antes, 50/50 locais depois; UI encerra busy no prazo, mantém draft, rejeita ACK/finally antigo. Backend/índice único e same-body retry auditados; sem prova de cancelamento/ordenação de escritas diferentes. Registra merges420–424, CI pós-merge, APKs pendentes e falha/rerun425. Gates físico/VisualTruth/PSP/pentest abertos.
