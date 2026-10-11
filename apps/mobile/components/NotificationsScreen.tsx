@@ -11,13 +11,13 @@ import { loadNotifications,markNotificationRead,notificationContextHeaders,type 
 export function NotificationsScreen({company=false}:{company?:boolean}){
  const[items,setItems]=useState<Notification[]>([]),[status,setStatus]=useState<'loading'|'error'|'ready'>('loading'),[message,setMessage]=useState(''),[pending,setPending]=useState<string[]>([]);
  const requestId=useRef(0),epoch=useRef(0),sourceHeaders=useRef<Record<string,string>|null>(null),controllers=useRef(new Set<AbortController>()),pendingReads=useRef(new Set<string>());
- function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+ function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  async function load(){
-  const id=++requestId.current,version=epoch.current,op=operation();setStatus('loading');setItems([]);sourceHeaders.current=null;
+  const id=++requestId.current,version=epoch.current,op=operation(()=>{if(id===requestId.current&&version===epoch.current){sourceHeaders.current=null;setItems([]);setStatus('error');}});setStatus('loading');setItems([]);sourceHeaders.current=null;
   let loadedHeaders:Record<string,string>|null=null;
   try{
    const result=await runForSession(notificationContextHeaders(company?authenticatedTenantHeaders:authHeaders,company),headers=>{loadedHeaders=headers;return loadNotifications(()=>fetch(apiUrl('/notifications/mine'),{headers,signal:op.controller.signal}),company?headers['x-tenant-id']:undefined);},()=>id===requestId.current&&version===epoch.current&&!op.controller.signal.aborted);
-   if(id!==requestId.current||version!==epoch.current)return;
+   if(id!==requestId.current||version!==epoch.current||op.controller.signal.aborted)return;
    if(result.status==='ready'){setStatus(result.data.status);if(result.data.status==='ready'){sourceHeaders.current=loadedHeaders;setItems(result.data.data);}}
    else setStatus('error');
   }finally{op.finish();}
