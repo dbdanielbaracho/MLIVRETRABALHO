@@ -20,7 +20,7 @@ export default function Privacidade(){
   function changedContext(){snapshot.current=null;setDetails('');draftAuthorization.current=null;setExportText('');setRequestState({status:'error'});setMessage('A sessão mudou. Atualize os pedidos antes de continuar.');}
   async function load(manual=false,expected?:Record<string,string>){
     const id=++sequence.current,generation=epoch.current,controller=new AbortController();controllers.current.add(controller);snapshot.current=null;setRequestState({status:'loading'});
-    const timer=setTimeout(()=>controller.abort(),15000);
+    const timer=setTimeout(()=>{controller.abort();if(id===sequence.current&&generation===epoch.current){snapshot.current=null;setRequestState({status:'error'});}},15000);
     try{
       const headers=await authHeaders();
       if(id!==sequence.current||generation!==epoch.current)return;

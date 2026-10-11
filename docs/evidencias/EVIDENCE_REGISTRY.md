@@ -828,3 +828,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — Notificações
 
 - [NOTIFICATIONS_READ_DEADLINE_2026-10-11.md](NOTIFICATIONS_READ_DEADLINE_2026-10-11.md): 10falhas/8sucessos antes,18novas/PASS28local. MarcarPOST/layout/nav preservados; CI528mobile/145API eAPK próprios pendentes. #420 CI497/145 comprovado, APK em execução.
+
+
+## 2026-10-11 — leituras secundárias
+
+- [SECONDARY_READ_DEADLINES_2026-10-11.md](SECONDARY_READ_DEADLINES_2026-10-11.md): 25falhas/15sucessos na bateria anterior40,43novas/PASS94local. Escritas/layouts/rascunhos/resultados incertos preservados; CI571mobile/145API eAPK próprios pendentes. CI420–422 comprovados, APKs em execução.

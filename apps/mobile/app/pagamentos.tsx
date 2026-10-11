@@ -18,8 +18,8 @@ export default function Pagamentos(){
  const [result,setResult]=useState<ReadResult<Reconciliation>>({status:'loading'}),[retry,setRetry]=useState(0),generation=useRef(0);
  const items=result.status==='ready'?result.data:[];
  useFocusEffect(useCallback(()=>{
-  const version=++generation.current,controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);setResult({status:'loading'});
-  void (async()=>{const headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return runForSession(authenticatedTenantHeaders,origin=>loadReconciliation(path=>fetch(apiUrl(path),{headers:origin,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted,headers.Authorization,headers['x-tenant-id']);})().then(next=>{if(version===generation.current)setResult(next.status==='ready'?next.data:{status:'error'});}).catch(()=>{if(version===generation.current)setResult({status:'error'});}).finally(()=>clearTimeout(timer));
+  const version=++generation.current,controller=new AbortController(),timer=setTimeout(()=>{controller.abort();if(version===generation.current)setResult({status:'error'});},15000);setResult({status:'loading'});
+  void (async()=>{const headers=await authenticatedTenantHeaders();if(!headers['x-tenant-id'])throw Error('tenant_required');return runForSession(authenticatedTenantHeaders,origin=>loadReconciliation(path=>fetch(apiUrl(path),{headers:origin,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted,headers.Authorization,headers['x-tenant-id']);})().then(next=>{if(version===generation.current&&!controller.signal.aborted)setResult(next.status==='ready'?next.data:{status:'error'});}).catch(()=>{if(version===generation.current)setResult({status:'error'});}).finally(()=>clearTimeout(timer));
   return ()=>{++generation.current;clearTimeout(timer);controller.abort();setResult({status:'loading'});};
  },[retry]));
   return (

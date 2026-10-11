@@ -34,11 +34,11 @@ export default function CasosSeguranca(){
  const [data,setData]=useState(loadingSafety),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
  const generation=useRef(0),sequence=useRef(0),pending=useRef(false),snapshot=useRef<{headers:Record<string,string>;data:SafetyData}|null>(null),controllers=useRef(new Set<AbortController>());
  const items=data.cases.status==='ready'?data.cases.data:[],appeals=data.appeals.status==='ready'?data.appeals.data:[];
- function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+ function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  function requestWith(headers:Record<string,string>,signal:AbortSignal):Request{return async(path,body)=>fetch(apiUrl(path),{method:body?'POST':'GET',headers:{...headers,...(body?{'content-type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal});}
  async function load(manual=false,expected?:Record<string,string>){
-  if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData(loadingSafety());
-  try{const headers=await authenticatedTenantHeaders();const result=await loadSafety(async(path,body)=>{if(!headers['x-tenant-id']||(expected&&!sameSafetyContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,body);});
+  if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation(()=>{if(version===generation.current&&seq===sequence.current){snapshot.current=null;setData({cases:{status:'error'},appeals:{status:'error'}});}});snapshot.current=null;setData(loadingSafety());
+  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||seq!==sequence.current||op.controller.signal.aborted)return;const result=await loadSafety(async(path,body)=>{if(!headers['x-tenant-id']||(expected&&!sameSafetyContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,body);});
    const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameSafetyContext(current,headers))throw Error('company_context_changed');
    if(version===generation.current&&seq===sequence.current){setData(result);snapshot.current=result.cases.status==='ready'||result.appeals.status==='ready'?{headers,data:result}:null;if(manual)setMessage('');}
   }catch{if(version===generation.current&&seq===sequence.current)setData({cases:{status:'error'},appeals:{status:'error'}});}
