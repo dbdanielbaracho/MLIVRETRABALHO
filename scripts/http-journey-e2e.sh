@@ -2,6 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
 STAMP="$(date +%s)-$RANDOM"
 PRO_EMAIL="pro-${STAMP}@example.test"
 COMPANY_EMAIL="company-${STAMP}@example.test"
@@ -90,6 +91,28 @@ REPLACEMENT_ID="$(printf '%s' "$REPLACEMENT" | json_field id)"
 REPLACEMENTS="$(request GET /v1/company/replacements "$COMPANY2_TOKEN" "$TENANT2_ID")"
 contains "$REPLACEMENTS" "$REPLACEMENT_ID"
 contains "$REPLACEMENTS" "$ASSIGNMENT2_ID"
+
+
+# Malformed content must produce no message or notification for either actor.
+json_equal(){ node -e 'require("node:assert/strict").deepEqual(JSON.parse(require("fs").readFileSync(0,"utf8")),JSON.parse(process.argv[1]))' -- "$1"; }
+bad_message_status(){ local method="$1" id="$2" token="$3" tenant="$4" body="$5"; curl -sS -o /tmp/message-input-negative.json -w '%{http_code}' -X "$method" "$BASE_URL/v1/conversations/$id/messages" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data "$body"; }
+PRO_ALERTS="$(request GET /v1/notifications/mine "$PRO_TOKEN" "$TENANT_ID")"
+COMPANY_ALERTS="$(request GET /v1/notifications/mine "$COMPANY_TOKEN" "$TENANT_ID")"
+INVALID_MESSAGE="$(node -e 'for(const b of [null,[],42,true,"text",{},...[42,true,false,[],{},["Hello"],null," "].map(body=>({body}))])process.stdout.write(JSON.stringify(b)+"\n")')"
+test "$(bad_message_status POST not-a-uuid '' "$TENANT_ID" 'null')" = 401
+test "$(bad_message_status POST "$ASSIGNMENT_ID" "$COMPANY_TOKEN" "$TENANT2_ID" 'null')" = 401
+for token in "$PRO_TOKEN" "$COMPANY_TOKEN"; do
+  for method in GET POST; do
+    test "$(bad_message_status "$method" not-a-uuid "$token" "$TENANT_ID" '{"body":"fixture"}')" = 400
+  done
+  while IFS= read -r body; do
+    test "$(bad_message_status POST "$ASSIGNMENT_ID" "$token" "$TENANT_ID" "$body")" = 400
+    request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$token" "$TENANT_ID" | json_equal '[]'
+    request GET /v1/notifications/mine "$PRO_TOKEN" "$TENANT_ID" | json_equal "$PRO_ALERTS"
+    request GET /v1/notifications/mine "$COMPANY_TOKEN" "$TENANT_ID" | json_equal "$COMPANY_ALERTS"
+  done <<< "$INVALID_MESSAGE"
+done
+echo 'PASS: conversation malformed input rejects 400 without messages or notifications'
 
 COMPANY_MESSAGE="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$COMPANY_TOKEN" "$TENANT_ID" '{"body":"Olá, confirme seu horário."}')"
 contains "$COMPANY_MESSAGE" 'confirme seu horário'

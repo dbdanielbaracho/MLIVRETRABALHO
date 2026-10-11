@@ -919,3 +919,8 @@ Três testes adicionais dos handlers reais: matriz anterior 9 testes, 2 FAIL/7 P
 ## Avaliações / recibo #439 — 2026-10-11
 
 [RATING_INPUT_RUNTIME_VALIDATION_2026-10-11.md](RATING_INPUT_RUNTIME_VALIDATION_2026-10-11.md): 9novos testes ANTES3FAIL/6PASS, DEPOIS9PASS; 12locais com política existente; HTTP38requests/CI186API pendentes antes de publicação. #439 integrado com CI177API completo; native próprio N/A, pós-CI439/pósAPK438/retry427 separados pendentes.
+
+
+## Conversas / recibo #440 — 2026-10-11
+
+[CONVERSATION_INPUT_RUNTIME_VALIDATION_2026-10-11.md](CONVERSATION_INPUT_RUNTIME_VALIDATION_2026-10-11.md): 9novos testes ANTES3FAIL/6PASS, DEPOIS9PASS; HTTP28invalidPOSTs/CI195API pendentes antes de publicar. #440 integrado com CI186API completo, pós439CI comprovado; native próprio N/A, pósAPK438/retry427 separados pendentes.
