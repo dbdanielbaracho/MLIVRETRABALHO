@@ -6,6 +6,8 @@ import { reliabilityScore } from './reliability-score';
 import { roleFit } from './role-fit';
 import { cityDistanceKm } from './city-proximity';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Controller('company/teams')
 export class TeamAllocationController {
   constructor(private readonly db: DatabaseService, private readonly auth: AuthService) {}
@@ -26,6 +28,7 @@ export class TeamAllocationController {
     @Headers('x-tenant-id') t?: string
   ) {
     const tenant = await this.ctx(a, t);
+    if (typeof jobId !== 'string' || !UUID_RE.test(jobId)) throw new BadRequestException('job_invalid');
     return this.db.tenant(tenant, async db => {
       const job = (await db.query<{
         requiredRole: string | null;
@@ -36,6 +39,7 @@ export class TeamAllocationController {
         [tenant, jobId]
       )).rows[0];
       if (!job) throw new BadRequestException('job_not_found');
+      if (typeof teamId !== 'string' || !UUID_RE.test(teamId)) throw new BadRequestException('team_not_found');
 
       const team = (await db.query('SELECT 1 FROM workforce_teams WHERE tenant_id=$1 AND id=$2', [tenant, teamId])).rows[0];
       if (!team) throw new BadRequestException('team_not_found');
