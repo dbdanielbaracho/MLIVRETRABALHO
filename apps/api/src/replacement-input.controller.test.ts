@@ -5,17 +5,17 @@ import {ReplacementController} from './replacement.controller';
 import type {DatabaseService} from './database.service';
 import type {AuthService} from './auth.service';
 const ID='11111111-2222-3333-4444-555555555555',PRO='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',NEW='99999999-8888-7777-6666-555555555555';
-function setup(options:{authorized?:boolean;membership?:boolean;role?:string;found?:boolean;original?:boolean;status?:string;candidate?:boolean;available?:boolean;inserted?:boolean;recipient?:boolean;error?:Error}={}){
+function setup(options:{authorized?:boolean;membership?:boolean;role?:string;found?:boolean;original?:boolean;status?:string;candidate?:boolean;available?:boolean;inserted?:boolean;recipient?:boolean;originalProfessionalId?:string;error?:Error}={}){
  const queries:{sql:string;params:unknown[]}[]=[],contexts:string[]=[],memberships:unknown[][]=[];
  const auth={identityFromAuthorization:async()=>{if(options.authorized===false)throw new UnauthorizedException();return{id:'trusted-identity'};},requireMembership:async(...args:unknown[])=>{memberships.push(args);if(options.membership===false)throw new UnauthorizedException();return{role:options.role??'owner'};}};
  const db={tenant:async(tenant:string,op:(db:unknown)=>Promise<unknown>)=>{contexts.push(tenant);if(options.error)throw options.error;return op({query:async(sql:string,params:unknown[]=[])=>{
  queries.push({sql,params});
  if(sql.startsWith('SELECT assignment_id'))return{rows:options.found===false?[]:[{assignmentId:ID}]};
- if(sql.startsWith('SELECT job_id'))return{rows:options.original===false?[]:[{jobId:NEW,status:options.status??'confirmed'}]};
+ if(sql.startsWith('SELECT job_id'))return{rows:options.original===false?[]:[{jobId:NEW,status:options.status??'confirmed',isOriginalProfessional:typeof params[2]==='string'&&params[2].toLowerCase()===(options.originalProfessionalId??ID).toLowerCase()}]};
  if(sql.startsWith('SELECT status'))return{rows:options.found===false?[]:[{status:options.status??'confirmed'}]};
  if(sql.startsWith('SELECT 1 FROM talent_pool_members'))return{rows:options.candidate===false?[]:[{}]};
  if(sql.startsWith('SELECT 1 FROM professional_availability_network'))return{rows:options.available===false?[]:[{}]};
- if(sql.startsWith('INSERT INTO work_assignments'))return{rows:options.inserted===false?[]:[{id:NEW}]};
+ if(sql.startsWith('INSERT INTO work_assignments'))return{rows:options.inserted===false?[]:[{id:options.originalProfessionalId&&typeof params[2]==='string'&&params[2].toLowerCase()===options.originalProfessionalId.toLowerCase()?ID:NEW}]};
  if(sql.startsWith('SELECT active_tenant_professional_identity'))return{rows:options.recipient===false?[]:[{identityId:'trusted-recipient'}]};
  if(sql.startsWith('INSERT INTO replacement_requests'))return{rows:[{id:NEW,assignmentId:ID,status:'open',reason:params[2]}]};
  return{rows:[]};
@@ -82,4 +82,31 @@ test('replacement create preserves missing assignment and replaceable status sco
 });
 test('replacement DB failure propagates without fabricated success',async()=>{
  const error=new Error('fixture unavailable'),h=setup({error});await assert.rejects(h.controller.create(ID,{},'Bearer fixture','trusted-tenant'),(e:unknown)=>e===error);
+});
+
+test('replacement cannot select its original professional even when active preferred and available, including equivalent UUID case',async()=>{
+ for(const status of ['confirmed','checked_in','in_progress'])for(const professionalId of [PRO,PRO.toUpperCase()]){
+  const h=setup({originalProfessionalId:PRO,status});
+  await assert.rejects(h.controller.select(ID,{professionalId},'Bearer fixture','trusted-tenant'),
+   (e:unknown)=>e instanceof BadRequestException&&e.message==='replacement_candidate_required');
+  assert.equal(h.queries.filter(q=>/^(INSERT|UPDATE)/.test(q.sql)).length,0);
+  assert.equal(h.queries.some(q=>q.sql.startsWith('SELECT 1 FROM talent_pool_members')),false);
+  assert.deepEqual(h.queries[1]?.params,[ID,'trusted-tenant',professionalId]);
+ }
+});
+test('distinct replacement candidate retains exact input and factual ACK while original-state and company authority remain gates',async()=>{
+ const input=PRO.toUpperCase(),h=setup({originalProfessionalId:ID});
+ const row=await h.controller.select(ID,{professionalId:input},'Bearer fixture','trusted-tenant');
+ assert.deepEqual(row,{replacementRequestId:ID,assignmentId:NEW,replacedAssignmentId:ID,professionalId:input,status:'matched'});
+ assert.deepEqual(h.queries.find(q=>q.sql.startsWith('INSERT INTO work_assignments'))?.params,['trusted-tenant',NEW,input]);
+ const member=setup({role:'professional',originalProfessionalId:PRO});
+ await assert.rejects(member.controller.select(ID,{professionalId:PRO},'Bearer fixture','trusted-tenant'),
+  (e:unknown)=>e instanceof ForbiddenException&&e.message==='company_role_required');
+ assert.equal(member.contexts.length,0);
+ for(const status of ['cancelled','completed']){
+  const invalid=setup({originalProfessionalId:PRO,status});
+  await assert.rejects(invalid.controller.select(ID,{professionalId:PRO},'Bearer fixture','trusted-tenant'),
+   (e:unknown)=>e instanceof BadRequestException&&e.message==='assignment_not_replaceable');
+  assert.equal(invalid.queries.filter(q=>/^(INSERT|UPDATE)/.test(q.sql)).length,0);
+ }
 });

@@ -138,6 +138,28 @@ test "$(request GET /v1/assignments/mine "$PRO1_TOKEN")" = "$SELECT_PRO1_BEFORE"
 test "$(request GET /v1/assignments/mine "$PRO2_TOKEN")" = "$SELECT_PRO2_BEFORE"
 echo "PASS: replacement optional reasons and malformed selection UUIDs preserve real requests and assignments"
 
+
+# The original worker can be an active pool member; the concrete selection must still exclude them.
+SELF_POOL="$(request POST /v1/company/talent-pools "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PRO1_ID\",\"pool\":\"preferred\"}")"
+test "$(printf '%s' "$SELF_POOL" | json_field professionalId)" = "$PRO1_ID"
+SELF_PRO1_NOTICES="$(request GET /v1/notifications/mine "$PRO1_TOKEN")"
+SELF_PRO2_NOTICES="$(request GET /v1/notifications/mine "$PRO2_TOKEN")"
+SELF_PRO1_EARNINGS="$(request GET /v1/earnings/mine "$PRO1_TOKEN")"
+SELF_PRO2_EARNINGS="$(request GET /v1/earnings/mine "$PRO2_TOKEN")"
+SELF_UPPER="$(node -e 'process.stdout.write(process.argv[1].toUpperCase())' "$PRO1_ID")"
+for self_id in "$PRO1_ID" "$SELF_UPPER"; do
+ test "$(status_only POST "/v1/company/replacements/$REPLACEMENT_ID/select" "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$self_id\"}")" = "400"
+ test "$(json_field message < "$CANCEL_INPUT_DIR/negative.json")" = "replacement_candidate_required"
+done
+test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$SELECT_REPLACEMENTS_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO1_TOKEN")" = "$SELECT_PRO1_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO2_TOKEN")" = "$SELECT_PRO2_BEFORE"
+test "$(request GET /v1/notifications/mine "$PRO1_TOKEN")" = "$SELF_PRO1_NOTICES"
+test "$(request GET /v1/notifications/mine "$PRO2_TOKEN")" = "$SELF_PRO2_NOTICES"
+test "$(request GET /v1/earnings/mine "$PRO1_TOKEN")" = "$SELF_PRO1_EARNINGS"
+test "$(request GET /v1/earnings/mine "$PRO2_TOKEN")" = "$SELF_PRO2_EARNINGS"
+echo "PASS: replacement rejects original worker and equivalent UUID case without cancelling assignments matching requests notifications or earnings"
+
 AUTO="$(request POST "/v1/company/replacements/$REPLACEMENT_ID/auto-match" "$COMPANY_TOKEN" "$TENANT_ID")"
 test "$(printf '%s' "$AUTO" | json_field recommendedProfessionalId)" = "$PRO2_ID"
 test "$(printf '%s' "$AUTO" | json_field recommendedProfessionalName)" = "Replacement Bartender"
