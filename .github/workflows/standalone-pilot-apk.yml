@@ -60,6 +60,17 @@ jobs:
       # Do not publish an APK merely because Gradle compiled it. Boot a clean
       # Android emulator, install the exact artifact, launch it with Metro absent,
       # and fail on native/React Native fatal crashes.
+      - name: Enable and verify KVM for the Android emulator
+        run: |
+          test -c /dev/kvm
+          # Apply the same access mode directly to the existing ephemeral device;
+          # don't depend on asynchronous udev events or a daemon reload.
+          sudo chmod a+rw /dev/kvm
+          stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
+          test -r /dev/kvm || { echo 'KVM_NOT_READABLE'; exit 1; }
+          test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
+          echo "KVM_READY device=/dev/kvm"
+
       - name: Device smoke test — install and launch without Metro
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -67,6 +78,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: false
+          disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
           script: bash scripts/android-standalone-smoke.sh
 
