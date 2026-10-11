@@ -84,7 +84,7 @@ test('appeal all transition pairs retain same idempotence and conflict policy af
   if(current===next)assert.deepEqual(await operation,{id:ID,status:current,changed:false});
   else if(allowed)assert.deepEqual(await operation,{id:ID,status:next,changed:true});
   else await assert.rejects(operation,(e:unknown)=>e instanceof ConflictException&&e.message==='safety_appeal_transition_invalid');
-  assert.equal(h.queries[0].sql,'SELECT pg_advisory_xact_lock(hashtext($1))');
+  const lock=h.queries[0];assert.ok(lock);assert.equal(lock.sql,'SELECT pg_advisory_xact_lock(hashtext($1))');
   assert.equal(h.queries.filter(q=>q.sql.startsWith('INSERT INTO safety_case_appeal_events')).length,current!==next&&allowed?1:0);
  }
 });

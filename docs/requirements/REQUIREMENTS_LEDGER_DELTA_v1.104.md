@@ -547,3 +547,8 @@ Publicar branch/PR, revisar diff e nove paths/bytes, exigir CI própria completa
 
 Próxima ação segura após integração: reconsultar main/PRs/gates e auditar CancellationController.reason e ReplacementController.create/select, reproduzindo falhas runtime concretas e preservando suas políticas/SQL antes de mudar código. Não mudar compensação financeira, scheduling ou semântica de substituição sem requisito/prova. React19.1.4/RN0.81.6/lockfile/tenant/RLS/desenho preservados. Zero custo, contratação, deploy pago, dinheiro real, PSP ou mensagens reais. Android físico/Visual Truth/E2E/SecureStore/piloto, pentest independente e providers/PSP/KYC/FIN-RISK/Web pago permanecem OPEN. Projeto em andamento; bloqueio isolado não encerra os demais trabalhos.
 
+
+
+### Correção do teste após CI própria
+
+Head inicial 76a08b4e421ec5b8c91ec2c73b249a44f54d8e05, CI38138064763/job114465949006 FAILED no typecheck: TS2532 em safety-appeals-input.controller.test.ts linha87, query[0] possivelmente ausente. Log completo inspecionado; build/testes/HTTP posteriores SKIPPED não são aprovação. Corrigida somente asserção: obter lock, assert.ok(lock), então conferir SQL. Sem mudar controller/policy/SQL/expectativas nem remover testes. Testes locais repetidos e nova CI inteira obrigatória em novo SHA; não rerun cego, não reutilizar gate do head falho. Histórico de falha preservado.

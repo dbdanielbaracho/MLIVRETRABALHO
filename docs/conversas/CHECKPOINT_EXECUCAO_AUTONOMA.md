@@ -1,5 +1,10 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+### Correção do teste após CI própria
+
+Head inicial 76a08b4e421ec5b8c91ec2c73b249a44f54d8e05, CI38138064763/job114465949006 FAILED no typecheck: TS2532 em safety-appeals-input.controller.test.ts linha87, query[0] possivelmente ausente. Log completo inspecionado; build/testes/HTTP posteriores SKIPPED não são aprovação. Corrigida somente asserção: obter lock, assert.ok(lock), então conferir SQL. Sem mudar controller/policy/SQL/expectativas nem remover testes. Testes locais repetidos e nova CI inteira obrigatória em novo SHA; não rerun cego, não reutilizar gate do head falho. Histórico de falha preservado.
+
+
 ## Recursos de segurança: validação de entradas — 2026-10-11 12:06:45 UTC
 
 Estado de partida confirmado: main 3de10488b64a90139386fc2b6f5617744b35100c, tree 16a7b201a1039e69c01c82472102cbf229471dbc, PR #446 integrado uma única vez. CI do head eebfcb74debcc6891c1345ffb688bb7f23e924ae: run 38137493375/job 114464260065 PASS; pós-merge no SHA 3de10488b64a90139386fc2b6f5617744b35100c: run 38137742579/job 114464986458 PASS. Ambos: 4 testes web, 713 mobile, 228 API, 3 CLI, todos os steps aplicáveis, fluxo HTTP original e os dois markers novos da revisão de segurança. Pais [b4b45e4482ea08e3e1706318b8757f238201fe0c,eebfcb74debcc6891c1345ffb688bb7f23e924ae] e tree aprovada 16a7b201a1039e69c01c82472102cbf229471dbc conferidos. Recibo final persistido no corpo de https://github.com/dbdanielbaracho/MLIVRETRABALHO/pull/446. README, Documento da Verdade ORIGINAL v1.104, memória, checkpoint, fonte, inventário e workflows relidos na main; histórico integral preservado.
