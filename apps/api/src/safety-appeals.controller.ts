@@ -14,6 +14,8 @@ import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { SafetyAppealStatus, safetyAppealTransition } from './safety-appeal-policy';
 
+const appealUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const appealStatuses: SafetyAppealStatus[] = ['submitted', 'reviewing', 'upheld', 'modified', 'reversed'];
 
 @Controller('safety-appeals')
@@ -70,15 +72,21 @@ export class SafetyAppealsController {
 
   @Post()
   async create(
-    @Body() body: { safetyCaseId?: string; reason?: string },
+    @Body() body: unknown,
     @Headers('authorization') authorization?: string,
     @Headers('x-tenant-id') tenantId?: string
   ) {
     const context = await this.context(authorization, tenantId);
-    const reason = body.reason?.trim();
-    if (!body.safetyCaseId || !reason || reason.length > 4000) {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
       throw new BadRequestException('safety_appeal_invalid');
     }
+    const input = body as Record<string, unknown>;
+    if (typeof input.safetyCaseId !== 'string' || !appealUuid.test(input.safetyCaseId) ||
+        typeof input.reason !== 'string') {
+      throw new BadRequestException('safety_appeal_invalid');
+    }
+    const reason = input.reason.trim();
+    if (!reason || reason.length > 4000) throw new BadRequestException('safety_appeal_invalid');
 
     return this.db.tenant(context.tenantId, async db => {
       const safetyCase = (
@@ -94,7 +102,7 @@ export class SafetyAppealsController {
              LEFT JOIN work_assignments wa ON wa.id=sc.assignment_id AND wa.tenant_id=sc.tenant_id
              LEFT JOIN professional_profiles p ON p.id=wa.professional_id
             WHERE sc.id=$1 AND sc.tenant_id=$2`,
-          [body.safetyCaseId, context.tenantId]
+          [input.safetyCaseId, context.tenantId]
         )
       ).rows[0];
       if (!safetyCase) throw new NotFoundException('safety_case_not_found');
@@ -201,6 +209,7 @@ export class SafetyAppealsAdminController {
     @Headers('x-tenant-id') tenantId?: string
   ) {
     const context = await this.context(authorization, tenantId);
+    if (!appealUuid.test(id)) throw new BadRequestException('safety_appeal_invalid');
     return this.db.tenant(context.tenantId, async db => {
       const appeal = (
         await db.query<{ id: string }>(
@@ -230,17 +239,25 @@ export class SafetyAppealsAdminController {
   @Post(':id/status')
   async status(
     @Param('id') id: string,
-    @Body() body: { status?: string; note?: string },
+    @Body() body: unknown,
     @Headers('authorization') authorization?: string,
     @Headers('x-tenant-id') tenantId?: string
   ) {
     const context = await this.context(authorization, tenantId);
-    if (!body.status || !appealStatuses.includes(body.status as SafetyAppealStatus)) {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
       throw new BadRequestException('safety_appeal_status_invalid');
     }
-    const next = body.status as SafetyAppealStatus;
-    const note = body.note?.trim() || null;
+    const input = body as Record<string, unknown>;
+    if (typeof input.status !== 'string' || !appealStatuses.includes(input.status as SafetyAppealStatus)) {
+      throw new BadRequestException('safety_appeal_status_invalid');
+    }
+    const next = input.status as SafetyAppealStatus;
+    if (input.note != null && typeof input.note !== 'string') {
+      throw new BadRequestException('safety_appeal_note_invalid');
+    }
+    const note = typeof input.note === 'string' ? input.note.trim() || null : null;
     if (note && note.length > 2000) throw new BadRequestException('safety_appeal_note_invalid');
+    if (!appealUuid.test(id)) throw new BadRequestException('safety_appeal_invalid');
 
     return this.db.tenant(context.tenantId, async db => {
       await db.query('SELECT pg_advisory_xact_lock(hashtext($1))', [id]);
