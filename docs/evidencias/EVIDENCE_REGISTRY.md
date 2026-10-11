@@ -924,3 +924,13 @@ Três testes adicionais dos handlers reais: matriz anterior 9 testes, 2 FAIL/7 P
 ## Conversas / recibo #440 — 2026-10-11
 
 [CONVERSATION_INPUT_RUNTIME_VALIDATION_2026-10-11.md](CONVERSATION_INPUT_RUNTIME_VALIDATION_2026-10-11.md): 9novos testes ANTES3FAIL/6PASS, DEPOIS9PASS; HTTP28invalidPOSTs/CI195API pendentes antes de publicar. #440 integrado com CI186API completo, pós439CI comprovado; native próprio N/A, pósAPK438/retry427 separados pendentes.
+
+
+## Recibo de integração #438–441 / pós-merge histórico
+
+[VERIFIED_CONTINUITY_RECEIPTS_2026-10-11.md](VERIFIED_CONTINUITY_RECEIPTS_2026-10-11.md): CI pré/pós438–441 e APK próprio438 aprovados; postAPK419/425–434 aprovados, retry4272 comprovado; postAPK438 ainda executando no snapshot. N/A nativo API/docs explicado por paths/mobiletree. PróximaAuthinput/Supportstatus, VisualTruth físico/pentest/PSP externos ainda OPEN. Originalv1.104/histórico integral mantidos.
+
+
+### Pós438 atualizado 2026-10-11 11:18:07 UTC
+
+PASS run38133235730/job114451722593, install11:14:10.8159307Z/DEVICE_SMOKE_OK11:14:53.7258824Z, ZIP11700537236/sha256:de19b169e19ab8c59d27d30b462095220c44e167342d2b3a35602267206be510 no merge27e96142. Novo complemento em VERIFIED_CONTINUITY_RECEIPTS_2026-10-11.md. Histórico pendente mantido como histórico; gates físicos/provedores não fechados.
