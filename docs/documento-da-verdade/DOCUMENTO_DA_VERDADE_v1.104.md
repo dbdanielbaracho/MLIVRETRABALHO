@@ -736,3 +736,36 @@ APKpróprio/pós N/A por API/docs/mobiletree4cb705aeb39244f46649bc5c569459ef9b0c
 
 Próxima ação concreta: acompanhar CI própria deste candidato, rever diff e integrar somentePASS, verificar pós SHAmerge e atualizar recibo final no corpoPR (SHAs gerados posteriormente). Revalidar main/README/memória/checkpoint e auditar Privacy requestType/details: String coage arrays/objetos para solicitações reais. Corrigir sóruntime, sem mudar políticas de direitos/retention/deactivation/exports ou ativarprovedor. Um gate externo isolado não bloqueia estas tarefas independentes; não exigir continuar nem encerrar rotina por roundend.
 
+
+
+## Modelo operacional de execução autônoma — 11/10/2026
+
+**Objetivo do proprietário:** avançar o MLIVRETRABALHO sem digitar «CONTINUAR», evitando longos períodos ociosos, até encerrar todas as pendências internas possíveis. O calendário do ChatGPT está ativo com execução horária, mas **não** é um processo de longa duração e não oferece garantia de execução ininterrupta.
+
+**Estado verificado em 11/10/2026:** CI e APK standalone existem em GitHub Actions; não foi identificado serviço de agente de engenharia permanentemente executando neste repositório. O último commit observado antes deste adendo foi `ed64035184c8077df5e01eefab3e8d3fabc381cc` (#453). A ausência de PR aberto não demonstra conclusão do produto.
+
+### Níveis de execução e verdade operacional
+1. **Ativo já:** uma única tarefa ChatGPT a cada hora, realizando rodadas reais; cada rodada deve consultar `main`, Documento da Verdade, PRs, issues e gates, executar avanço concreto seguro, registrar evidência e próximo passo. Uma rodada pode falhar, terminar cedo ou ser atrasada pelo agendador. Não chamar isso de serviço 24×7.
+2. **Pronto para implementação futura, NÃO ativado:** worker de desenvolvimento com ciclo `plan → implement → test → open PR → await gates → merge → verify → checkpoint → repeat`, processado por executor persistente com mecanismo de lease, idempotência, rate limit e recuperação após crash. Exige credenciais e orçamento explícitos do proprietário e hospedagem/equivalente apto; não criar serviço/custo por inferência. GitHub Actions apenas de CI/APK não substitui um worker IA.
+3. **Gates que continuam humanos/externos:** instalação e E2E em Android físico, Visual Truth, pentest independente, PSP/KYC/sandbox real e decisões de infraestrutura/custo. Tais dependências não bloqueiam correções internas independentes.
+
+### Contrato de segurança para um eventual executor persistente
+- Credencial mínima, curta duração e rotativa (preferência GitHub App), armazenada somente em secret manager; nunca copiar token em documento ou log.
+- Permitir escrita apenas no repositório deste produto e em branches de trabalho; bloquear force push e alterações destrutivas na `main`.
+- **Sem merge automático** antes de gates aplicáveis (CI e standalone APK no SHA exato); validar depois na `main`. Em caso de gates pendentes, trabalhar em item independente, não simular PASS.
+- **Sem gastos, provedores externos, pagamentos reais, deploy pago, exclusão de dados ou alterações de autorização** sem autorização específica.
+- Preservar Documento da Verdade integralmente, compatibilidade React 19.1.4 / RN 0.81.6, isolamento tenant/RLS e comportamento de resultado financeiro incerto.
+- **Checkpoint durável mínimo:** timestamp UTC, SHA observado, issue/PR selecionado, branch, commits feitos, resultados dos gates com links, bloqueios, próximo passo e idempotency key. Evitar loops de commits vazios, PRs duplicados e atualizações só de status.
+- Monitorar: tempo desde último avanço material, rodadas falhas, custos/quotas, erros de credenciais e filas. Notificar o proprietário quando dois ciclos consecutivos não produzirem avanço e houver causa externa concreta.
+- O executor nunca se declara instalado ou executando apenas porque este desenho foi escrito; ativação requer ambiente provisionado, secret seguro, smoke test de duas rodadas e evidência real de auto-recuperação.
+
+### Critério de conclusão
+Concluir apenas quando o inventário normativo estiver revisado requisito por requisito; gates internos aplicáveis comprovados; bloqueios externos listados com proprietário e evidência; nunca confundir conclusão do trabalho interno com produto pronto para produção.
+
+
+### Inventário real da infraestrutura reutilizável (11/10/2026)
+- Railway autenticado contém projeto `MLIVRETRABALHO` (`c576bee0-9708-4e85-b311-62f84e36bad6`), ambiente `production`, serviços `@mlivretrabalho/api` e `Postgres`. Não alterar serviços produtivos existentes para hospedar o agente.
+- As variáveis visíveis da API no Railway não incluem nomes de segredo `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `COPILOT_GITHUB_TOKEN` ou outra chave de motor IA. Isso NÃO prova inexistência de licença Copilot na conta GitHub; a habilitação e o uso de modelos ainda requerem verificação.
+- A API de repositório GitHub informa `private=false` para `dbdanielbaracho/MLIVRETRABALHO`. A modalidade **Copilot cloud agent automations** da documentação oficial exige repositório private/internal; nenhuma alteração de visibilidade foi feita. Uma alternativa é um GitHub Agentic Workflow em Actions, que requer um motor IA e autenticação, mais geração/commit do workflow compilado `.lock.yml`; escrever só o `.md` não ativa execução.
+- Assinaturas GitHub/Railway pagas e serviços já existentes não demonstram disponibilidade de credencial IA ou orçamento ilimitado. Exige-se inventário de Copilot habilitado, autenticação segura e estimativa do consumo **antes de ativar** o worker.
+- Próxima entrega de implementação segura: separar o executor em serviço exclusivo com idempotência e limites de gasto; nunca modificar a API operacional para manter loop de desenvolvimento. Validar fluxo de smoke, CI e permissions por um ciclo antes de ligar execução recorrente.
