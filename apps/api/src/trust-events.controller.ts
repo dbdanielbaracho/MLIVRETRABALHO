@@ -26,6 +26,7 @@ export class TrustEventsController {
     @Headers('x-tenant-id') t?: string,
   ) {
     const context = await this.ctx(a, t);
+    if (typeof professionalId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(professionalId)) throw new BadRequestException('trust_event_invalid');
     return this.db.tenant(context.tenantId, async db => {
       const visible = (await db.query('SELECT 1 FROM work_assignments WHERE professional_id=$1 LIMIT 1', [professionalId])).rows[0];
       if (!visible) throw new NotFoundException('professional_not_found');
@@ -40,41 +41,48 @@ export class TrustEventsController {
 
   @Post()
   async create(
-    @Body() body: { assignmentId?: string; professionalId?: string; eventType?: string; cause?: string; notes?: string },
+    @Body() body: unknown,
     @Headers('authorization') a?: string,
     @Headers('x-tenant-id') t?: string,
   ) {
     const context = await this.ctx(a, t);
-    if (!body.professionalId || !body.eventType || !types.includes(body.eventType)) {
+    const input = body && typeof body === 'object' && !Array.isArray(body) ? body as Record<string, unknown> : null;
+    const professionalId = input?.professionalId;
+    const eventType = input?.eventType;
+    if (typeof professionalId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(professionalId) || typeof eventType !== 'string' || !types.includes(eventType)) {
       throw new BadRequestException('trust_event_invalid');
     }
-    if (body.cause && !causes.includes(body.cause)) throw new BadRequestException('trust_cause_invalid');
-    if (['no_show', 'late_arrival'].includes(body.eventType) && !body.assignmentId) {
+    if (input?.cause != null && (typeof input.cause !== 'string' || !causes.includes(input.cause))) throw new BadRequestException('trust_cause_invalid');
+    const assignmentId = input?.assignmentId;
+    if (['no_show', 'late_arrival'].includes(eventType) && !assignmentId) {
       throw new BadRequestException('assignment_required');
     }
-    const cause = body.eventType === 'commendation' ? (body.cause ?? 'undetermined') : (body.cause ?? 'undetermined');
+    if (assignmentId != null && (typeof assignmentId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(assignmentId))) throw new BadRequestException('trust_assignment_invalid');
+    if (input?.notes != null && typeof input.notes !== 'string') throw new BadRequestException('trust_notes_invalid');
+    const cause = input?.cause ?? 'undetermined';
+    const notes = typeof input?.notes === 'string' ? input.notes.trim() || null : null;
 
     return this.db.tenant(context.tenantId, async db => {
-      const visible = (await db.query('SELECT 1 FROM work_assignments WHERE professional_id=$1 LIMIT 1', [body.professionalId])).rows[0];
+      const visible = (await db.query('SELECT 1 FROM work_assignments WHERE professional_id=$1 LIMIT 1', [professionalId])).rows[0];
       if (!visible) throw new NotFoundException('professional_not_found');
-      if (body.assignmentId) {
+      if (assignmentId) {
         const wa = (
-          await db.query<{ professionalId: string }>('SELECT professional_id AS "professionalId" FROM work_assignments WHERE id=$1', [body.assignmentId])
+          await db.query<{ professionalId: string }>('SELECT professional_id AS "professionalId" FROM work_assignments WHERE id=$1', [assignmentId])
         ).rows[0];
         if (!wa) throw new BadRequestException('assignment_not_found');
-        if (wa.professionalId !== body.professionalId) throw new BadRequestException('assignment_professional_mismatch');
+        if (wa.professionalId !== professionalId) throw new BadRequestException('assignment_professional_mismatch');
       }
       return (
         await db.query(
           'INSERT INTO trust_events(tenant_id,assignment_id,professional_id,event_type,cause,reported_by_identity_id,notes) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id,event_type AS "eventType",cause,reported_by_identity_id AS "reportedByIdentityId",occurred_at AS "occurredAt"',
           [
             context.tenantId,
-            body.assignmentId ?? null,
-            body.professionalId,
-            body.eventType,
+            assignmentId ?? null,
+            professionalId,
+            eventType,
             cause,
             context.identity.id,
-            body.notes?.trim() || null,
+            notes,
           ],
         )
       ).rows[0];
