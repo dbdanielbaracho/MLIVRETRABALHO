@@ -26,7 +26,7 @@ test('company context must retain both tenant and identity before acting on disp
  assert.equal(sameCompanyContext({},{}),false);
 });
 test('confirmation requires exact job/professional/tenant ack and never fabricates success on timeout',async()=>{
- const data={id:'a',jobId:'j',professionalId:'p',tenantId:'t',status:'confirmed'},calls=[];
+ const data={id:'11111111-2222-4333-8444-555555555555',jobId:'j',professionalId:'p',tenantId:'t',status:'confirmed'},calls=[];
  assert.equal(await confirmCandidate(async(path,options)=>{calls.push([path,options]);return response(data)},'j','p','t'),true);
  assert.deepEqual(calls,[['/company/jobs/j/confirm',{method:'POST',body:JSON.stringify({professionalId:'p'})}]]);
  for(const bad of [{...data,tenantId:'other'},{...data,jobId:'other'},{...data,professionalId:'other'},{...data,status:'completed'},null])assert.equal(await confirmCandidate(async()=>response(bad),'j','p','t'),false);
