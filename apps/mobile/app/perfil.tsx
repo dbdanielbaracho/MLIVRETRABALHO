@@ -18,7 +18,7 @@ export default function Perfil(){
  const[expanded,setExpanded]=useState<string|null>(null),[notice,setNotice]=useState('');
  const[saving,setSaving]=useState(false),[signingOut,setSigningOut]=useState(false);
  const dirty=useRef(false),submitting=useRef(false),exiting=useRef(false),requestId=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),sourceHeaders=useRef<Record<string,string>|null>(null),draftOwner=useRef<string|undefined>(undefined);
- const exitController=useRef<AbortController|null>(null);
+ const exitController=useRef<AbortController|null>(null),saveController=useRef<AbortController|null>(null);
  function changedContext(){sourceHeaders.current=null;dirty.current=false;setDisplayName('');setCity('');setRole('');setProfile({status:'error'});setPassport({status:'error'});setNotice('A sessão mudou. Atualize seus dados antes de continuar.');}
  const load=useCallback(async(focusSignal?:AbortSignal)=>{
   const id=++requestId.current,generation=epoch.current;sourceHeaders.current=null;setProfile({status:'loading'});setPassport({status:'loading'});
@@ -51,17 +51,20 @@ export default function Perfil(){
   const input={displayName,homeCity:city,primaryRole:role},expectedId=profile.data?.id;
   if(!displayName.trim()){setNotice('Informe seu nome antes de salvar.');return;}
   submitting.current=true;setSaving(true);setNotice('');const generation=epoch.current;
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);controllers.current.add(controller);
+  const controller=new AbortController();controllers.current.add(controller);saveController.current=controller;
+  const isCurrent=()=>generation===epoch.current&&saveController.current===controller;
+  const timeout=setTimeout(()=>{controller.abort();if(isCurrent()){submitting.current=false;setSaving(false);setNotice('Não foi possível confirmar o salvamento em 15 segundos. Seus dados foram mantidos para tentar novamente.');}},15000);
   try{
-   const h=await authHeaders();if(generation!==epoch.current||controller.signal.aborted)return;
+   const h=await authHeaders();if(!isCurrent()||controller.signal.aborted)return;
    if(h.Authorization!==original.Authorization){changedContext();return;}
-   const result=await submitProfile((path,body)=>fetch(apiUrl(path),{method:'PUT',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),input,expectedId,()=>generation===epoch.current&&!controller.signal.aborted);
-   const current=await authHeaders();if(generation!==epoch.current)return;
+   const result=await submitProfile((path,body)=>fetch(apiUrl(path),{method:'PUT',headers:{...h,'content-type':'application/json'},body:JSON.stringify(body),signal:controller.signal}),input,expectedId,()=>isCurrent()&&!controller.signal.aborted);
+   if(!isCurrent()||controller.signal.aborted)return;
+   const current=await authHeaders();if(!isCurrent()||controller.signal.aborted)return;
    if(current.Authorization!==original.Authorization){changedContext();return;}
    if(controller.signal.aborted||result.status!=='saved'){setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');return;}
    ++requestId.current;dirty.current=false;setProfile({status:'ready',data:result.data});setDisplayName(result.data.displayName);setCity(result.data.homeCity??'');setRole(result.data.primaryRole??'');setNotice('Dados salvos.');void load();
-  }catch{if(generation===epoch.current)setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');}
-  finally{clearTimeout(timeout);controllers.current.delete(controller);if(generation===epoch.current){submitting.current=false;setSaving(false);}}
+  }catch{if(isCurrent()&&!controller.signal.aborted)setNotice('Não foi possível confirmar o salvamento. Seus dados foram mantidos para tentar novamente.');}
+  finally{clearTimeout(timeout);controllers.current.delete(controller);if(isCurrent()){saveController.current=null;submitting.current=false;setSaving(false);}}
  }
  async function signout(){
   if(exiting.current||submitting.current)return;
