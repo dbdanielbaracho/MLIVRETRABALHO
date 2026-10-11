@@ -48,3 +48,15 @@ test('Equipes keeps create/changeMember on the default timeout contract',()=>{
   assert.match(body,/op=operation\(\)/,'mutations must not silently inherit read-only deadline state');
  }
 });
+
+test('Equipes read handlers do not overwrite timeout message after an abort',()=>{
+ const src=fs.readFileSync(new URL('../app/equipes.tsx',import.meta.url),'utf8');
+ for(const [begin,end,guard] of [
+  ['async function selectTeam(', 'async function selectAllocation(', /catch\{if\(!op\.controller\.signal\.aborted&&version===generation\.current&&seq===teamSelection\.current\.version\)/],
+  ['async function selectAllocation(', 'async function create(', /catch\{if\(!op\.controller\.signal\.aborted&&version===generation\.current&&teamVersion===teamSelection\.current\.version&&seq===allocationSequence\.current\)/],
+ ]){
+  const start=src.indexOf(begin),stop=src.indexOf(end,start+begin.length);
+  assert.ok(start>=0&&stop>start);
+  assert.match(src.slice(start,stop),guard,'late aborted read must not replace deadline-specific guidance');
+ }
+});
