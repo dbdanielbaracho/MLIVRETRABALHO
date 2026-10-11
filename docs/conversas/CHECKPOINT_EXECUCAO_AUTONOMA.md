@@ -838,3 +838,8 @@ Antes de integrar, review do patch identificou que o primeiro heada50e5a61798c17
 ### Correção do próprio teste antes da integração — 2026-10-11 16:13 UTC
 
 PR #458 head4bf37ee6a2bcef7b6df13e4cbf5a2995f742eb09 NÃO integrado: CI38154327849/job114514053655 falhou no Typecheck com TS2532 em duas referências accepted[0] do teste novo, noUncheckedIndexedAccess. Dados de fixture agora definidos como tupla readonly as const, comprovando índice existente sem desabilitar verificação nem alterar controller/política. Regressores locais8PASS novamente; exigir CI completo do novo SHA, incluindo HTTP real; a falha anterior não é infraestrutura nem prova de aprovação. Revalidar head/main/diff antes de merge. Histórico original e snapshot anterior preservados.
+
+
+### Correção do gate HTTP da confirmação — 2026-10-11
+
+O CI 38155848323 do head ede2f1b62388adbea3ecb12d321ade1e0ba93853 passou typecheck, build e todos os testes unitários (4 web, 714 mobile, 348 API, 3 CLI), mas falhou no HTTP journey: a nova fixture consultou `/v1/notifications`, rota inexistente (404). A rota canônica auditada é `/v1/notifications/mine`, que sem tenant agrega somente os tenants da identidade autenticada e permite lista vazia antes da confirmação. Corrigida apenas a fixture, acrescentando prova de uma notificação factual de confirmação por tenant e preservação no replay. Não houve alteração de produção para contornar o teste. O gate do novo SHA permanece pendente até execução integral bem-sucedida; não repetir/rerodar o SHA antigo nem alegar merge aprovado.
