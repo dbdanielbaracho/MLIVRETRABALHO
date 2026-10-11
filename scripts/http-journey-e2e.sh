@@ -68,12 +68,77 @@ contains "$RECOMMENDATIONS" "$PROFESSIONAL_ID"
 RECOMMENDATIONS2="$(request GET "/v1/company/jobs/$JOB2_ID/recommendations" "$COMPANY2_TOKEN" "$TENANT2_ID")"
 contains "$RECOMMENDATIONS2" "$PROFESSIONAL_ID"
 
+
+# Malformed confirmations cannot create assignments, memberships or notifications.
+CONFIRM_MEMBERS_BEFORE="$(request GET /v1/me "$PRO_TOKEN")"
+CONFIRM_ASSIGN_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+CONFIRM_EARNINGS_BEFORE="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+CONFIRM_NOTIFICATIONS_BEFORE="$(request GET /v1/notifications/mine "$PRO_TOKEN")"
+CONFIRM_CANDIDATES_BEFORE="$(request GET "/v1/company/jobs/$JOB_ID/candidates" "$COMPANY_TOKEN" "$TENANT_ID")"
+node - "$GPS_INPUT_DIR" "$PROFESSIONAL_ID" <<'NODE'
+const fs=require('fs'),dir=process.argv[2],pro=process.argv[3];
+const bad=[null,false,true,42,'text',[],{},...[undefined,null,false,42,[],{},[pro],'','invalid'].map(professionalId=>({professionalId}))];
+bad.forEach((body,i)=>fs.writeFileSync(dir+'/bad-confirm-'+i+'.json',JSON.stringify(body)));
+NODE
+for payload in "$GPS_INPUT_DIR"/bad-confirm-*.json; do
+ code="$(curl -sS -o "$GPS_INPUT_DIR/confirm-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/jobs/$JOB_ID/confirm" -H "authorization: Bearer $COMPANY_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data-binary "@$payload")"
+ test "$code" = 400
+ test "$(json_field message < "$GPS_INPUT_DIR/confirm-response.json")" = professional_required
+done
+for id in invalid bad-id 42; do
+ for suffix in candidates recommendations; do
+  test "$(status_only GET "/v1/company/jobs/$id/$suffix" "$COMPANY_TOKEN" "$TENANT_ID")" = 400
+ done
+ code="$(curl -sS -o "$GPS_INPUT_DIR/confirm-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/jobs/$id/confirm" -H "authorization: Bearer $COMPANY_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
+ test "$code" = 400
+ test "$(json_field message < "$GPS_INPUT_DIR/confirm-response.json")" = job_invalid
+done
+for fixture in auth tenant membership; do
+ token="$COMPANY_TOKEN"
+ tenant="$TENANT_ID"
+ expected=401
+ case "$fixture" in auth) token=invalid-token ;; tenant) tenant=''; expected=400 ;; membership) tenant="$TENANT2_ID" ;; esac
+ code="$(curl -sS -o "$GPS_INPUT_DIR/confirm-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/jobs/invalid/confirm" -H "authorization: Bearer $token" -H "x-tenant-id: $tenant" -H 'content-type: application/json' --data null)"
+ test "$code" = "$expected"
+done
+test "$(request GET /v1/me "$PRO_TOKEN")" = "$CONFIRM_MEMBERS_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$CONFIRM_ASSIGN_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$CONFIRM_EARNINGS_BEFORE"
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$CONFIRM_NOTIFICATIONS_BEFORE"
+test "$(request GET "/v1/company/jobs/$JOB_ID/candidates" "$COMPANY_TOKEN" "$TENANT_ID")" = "$CONFIRM_CANDIDATES_BEFORE"
+echo 'PASS: malformed company confirmation JSON and job UUIDs reject before changing real assignments memberships interests notifications or earnings'
+
 CONFIRM="$(request POST "/v1/company/jobs/$JOB_ID/confirm" "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
 ASSIGNMENT_ID="$(printf '%s' "$CONFIRM" | json_field id)"
 CONFIRM2="$(request POST "/v1/company/jobs/$JOB2_ID/confirm" "$COMPANY2_TOKEN" "$TENANT2_ID" "{\"professionalId\":\"$PROFESSIONAL_ID\"}")"
 ASSIGNMENT2_ID="$(printf '%s' "$CONFIRM2" | json_field id)"
 test "$(printf '%s' "$CONFIRM" | json_field tenantId)" = "$TENANT_ID"
 test "$(printf '%s' "$CONFIRM2" | json_field tenantId)" = "$TENANT2_ID"
+
+
+# Confirmed replay returns the real original assignment/date and cannot duplicate notifications.
+CONFIRM_REPLAY_NOTIFICATIONS="$(request GET /v1/notifications/mine "$PRO_TOKEN")"
+node - "$CONFIRM_REPLAY_NOTIFICATIONS" "$TENANT_ID" "$TENANT2_ID" <<'NODE'
+const rows=JSON.parse(process.argv[2]);if(rows.length!==2||rows.some(x=>x.type!=='assignment_confirmed')||!rows.some(x=>x.tenantId===process.argv[3])||!rows.some(x=>x.tenantId===process.argv[4]))throw Error('expected one real confirmation notification per tenant');
+NODE
+CONFIRM_REPLAY_MEMBERS="$(request GET /v1/me "$PRO_TOKEN")"
+CONFIRM_REPLAY_MINE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+REPLAY="$(request POST "/v1/company/jobs/$JOB_ID/confirm" "$COMPANY_TOKEN" "$TENANT_ID" "{\"professionalId\":\"$PROFESSIONAL_ID\",\"tenantId\":\"spoof\"}")"
+node - "$CONFIRM" "$REPLAY" "$JOB_ID" "$PROFESSIONAL_ID" "$TENANT_ID" <<'NODE'
+const ack=JSON.parse(process.argv[2]),replay=JSON.parse(process.argv[3]);
+if(!ack.id||ack.jobId!==process.argv[4]||ack.professionalId!==process.argv[5]||ack.tenantId!==process.argv[6]||ack.status!=='confirmed'||!Number.isFinite(Date.parse(ack.confirmedAt))||JSON.stringify(ack)!==JSON.stringify(replay))throw Error('confirmed replay lost actual assignment identity tenant status or immutable timestamp');
+NODE
+for payload in "$GPS_INPUT_DIR"/bad-confirm-*.json; do
+ code="$(curl -sS -o "$GPS_INPUT_DIR/confirm-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/jobs/$JOB_ID/confirm" -H "authorization: Bearer $COMPANY_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data-binary "@$payload")"
+ test "$code" = 400
+ test "$(json_field message < "$GPS_INPUT_DIR/confirm-response.json")" = professional_required
+done
+test "$(curl -sS -o "$GPS_INPUT_DIR/confirm-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/company/jobs/$JOB_ID/confirm" -H "authorization: Bearer $PRO_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data null)" = 403
+test "$(json_field message < "$GPS_INPUT_DIR/confirm-response.json")" = company_role_required
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$CONFIRM_REPLAY_NOTIFICATIONS"
+test "$(request GET /v1/me "$PRO_TOKEN")" = "$CONFIRM_REPLAY_MEMBERS"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$CONFIRM_REPLAY_MINE"
+echo 'PASS: company confirmation retains real scoped ACK immutable replay date trusted membership and one notification without malformed overwrite'
 
 PRO_ME="$(request GET /v1/me "$PRO_TOKEN")"
 contains "$PRO_ME" "$TENANT_ID"
