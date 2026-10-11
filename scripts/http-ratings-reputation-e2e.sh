@@ -2,6 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
 STAMP="$(date +%s)-$RANDOM"
 PRO_EMAIL="rating-pro-${STAMP}@example.test"
 COMPANY_EMAIL="rating-company-${STAMP}@example.test"
@@ -52,6 +53,24 @@ node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const r
 
 UPDATED="$(request POST "/v1/assignments/$ASSIGNMENT_ID/company-rating" "$PRO_TOKEN" "$TENANT_ID" '{"score":3,"comment":"Atualização"}')"
 test "$(printf '%s' "$UPDATED" | json_field score)" = "3"
+
+
+# Disposable malformed input must never replace either real rating or score.
+INVALID_RATING="$(node -e 'for(const b of [null,[],42,true,"text",{},...[0,6,1.5,"5",true,[],{},null].map(score=>({score})),...[42,true,false,[],{}].map(comment=>({score:1,comment}))])process.stdout.write(JSON.stringify(b)+"\n")')"
+for DIRECTION in rating company-rating; do
+  if [[ "$DIRECTION" == rating ]]; then RAT_TOKEN="$COMPANY_TOKEN"; else RAT_TOKEN="$PRO_TOKEN"; fi
+  for BAD_ID in not-a-uuid 42; do
+    test "$(status_only POST "/v1/assignments/$BAD_ID/$DIRECTION" "$RAT_TOKEN" "$TENANT_ID" '{"score":1}')" = 400
+  done
+  test "$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/$DIRECTION" '' "$TENANT_ID" 'null')" = 401
+  test "$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/$DIRECTION" "$RAT_TOKEN" "$OTHER_TENANT" 'null')" = 401
+  while IFS= read -r BODY; do
+    test "$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/$DIRECTION" "$RAT_TOKEN" "$TENANT_ID" "$BODY")" = 400
+    request GET /v1/assignments/mine "$PRO_TOKEN" "$TENANT_ID" | node -e 'const rows=JSON.parse(require("fs").readFileSync(0,"utf8"));const row=rows.find(x=>x.id===process.argv[1]);require("node:assert/strict").equal(row?.companyRatingScore,3)' -- "$ASSIGNMENT_ID"
+    request GET /v1/work-passport/mine "$PRO_TOKEN" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));const a=require("node:assert/strict");a.equal(x.averageRating,5);a.equal(x.ratingCount,1)'
+  done <<< "$INVALID_RATING"
+done
+echo 'PASS: rating malformed input rejects 400 without replacing bidirectional real scores'
 
 CROSS_STATUS="$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/company-rating" "$OTHER_TOKEN" "$OTHER_TENANT" '{"score":1}')"
 test "$CROSS_STATUS" = "400" || test "$CROSS_STATUS" = "401" || test "$CROSS_STATUS" = "403"
