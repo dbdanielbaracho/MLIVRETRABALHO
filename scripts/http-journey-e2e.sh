@@ -127,14 +127,43 @@ contains "$COMPANY_NOTIFICATIONS" 'new_message'
 WRONG_TENANT_STATUS="$(status_only GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$COMPANY2_TOKEN" "$TENANT2_ID")"
 test "$WRONG_TENANT_STATUS" = "404"
 
+# Every operational route must reject malformed IDs without changing real state or earnings.
+TRANSITION_MINE_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+TRANSITION_EARNINGS_BEFORE="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+for step in check-in start check-out complete; do
+ for id in not-a-uuid 42 "${ASSIGNMENT_ID}x"; do
+  test "$(status_only POST "/v1/assignments/$id/$step" "$PRO_TOKEN" "$TENANT_ID")" = "400"
+ done
+ test "$(status_only POST "/v1/assignments/not-a-uuid/$step" '' "$TENANT_ID")" = "401"
+ test "$(status_only POST "/v1/assignments/not-a-uuid/$step" "$PRO_TOKEN" '')" = "400"
+ test "$(status_only POST "/v1/assignments/not-a-uuid/$step" "$COMPANY2_TOKEN" "$TENANT_ID")" = "401"
+ test "$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/$step" "$PRO_TOKEN" "$TENANT2_ID")" = "400"
+ test "$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/$step" "$COMPANY_TOKEN" "$TENANT_ID")" = "404"
+done
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$TRANSITION_MINE_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$TRANSITION_EARNINGS_BEFORE"
+echo 'PASS: assignment malformed UUID and tenant or actor failures preserve real assignments and earnings'
+
 for STEP in check-in start check-out complete; do
   STATUS="$(case "$STEP" in check-in) echo checked_in;; start) echo in_progress;; check-out) echo checked_out;; complete) echo completed;; esac)"
-  test "$(request POST "/v1/assignments/$ASSIGNMENT_ID/$STEP" "$PRO_TOKEN" "$TENANT_ID" '{}' | json_field status)" = "$STATUS"
+  TRANSITION_ACK="$(request POST "/v1/assignments/$ASSIGNMENT_ID/$STEP" "$PRO_TOKEN" "$TENANT_ID" '{}')"
+  test "$(printf '%s' "$TRANSITION_ACK" | json_field status)" = "$STATUS"
+  node - "$TRANSITION_ACK" "$ASSIGNMENT_ID" "$STEP" <<'NODE'
+const row=JSON.parse(process.argv[2]),id=process.argv[3],step=process.argv[4];
+const field={'check-in':'checkedInAt','check-out':'checkedOutAt',complete:'completedAt'}[step];
+if(row.id!==id||field&&!Number.isFinite(Date.parse(row[field])))throw Error('actual assignment ACK or timestamp lost');
+NODE
+  if [[ "$STEP" == "complete" ]]; then COMPLETION_EARNINGS_BEFORE_REPLAY="$(request GET /v1/earnings/mine "$PRO_TOKEN")"; fi
+  test "$(status_only POST "/v1/assignments/$ASSIGNMENT_ID/$STEP" "$PRO_TOKEN" "$TENANT_ID")" = "400"
+  if [[ "$STEP" == "complete" ]]; then test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$COMPLETION_EARNINGS_BEFORE_REPLAY"; fi
 done
 
 EARNINGS="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
 contains "$EARNINGS" '25000'
 contains "$EARNINGS" "$TENANT_ID"
+EARNINGS_AFTER_REPLAY="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+test "$EARNINGS_AFTER_REPLAY" = "$EARNINGS"
+echo 'PASS: assignment lifecycle returns real timestamps without GPS and rejects replay without duplicate earnings'
 
 RATING="$(request POST "/v1/assignments/$ASSIGNMENT_ID/rating" "$COMPANY_TOKEN" "$TENANT_ID" '{"score":5,"comment":"Excelente"}')"
 test "$(printf '%s' "$RATING" | json_field score)" = "5"
