@@ -872,3 +872,7 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 05:32:18 UTC
 
 - [PROFILE_SAVE_SCREEN_DEADLINE_2026-10-11.md](./PROFILE_SAVE_SCREEN_DEADLINE_2026-10-11.md): Perfil.saveProfile: 5 falhas/6 sucessos antes, 50/50 locais depois; UI encerra busy no prazo, mantém draft, rejeita ACK/finally antigo. Backend/índice único e same-body retry auditados; sem prova de cancelamento/ordenação de escritas diferentes. Registra merges420–424, CI pós-merge, APKs pendentes e falha/rerun425. Gates físico/VisualTruth/PSP/pentest abertos.
+
+## 2026-10-11 05:36:39 UTC
+
+- [DASHBOARD_SIGNOUT_LOCAL_DEADLINE_2026-10-11.md](./DASHBOARD_SIGNOUT_LOCAL_DEADLINE_2026-10-11.md): EmpresaInicio.signout: 6 falhas/3 sucessos antes; 70/70 locais depois, incluindo27casos das3telas. Prazo de UI/limpeza local/token posterior/contexto exibido conservados; sem prova física ou de revogação remota. CI431 aprovado, APKs pendentes. Equipes já coberta na main; publicação incerta identificada para auditoria.

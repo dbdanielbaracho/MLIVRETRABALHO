@@ -20,6 +20,7 @@ export default function EmpresaInicio() {
   const [tenantId,setTenantId]=useState('');
   const [message,setMessage]=useState('');
   const pendingActions=useRef(new Set<string>()),requestId=useRef(0),exiting=useRef(false),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),displayedContext=useRef<Record<string,string>|null>(null);
+  const exitController=useRef<AbortController|null>(null);
   const [pending,setPending]=useState<string[]>([]),[signingOut,setSigningOut]=useState(false);
   function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
   const load=useCallback(async()=>{
@@ -63,10 +64,13 @@ export default function EmpresaInicio() {
   }
   async function signout(){
     if(exiting.current||pendingActions.current.size)return;exiting.current=true;setSigningOut(true);
-    const version=epoch.current,displayed=displayedContext.current,op=operation();let authorization:string|undefined,started=false;
-    try{const headers=await authenticatedTenantHeaders();if(version!==epoch.current||op.controller.signal.aborted)return;if(displayed&&!sameCompanyContext(headers,displayed)){setMessage('A empresa ou sessão mudou. Atualize o painel antes de sair.');return;}authorization=headers.Authorization;started=true;await fetch(apiUrl('/auth/signout'),{method:'POST',headers,signal:op.controller.signal});}
+    let authorization:string|undefined,started=false,releaseDeadline:()=>void=()=>{};
+    const deadline=new Promise<void>(resolve=>{releaseDeadline=resolve;});
+    const version=epoch.current,displayed=displayedContext.current,op=operation(()=>{releaseDeadline();if(version===epoch.current&&exitController.current===op.controller){exiting.current=false;setSigningOut(false);setMessage('Não foi possível confirmar a saída em 15 segundos. A limpeza local ainda pode estar pendente. Tente novamente.');}});exitController.current=op.controller;
+    const current=()=>version===epoch.current&&exitController.current===op.controller;
+    try{const headers=await authenticatedTenantHeaders();if(!current()||op.controller.signal.aborted)return;if(displayed&&!sameCompanyContext(headers,displayed)){setMessage('A empresa ou sessão mudou. Atualize o painel antes de sair.');return;}authorization=headers.Authorization;started=true;await Promise.race([fetch(apiUrl('/auth/signout'),{method:'POST',headers,signal:op.controller.signal}),deadline]);}
     catch{ /* The requested session can still be cleared locally when offline. */ }
-    finally{op.finish();if(started){const result=await clearSessionForAuthorization(authorization);if(version===epoch.current){if(result==='cleared')router.replace('/');else setMessage(result==='stale'?'A sessão mudou. A nova conta foi preservada.':'Não foi possível confirmar a saída neste aparelho. Tente sair novamente.');}}if(version===epoch.current){exiting.current=false;setSigningOut(false);}}
+    finally{try{if(started){const result=await clearSessionForAuthorization(authorization);if(current()){if(result==='cleared')router.replace('/');else setMessage(result==='stale'?'A sessão mudou. A nova conta foi preservada.':'Não foi possível confirmar a saída neste aparelho. Tente sair novamente.');}}}finally{op.finish();if(current()){exitController.current=null;exiting.current=false;setSigningOut(false);}}}
   }
   async function openConversation(assignmentId: string) {
     const displayed=displayedContext.current,version=epoch.current;
