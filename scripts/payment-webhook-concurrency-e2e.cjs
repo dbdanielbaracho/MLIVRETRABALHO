@@ -43,6 +43,8 @@ async function race(different) {
   const deadline=Date.now()+5000;
   let blocked=0;
   do {
+   // Refresh transaction-local activity statistics before observing the insert barrier.
+   await client.query('SELECT pg_stat_clear_snapshot()');
    const result=await client.query(`SELECT count(*)::int AS blocked
     FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid
     WHERE l.relation='payment_events'::regclass AND l.mode='RowExclusiveLock'
