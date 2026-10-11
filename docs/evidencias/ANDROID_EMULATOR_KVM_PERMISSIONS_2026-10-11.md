@@ -15,3 +15,6 @@ Preserva ubuntu-latest existente/AndroidAPI35/x86_64/pixel_6/GPU/animations/Java
 Branch parte do head4695e29cacde3742b28e8c36a179b535dfa4294d075/tree1f2362a0c74224cf1d3ccc7471712ee188802ff5, para não perder3regressõesreais468 e2reais469/amboscódigo/docs. Integrar468→469primeiro com própriosgatesnovos; retarget destaPRmain depois e reverdiff7paths/bytes/tree/head/main/mergeable. PrópriosCI/APKnovoSHAobrigatórios; nãoemprestarAPKanterior nemrepetirmerges. Pós próprios de cadaSHAreal devemser confirmados e recibosfinais consolidados emdocsevidência porPRsomentedocs depois, semloopautorrefentemetadados. Capturasrunning/[]nãoPASS.
 
 FísicoAndroid/E2E/VisualTruth/SecureStore/piloto/pentestindependente/Trustproviders/PSPKYCsandbox/FIN-RISK/Webprovisionamentoeventualpago continuam separados OPEN. Emulador não físico; ZIPdigest não APKindividual. Sem custo/contratação/PSP/dinheiroreal/deploypago/produçãoRailsRailway. Próximo: validar CI/emulador real novoSHA e medir boot, integrarnaordem e verificar pós; continuar auditando todasfrentesinternas da fontecanônica e corrigindo lacunascomprovadas, seminventaratividade/declararconclusão porPRvazia ougateisolado/encerrarrotina.
+
+
+Nota: snapshot histórico da branch470/f25 preservado; infraestrutura agora isolada na473, nãoalegar470merged nemprovarheadnovo usandoAPKf25.
