@@ -15,7 +15,7 @@ function screen(){
  const state=[],refs=[],calls=[],timers=new Map(),held=[];let si=0,ri=0,focus,cleanup,handlers,reads=0,id=0,armed=null,current={...original},kind='created';
  function hold(value){armed=null;const gate=deferred();held.push({gate,value});return gate.promise;}
  const auth=async()=>{const value={...current},stage=++reads===1?'auth':'final-auth';return armed===stage?hold(value):value;};
- const fetch=async(path,options)=>{calls.push({path,options});const payload=JSON.parse(options.body),data={...payload,id:'fixture-job',status:'open',title:payload.title.trim(),workCity:payload.workCity.trim(),location:payload.location.trim()||null};const response={ok:kind!=='rejected',status:kind==='rejected'?400:200,json:async()=>armed==='json'?hold(data):kind==='unknown'?{}:data};return armed==='fetch'?hold(response):response;};
+ const fetch=async(path,options)=>{calls.push({path,options});const payload=JSON.parse(options.body),data={...payload,id:kind==='malformed-id'?'fixture-job':'dddddddd-1111-4222-8333-444444444444',status:'open',title:payload.title.trim(),workCity:payload.workCity.trim(),location:payload.location.trim()||null};const response={ok:kind!=='rejected',status:kind==='rejected'?400:200,json:async()=>armed==='json'?hold(data):kind==='unknown'?{}:data};return armed==='fetch'?hold(response):response;};
  function render(){si=0;ri=0;handlers=create(initial=>{const i=si++;if(!(i in state))state[i]=initial;return[state[i],v=>{state[i]=v}]},initial=>{const i=ri++;return refs[i]??(refs[i]={current:initial})},cb=>cb,cb=>{focus=cb},auth,sameCompanyContext,p=>p,fetch,runForSession,publishJob,cb=>{const n=++id;timers.set(n,cb);return n},n=>timers.delete(n));}
  render();cleanup=focus();return {state,refs,calls,render,pump:()=>new Promise(setImmediate),edit:()=>{draft.forEach((v,i)=>{state[i]=v});render()},create:()=>handlers.create(),refresh:()=>handlers.loadContext(),arm:stage=>{reads=0;armed=stage},response:value=>{kind=value},owner:value=>{current={...value}},blur:()=>cleanup(),refocus:()=>{render();cleanup=focus()},timer:()=>{const cb=[...timers.values()].at(-1);assert.ok(cb);return cb},release:()=>{assert.ok(held.length);const x=held.shift();x.gate.resolve(x.value)},get busy(){return state[9]},get uncertain(){return refs[7].current},get message(){return state[7]},get context(){return refs[5].current},get blocked(){return held.length}};
 }
@@ -40,4 +40,9 @@ test('timely rejected publication preserves the draft and permits a new explicit
 });
 test('different company within the same account before publication sends no POST',async()=>{
  const h=await ready();h.owner({...original,'x-tenant-id':'different-company'});h.arm(null);await h.create();assert.equal(h.calls.length,0);assert.deepEqual(h.state.slice(0,7),draft);assert.equal(h.uncertain,false);assert.equal(h.busy,false);h.blur();
+});
+
+
+test('timely malformed publication UUID preserves actual draft and uncertainty through explicit same-company refresh without another POST',async()=>{
+ const h=await ready();h.response('malformed-id');h.arm(null);await h.create();assert.equal(h.calls.length,1);assert.equal(h.uncertain,true);assert.equal(h.busy,false);assert.deepEqual(h.state.slice(0,7),draft);assert.doesNotMatch(h.message,/Trabalho publicado/);assert.match(h.message,/Planejamento/);h.render();await h.refresh();h.render();await h.create();assert.equal(h.calls.length,1,'malformed ACK must not authorize another non-idempotent publication');assert.deepEqual(h.state.slice(0,7),draft);assert.equal(h.uncertain,true);h.blur();
 });
