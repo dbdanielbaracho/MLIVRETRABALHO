@@ -2,6 +2,8 @@ import { BadRequestException, ForbiddenException, Body, Controller, Delete, Get,
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Controller('company/teams')
 export class TeamsController {
   constructor(private readonly db: DatabaseService, private readonly auth: AuthService) {}
@@ -38,6 +40,7 @@ export class TeamsController {
   @Get(':id/members')
   async members(@Param('id') id: string, @Headers('authorization') a?: string, @Headers('x-tenant-id') t?: string) {
     const tenant = await this.ctx(a, t);
+    if (!UUID_RE.test(id)) throw new BadRequestException('team_not_found');
     return this.db.tenant(tenant, async db => {
       await this.requireTeam(db, tenant, id);
       return (await db.query(
@@ -55,10 +58,12 @@ export class TeamsController {
   }
 
   @Post()
-  async create(@Body() body: { name?: string }, @Headers('authorization') a?: string, @Headers('x-tenant-id') t?: string) {
+  async create(@Body() value: unknown, @Headers('authorization') a?: string, @Headers('x-tenant-id') t?: string) {
     const tenant = await this.ctx(a, t);
-    const name = body.name?.trim();
-    if (!name) throw new BadRequestException('team_name_required');
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new BadRequestException('team_name_required');
+    const body = value as Record<string, unknown>;
+    if (typeof body.name !== 'string' || !body.name.trim()) throw new BadRequestException('team_name_required');
+    const name = body.name.trim();
     return this.db.tenant(tenant, async db => (
       await db.query('INSERT INTO workforce_teams(tenant_id,name) VALUES($1,$2) RETURNING id,name', [tenant, name])
     ).rows[0]);
@@ -67,18 +72,22 @@ export class TeamsController {
   @Post(':id/members')
   async add(
     @Param('id') id: string,
-    @Body() body: { professionalId?: string },
+    @Body() value: unknown,
     @Headers('authorization') a?: string,
     @Headers('x-tenant-id') t?: string
   ) {
     const tenant = await this.ctx(a, t);
-    if (!body.professionalId) throw new BadRequestException('professional_required');
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new BadRequestException('professional_required');
+    const body = value as Record<string, unknown>;
+    if (typeof body.professionalId !== 'string' || !UUID_RE.test(body.professionalId)) throw new BadRequestException('professional_required');
+    const professionalId = body.professionalId;
+    if (!UUID_RE.test(id)) throw new BadRequestException('team_not_found');
     return this.db.tenant(tenant, async db => {
       await this.requireTeam(db, tenant, id);
 
       const professional = (await db.query(
         'SELECT 1 FROM work_assignments WHERE tenant_id=$1 AND professional_id=$2 LIMIT 1',
-        [tenant, body.professionalId]
+        [tenant, professionalId]
       )).rows[0];
       if (!professional) throw new BadRequestException('professional_not_found');
 
@@ -87,8 +96,8 @@ export class TeamsController {
          VALUES($1,$2,$3)
          ON CONFLICT DO NOTHING
          RETURNING team_id AS "teamId",professional_id AS "professionalId"`,
-        [id, body.professionalId, tenant]
-      )).rows[0] ?? { teamId: id, professionalId: body.professionalId };
+        [id, professionalId, tenant]
+      )).rows[0] ?? { teamId: id, professionalId };
     });
   }
 
@@ -100,6 +109,8 @@ export class TeamsController {
     @Headers('x-tenant-id') t?: string
   ) {
     const tenant = await this.ctx(a, t);
+    if (!UUID_RE.test(id)) throw new BadRequestException('team_not_found');
+    if (!UUID_RE.test(professionalId)) throw new BadRequestException('professional_required');
     return this.db.tenant(tenant, async db => {
       await this.requireTeam(db, tenant, id);
       await db.query(
