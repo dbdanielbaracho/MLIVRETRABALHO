@@ -45,6 +45,8 @@ async function request(url,token,scope,body){
    settled=Promise.allSettled([confirm(company),confirm(company)]);
    const deadline=Date.now()+5000;let blocked=0;
    do{
+    // pg_stat_activity is cached within this transaction; observe the current requests.
+    await client.query('SELECT pg_stat_clear_snapshot()');
     const result=await client.query(`SELECT count(*)::int AS n FROM pg_stat_activity
      WHERE datname=current_database() AND wait_event_type='Lock'
      AND (query LIKE 'INSERT INTO work_assignments%' OR query LIKE 'SELECT id,status,title,%FROM company_jobs%')`);
