@@ -16,17 +16,17 @@ export default function CriarConta() {
   async function signup() {
     if(pending.current||unknown.current)return;
     pending.current=true;sent.current=false;setBusy(true);setMessage('');const generation=epoch.current,operation=new AbortController();controller.current=operation;
-    const timer=setTimeout(()=>operation.abort(),15000);
+    const current=()=>generation===epoch.current&&controller.current===operation;
+    const timer=setTimeout(()=>{operation.abort();if(current()){pending.current=false;setBusy(false);if(sent.current){unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');}else setMessage('Não foi possível iniciar o cadastro em 15 segundos. Tente novamente.');}},15000);
     try{
-      const result=await signupAccount((path,body)=>{sent.current=true;unknown.current=true;return fetch(apiUrl(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal});},{email,password,accountType,workspaceName},()=>generation===epoch.current&&!operation.signal.aborted);
-      if(generation!==epoch.current)return;
-      if(operation.signal.aborted&&sent.current){setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');return;}
+      const result=await signupAccount((path,body)=>{sent.current=true;unknown.current=true;return fetch(apiUrl(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal});},{email,password,accountType,workspaceName},()=>current()&&!operation.signal.aborted);
+      if(!current()||operation.signal.aborted)return;
       if(result.status==='created'){pending.current=false;unknown.current=false;setUncertain(false);setPassword('');router.replace('/entrar');}
       else if(result.status==='invalid')setMessage('Preencha um e-mail válido, senha de 8 a 128 caracteres e, para empresa, nome de até 120 caracteres.');
       else if(result.status==='rejected'){pending.current=false;unknown.current=false;setUncertain(false);setMessage(result.emailInUse?'Este e-mail já está cadastrado. Entre com sua conta.':'Não foi possível criar a conta. Confira os dados e tente novamente.');}
       else if(sent.current){unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o cadastro. Tente entrar com este e-mail e senha antes de cadastrar novamente.');}
       else setMessage('Não foi possível iniciar o cadastro. Confira os dados e tente novamente.');
-    }finally{clearTimeout(timer);if(generation===epoch.current){pending.current=false;setBusy(false);}}
+    }finally{clearTimeout(timer);if(current()){controller.current=null;pending.current=false;setBusy(false);}}
   }
 
   return (
