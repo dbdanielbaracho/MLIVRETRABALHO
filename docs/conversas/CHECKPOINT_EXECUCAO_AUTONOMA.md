@@ -1,5 +1,14 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+## Validação das rotas de equipes — 2026-10-11 06:06:16 UTC
+
+A pendência dos parâmetros de rota UUID no mesmo TeamsController foi reproduzida e corrigida nesta fatia: GET membros, POST membro e DELETE membro agora rejeitam IDs não canônicos antes de db.tenant/query/cast uuid, após autenticação/membership/role original. UUID_RE não impõe versão; IDs canônicos emitidos pela API e SQL/RLS existentes preservados. Nenhuma lista/snapshot ou ACK fictício.
+
+Três testes adicionais dos handlers reais: matriz anterior 9 testes, 2 FAIL/7 PASS; matriz final 9 PASS/0 FAIL local (limitações de stubs já registradas). Confirmam rejeição sem abrir tenant/query, prioridade 401/403 e consultas válidas com tenant confiável/DELETE exato; continuam 6 regressões anteriores de Body. HTTP de equipes acrescenta GET/POST/DELETE de rota inválida com 400 e GETs inalterados, sem relaxar jornada válida de alocação existente. bash -n PASS. CI do NOVO head espera 4/699/162/3 e todos HTTP; não reutilizar a aprovação do head anterior f5133a4c061b1d0652654282fe907494e018d640 (CI38116726059 passou 4/699/159/3 e marcador equipe em 2026-10-11T06:04:18.0077457Z).
+
+#435 head5b9f91029a5401b6c54c64862076bcd7e7e981fc CI38116648295/job114402739344 confirmado PASS em todos os passos, 4/699/153/3, marcador job inválido 2026-10-11T06:02:39.4641635Z e cronologia PostgreSQL 06:02:54.5430625Z; ainda não merged. #425 attempt3/#430 attempt2 em execução, sem gate nativo aprovado nessas tentativas. Main permanece #424 b00be864d6ed6c7383f9f5267df054dad6907535. Próxima ação: acompanhar #425/#430/#434; integrar em ordem #425–#436 com gates aplicáveis exatos e confirmar pós-merge. APK desta fatia API permanece N/A condicional a mobile tree idêntica e #434 nativo; gates físicos/Visual Truth/pentest/PSP/Web pago permanecem abertos. Histórico v1.104/memória/checkpoint preservados. Sem custos, provider, dinheiro real ou deploy.
+
+
 ## Equipes: validação de JSON nas mutações — 2026-10-11 06:01:48 UTC
 
 Falha concreta reproduzida na main b00be864d6ed6c7383f9f5267df054dad6907535: TeamsController.create/add recebem Body tipado mas null dispara TypeError em name/professionalId; números/objetos em name alcançam trim e professionalId inválido alcança SQL uuid. Alterados somente esses dois corpos para unknown, objeto record e validação antes de db.tenant. Nome continua texto não vazio trim, sem novo teto comercial; professionalId deve ser string UUID canônica, sem impor versão, refletindo o tipo uuid real de workforce_team_members e os IDs devolvidos pela API. Autenticação/membership/roles precedem validação; nenhuma authority do payload é usada. Queries de requireTeam/work_assignments, isolamento tenant, ON CONFLICT DO NOTHING e ACK existentes preservados. Falhas DB continuam erro servidor/incerteza, não 400 sintético.

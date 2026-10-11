@@ -2,6 +2,8 @@ import { BadRequestException, ForbiddenException, Body, Controller, Delete, Get,
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Controller('company/teams')
 export class TeamsController {
   constructor(private readonly db: DatabaseService, private readonly auth: AuthService) {}
@@ -38,6 +40,7 @@ export class TeamsController {
   @Get(':id/members')
   async members(@Param('id') id: string, @Headers('authorization') a?: string, @Headers('x-tenant-id') t?: string) {
     const tenant = await this.ctx(a, t);
+    if (!UUID_RE.test(id)) throw new BadRequestException('team_not_found');
     return this.db.tenant(tenant, async db => {
       await this.requireTeam(db, tenant, id);
       return (await db.query(
@@ -76,8 +79,9 @@ export class TeamsController {
     const tenant = await this.ctx(a, t);
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new BadRequestException('professional_required');
     const body = value as Record<string, unknown>;
-    if (typeof body.professionalId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.professionalId)) throw new BadRequestException('professional_required');
+    if (typeof body.professionalId !== 'string' || !UUID_RE.test(body.professionalId)) throw new BadRequestException('professional_required');
     const professionalId = body.professionalId;
+    if (!UUID_RE.test(id)) throw new BadRequestException('team_not_found');
     return this.db.tenant(tenant, async db => {
       await this.requireTeam(db, tenant, id);
 
@@ -105,6 +109,8 @@ export class TeamsController {
     @Headers('x-tenant-id') t?: string
   ) {
     const tenant = await this.ctx(a, t);
+    if (!UUID_RE.test(id)) throw new BadRequestException('team_not_found');
+    if (!UUID_RE.test(professionalId)) throw new BadRequestException('professional_required');
     return this.db.tenant(tenant, async db => {
       await this.requireTeam(db, tenant, id);
       await db.query(
