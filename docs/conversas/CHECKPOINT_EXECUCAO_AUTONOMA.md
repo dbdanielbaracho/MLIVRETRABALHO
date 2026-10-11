@@ -775,3 +775,8 @@ CI38135705986/job114459009267 no headab3da139ef6ea42dd9a20792089251ca6a362f1c fa
 ## Diff revisado: testes de criação preservados — 2026-10-11 11:36:36 UTC
 
 Antes de integrar, review do patch identificou que o primeiro heada50e5a61798c17fcab622a57a0cf8ede915c8600 substituía o arquivo EXISTENTE support.controller.test.ts (4testes de criação/tenant) pelos9novos de status. Corrigido: original restaurado BYTE-IDÊNTICO à mainbase e9novos em arquivo separado support-status.controller.test.ts. Local13PASS (4anteriores+9novos), sem apagar cobertura de criação. Head anterior/CI38136142135 não autorizam merge; SHA novo precisa CI4/713/216/3 completo. Diff final contra main NÃO deve alterar support.controller.test.ts original. História preservada e falha corrigida antes de gate/merge; sem bypass/rerun.
+
+
+### Correção do próprio teste antes da integração — 2026-10-11 16:13 UTC
+
+PR #458 head4bf37ee6a2bcef7b6df13e4cbf5a2995f742eb09 NÃO integrado: CI38154327849/job114514053655 falhou no Typecheck com TS2532 em duas referências accepted[0] do teste novo, noUncheckedIndexedAccess. Dados de fixture agora definidos como tupla readonly as const, comprovando índice existente sem desabilitar verificação nem alterar controller/política. Regressores locais8PASS novamente; exigir CI completo do novo SHA, incluindo HTTP real; a falha anterior não é infraestrutura nem prova de aprovação. Revalidar head/main/diff antes de merge. Histórico original e snapshot anterior preservados.

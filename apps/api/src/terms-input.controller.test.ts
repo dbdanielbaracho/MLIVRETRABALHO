@@ -6,7 +6,7 @@ import type {AuthService} from './auth.service';
 import type {DatabaseService} from './database.service';
 function setup(options:{authorized?:boolean;error?:Error;role?:string}={}){
  const calls:{sql:string;params:unknown[]}[]=[],actors:string[]=[];
- const accepted=[{termsKey:'platform_terms',version:'1.0',acceptedAt:'2026-10-11T00:00:00Z'},{termsKey:'privacy_notice',version:'1.0',acceptedAt:'2026-10-11T00:00:01Z'}];
+ const accepted=[{termsKey:'platform_terms',version:'1.0',acceptedAt:'2026-10-11T00:00:00Z'},{termsKey:'privacy_notice',version:'1.0',acceptedAt:'2026-10-11T00:00:01Z'}] as const;
  const auth={identityFromAuthorization:async()=>{actors.push('auth');if(options.authorized===false)throw new UnauthorizedException();return{id:'trusted-identity'};},memberships:async(id:string)=>{assert.equal(id,'trusted-identity');return[{role:options.role??'owner'}];}};
  const db={query:async(sql:string,params:unknown[]=[])=>{calls.push({sql,params});if(options.error)throw options.error;if(sql.startsWith('INSERT'))return{rows:[{termsKey:params[1],version:params[2],acceptedAt:accepted[0].acceptedAt}]};return{rows:accepted};}};
  return{controller:new TermsController(db as unknown as DatabaseService,auth as unknown as AuthService),calls,actors,accepted};
