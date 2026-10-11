@@ -769,3 +769,8 @@ Concluir apenas quando o inventário normativo estiver revisado requisito por re
 - A API de repositório GitHub informa `private=false` para `dbdanielbaracho/MLIVRETRABALHO`. A modalidade **Copilot cloud agent automations** da documentação oficial exige repositório private/internal; nenhuma alteração de visibilidade foi feita. Uma alternativa é um GitHub Agentic Workflow em Actions, que requer um motor IA e autenticação, mais geração/commit do workflow compilado `.lock.yml`; escrever só o `.md` não ativa execução.
 - Assinaturas GitHub/Railway pagas e serviços já existentes não demonstram disponibilidade de credencial IA ou orçamento ilimitado. Exige-se inventário de Copilot habilitado, autenticação segura e estimativa do consumo **antes de ativar** o worker.
 - Próxima entrega de implementação segura: separar o executor em serviço exclusivo com idempotência e limites de gasto; nunca modificar a API operacional para manter loop de desenvolvimento. Validar fluxo de smoke, CI e permissions por um ciclo antes de ligar execução recorrente.
+
+
+### Proteção das mensagens de timeout em Equipes (11/10/2026)
+
+Leituras de membros e alocações com deadline abortam o transporte após 15 s. O tratamento tardio de `catch` poderia substituir a mensagem específica de prazo excedido por aviso genérico ao receber rejeição do fetch abortado. Guardas adicionais por `op.controller.signal.aborted` preservam a orientação específica do deadline, sem modificar operações de escrita e sem afirmar validação em aparelho físico. Regressão de contrato adicionada em `apps/mobile/tests/teams-read-deadline.test.mjs`; CI e APK ainda devem ser verificados no SHA final antes do merge.
