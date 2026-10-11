@@ -59,8 +59,37 @@ JOBS="$(request GET /v1/jobs "$PRO_TOKEN")"
 contains "$JOBS" "$JOB_ID"
 contains "$JOBS" "$JOB2_ID"
 
+
+# Marketplace job UUIDs reject before any interest write; valid absent UUID remains a factual null/404.
+INTEREST_MINE_BEFORE="$(request GET /v1/assignments/mine "$PRO_TOKEN")"
+INTEREST_EARNINGS_BEFORE="$(request GET /v1/earnings/mine "$PRO_TOKEN")"
+INTEREST_NOTIFICATIONS_BEFORE="$(request GET /v1/notifications/mine "$PRO_TOKEN")"
+INTEREST_BEFORE="$(request GET "/v1/jobs/$JOB_ID/interest" "$PRO_TOKEN")"
+for id in invalid bad-id 42; do
+ for method in GET POST; do
+  code="$(curl -sS -o "$GPS_INPUT_DIR/interest-response.json" -w '%{http_code}' -X "$method" "$BASE_URL/v1/jobs/$id/interest" -H "authorization: Bearer $PRO_TOKEN")"
+  test "$code" = 400
+  test "$(json_field message < "$GPS_INPUT_DIR/interest-response.json")" = job_invalid
+  test "$(status_only "$method" "/v1/jobs/$id/interest" invalid-token '')" = 401
+ done
+done
+test "$(status_only POST /v1/jobs/invalid/interest "$COMPANY_TOKEN" '')" = 404
+test "$(request GET /v1/jobs/00000000-0000-0000-0000-000000000000/interest "$PRO_TOKEN")" = null
+test "$(status_only POST /v1/jobs/00000000-0000-0000-0000-000000000000/interest "$PRO_TOKEN" '')" = 404
+test "$(request GET "/v1/jobs/$JOB_ID/interest" "$PRO_TOKEN")" = "$INTEREST_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$INTEREST_MINE_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$INTEREST_EARNINGS_BEFORE"
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$INTEREST_NOTIFICATIONS_BEFORE"
+echo 'PASS: malformed marketplace job UUIDs reject after authority without creating real interests assignments notifications or earnings'
+
 for JOBX in "$JOB_ID" "$JOB2_ID"; do
   test "$(request POST "/v1/jobs/$JOBX/interest" "$PRO_TOKEN" | json_field status)" = "interested"
+done
+
+
+for JOBX in "$JOB_ID" "$JOB2_ID"; do
+ test "$(request GET "/v1/jobs/$JOBX/interest" "$PRO_TOKEN" | json_field status)" = interested
+ test "$(request GET "/v1/jobs/$JOBX/interest" "$COMPANY_TOKEN")" = null
 done
 
 RECOMMENDATIONS="$(request GET "/v1/company/jobs/$JOB_ID/recommendations" "$COMPANY_TOKEN" "$TENANT_ID")"
@@ -139,6 +168,16 @@ test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$CONFIRM_REPLAY_NOT
 test "$(request GET /v1/me "$PRO_TOKEN")" = "$CONFIRM_REPLAY_MEMBERS"
 test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$CONFIRM_REPLAY_MINE"
 echo 'PASS: company confirmation retains real scoped ACK immutable replay date trusted membership and one notification without malformed overwrite'
+
+
+# A later interest POST retains the real confirmed status and creates no new assignment/notification.
+for JOBX in "$JOB_ID" "$JOB2_ID"; do
+ test "$(request POST "/v1/jobs/$JOBX/interest" "$PRO_TOKEN" | json_field status)" = confirmed
+ test "$(request GET "/v1/jobs/$JOBX/interest" "$PRO_TOKEN" | json_field status)" = confirmed
+done
+test "$(request GET /v1/notifications/mine "$PRO_TOKEN")" = "$CONFIRM_REPLAY_NOTIFICATIONS"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$CONFIRM_REPLAY_MINE"
+echo 'PASS: marketplace interests retain real owner scoped reads absent NULL and confirmed replay without duplicate assignments or notifications'
 
 PRO_ME="$(request GET /v1/me "$PRO_TOKEN")"
 contains "$PRO_ME" "$TENANT_ID"
