@@ -15,7 +15,7 @@ function panel(){
  const state=[],refs=[],calls=[],timers=new Map();let si=0,ri=0,focus,cleanup,handlers,nextTimer=0,authorization='Bearer fixture',armed=null,responseKind='saved';const held=[];
  function hold(value){const old=armed;armed=null;old.value=value;held.push(old);return old.gate.promise;}
  const headers=async()=>{const value={Authorization:authorization};if(armed?.authReads&&--armed.authReads===0)return hold(value);return value;};
- const fetch=async(path,options)=>{calls.push({path,options});const window=JSON.parse(options.body),kind=responseKind;const response={ok:kind==='saved',status:kind==='saved'?201:400,json:async()=>{const data=kind==='saved'?{id:'fixture-availability',...window}:{message:'professional_profile_required'};return armed?.phase==='json'?hold(data):data;}};return armed?.phase==='fetch'?hold(response):response;};
+ const fetch=async(path,options)=>{calls.push({path,options});const window=JSON.parse(options.body),kind=responseKind;const response={ok:kind==='saved'||kind==='malformed-id',status:kind==='saved'||kind==='malformed-id'?201:400,json:async()=>{const data=kind==='saved'||kind==='malformed-id'?{id:kind==='malformed-id'?'fixture-availability':'bbbbbbbb-1111-4222-8333-444444444444',...window}:{message:'professional_profile_required'};return armed?.phase==='json'?hold(data):data;}};return armed?.phase==='fetch'?hold(response):response;};
  const dependencies=[initial=>{const i=si++;if(!(i in state))state[i]=initial;return[state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value}];},initial=>{const i=ri++;return refs[i]??(refs[i]={current:initial});},cb=>cb,cb=>{focus=cb},headers,p=>p,submitAvailability,availabilityWindow,fetch,cb=>{const id=++nextTimer;timers.set(id,cb);return id},id=>timers.delete(id)];
  function render(){si=0;ri=0;handlers=create(...dependencies);}
  render();cleanup=focus();state.splice(0,3,...draft);render();
@@ -44,4 +44,8 @@ test('profile-required acknowledgement after deadline stays uncertain and does n
 });
 test('timely profile-required rejection preserves draft and offers the actual profile requirement',async()=>{
  const h=panel();h.response('profile');await h.save();assert.equal(h.state[5],true);assert.equal(h.state[6],false);assert.deepEqual(h.state.slice(0,3),draft);assert.equal(h.state[4],false);h.blur();
+});
+
+test('timely malformed availability UUID preserves the real draft and displays uncertainty rather than saved',async()=>{
+ const h=panel();h.response('malformed-id');await h.save();assert.equal(h.calls.length,1);assert.equal(h.state[6],true);assert.equal(h.state[5],false);assert.deepEqual(h.state.slice(0,3),draft);assert.equal(h.state[4],false);assert.equal(h.refs[0].current,false);assert.match(h.state[3],/Não foi possível confirmar/);assert.doesNotMatch(h.state[3],/Disponibilidade salva/);await h.pump();assert.equal(h.calls.length,1);h.blur();
 });
