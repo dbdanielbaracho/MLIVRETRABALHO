@@ -19,7 +19,7 @@ function fixture(stage){
  const fetch=async()=>{if(paused&&stage==='fetch')await gate.promise;return {ok:true,json:async()=>{if(paused&&stage==='json')await gate.promise;return []}}};
  const load=async request=>{await request('/v1/teams');return base;};
  const equal=(a,b)=>a.Authorization===b.Authorization&&a['x-tenant-id']===b['x-tenant-id'];
- const h=make(initial=>{const n=si++;if(!(n in state))state[n]=initial;return[state[n],v=>{state[n]=v;}];},initial=>{const n=ri++;return refs[n]??(refs[n]={current:initial});},callback=>{focus=callback;},x=>x,null,auth,x=>x,null,()=>({teams:{status:'loading'},active:{status:'loading'},completed:{status:'loading'},jobs:{status:'loading'}}),load,()=>[],async()=>[],async()=>[],async()=>{},async()=>{},equal,fetch,fn=>{const n=++id;timers.set(n,fn);return n;},n=>timers.delete(n));
+ const h=make(initial=>{const n=si++;if(!(n in state))state[n]=typeof initial==='function'?initial():initial;return[state[n],v=>{state[n]=v;}];},initial=>{const n=ri++;return refs[n]??(refs[n]={current:initial});},callback=>{focus=callback;},x=>x,null,auth,x=>x,null,()=>({teams:{status:'loading'},active:{status:'loading'},completed:{status:'loading'},jobs:{status:'loading'}}),load,()=>[],async()=>[],async()=>[],async()=>{},async()=>{},equal,fetch,fn=>{const n=++id;timers.set(n,fn);return n;},n=>timers.delete(n));
  const cleanup=focus();
  return {h,state,deadline:()=>{const fn=[...timers.values()].at(-1);assert.ok(fn);fn();},resume:()=>{paused=false;gate.resolve(headers);},pump:()=>new Promise(setImmediate),blur:()=>cleanup()};
 }
