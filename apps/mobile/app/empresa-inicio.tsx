@@ -21,9 +21,9 @@ export default function EmpresaInicio() {
   const [message,setMessage]=useState('');
   const pendingActions=useRef(new Set<string>()),requestId=useRef(0),exiting=useRef(false),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),displayedContext=useRef<Record<string,string>|null>(null);
   const [pending,setPending]=useState<string[]>([]),[signingOut,setSigningOut]=useState(false);
-  function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+  function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
   const load=useCallback(async()=>{
-    const id=++requestId.current,version=epoch.current,op=operation();displayedContext.current=null;setData(loadingCompany());setTenantId('');
+    const id=++requestId.current,version=epoch.current,op=operation(()=>{if(id===requestId.current&&version===epoch.current){displayedContext.current=null;setTenantId('');setData({dashboard:{status:'error'},active:{status:'error'},completed:{status:'error'}});}});displayedContext.current=null;setData(loadingCompany());setTenantId('');
     try{
       const headers=await authenticatedTenantHeaders();
       if(id!==requestId.current||version!==epoch.current||op.controller.signal.aborted)return;
