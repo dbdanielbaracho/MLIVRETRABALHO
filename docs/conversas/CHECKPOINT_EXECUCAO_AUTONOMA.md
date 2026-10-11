@@ -1,5 +1,18 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+## Perfil: recusar confirmação incompatível com UUID real — 2026-10-11
+
+Main `524cba983a49a4ea6ba10055f4be7fe0b2a58af8`; predecessores464head7f4b96cbc55c97fb7922219f96b749c8cb91345e (CI38158579009 SUCCESS4/716/367/3, APK38158579008 ainda em execução) e465headfb8a3261d8940c6376a949aef203de99ae824b65 (CI38159094661/APK38159094659, reconsultar estados). Nenhum APK pendente equivale aPASS.
+
+Fato reproduzido em helper e handler REAL Perfil: criação sem perfil existente aceitava idnew-profile com campos iguais e anunciava Dados salvos, desmarcando dirty/normalizando rascunho e atualizando/recarregando perfil apesar de IDincompatível. Migration0002 professional_profiles.id UUID DEFAULT gen_random_uuid; ProfessionalProfileController.upsert retorna UUID/fatos reais e ONCONFLICT(identity_id) mantém retry explícito upsert. Fontes relidas na main imutável.
+
+Correção limitada aapps/mobile/lib/profile-submit.ts UUID completo no ACK; dados incompatíveis unknown, rascunho/dirty/aviso preservados, sem atualizar/recarregar snapshotnemretryautomático. expectedId em edição continua igualdadeEXATA, campos/nulls/trim/4xx/5xx/session/deadline/layout/SQL/API/RLS intactos. profile-submit.test.mjs9originais e profile-save-screen-deadline.test.mjs11originais preservados/assertions; positivos UUID e casos de IDdiferente usam outro UUID válido para continuar testar identidade, não apenas formato. Mais2regressões malformedtypes/IDs/criação e expectedIdmalformadocoincidente/uppercaseválido; handlerREAL comperfilinicialnull/provasrascunho/dirty/busyfalse/aviso/semGETextra/semrota/umaPUT. RED20PASS/2FAIL22→GREEN22PASS, sem harnessfakeproduction.
+
+Branch fix/mobile-profile-ack-uuid parte head465 preservando predecessores/dados/documentos. Integrar464→465primeiro, retargetmain/revisardiff/gates/head/pais/tree semsobrescrever. PróprioCI esperado4web/720mobile/367API/3CLI(1094)/todossteps/HTTPreal/zerofalhas e APKstandalone MOBILE obrigatório no SHAexato; ambos pósCI/APK obrigatórios apósmerge. Sem emprestar APK455/464/465. Novepaths helper+2testes+evidência+5docs EXISTENTES DVT ORIGINALv1.104/histórico/memória/checkpoint/ledger/registry preservados.
+
+Sem React/RN/lockfile/layout/workflows/backend/produçãoRailsRailway/custos/serviços/PSP/dinheiroreal/deploypago. Externos Androidfísico/E2E/VisualTruth/SecureStore/piloto/pentestindependente/TRUSTproviders/PSPKYCsandbox/FINRISK/Webpago continuamOPEN separados. Emulador≠físico/ZIPdigest≠APKindividual; []/running≠PASS. Não declarar projeto completo nem bloquear outras tarefas seguras por gate pendente.
+
+
 ## Disponibilidade: confirmação exige UUID real — 2026-10-11
 
 Main revalidada `524cba983a49a4ea6ba10055f4be7fe0b2a58af8`; PR#464 aberta head`7f4b96cbc55c97fb7922219f96b749c8cb91345e`, CI38158579009/job114526542150 SUCCESS4web/716mobile/367API/3CLI/todossteps/zero falhas/HTTP real/ambas novas regressões; APK38158579008 ainda em execução, NÃO PASS. Diff/9paths/bytes/tree revisados. APK anterior38158313208 não autoriza head novo; manter histórico CI38158313160 falho por fixtures positivas nãoUUID.

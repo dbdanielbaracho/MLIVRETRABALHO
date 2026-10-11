@@ -6,7 +6,7 @@ import {loadProfessionalProfile,loadWorkPassport} from '../lib/professional-prof
 import {submitProfile} from '../lib/profile-submit.ts';
 // Actual pre-JSX Perfil handlers and production parsers; explicit hooks/auth/transport fixtures.
 // This does not render RN, run SecureStore, or prove cancellation of a dispatched server write.
-const identity='Bearer owner',initial={id:'fixture-profile',displayName:'Before',homeCity:null,primaryRole:null},draft={displayName:' Edited ',homeCity:' City ',primaryRole:' Role '},saved={id:initial.id,displayName:'Edited',homeCity:'City',primaryRole:'Role'};
+const identity='Bearer owner',initial={id:'aaaaaaaa-1111-4222-8333-444444444444',displayName:'Before',homeCity:null,primaryRole:null},draft={displayName:' Edited ',homeCity:' City ',primaryRole:' Role '},saved={id:initial.id,displayName:'Edited',homeCity:'City',primaryRole:'Role'};
 const deferred=()=>{let resolve;return {promise:new Promise(r=>{resolve=r}),resolve:value=>resolve(value)};};
 function screen(){
  const source=fs.readFileSync(new URL('../app/perfil.tsx',import.meta.url),'utf8'),start=source.indexOf('export default function Perfil('),end=source.indexOf('\n const rows=',start);assert.ok(start>=0&&end>start);
@@ -29,20 +29,24 @@ test('explicit retry retains the exact trimmed upsert body and old finally canno
  const h=await ready();h.arm('fetch');const old=h.save();await h.pump();const expire=h.timer();expire();h.render();h.arm('json');const next=h.save();await h.pump();assert.equal(h.puts.length,2);assert.equal(h.blocked,2);h.release();await old;assert.equal(h.busy,true);expire();assert.equal(h.busy,true);h.profile(saved);h.release();await next;await h.pump();assert.deepEqual(h.state[0],{status:'ready',data:saved});assert.equal(h.busy,false);assert.equal(h.refs[0].current,false);assert.equal(h.message,'Dados salvos.');assert.deepEqual(h.puts.map(c=>JSON.parse(c.options.body)),[saved,saved].map(({id,...body})=>body));assert.ok(h.puts.every(c=>c.options.headers.Authorization===identity&&c.path==='/professional-profile'));h.blur();
 });
 test('focus and owner change preserve the new identity snapshot against old response, finally and timer',async()=>{
- const h=await ready();h.arm('fetch');const old=h.save();await h.pump();const expire=h.timer();h.blur();h.owner('Bearer newer-owner');const actual={...initial,id:'new-profile',displayName:'New owner'};h.profile(actual);h.refocus();await h.pump();h.render();expire();h.release();await old;assert.deepEqual(h.state[0],{status:'ready',data:actual});assert.equal(h.state[2],'New owner');assert.equal(h.refs[0].current,false);assert.equal(h.busy,false);assert.equal(h.puts.length,1);assert.deepEqual(h.routes,[]);h.blur();
+ const h=await ready();h.arm('fetch');const old=h.save();await h.pump();const expire=h.timer();h.blur();h.owner('Bearer newer-owner');const actual={...initial,id:'bbbbbbbb-1111-4222-8333-444444444444',displayName:'New owner'};h.profile(actual);h.refocus();await h.pump();h.render();expire();h.release();await old;assert.deepEqual(h.state[0],{status:'ready',data:actual});assert.equal(h.state[2],'New owner');assert.equal(h.refs[0].current,false);assert.equal(h.busy,false);assert.equal(h.puts.length,1);assert.deepEqual(h.routes,[]);h.blur();
 });
 test('changed authorization before dispatch refuses PUT and clears the previous owner draft',async()=>{
  const h=await ready();h.arm(null);h.owner('Bearer another-owner');await h.save();assert.equal(h.puts.length,0);assert.deepEqual(h.state.slice(2,5),['','','']);assert.deepEqual(h.state[0],{status:'error'});assert.equal(h.busy,false);assert.match(h.message,/sessão mudou/);h.blur();
 });
 test('wrong profile ID in a timely successful response cannot clear the draft or report saved',async()=>{
- const h=await ready();h.arm(null);h.response({...saved,id:'other-profile'});await h.save();assert.deepEqual(h.state.slice(2,5),[draft.displayName,draft.homeCity,draft.primaryRole]);assert.equal(h.refs[0].current,true);assert.doesNotMatch(h.message,/Dados salvos/);assert.equal(h.busy,false);h.blur();
+ const h=await ready();h.arm(null);h.response({...saved,id:'cccccccc-1111-4222-8333-444444444444'});await h.save();assert.deepEqual(h.state.slice(2,5),[draft.displayName,draft.homeCity,draft.primaryRole]);assert.equal(h.refs[0].current,true);assert.doesNotMatch(h.message,/Dados salvos/);assert.equal(h.busy,false);h.blur();
 });
 test('timely profile creation verifies the real new ID and optional backend nulls',async()=>{
- const h=await ready();h.blur();h.profile(null);h.refocus();await h.pump();const input={displayName:' Created ',homeCity:' ',primaryRole:''},data={id:'new-profile',displayName:'Created',homeCity:null,primaryRole:null};h.edit(input);h.arm(null);h.response(data);h.profile(data);await h.save();await h.pump();assert.deepEqual(h.state[0],{status:'ready',data});assert.deepEqual(h.state.slice(2,5),['Created','','']);assert.equal(h.refs[0].current,false);assert.equal(h.message,'Dados salvos.');h.blur();
+ const h=await ready();h.blur();h.profile(null);h.refocus();await h.pump();const input={displayName:' Created ',homeCity:' ',primaryRole:''},data={id:'bbbbbbbb-1111-4222-8333-444444444444',displayName:'Created',homeCity:null,primaryRole:null};h.edit(input);h.arm(null);h.response(data);h.profile(data);await h.save();await h.pump();assert.deepEqual(h.state[0],{status:'ready',data});assert.deepEqual(h.state.slice(2,5),['Created','','']);assert.equal(h.refs[0].current,false);assert.equal(h.message,'Dados salvos.');h.blur();
 });
 test('a timely rejected PUT retains the draft and never retries or reports saved',async()=>{
  const h=await ready();h.arm(null);h.response({},false);await h.save();assert.equal(h.puts.length,1);assert.equal(h.busy,false);assert.deepEqual(h.state.slice(2,5),[draft.displayName,draft.homeCity,draft.primaryRole]);assert.equal(h.refs[0].current,true);assert.doesNotMatch(h.message,/Dados salvos/);h.blur();
 });
 test('empty edited name prevents any PUT without claiming a successful save',async()=>{
  const h=await ready();h.edit({...draft,displayName:' '});h.arm(null);await h.save();assert.equal(h.puts.length,0);assert.equal(h.busy,false);assert.match(h.message,/Informe seu nome/);assert.equal(h.refs[0].current,true);h.blur();
+});
+
+test('timely creation with malformed profile UUID preserves actual draft and dirty state without saved notice or refresh',async()=>{
+ const h=await ready();h.blur();h.profile(null);h.refocus();await h.pump();const input={displayName:' Created ',homeCity:' ',primaryRole:''},data={id:'new-profile',displayName:'Created',homeCity:null,primaryRole:null};h.edit(input);h.arm(null);h.response(data);h.profile(data);const gets=h.calls.filter(c=>c.options.method!=='PUT').length;await h.save();await h.pump();assert.equal(h.puts.length,1);assert.deepEqual(h.state.slice(2,5),[input.displayName,input.homeCity,input.primaryRole]);assert.equal(h.refs[0].current,true);assert.equal(h.busy,false);assert.doesNotMatch(h.message,/Dados salvos/);assert.match(h.message,/Não foi possível confirmar/);assert.equal(h.calls.filter(c=>c.options.method!=='PUT').length,gets);assert.deepEqual(h.routes,[]);h.blur();
 });
