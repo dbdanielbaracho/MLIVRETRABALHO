@@ -11,11 +11,11 @@ export default function Talentos(){
  const generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;items:Talent[]}|null>(null);
  const items=data.status==='ready'?data.data:[];
  const grouped=useMemo(()=>({preferred:items.filter(x=>x.pool==='preferred'),network:items.filter(x=>x.pool==='network'),open:items.filter(x=>x.pool==='open')}),[items]);
- function operation(){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
+ function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  const requestWith=(headers:Record<string,string>,signal:AbortSignal):Request=>(path,method)=>fetch(apiUrl(path),{method,headers,signal});
  async function load(manual=false,expected?:Record<string,string>){
-  if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation();snapshot.current=null;setData({status:'loading'});
-  try{const headers=await authenticatedTenantHeaders();const result=await loadTalents((path,method)=>{if(!headers['x-tenant-id']||(expected&&!sameTalentContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,method);});
+  if(manual&&pending.current)return;const version=generation.current,seq=++sequence.current,op=operation(()=>{if(version===generation.current&&seq===sequence.current){snapshot.current=null;setData({status:'error'});}});snapshot.current=null;setData({status:'loading'});
+  try{const headers=await authenticatedTenantHeaders();if(op.controller.signal.aborted||version!==generation.current||seq!==sequence.current)return;const result=await loadTalents((path,method)=>{if(!headers['x-tenant-id']||(expected&&!sameTalentContext(headers,expected)))throw Error('company_context_changed');return requestWith(headers,op.controller.signal)(path,method);});
    const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameTalentContext(current,headers))throw Error('company_context_changed');
    if(version===generation.current&&seq===sequence.current){setData(result);snapshot.current=result.status==='ready'?{headers,items:result.data}:null;if(manual)setMessage('');}
   }catch{if(version===generation.current&&seq===sequence.current)setData({status:'error'});}
