@@ -104,6 +104,80 @@ test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$TRUST_ASSIGNMENTS_BE
 test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$TRUST_EARNINGS_BEFORE"
 echo 'PASS: original trust types and causes retain scoped real ACKs actor audit optional NULL and dates without enforcement'
 
+
+# Integrity cases remain admin-reviewed records; malformed requests never create or change them.
+INTEGRITY_BEFORE="$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")"
+node - "$TRUST_INPUT_DIR" "$ASSIGNMENT_ID" <<'NODE'
+const fs=require('fs'),dir=process.argv[2],id=process.argv[3],base={assignmentId:id,kind:'other',evidence:'fixture evidence'};
+const bad=[null,false,true,42,'text',[],{},
+ ...[undefined,null,false,42,[],{},[id],'','invalid'].map(assignmentId=>({...base,assignmentId})),
+ ...[undefined,null,false,42,[],{},['other'],'unknown'].map(kind=>({...base,kind})),
+ ...[undefined,null,false,42,[],{},['text'],'','  '].map(evidence=>({...base,evidence}))];
+bad.forEach((body,i)=>fs.writeFileSync(dir+'/bad-integrity-create-'+i+'.json',JSON.stringify(body)));
+NODE
+for payload in "$TRUST_INPUT_DIR"/bad-integrity-create-*.json; do
+ test "$(status_with_body POST /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A" "$(cat "$payload")")" = 400
+ test "$(json_field message < "$TRUST_INPUT_DIR/response.json")" = integrity_case_invalid
+done
+test "$(status_with_body POST /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A" '{"assignmentId":"00000000-0000-0000-0000-000000000000","kind":"other","evidence":"fixture"}')" = 400
+test "$(json_field message < "$TRUST_INPUT_DIR/response.json")" = assignment_not_found
+test "$(status_with_body POST /v1/company/integrity/cases invalid-token "$TENANT_A" null)" = 401
+test "$(status_with_body POST /v1/company/integrity/cases "$A_TOKEN" '' null)" = 400
+test "$(status_with_body POST /v1/company/integrity/cases "$A_TOKEN" "$TENANT_B" null)" = 401
+test "$(status_with_body POST /v1/company/integrity/cases "$PRO_TOKEN" "$TENANT_A" null)" = 403
+test "$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")" = "$INTEGRITY_BEFORE"
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$TRUST_ASSIGNMENTS_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$TRUST_EARNINGS_BEFORE"
+echo 'PASS: malformed integrity creation JSON and UUIDs reject before creating real admin cases'
+
+for kind in suspected_bypass contact_exchange other; do
+ body="$(node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],kind:process.argv[2],evidence:"  fixture evidence  ",tenantId:"spoof",createdByIdentityId:"spoof"}))' "$ASSIGNMENT_ID" "$kind")"
+ ack="$(request POST /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A" "$body")"
+ case_id="$(printf '%s' "$ack" | json_field id)"
+ node - "$ack" "$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")" "$kind" "$ASSIGNMENT_ID" <<'NODE'
+const ack=JSON.parse(process.argv[2]),rows=JSON.parse(process.argv[3]),kind=process.argv[4],assignment=process.argv[5],row=rows.find(x=>x.id===ack.id);
+if(!ack.id||ack.kind!==kind||ack.status!=='open'||!Number.isFinite(Date.parse(ack.createdAt))||!row||row.assignmentId!==assignment||row.evidence!=='fixture evidence'||row.reviewNote!==null||row.reviewedAt!==null)throw Error('actual integrity case lost kind/evidence/assignment/date');
+NODE
+ before="$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")"
+ node - "$TRUST_INPUT_DIR" <<'NODE'
+const fs=require('fs'),dir=process.argv[2],base={decision:'needs_more_info',note:'fixture note'};
+const bad=[null,false,true,42,'text',[],{},
+ ...[undefined,null,false,42,[],{},['substantiated'],'unknown'].map(decision=>({...base,decision})),
+ ...[undefined,null,false,42,[],{},['text'],'','  '].map(note=>({...base,note}))];
+bad.forEach((body,i)=>fs.writeFileSync(dir+'/bad-integrity-review-'+i+'.json',JSON.stringify(body)));
+NODE
+ for payload in "$TRUST_INPUT_DIR"/bad-integrity-review-*.json; do
+  test "$(status_with_body POST "/v1/company/integrity/cases/$case_id/review" "$A_TOKEN" "$TENANT_A" "$(cat "$payload")")" = 400
+  test "$(json_field message < "$TRUST_INPUT_DIR/response.json")" = review_invalid
+ done
+ for id in invalid bad-id 42; do
+  test "$(status_with_body POST "/v1/company/integrity/cases/$id/review" "$A_TOKEN" "$TENANT_A" '{"decision":"needs_more_info","note":"fixture"}')" = 400
+  test "$(json_field message < "$TRUST_INPUT_DIR/response.json")" = review_invalid
+ done
+ test "$(status_with_body POST "/v1/company/integrity/cases/$case_id/review" invalid-token "$TENANT_A" null)" = 401
+ test "$(status_with_body POST "/v1/company/integrity/cases/$case_id/review" "$PRO_TOKEN" "$TENANT_A" null)" = 403
+ test "$(status_with_body POST "/v1/company/integrity/cases/$case_id/review" "$B_TOKEN" "$TENANT_B" '{"decision":"substantiated","note":"cross-tenant"}')" = 400
+ test "$(json_field message < "$TRUST_INPUT_DIR/response.json")" = integrity_case_not_open
+ test "$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")" = "$before"
+ terminal=substantiated
+ test "$kind" != contact_exchange || terminal=unsubstantiated
+ for decision in needs_more_info "$terminal"; do
+  review_ack="$(request POST "/v1/company/integrity/cases/$case_id/review" "$A_TOKEN" "$TENANT_A" "{\"decision\":\"$decision\",\"note\":\"  fixture review  \",\"reviewedByIdentityId\":\"spoof\"}")"
+  node - "$review_ack" "$case_id" "$decision" "$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")" <<'NODE'
+const ack=JSON.parse(process.argv[2]),id=process.argv[3],decision=process.argv[4],rows=JSON.parse(process.argv[5]),row=rows.find(x=>x.id===id);
+if(ack.id!==id||ack.status!==decision||ack.reviewNote!=='fixture review'||!Number.isFinite(Date.parse(ack.reviewedAt))||!row||row.status!==decision||row.reviewNote!==ack.reviewNote||row.reviewedAt!==ack.reviewedAt)throw Error('integrity human review lost actual status/note/date');
+NODE
+ done
+ closed="$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")"
+ test "$(status_with_body POST "/v1/company/integrity/cases/$case_id/review" "$A_TOKEN" "$TENANT_A" '{"decision":"needs_more_info","note":"closed replay"}')" = 400
+ test "$(json_field message < "$TRUST_INPUT_DIR/response.json")" = integrity_case_not_open
+ test "$(request GET /v1/company/integrity/cases "$A_TOKEN" "$TENANT_A")" = "$closed"
+done
+test "$(request GET /v1/company/integrity/cases "$B_TOKEN" "$TENANT_B")" = '[]'
+test "$(request GET /v1/assignments/mine "$PRO_TOKEN")" = "$TRUST_ASSIGNMENTS_BEFORE"
+test "$(request GET /v1/earnings/mine "$PRO_TOKEN")" = "$TRUST_EARNINGS_BEFORE"
+echo 'PASS: malformed integrity reviews preserve real cases and original human decisions dates admin scope and closed-case guard without enforcement'
+
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$A_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$B_TOKEN" '' '{}' >/dev/null
