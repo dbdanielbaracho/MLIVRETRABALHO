@@ -351,6 +351,9 @@ contains "$TALENT_POOL" 'preferred'
 PASSPORT="$(request GET /v1/work-passport/mine "$PRO_TOKEN")"
 node -e 'const p=JSON.parse(process.argv[1]);const tenant=process.argv[2];if(p.completedWorkCount!==1||p.ratingCount!==1||p.averageRating!==5||!p.verifiedHistory?.some(x=>x.tenantId===tenant)){console.error("passport assertion failed",JSON.stringify(p));process.exit(1)}' "$PASSPORT" "$TENANT_ID"
 
+# Preserve all previous journey assertions, then overlap confirmations for a fresh job.
+CONFIRM_COMPANY_TOKEN="$COMPANY_TOKEN" CONFIRM_PRO_TOKEN="$PRO_TOKEN" CONFIRM_OTHER_COMPANY_TOKEN="$COMPANY2_TOKEN" CONFIRM_TENANT="$TENANT_ID" CONFIRM_PROFESSIONAL="$PROFESSIONAL_ID" node scripts/company-confirmation-concurrency-e2e.cjs
+
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY2_TOKEN" '' '{}' >/dev/null
