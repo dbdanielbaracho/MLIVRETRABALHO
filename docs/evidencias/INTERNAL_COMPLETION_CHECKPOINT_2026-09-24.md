@@ -1,3 +1,5 @@
+> Aviso operacional — 2026-10-11: snapshot histórico preservado abaixo. As declarações de exaustão/conclusão interna correspondem somente à data e ao baseline ali indicado. O DVT ORIGINAL v1.104, README, código, PRs e checkpoint atuais governam a execução; falhas internas verificadas em #468–472 demonstram que ausência de TODO/PR aberta ou um gate externo não prova conclusão nem justifica parar tarefas independentes. Não substituir prova externa por CI/emulador ou contratar serviço sem autorização.
+
 # MLIVRETRABALHO — Internal Completion Checkpoint
 
 **Atualizado:** 2026-09-28  
@@ -37,3 +39,4 @@ Código/build/testes internos estão comprovados. Serviço Web público separado
 
 ## Conclusão
 O antigo checkpoint de 26/09 descrevia corretamente o estado histórico pré-CI, mas ficou obsoleto após recuperação do hosted runner. Este arquivo substitui aquele estado operacional: o trabalho interno comprovável avançou até CI, merge, produção, Web e artifact Android. Os gates restantes são os explicitamente listados acima.
+
