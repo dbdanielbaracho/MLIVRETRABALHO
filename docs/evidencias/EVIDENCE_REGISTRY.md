@@ -848,3 +848,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — Disponibilidade com resultado incerto
 
 - [AVAILABILITY_SAVE_DEADLINE_2026-10-11.md](AVAILABILITY_SAVE_DEADLINE_2026-10-11.md):8falhas/3sucessos antes;11novos/PASS23local. Prazo distingue não-envio/unknown, mantém draft e só retry humano. Idempotência existente exata auditada em controller/migration0026/HTTP real CI; JSX/schema preservados. CI610mobile/145API+APK próprios pendentes;420–424CI comprovados,425CI/APKs em execução.
+
+
+## 2026-10-11 — leitura pareada na abertura
+
+- [STARTUP_SESSION_READ_DEADLINE_2026-10-11.md](STARTUP_SESSION_READ_DEADLINE_2026-10-11.md):5falhas/2sucessos por prazo ausente;7novos/PASS11local. Callback libera entrada após15s, leitura expirada não navega/mescla contexto. Resolver/fila/storage/JSX preservados. CI617mobile/145API+APK próprios pendentes;420–426CI comprovados, APKs em execução.
