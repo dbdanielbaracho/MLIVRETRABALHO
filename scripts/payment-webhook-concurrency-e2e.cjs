@@ -87,6 +87,11 @@ async function race(different) {
 }
 (async()=>{
  await client.connect();
- try{await race(false);await race(true);}
+ try{
+  const invalid=await callback(null);
+  assert.equal(invalid.status,400);assert.equal(invalid.body.message,'payment_event_invalid');
+  console.log('PASS: signed null payment JSON returns controlled HTTP400 before financial writes');
+  await race(false);await race(true);
+ }
  finally{await client.end();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

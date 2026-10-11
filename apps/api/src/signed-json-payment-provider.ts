@@ -64,6 +64,10 @@ export class SignedJsonPaymentProviderAdapter implements PaymentProviderAdapter 
       throw new PaymentWebhookVerificationError('payment_event_invalid');
     }
 
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      throw new PaymentWebhookVerificationError('payment_event_invalid');
+    }
+
     const tenantId = payload.tenantId;
     const assignmentId = payload.assignmentId;
     const eventType = payload.eventType;

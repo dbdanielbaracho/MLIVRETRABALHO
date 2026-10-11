@@ -47,3 +47,10 @@ test('signed payment adapter rejects invalid financial payload after signature v
   const rawBody = JSON.stringify({ tenantId:'tenant-1', assignmentId:'assignment-1', eventType:'captured', amountCents:-1, idempotencyKey:'evt-invalid' });
   await assert.rejects(adapter.verifyWebhook(signed(rawBody)), (error: unknown) => error instanceof PaymentWebhookVerificationError && error.code === 'payment_event_invalid');
 });
+
+test('signed payment adapter rejects null primitive and array JSON with a controlled verification error',async()=>{
+ for(const value of [null,42,true,'text',[],{}]){
+  await assert.rejects(adapter.verifyWebhook(signed(JSON.stringify(value))),
+   (error:unknown)=>error instanceof PaymentWebhookVerificationError && error.code==='payment_event_invalid');
+ }
+});
