@@ -41,6 +41,7 @@ export class NotificationsController {
   @Post(':id/read')
   async read(@Param('id')id:string,@Headers('authorization')a?:string,@Headers('x-tenant-id')t?:string){
     const identity=await this.identity(a);const tenantId=await this.tenantContext(identity.id,t);
+    if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))throw new BadRequestException('notification_invalid');
     return this.db.tenant(tenantId,async db=>(await db.query('UPDATE notifications SET read_at=COALESCE(read_at,now()) WHERE id=$1 AND identity_id=$2 AND tenant_id=$3 RETURNING id,read_at AS "readAt"',[id,identity.id,tenantId])).rows[0]??null);
   }
 }
