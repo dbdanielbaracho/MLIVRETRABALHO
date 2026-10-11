@@ -761,3 +761,11 @@ Próxima ação concreta: acompanhar CI própria deste candidato, rever diff e i
 
 ### Critério de conclusão
 Concluir apenas quando o inventário normativo estiver revisado requisito por requisito; gates internos aplicáveis comprovados; bloqueios externos listados com proprietário e evidência; nunca confundir conclusão do trabalho interno com produto pronto para produção.
+
+
+### Inventário real da infraestrutura reutilizável (11/10/2026)
+- Railway autenticado contém projeto `MLIVRETRABALHO` (`c576bee0-9708-4e85-b311-62f84e36bad6`), ambiente `production`, serviços `@mlivretrabalho/api` e `Postgres`. Não alterar serviços produtivos existentes para hospedar o agente.
+- As variáveis visíveis da API no Railway não incluem nomes de segredo `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `COPILOT_GITHUB_TOKEN` ou outra chave de motor IA. Isso NÃO prova inexistência de licença Copilot na conta GitHub; a habilitação e o uso de modelos ainda requerem verificação.
+- A API de repositório GitHub informa `private=false` para `dbdanielbaracho/MLIVRETRABALHO`. A modalidade **Copilot cloud agent automations** da documentação oficial exige repositório private/internal; nenhuma alteração de visibilidade foi feita. Uma alternativa é um GitHub Agentic Workflow em Actions, que requer um motor IA e autenticação, mais geração/commit do workflow compilado `.lock.yml`; escrever só o `.md` não ativa execução.
+- Assinaturas GitHub/Railway pagas e serviços já existentes não demonstram disponibilidade de credencial IA ou orçamento ilimitado. Exige-se inventário de Copilot habilitado, autenticação segura e estimativa do consumo **antes de ativar** o worker.
+- Próxima entrega de implementação segura: separar o executor em serviço exclusivo com idempotência e limites de gasto; nunca modificar a API operacional para manter loop de desenvolvimento. Validar fluxo de smoke, CI e permissions por um ciclo antes de ligar execução recorrente.
