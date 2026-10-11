@@ -26,13 +26,15 @@ export class PrivacyController {
   }
 
   @Post('requests')
-  async request(@Body() body:{requestType?:string;details?:string},@Headers('authorization') authorization?:string){
+  async request(@Body() body:unknown,@Headers('authorization') authorization?:string){
     const identity=await this.auth.identityFromAuthorization(authorization);
-    const requestType=String(body?.requestType??'') as ManualPrivacyRequestType;
-    if(!MANUAL_REQUEST_TYPES.has(requestType))throw new BadRequestException('privacy_request_type_invalid');
-    const details=String(body?.details??'').trim();
+    const input=body&&typeof body==='object'&&!Array.isArray(body)?body as Record<string,unknown>:null;
+    const requestType=input?.requestType;
+    if(typeof requestType!=='string'||!MANUAL_REQUEST_TYPES.has(requestType as ManualPrivacyRequestType))throw new BadRequestException('privacy_request_type_invalid');
+    if(input?.details!=null&&typeof input.details!=='string')throw new BadRequestException('privacy_request_details_invalid');
+    const details=typeof input?.details==='string'?input.details.trim():'';
     if(details.length>2000)throw new BadRequestException('privacy_request_details_too_long');
-    if(DETAILS_REQUIRED.has(requestType)&&!details)throw new BadRequestException('privacy_request_details_required');
+    if(DETAILS_REQUIRED.has(requestType as ManualPrivacyRequestType)&&!details)throw new BadRequestException('privacy_request_details_required');
     const requestId=await this.createRequest(identity.id,requestType,details||null);
     return {requestId,requestType,status:'submitted'};
   }

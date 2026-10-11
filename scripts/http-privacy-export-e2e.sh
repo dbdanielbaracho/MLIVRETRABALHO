@@ -2,6 +2,9 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
+PRIVACY_INPUT_DIR="$(mktemp -d)"
+trap 'rm -rf "$PRIVACY_INPUT_DIR"' EXIT
 MAINTENANCE_DB="${PRIVACY_MAINTENANCE_DATABASE_URL:-}"
 STAMP="$(date +%s)-$RANDOM"
 EMAIL="privacy-${STAMP}@example.test"
@@ -30,6 +33,48 @@ if(x.notice?.redaction!=="third-party free-text is omitted unless authored by th
 const current=x.privacyRequests.find(r=>r.id===x.requestId);
 if(!current||current.requestType!=="access"||current.status!=="completed")throw new Error("completed access request missing from export audit");
 ' "$EXPORT" "$EMAIL"
+
+
+# Malformed JSON must not create manual privacy requests or coerce details into fabricated text.
+PRIVACY_REQUESTS_BEFORE="$(request GET /v1/privacy/requests "$TOKEN")"
+node - "$PRIVACY_INPUT_DIR" <<'NODE'
+const fs=require('fs'),dir=process.argv[2],types=['correction','erasure','restriction','objection','consent_withdrawal','automated_decision_review','sharing_information','portability'];
+const required=['correction','restriction','objection','automated_decision_review'];
+const cases=[
+ ...[null,false,true,42,'text',[],{}].map(body=>({body,error:'privacy_request_type_invalid'})),
+ ...[null,false,42,{},['erasure'],['correction'],'unknown','access','deactivation'].map(requestType=>({body:{requestType,details:'text'},error:'privacy_request_type_invalid'})),
+ ...types.flatMap(requestType=>[false,true,42,[],['text'],{}].map(details=>({body:{requestType,details},error:'privacy_request_details_invalid'}))),
+ ...required.flatMap(requestType=>[undefined,null,'','  '].map(details=>({body:{requestType,details},error:'privacy_request_details_required'}))),
+ ...types.map(requestType=>({body:{requestType,details:'x'.repeat(2001)},error:'privacy_request_details_too_long'}))
+];cases.forEach((x,i)=>fs.writeFileSync(dir+'/bad-'+i+'.json',JSON.stringify(x)));
+const good=[
+ ...types.map(requestType=>({requestType,details:'  '+'x'.repeat(2000)+'  '})),
+ ...types.filter(x=>!required.includes(x)).flatMap(requestType=>[undefined,null,'','  '].map(details=>({requestType,details})))
+];good.forEach((x,i)=>fs.writeFileSync(dir+'/good-'+i+'.json',JSON.stringify(x)));
+NODE
+for payload in "$PRIVACY_INPUT_DIR"/bad-*.json; do
+ body="$(node -e 'process.stdout.write(JSON.stringify(JSON.parse(require("fs").readFileSync(process.argv[1])).body))' "$payload")"
+ error="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1])).error)' "$payload")"
+ code="$(curl -sS -o "$PRIVACY_INPUT_DIR/response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/privacy/requests" -H "authorization: Bearer $TOKEN" -H 'content-type: application/json' --data "$body")"
+ test "$code" = 400
+ test "$(json_field message < "$PRIVACY_INPUT_DIR/response.json")" = "$error"
+done
+code="$(curl -sS -o "$PRIVACY_INPUT_DIR/response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/privacy/requests" -H 'content-type: application/json' --data 'null')"
+test "$code" = 401
+test "$(request GET /v1/privacy/requests "$TOKEN")" = "$PRIVACY_REQUESTS_BEFORE"
+echo 'PASS: malformed manual privacy request JSON types and details reject without creating real requests'
+for payload in "$PRIVACY_INPUT_DIR"/good-*.json; do
+ body="$(cat "$payload")"
+ ack="$(request POST /v1/privacy/requests "$TOKEN" "$body")"
+ rows="$(request GET /v1/privacy/requests "$TOKEN")"
+ node - "$ack" "$rows" "$body" <<'NODE'
+const ack=JSON.parse(process.argv[2]),rows=JSON.parse(process.argv[3]),body=JSON.parse(process.argv[4]);
+const row=rows.find(x=>x.id===ack.requestId),details=body.details?.trim()||null;
+if(!ack.requestId||ack.requestType!==body.requestType||ack.status!=='submitted'||!row||row.requestType!==body.requestType||row.status!=='submitted'||row.requestDetails!==details||!Number.isFinite(Date.parse(row.createdAt)))throw Error('manual privacy ACK, actual timestamp, text or NULL details changed');
+if('evidenceRef'in row||'operatorNote'in row||'handledBy'in row)throw Error('operator metadata leaked');
+NODE
+done
+echo 'PASS: manual privacy optional NULL and trimmed 2000-character details retain real scoped request ACKs and dates'
 
 MISSING_DETAILS_STATUS="$(curl -sS -o /tmp/privacy-request-missing-details.json -w '%{http_code}' -X POST "${BASE_URL%/}/v1/privacy/requests" -H "authorization: Bearer $TOKEN" -H 'content-type: application/json' --data '{"requestType":"correction"}')"
 test "$MISSING_DETAILS_STATUS" = "400"
