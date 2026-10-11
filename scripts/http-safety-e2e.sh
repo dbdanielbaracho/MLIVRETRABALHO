@@ -2,6 +2,9 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo "local_http_required" >&2; exit 2; }
+SAFETY_INPUT_DIR="$(mktemp -d)"
+trap 'rm -rf "$SAFETY_INPUT_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
 PRO_EMAIL="safety-pro-${STAMP}@example.test"
 COMPANY_A_EMAIL="safety-company-a-${STAMP}@example.test"
@@ -51,6 +54,33 @@ not_contains "$COMPANY_B_CASES" "$CASE_ID"
 
 CROSS_STATUS="$(status_only POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_B_TOKEN" "$TENANT_B" '{"status":"reviewing"}')"
 test "$CROSS_STATUS" = "404"
+
+# Reject malformed reviews before changing the actual case or immutable event log.
+SAFETY_BEFORE="$(request GET /v1/company/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A")"
+SAFETY_MINE_BEFORE="$(request GET /v1/safety-cases/mine "$PRO_TOKEN")"
+SAFETY_EVENTS_BEFORE="$(request GET "/v1/company/safety-cases/$CASE_ID/events" "$COMPANY_A_TOKEN" "$TENANT_A")"
+node >"$SAFETY_INPUT_DIR/inputs.jsonl" <<'NODE'
+const rows=[null,[],true,42,"text",{}];
+for(const status of [null,42,true,{},[],["reviewing"],"invalid"])rows.push({status});
+for(const note of [42,true,false,{},[],["Fixture"],"x".repeat(2001)])rows.push({status:"reviewing",note});
+for(const row of rows)console.log(JSON.stringify(row));
+NODE
+while IFS= read -r body; do
+ test "$(status_only POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" "$body")" = "400"
+done <"$SAFETY_INPUT_DIR/inputs.jsonl"
+test "$(status_only POST /v1/company/safety-cases/not-a-uuid/status "$COMPANY_A_TOKEN" "$TENANT_A" '{"status":"reviewing"}')" = "400"
+test "$(status_only GET /v1/company/safety-cases/not-a-uuid/events "$COMPANY_A_TOKEN" "$TENANT_A")" = "400"
+test "$(status_only POST /v1/company/safety-cases/not-a-uuid/status invalid-token "$TENANT_A" 'null')" = "401"
+test "$(status_only GET /v1/company/safety-cases/not-a-uuid/events invalid-token "$TENANT_A")" = "401"
+test "$(status_only POST /v1/company/safety-cases/not-a-uuid/status "$PRO_TOKEN" "$TENANT_A" 'null')" = "403"
+test "$(status_only GET /v1/company/safety-cases/not-a-uuid/events "$PRO_TOKEN" "$TENANT_A")" = "403"
+test "$(status_only POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_B" 'null')" = "401"
+node - "$SAFETY_BEFORE" "$(request GET /v1/company/safety-cases "$COMPANY_A_TOKEN" "$TENANT_A")" "$SAFETY_MINE_BEFORE" "$(request GET /v1/safety-cases/mine "$PRO_TOKEN")" "$SAFETY_EVENTS_BEFORE" "$(request GET "/v1/company/safety-cases/$CASE_ID/events" "$COMPANY_A_TOKEN" "$TENANT_A")" <<'NODE'
+const x=process.argv.slice(2).map(JSON.parse);
+for(let i=0;i<x.length;i+=2)if(JSON.stringify(x[i])!==JSON.stringify(x[i+1]))throw Error("safety_changed_on_invalid_review");
+NODE
+echo 'PASS: safety admin malformed JSON and UUID reject before changing real cases or events'
+
 UPDATED="$(request POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" '{"status":"reviewing","note":"Revisão humana iniciada"}')"
 test "$(printf '%s' "$UPDATED" | json_field status)" = "reviewing"
 test "$(printf '%s' "$UPDATED" | json_field changed)" = "true"
@@ -76,6 +106,26 @@ CROSS_EVENTS="$(status_only GET "/v1/company/safety-cases/$CASE_ID/events" "$COM
 test "$CROSS_EVENTS" = "404"
 MINE_AFTER="$(request GET /v1/safety-cases/mine "$PRO_TOKEN")"
 contains "$MINE_AFTER" 'reviewing'
+
+
+# Optional notes and all original statuses stay valid; each actual transition has
+# one immutable event, and repeating that state does not duplicate history.
+for review_status in resolved dismissed open reviewing; do
+ REVIEW_BODY="$(node -e 'const status=process.argv[1];const row={status,tenantId:"untrusted",actorIdentityId:"untrusted"};if(status==="dismissed")row.note=null;if(status==="open")row.note="   ";if(status==="reviewing")row.note=" Fixture ";process.stdout.write(JSON.stringify(row));' -- "$review_status")"
+ request POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" "$REVIEW_BODY" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(x.id!==process.argv[1]||x.status!==process.argv[2]||x.changed!==true)throw Error("safety_review_ack_invalid");if(["resolved","dismissed"].includes(x.status)?!Number.isFinite(Date.parse(x.resolvedAt)):x.resolvedAt!==null)throw Error("safety_review_date_invalid");' -- "$CASE_ID" "$review_status"
+ REPEAT="$(request POST "/v1/company/safety-cases/$CASE_ID/status" "$COMPANY_A_TOKEN" "$TENANT_A" "$REVIEW_BODY")"
+ test "$(printf '%s' "$REPEAT" | json_field changed)" = false
+done
+FINAL_EVENTS="$(request GET "/v1/company/safety-cases/$CASE_ID/events" "$COMPANY_A_TOKEN" "$TENANT_A")"
+OWNER_ID="$(printf '%s' "$COMPANY_A_SIGNUP" | json_field id)"
+node - "$FINAL_EVENTS" "$OWNER_ID" <<'NODE'
+const x=JSON.parse(process.argv[2]),actor=process.argv[3];
+const targets=["reviewing","resolved","dismissed","open","reviewing"];
+const from=["open","reviewing","resolved","dismissed","open"];
+const notes=["Revisão humana iniciada",null,null,null,"Fixture"];
+if(x.length!==5||x.some((e,i)=>e.toStatus!==targets[i]||e.fromStatus!==from[i]||e.note!==notes[i]||e.actorIdentityId!==actor))throw Error("safety_optional_note_or_event_history_invalid");
+NODE
+echo 'PASS: safety admin optional notes and four statuses retain real dates trusted actors and idempotent audit events'
 
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_A_TOKEN" '' '{}' >/dev/null
