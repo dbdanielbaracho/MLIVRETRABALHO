@@ -7,6 +7,7 @@ import {
 } from './signed-json-payment-provider';
 
 type RawRequest = { rawBody?: Buffer };
+const isInternalUuid = (value: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
 @Controller('payments')
 export class PaymentWebhookController {
@@ -43,6 +44,13 @@ export class PaymentWebhookController {
       }
       throw error;
     }
+
+    // These are concrete internal database keys; provider references stay opaque.
+    if (
+      !isInternalUuid(event.tenantId) ||
+      !isInternalUuid(event.assignmentId) ||
+      (event.recipientProfessionalId !== undefined && !isInternalUuid(event.recipientProfessionalId))
+    ) throw new BadRequestException('payment_event_invalid');
 
     return this.db.tenant(event.tenantId, async db => {
       const assignment = (

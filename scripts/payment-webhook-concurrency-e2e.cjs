@@ -106,13 +106,30 @@ async function amountBounds(){
  console.log('PASS: signed amount integer bounds HTTP400 without events, exact zero/max PostgreSQL ACK and idempotent replay');
 }
 
+
+async function internalIdBounds(){
+ const key='finance-internal-ids-'+stamp;
+ const payload={tenantId,assignmentId,eventType:'authorized',amountCents:77,idempotencyKey:key};
+ for(const field of ['tenantId','assignmentId','recipientProfessionalId']){
+  for(const value of ['not-a-uuid','', ' ', ' '+tenantId+' ', tenantId.replaceAll('-',''),123,{},[]]){
+   const invalid=await callback({...payload,[field]:value});
+   assert.equal(invalid.status,400);assert.equal(invalid.body.message,'payment_event_invalid');
+  }
+ }
+ const count=await client.query('SELECT count(*)::int AS n FROM payment_events WHERE idempotency_key=$1',[key]);
+ assert.equal(count.rows[0].n,0,'malformed internal IDs must not create an event in any tenant');
+ const missing=await callback({...payload,assignmentId:'ffffffff-ffff-4fff-8fff-ffffffffffff'});
+ assert.equal(missing.status,400);assert.equal(missing.body.message,'assignment_not_found');
+ console.log('PASS: signed malformed internal UUIDs HTTP400 without events, valid absent assignment remains assignment_not_found');
+}
+
 (async()=>{
  await client.connect();
  try{
   const invalid=await callback(null);
   assert.equal(invalid.status,400);assert.equal(invalid.body.message,'payment_event_invalid');
   console.log('PASS: signed null payment JSON returns controlled HTTP400 before financial writes');
-  await amountBounds();await race(false);await race(true);
+  await internalIdBounds();await amountBounds();await race(false);await race(true);
  }
  finally{await client.end();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -71,7 +71,7 @@ test('payment verification and assignment recipient boundaries precede event wri
  assert.equal(invalid.calls.length,0);assert.equal(invalid.tenants.length,0);
  const missing=fixture([[]]);await assert.rejects(missing.run(),/assignment_not_found/);assert.equal(missing.calls.length,1);
  const wrong=fixture([[{professionalId:professional}]]);
- await assert.rejects(wrong.run({...payload,eventType:'payout_paid',recipientProfessionalId:'other'}),/payout_recipient_mismatch/);assert.equal(wrong.calls.length,1);
+ await assert.rejects(wrong.run({...payload,eventType:'payout_paid',recipientProfessionalId:'55555555-5555-4555-8555-555555555555'}),/payout_recipient_mismatch/);assert.equal(wrong.calls.length,1);
 });
 
 test('signed null webhook is an invalid event before any tenant lookup or financial write',async()=>{
@@ -91,4 +91,24 @@ test('out of range signed payment amounts reject before tenant access while exac
   assert.deepEqual(f.tenants,[tenant]);assert.equal(f.calls.length,3);
   assert.equal(f.calls[2]?.values[4],amountCents);
  }
+});
+
+test('signed malformed internal payment IDs reject before opening any tenant or querying SQL',async()=>{
+ for(const field of ['tenantId','assignmentId','recipientProfessionalId']){
+  for(const value of ['not-a-uuid','', ' ', ' '+tenant+' ', tenant.replaceAll('-',''),123,{},[]]){
+   const f=fixture([]);await assert.rejects(f.run({...payload,[field]:value}),/payment_event_invalid/);
+   assert.equal(f.tenants.length,0);assert.equal(f.calls.length,0);
+  }
+ }
+});
+test('valid internal payment UUIDs preserve assignment ownership and exact optional recipient binding',async()=>{
+ const actual={...ack,recipientProfessionalId:professional},f=fixture([[{professionalId:professional}],[],[actual]]);
+ assert.deepEqual(await f.run({...payload,recipientProfessionalId:professional}),actual);
+ assert.deepEqual(f.tenants,[tenant]);assert.deepEqual(f.calls[0]?.values,[assignment]);
+ assert.equal(f.calls[2]?.values[6],professional);
+ const missing=fixture([[]]);await assert.rejects(missing.run(),/assignment_not_found/);
+ assert.deepEqual(missing.tenants,[tenant]);assert.equal(missing.calls.length,1);
+ const different=fixture([[{professionalId:professional}]]);
+ await assert.rejects(different.run({...payload,recipientProfessionalId:'55555555-5555-4555-8555-555555555555'}),/payout_recipient_mismatch/);
+ assert.equal(different.calls.length,1);assert.equal(different.calls.some(x=>x.sql.startsWith('INSERT')),false);
 });
