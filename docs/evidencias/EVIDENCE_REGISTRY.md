@@ -838,3 +838,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — Histórico de suporte
 
 - [SUPPORT_HISTORY_READ_DEADLINE_2026-10-11.md](SUPPORT_HISTORY_READ_DEADLINE_2026-10-11.md):10falhas/7sucessos antes;17novos/PASS37local. GETs de trabalhos/casos com error imediato e isolamento de seleção; SupportRequest/durable/JSX preservados. CIs420–423 comprovados; APKs pendentes. CI588mobile/145API eAPK próprios ainda pendentes antes de publicação.
+
+
+## 2026-10-11 — prazo do Copilot assistido
+
+- [COPILOT_INTERPRETATION_DEADLINE_2026-10-11.md](COPILOT_INTERPRETATION_DEADLINE_2026-10-11.md):8falhas/3sucessos antes;11novos/PASS28local. Backend interpreta sem mutations/provider pago. Prazo libera interpretação para retry humano com guard controller/foco e sem rota/POST automático; nextStep/layout preservados. CI599mobile/145API eAPK próprios pendentes;420–423CI comprovados,424CI/APKs em execução.

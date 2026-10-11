@@ -24,18 +24,19 @@ export default function Copilot() {
     if(pending.current)return;
     pending.current=true;++suggestion.current;setBusy(true);setResult(null);setMessage('Entendendo seu pedido…');
     const version=epoch.current,operation=new AbortController();controller.current=operation;
-    const timer=setTimeout(()=>operation.abort(),15000);
+    const current=()=>version===epoch.current&&controller.current===operation;
+    const timer=setTimeout(()=>{operation.abort();if(current()){pending.current=false;setBusy(false);sourceAuthorization.current=undefined;setResult(null);setMessage('A interpretação não respondeu em 15 segundos. Tente novamente.');}},15000);
     try{
       const headers=await authHeaders();
-      if(version!==epoch.current||operation.signal.aborted)return;
-      const outcome=await runForSession(authHeaders,origin=>interpretRequest((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...origin,'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),text),()=>version===epoch.current&&!operation.signal.aborted,headers.Authorization);
-      if(version!==epoch.current)return;
+      if(!current()||operation.signal.aborted)return;
+      const outcome=await runForSession(authHeaders,origin=>interpretRequest((path,body)=>fetch(apiUrl(path),{method:'POST',headers:{...origin,'content-type':'application/json'},body:JSON.stringify(body),signal:operation.signal}),text),()=>current()&&!operation.signal.aborted,headers.Authorization);
+      if(!current()||operation.signal.aborted)return;
       if(outcome.status!=='ready'){sourceAuthorization.current=undefined;setMessage('A sessão ou conexão mudou. Interprete o pedido novamente.');return;}
       const next=outcome.data;
       if(next.status==='ready'){sourceAuthorization.current=headers.Authorization;setResult(next.data);setMessage('');}
       else setMessage(next.status==='invalid'?'Escreva um pedido de até 2000 caracteres.':'Não foi possível interpretar o pedido. Tente novamente.');
-    }catch{if(version===epoch.current)setMessage('Não foi possível interpretar o pedido. Tente novamente.');}
-    finally{clearTimeout(timer);if(version===epoch.current){pending.current=false;setBusy(false);}}
+    }catch{if(current()&&!operation.signal.aborted)setMessage('Não foi possível interpretar o pedido. Tente novamente.');}
+    finally{clearTimeout(timer);if(current()){controller.current=null;pending.current=false;setBusy(false);}}
   }
   async function nextStep(){
     const route=result?.suggestedRoute,version=epoch.current,selection=suggestion.current;if(!route||pending.current)return;
