@@ -17,13 +17,13 @@ function fixture(stage){
  let paused=true;
  const auth=async()=>{authReads++;if(paused&&stage==='auth')return gate.promise;if(paused&&stage==='final-auth'&&authReads>1)return gate.promise;return headers;};
  const fetch=async()=>{if(paused&&stage==='fetch')await gate.promise;return {ok:true,json:async()=>{if(paused&&stage==='json')await gate.promise;return []}}};
- const load=async request=>{await request('/v1/teams');return base;};
+ const load=async request=>{const response=await request('/v1/teams');await response.json();return base;};
  const equal=(a,b)=>a.Authorization===b.Authorization&&a['x-tenant-id']===b['x-tenant-id'];
  const h=make(initial=>{const n=si++;if(!(n in state))state[n]=typeof initial==='function'?initial():initial;return[state[n],v=>{state[n]=v;}];},initial=>{const n=ri++;return refs[n]??(refs[n]={current:initial});},callback=>{focus=callback;},x=>x,null,auth,x=>x,null,()=>({teams:{status:'loading'},active:{status:'loading'},completed:{status:'loading'},jobs:{status:'loading'}}),load,()=>[],async()=>[],async()=>[],async()=>{},async()=>{},equal,fetch,fn=>{const n=++id;timers.set(n,fn);return n;},n=>timers.delete(n));
  const cleanup=focus();
  return {h,state,deadline:()=>{const fn=[...timers.values()].at(-1);assert.ok(fn);fn();},resume:()=>{paused=false;gate.resolve(headers);},pump:()=>new Promise(setImmediate),blur:()=>cleanup()};
 }
-for(const stage of ['auth','fetch','final-auth']){
+for(const stage of ['auth','fetch','json','final-auth']){
  test('Equipes loadBase exits loading on deadline with unresolved '+stage,async()=>{
   const t=fixture(stage);await t.pump();t.deadline();assert.equal(t.state[0].teams.status,'error');
   t.resume();await t.pump();assert.equal(t.state[0].teams.status,'error','late result must not restore stale teams');
@@ -31,7 +31,7 @@ for(const stage of ['auth','fetch','final-auth']){
  });
 }
 
-for(const stage of ['auth','fetch','final-auth']){
+for(const stage of ['auth','fetch','json','final-auth']){
  test('Equipes ignores an expired read deadline after blur during '+stage,async()=>{
   const t=fixture(stage);await t.pump();t.blur();t.deadline();
   assert.equal(t.state[0].teams.status,'loading','blurred screen must not receive stale deadline error');

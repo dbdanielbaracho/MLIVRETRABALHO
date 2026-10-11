@@ -69,3 +69,8 @@ Completar os testes de regressão de seleção de equipe/alocação, foco e tena
 ### Cobertura adicional — timeout de Equipes e foco (2026-10-10)
 
 Regressões adicionais propostas: deadline anterior depois do blur não publica estado nem aceita resultados tardios nos cenários de autenticação inicial, fetch e autenticação final. Teste de contrato preserva `operation()` sem callback nas ações de escrita de equipe, evitando converter resultado incerto em reenvio. Referência ao teste `apps/mobile/tests/teams-read-deadline.test.mjs`. Validação de CI/APK no SHA final e pós-merge ainda pendente; estes testes não provam E2E físico nem isolam todos os estados de equipe/vaga.
+
+
+### Regressão adicional: JSON sem resposta na leitura de Equipes
+
+A fixture dos handlers reais de Equipes passa agora por `response.json()` e verifica prazo imediato, recusa de dados tardios e isolamento após blur também quando a leitura do JSON permanece indefinida. Antes disso o estágio `json` não era exercitado, pois a fixture apenas aguardava `fetch` e ignorava o corpo. O teste é simulado e não comprova execução de rede real ou Android físico. CI e APK no SHA final, pós-merge e Visual Truth permanecem sujeitos a gates próprios.
