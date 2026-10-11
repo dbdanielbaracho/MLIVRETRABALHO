@@ -833,3 +833,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — leituras secundárias
 
 - [SECONDARY_READ_DEADLINES_2026-10-11.md](SECONDARY_READ_DEADLINES_2026-10-11.md): 25falhas/15sucessos na bateria anterior40,43novas/PASS94local. Escritas/layouts/rascunhos/resultados incertos preservados; CI571mobile/145API eAPK próprios pendentes. CI420–422 comprovados, APKs em execução.
+
+
+## 2026-10-11 — Histórico de suporte
+
+- [SUPPORT_HISTORY_READ_DEADLINE_2026-10-11.md](SUPPORT_HISTORY_READ_DEADLINE_2026-10-11.md):10falhas/7sucessos antes;17novos/PASS37local. GETs de trabalhos/casos com error imediato e isolamento de seleção; SupportRequest/durable/JSX preservados. CIs420–423 comprovados; APKs pendentes. CI588mobile/145API eAPK próprios ainda pendentes antes de publicação.
