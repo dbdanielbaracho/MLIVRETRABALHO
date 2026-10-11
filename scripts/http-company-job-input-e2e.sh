@@ -21,7 +21,7 @@ request GET /v1/company/jobs "$TOKEN_A" "$TENANT_A" | assert_equal '[]'
 request GET /v1/company/jobs "$TOKEN_B" "$TENANT_B" | assert_equal '[]'
 # Authentication/membership precede malformed controller input.
 expect_status 401 '' "$TENANT_A" '{}'
-expect_status 403 "$TOKEN_A" "$TENANT_B" '{}'
+expect_status 401 "$TOKEN_A" "$TENANT_B" '{}'
 VALID='{"title":" Fixture shift ","requiredRole":null,"location":" ","workCity":null,"startsAt":"2026-10-12T18:00:00Z","endsAt":"2026-10-12T23:00:00Z","payCents":null,"engagementModality":null,"tenantId":"untrusted","identityId":"untrusted","id":"untrusted"}'
 JOB="$(request POST /v1/company/jobs "$TOKEN_A" "$TENANT_A" "$VALID")"
 printf '%s' "$JOB" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!x.id||x.id==="untrusted"||x.title!=="Fixture shift"||x.requiredRole!=="Fixture shift"||x.location!==null||x.workCity!==null||x.payCents!==0||x.engagementModality!=="gig"||x.startsAt!=="2026-10-12T18:00:00.000Z"||x.endsAt!=="2026-10-12T23:00:00.000Z")process.exit(1)'

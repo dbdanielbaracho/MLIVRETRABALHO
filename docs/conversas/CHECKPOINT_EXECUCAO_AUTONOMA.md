@@ -1,5 +1,9 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+### Retificação comprovada do contrato HTTP — 2026-10-11 06:00 UTC
+CI #435 38116431968 no head c39bc3752f3434b69d1b0c30f2b9c053c0c8f8d1: Typecheck/Build/export/testes/migrações/retenção PASS, 4/699/153/3 testes sem falhas, mas HTTP NÃO aprovado. Job 114402119736 falhou porque o novo teste esperava 403 para falta de membership e a API vigente retorna 401. Fonte auth.service.ts::requireMembership lança UnauthorizedException('tenant_membership_required') quando identidade válida não pertence ao tenant solicitado; confirmado no código e GET autorizado da fixture. Corrigida somente a expectativa exata para 401; não se enfraquece auth/RLS nem muda a API. Nenhum gate completo #435 é declarado PASS até CI do novo SHA e todo HTTP aprovados. #430 APK 38114691248/job114397143546 attempt1 falhou em input keyevent82 Broken pipe32 antes de instalação em 05:43:22.5234357Z, build PASS; diagnóstico ZIP11693427721 sha256:38bc487638a2d67da8174c3bdf4476ac38e7f9dd732797477196c49f89b75dbc. Após log integral, rerun somente job falho solicitado; attempt2 pendente. #425 attempt3 pendente. Próxima ação: acompanhar e integrar em ordem com gates reais, sem bypass.
+
+
 ## Continuidade verificada 2026-10-11 05:56:27 UTC — correção de tipagem do PR #435 e gate #425
 
 Main reconsultada: b00be864d6ed6c7383f9f5267df054dad6907535 (#424). #435 ainda não integrado. CI 38116087795, job 114401146934, falhou em Typecheck com TS2345: engagementModality unknown não estava estreitado para string antes de isEngagementModality. Correção inclui typeof string antes do predicado; 8 testes locais repetidos PASS (transformação/stubs, sem alegar typecheck Nest/PostgreSQL local). Novo SHA exige CI completo e HTTP novo; aprovação anterior não é reutilizada.
