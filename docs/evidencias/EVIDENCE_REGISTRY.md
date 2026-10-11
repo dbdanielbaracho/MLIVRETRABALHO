@@ -888,3 +888,5 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 05:50:14 UTC
 
 - [COMPANY_JOB_INPUT_RUNTIME_VALIDATION_2026-10-11.md](./COMPANY_JOB_INPUT_RUNTIME_VALIDATION_2026-10-11.md): CompanyJobCreateController runtime JSON: antes5falhas/3sucessos, depois8/8 locais; HTTPlocalhost34entradas malformadas integrado aoCI, ainda aguarda prova real no head. Auth/membership primeiro, 400semINSERT, trim/null/defaults/tenant e integer representável preservados. APK N/A condicionado paths/mobiletree/predecessor434; gatespós420/421/423/424 comprovados,422/425pendentes.
+
+- Retificação no mesmo [registro de entrada JSON](COMPANY_JOB_INPUT_RUNTIME_VALIDATION_2026-10-11.md): CI inicial #435 TS2345 corrigido, nova validação pendente; #422 pós-merge comprovado e #425 ANR do sistema/tentativa 3 pendente.

@@ -15,7 +15,7 @@ export class CompanyJobCreateController {
   for(const key of ['requiredRole','location','workCity'])if(body[key]!=null&&typeof body[key]!=='string')throw new BadRequestException('company_job_invalid');
   // pay_cents is the existing nonnegative PostgreSQL integer column, not a new business cap.
   if(body.payCents!=null&&(typeof body.payCents!=='number'||!Number.isInteger(body.payCents)||body.payCents<0||body.payCents>2147483647))throw new BadRequestException('pay_invalid');
-  if(body.engagementModality!=null&&!isEngagementModality(body.engagementModality))throw new BadRequestException('engagement_modality_invalid');
+  if(body.engagementModality!=null&&(typeof body.engagementModality!=='string'||!isEngagementModality(body.engagementModality)))throw new BadRequestException('engagement_modality_invalid');
   if(!body.startsAt||!body.endsAt)throw new BadRequestException('shift_window_required');
   if(typeof body.startsAt!=='string'||typeof body.endsAt!=='string')throw new BadRequestException('shift_window_invalid');
   const startsAt=new Date(body.startsAt),endsAt=new Date(body.endsAt);
