@@ -908,6 +908,17 @@ Auditoria de continuidade: docs/evidencias/INTERNAL_EXHAUSTION_PROOF_2026-09-28.
 DVT ORIGINAL integral/histórico+memória/checkpoint/ledger/registry+evidência no ciclo. Source/workflow gatejátestadono470, YAML/bashtargetedPASS e nenhuma semânticaapp nova. CI/APK próprios/pós destaPR PENDENTES neste commit, nãoPASS. FísicoAndroid/E2E/VisualTruth/SecureStore/piloto/pentestindependente/TRUSTprovider/PSPKYCsandbox/FIN-RISK/Webpagodeploy continuam OPEN. PreserveReact19.1.4/RN0.81.6/frozenlock/tenantRLS/standalone/desenho, no PSP/money/custo/produção/deploypago. Próximo concretamente: própriosinfraCI/APKnewSHA, merge pós, incorporarKVMmain nosheads de candidatos e retestar sem relaxargates, depois pagamentos/UUIDACKtestados e consolidarrecibos, continuarfrentesinternas.
 
 
+## Correção do preparo KVM após falha primária de473 — 2026-10-11
+
+Own473APK38179654427/job114589320217 no head21d7567b9bfa8df660765ad2382fec6d836b141e FAIL no stepEnableandverifyKVM22:24:36Z; APK buildSUCCESS9m12s, customdevice-smokeSKIPPED evalidatedartifactSKIPPED, portanto nãoPASS/existência de APKpublicável. Log imprime regra do sudo tee após test-c/dev/kvm, mas nãoKVM_READY; falha aconteceu entre reload/trigger/test-r/test-w, semlogporcomandoparaatribuircausa exata. Não declarar indisponibilidadehardware ou certeza de qual comando falhou; não é erro do app nemlogoappinstalado. Diagnóstico failureartifact11717640022 retido, semvalidadoAPK.
+
+Correção de implementação do setup, mantendo MESMApermissão pretendida0666/no runner efêmero: depois de exigircharacterdeviceKVM jápresente, aplica sudochmoda+rw/dev/kvm diretamente e registra stat KVM_PERMISSIONS; exige read/write pelo próprio runner com mensagens explícitas KVM_NOT_READABLE/KVM_NOT_WRITABLE e exit1. Evita dependênciaderecarga/eventosudevasíncronos, semfallbacksoftwaresilent/skip/continueonerror. Não cria dispositivo fictício, não atua nocomputadorusuario/produção/RLS/segredos, não mudaUbuntu/runnermetered. Mantém disable-linux-hw-accel:false, KVM_READY sóapóschecks, appinstall/launch/nativecrash/Metrofalse/ZIPuploadsomenteapósSUCCESS.
+
+OwnCI473anterior38179654397/job114589320021SUCCESS4/722/367/3 pertenceapenas21d. Headcorretivo exige NEWCI4/722/367/3 eNEWAPK acelerado/install/DEVICE_SMOKE_OKmetrofalse/artifactSHAexato/nãoexpirado. YAMLparse/bash -n jábaseworkflowprovados, novo bloco seráchecadosintaxe; não executar rootdevKVM local nemalegarvirtualização daí. Validarprecisamente comandos/primáriosantesownmerge eposrealambos. Nenhum rerunsemcodefix do473failed; não apagarhistoricalFAILnememprestar470artefato. Depois incorporar novohead473nasbranches468/469/471/472/474por ancestry mergessemforce/missingdocs, própriosgates novos SHAexato; N/AAPI sódiffnãoAPK exato contraantecessornovo, retargetbranches para refletir dependencia real. Main ainda682... nesta fotografia, nãoalegarnovomerge.
+
+DVT ORIGINAL/histórico/memória/checkpoint/ledger/registry/evidência preservados, no mesmo commit. Semcusto/PSP/dinheiroreal/serviços/produção/deploypago; físicos/pentest/provider/FINRISK/Webpaid separadosOPEN. Correção épermissionamento pretendido doCI, não relaxamento do smoke oubypassgate. Próximo: gate473novo eextrasgatesbranchesnovaancestria, integraçãogatesown/post, consolidaçãoevidências e auditoria independente segura.
+
+
 ## Notas historicas da branch #468 preservadas integralmente
 
 
@@ -930,3 +941,10 @@ Merge de ancestrais preserva pais[5888455ace44c6eb8b26201fe4a3a88ca54ab441,21d75
 Own468 anterior588 CI38177844414 SUCCESS4/725/367/3; APK38177844411/job114583912063SUCCESS install22:10:25.8247404Z/DEVICE_SMOKE_OK22:11:38.0601986Zmetrofalse/ZIP11716433370size28911013digestsha256:f4ba99b16054b7a2ea5df733b7951ac13682caac422007891df5b9351b3361c5expires2026-10-25T22:11:49Z. Historico valido SOMENTE588, nao autoriza novoSHA. PropriosCI4/725/367/3 eAPK novos obrigatorios no headresultante, KVM_READY/install/smoke/artifact exatos.
 
 Infra473 deveintegrarprimeiro com propriosCI/APKgreen eposreal; entao main equivale a fonte473, diff468volta8paths e tree deveequivaler ao candidato. Nenhum merge468real nestecommit. #469readguard/#471finance/#472UUIDACK ficambranchesposteriores; progressosegueautonomo semloanAPK, semrerunrunning, semcusto/PSP/producaofisicofalso. ConfirmarHEAD/main/mergeable/bytes/diff/pais/tree/gates frescos antesmerge, verificarpostCI/APKactual e consolidarrecibos.
+
+
+## Merge do KVM direto verificado como mecanismo, novos gates obrigatórios #468 — 2026-10-11
+
+Pais ordenados[fd13d5b70faf4093a2824f904723b6fedc42ab82,c33b2823950c990ceda9815dffe9c42b74b8366a], semforce/reset/perda depredecessores. Arvore parte do ancestralnovo473, conserva bytea byte source/testes/domínio destaPR; incorpora correção de setup473c33b2823950c990ceda9815dffe9c42b74b8366a: exige characternode, aplica mesma0666 viachmoda+rw diretamente, statpermissões e read/write failclosed/KVM_READY/açãohardwarefalse; deixa udevasynchronous/reload fora do caminho. 473head21d ownAPK38179654427 FAILantesemulador, buildSUCCESS, não usarcomoPASS. CI verde e APKque termine nosheads anteriores pertencem apenas a suasSHAs, nãoautorizamesteheadnovo.
+
+TODOoriginal5docs doantecessornovo prefix-preservado maisnotas anterioresdestaPR integrais/fotografiasdatadas eesta reconciliação. OwnCI expected4/725/367/3 novo eownAPK novo KVM_READY/install/DEVICE_SMOKE_OKmetrofalse/artifactexato obrigatório. Verificarprioridade473independente→468→469→471→472→474, main/heads/mergeableeventual/diff/bytes/todossteps/pais/tree/SHAreal/postCIeAPK. NãoemprestarAPK/nãoPASS[]/running/nãorepetirmerges/rerunsold. Semcusto/PSP/money/produção, físico/provider/pentestcontinuamOPEN; consolidarrecibosreais eprosseguir todasfrentesinternas seminventaratividade.
