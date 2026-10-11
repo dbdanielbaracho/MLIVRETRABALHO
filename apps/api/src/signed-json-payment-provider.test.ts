@@ -54,3 +54,19 @@ test('signed payment adapter rejects null primitive and array JSON with a contro
    (error:unknown)=>error instanceof PaymentWebhookVerificationError && error.code==='payment_event_invalid');
  }
 });
+
+test('signed payment amounts match PostgreSQL integer bounds without rounding or invented receipts',async()=>{
+ const payload={tenantId:'tenant-1',assignmentId:'assignment-1',eventType:'authorized',idempotencyKey:'range'};
+ for(const amountCents of [2_147_483_648,Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER+1,1e100,-1,0.5,'77',null]){
+  await assert.rejects(adapter.verifyWebhook(signed(JSON.stringify({...payload,amountCents}))),
+   (error:unknown)=>error instanceof PaymentWebhookVerificationError && error.code==='payment_event_invalid');
+ }
+ for(const amountCents of [0,1,2_147_483_647]){
+  const event=await adapter.verifyWebhook(signed(JSON.stringify({...payload,amountCents})));
+  assert.equal(event.amountCents,amountCents);assert.equal(event.idempotencyKey,'range');
+ }
+ const input=signed(JSON.stringify({...payload,amountCents:2_147_483_648}));
+ input.headers['x-webhook-signature']='sha256='+'0'.repeat(64);
+ await assert.rejects(adapter.verifyWebhook(input),
+  (error:unknown)=>error instanceof PaymentWebhookVerificationError && error.code==='webhook_signature_invalid');
+});
