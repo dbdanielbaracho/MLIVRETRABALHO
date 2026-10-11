@@ -47,3 +47,20 @@ Preferências: falta contrato de campos/semântica/escopo/persistência/efeito d
 
 Publicar fix/agenda-read-deadline sobre head41492bfffc9bac8972959f726fbbb5dc8d4dcf1bbb8/treeb584e15cfda45fe1f1fc2a624024924c6ef24628, basefix/company-publication-context-deadline. Conferir bytes remotos e diff, CI467mobile/145API e APK próprio antes de merge. Integrar412,413,414 e esta fatia em ordem, só com gates aplicáveis no SHA exato, retargetmain/reconsulta eventual, merge-base tree equivalente, pais/tree/main e pós-gates reais. Registrar número/SHA/runs reais após publicação, sem antecipar resultados. Não repetir401–411 nem rerun de job em execução.
 Próxima correção independente a reproduzir: Equipes loadBase/selectTeam/selectAllocation usam timer abort-only; verificar auth/HTTP/JSON/auth final/foco/seleção/company e preservar mutations/resultado incerto. Rotas secundárias precisam auditoria factual própria. Preferências, autoridade para nova ajuda semmembership, ML/dados e integraçãoenterprise precisam contratos/provas externas; físico/pentest/providers/Web seguem separados. Encerrar rodada não encerra projeto; manter continuidade até conclusão integral comprovada ou ordem expressa.
+
+
+---
+
+## Atualização incremental — Equipes #416 / PR #417 (2026-10-10)
+
+### Equipes: deadline das leituras de base, membros e alocação
+
+Em `apps/mobile/app/equipes.tsx`, o timer de `operation()` só abortava o `AbortController`: autenticação, transporte ou leitura que não resolvessem podiam manter a tela carregando. Esta versão acrescenta callback opcional de prazo às três leituras (`loadBase`, `selectTeam`, `selectAllocation`), publicando erro exclusivamente na geração/seleção/sequência corrente. `loadBase` rejeita também resultados posteriores ao abort. Ações de escrita usam `operation()` sem callback e não são repetidas automaticamente; resultado incerto de criação/alteração continua exigindo conferência.
+
+## Evidência e limites
+
+Issue #416 e PR #417. Testes de regressão dos handlers pré-JSX foram incluídos em `apps/mobile/tests/teams-read-deadline.test.mjs`; eles usam fixtures de hooks/serviços, não render real, Android real nem validação física. O primeiro CI detectou erro na fixture de lazy `useState` e ele foi corrigido no commit `22045a14`. CI desse commit aprovado no run `38103335279`; APK standalone desse commit run `38103335320` estava em andamento ao redigir esta versão. Como esta atualização documental altera o head, **ambos os gates do commit final devem ser executados e comprovados novamente**, seguidos pelos gates pós-merge aplicáveis. Nenhum PASS não observado pode ser inferido.
+
+## Pendente
+
+Completar os testes de regressão de seleção de equipe/alocação, foco e tenant para a mesma classe de defeito, conferir resultado final de CI/APK e efetuar merge só com gates concluídos. Validar visualmente no Android físico e preservar os demais bloqueios externos (pentest, PSP/KYC, Web Railway) como separados. A continuidade automática não substitui provas físicas nem autorização de despesas.
