@@ -10,7 +10,7 @@ const start=source.indexOf('export default function CriarConta()'),end=source.in
 assert.ok(start>=0&&end>start);
 const body=stripTypeScriptTypes(source.slice(start,end).replace('export default ','')+'\n return {signup};\n}',{mode:'strip'});
 const create=new Function('useState','useRef','useCallback','useFocusEffect','signupAccount','fetch','apiUrl','router','setTimeout','clearTimeout',body+'\n return CriarConta();');
-const ack={id:'fixture',email:'fixture@example.test',accountType:'professional'};
+const ack={id:'aaaaaaaa-1111-4222-8333-444444444444',email:'fixture@example.test',accountType:'professional'};
 const response=()=>({ok:true,status:201,json:async()=>ack});
 function deferred(){let resolve;const promise=new Promise(r=>{resolve=r});return {promise,resolve};}
 function screen(fetch,password='Password123!',blurOnRoute=false){
@@ -54,4 +54,9 @@ test('blur during local invalid-input validation does not prevent a corrected si
 test('verified creation clears pending before navigation cleanup and does not become falsely uncertain',async()=>{
  let calls=0;const h=screen(async()=>{calls++;return response()},'Password123!',true);
  await h.signup();assert.equal(calls,1);assert.deepEqual(h.routes,['/entrar']);assert.equal(h.state[1],'');assert.equal(h.state[6],false);
+});
+
+test('timely malformed signup UUID keeps actual draft and uncertain barrier without navigation or another non-idempotent POST',async()=>{
+ let calls=0;const h=screen(async()=>{calls++;return {ok:true,status:201,json:async()=>({...ack,id:'not-an-identity-uuid'})}});
+ await h.signup();assert.deepEqual(h.routes,[]);assert.equal(h.state[0],ack.email);assert.equal(h.state[1],'Password123!');assert.equal(h.state[2],'professional');assert.equal(h.state[6],true);assert.equal(h.state[5],false);assert.match(h.state[4],/Não foi possível confirmar/);await h.signup();assert.equal(calls,1);
 });
