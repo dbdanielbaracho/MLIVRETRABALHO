@@ -876,3 +876,7 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 05:36:39 UTC
 
 - [DASHBOARD_SIGNOUT_LOCAL_DEADLINE_2026-10-11.md](./DASHBOARD_SIGNOUT_LOCAL_DEADLINE_2026-10-11.md): EmpresaInicio.signout: 6 falhas/3 sucessos antes; 70/70 locais depois, incluindo27casos das3telas. Prazo de UI/limpeza local/token posterior/contexto exibido conservados; sem prova física ou de revogação remota. CI431 aprovado, APKs pendentes. Equipes já coberta na main; publicação incerta identificada para auditoria.
+
+## 2026-10-11 05:39:56 UTC
+
+- [PUBLICATION_UNCERTAIN_DEADLINE_2026-10-11.md](./PUBLICATION_UNCERTAIN_DEADLINE_2026-10-11.md): Empresa.create: reproduz7falhas/3sucessos incluindo reenvio duplicado apósunknown; 31/31 locais depois. Prazo/guarduncertain preservamdraft e impedem novoPOST sem contrato. Recuperação durável/reinício/idempotência continuam abertos; sem bypass. Registra pós420 integral e demaisgates pendentes.

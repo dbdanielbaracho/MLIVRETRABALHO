@@ -24,6 +24,7 @@ function shiftWindow(dateText:string,startText:string,endText:string){
 export default function Empresa(){
  const [title,setTitle]=useState(''),[location,setLocation]=useState(''),[workCity,setWorkCity]=useState(''),[date,setDate]=useState(''),[startTime,setStartTime]=useState(''),[endTime,setEndTime]=useState(''),[pay,setPay]=useState(''),[message,setMessage]=useState('');
  const submittingRef=useRef(false),generation=useRef(0),contextRequest=useRef(0),active=useRef(false),controllers=useRef(new Set<AbortController>()),context=useRef<Record<string,string>|null>(null),draftContext=useRef<Record<string,string>|null>(null),uncertain=useRef(false);
+ const publicationController=useRef<AbortController|null>(null);
  const [contextReady,setContextReady]=useState(false);
  const [submitting,setSubmitting]=useState(false);
  function clearDraft(){setTitle('');setLocation('');setWorkCity('');setDate('');setStartTime('');setEndTime('');setPay('');}
@@ -43,6 +44,7 @@ export default function Empresa(){
  async function create(){
   const displayed=context.current,version=generation.current;
   if(submittingRef.current||!contextReady||!displayed||!active.current)return;
+  if(uncertain.current){setMessage('Há uma publicação anterior sem confirmação. Confira o Planejamento. Um novo envio não foi autorizado.');return;}
   const window=shiftWindow(date,startTime,endTime);
   if(!title.trim()||!workCity.trim()||!window){setMessage('Informe função, cidade, data e horários válidos.');return;}
   const payText=pay.trim();
@@ -52,15 +54,17 @@ export default function Empresa(){
   submittingRef.current=true;
   setSubmitting(true);
   setMessage('');
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);controllers.current.add(controller);
+  const controller=new AbortController();controllers.current.add(controller);publicationController.current=controller;
+  const current=()=>active.current&&version===generation.current&&publicationController.current===controller;
+  const timer=setTimeout(()=>{controller.abort();if(current()){submittingRef.current=false;setSubmitting(false);context.current=null;setContextReady(false);setMessage(uncertain.current?'A publicação não foi confirmada em 15 segundos. Confira o Planejamento antes de qualquer novo envio. Seus dados foram mantidos.':'Não foi possível verificar sua sessão em 15 segundos. Nenhuma publicação foi enviada. Atualize a empresa antes de tentar novamente.');}},15000);
   try {
    const body={title,location,workCity,...window,payCents:Math.round(amount*100)};
-   const result=await runForSession(authenticatedTenantHeaders,headers=>{uncertain.current=true;return publishJob(payload=>fetch(apiUrl('/company/jobs'),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(payload),signal:controller.signal}),body);},()=>active.current&&version===generation.current&&!controller.signal.aborted,displayed.Authorization,displayed['x-tenant-id']);
-   if(!active.current||version!==generation.current)return;
+   const result=await runForSession(authenticatedTenantHeaders,headers=>{uncertain.current=true;return publishJob(payload=>fetch(apiUrl('/company/jobs'),{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify(payload),signal:controller.signal}),body);},()=>current()&&!controller.signal.aborted,displayed.Authorization,displayed['x-tenant-id']);
+   if(!current()||controller.signal.aborted)return;
    if(result.status!=='ready'){context.current=null;setContextReady(false);setMessage('A publicação não foi confirmada na empresa ou sessão atual. Atualize a empresa e confira o Planejamento antes de tentar novamente.');return;}
    setMessage(result.data.status==='created'?'Trabalho publicado.':result.data.status==='rejected'?'Não foi possível publicar. Seus dados foram mantidos.':'O resultado da publicação não foi confirmado. Confira seus trabalhos no Planejamento antes de tentar novamente.');
    uncertain.current=result.data.status==='unknown';if(result.data.status==='created')clearDraft();
-  } finally {clearTimeout(timer);controllers.current.delete(controller);if(version===generation.current){submittingRef.current=false;setSubmitting(false);}}
+  } finally {clearTimeout(timer);controllers.current.delete(controller);if(current()){publicationController.current=null;submittingRef.current=false;setSubmitting(false);}}
 
  }
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Pressable accessibilityRole="button" accessibilityLabel="Voltar" onPress={()=>router.back()}><Text style={s.back}>‹ Voltar</Text></Pressable><Text style={s.title}>Criar novo trabalho</Text>{!contextReady?<Pressable accessibilityRole="button" disabled={submitting} onPress={()=>void loadContext()}><Text style={s.hint}>Atualizar empresa ativa</Text></Pressable>:null}<TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Título do trabalho" accessibilityLabel="Título do trabalho" value={title} onChangeText={setTitle}/><TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Cidade do trabalho" accessibilityLabel="Cidade do trabalho" value={workCity} onChangeText={setWorkCity}/><TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Local" accessibilityLabel="Local do trabalho" value={location} onChangeText={setLocation}/><TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Data — DD/MM/AAAA" accessibilityLabel="Data do trabalho no formato dia mês ano" keyboardType="number-pad" value={date} onChangeText={setDate}/><TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Início — HH:MM" accessibilityLabel="Horário de início" keyboardType="numbers-and-punctuation" value={startTime} onChangeText={setStartTime}/><TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Fim — HH:MM" accessibilityLabel="Horário de término" keyboardType="numbers-and-punctuation" value={endTime} onChangeText={setEndTime}/><Text style={s.hint}>Se o horário final for menor ou igual ao inicial, o turno termina no dia seguinte.</Text><TextInput style={s.input} editable={!submitting&&contextReady} placeholder="Valor do trabalho em R$" accessibilityLabel="Valor do trabalho em reais" keyboardType="decimal-pad" value={pay} onChangeText={setPay}/><Pressable style={s.button} disabled={submitting||!contextReady} accessibilityRole="button" accessibilityState={{disabled:submitting||!contextReady,busy:submitting}} onPress={()=>void create()}><Text style={s.buttonText}>{submitting?'PUBLICANDO...':'PUBLICAR TRABALHO'}</Text></Pressable><Text accessibilityLiveRegion="polite">{message}</Text><Pressable accessibilityRole="button" disabled={submitting} onPress={()=>router.push('/planejamento')}><Text style={s.hint}>Conferir trabalhos no Planejamento</Text></Pressable></ScrollView><CompanyNav/></SafeAreaView>}
