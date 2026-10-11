@@ -12,10 +12,10 @@ import {loadSupportCases,supportStatus,type SupportResult} from '../lib/professi
 export function SupportHistory(){
  const[work,setWork]=useState<Section<Assignment[]>>({status:'loading'}),[selected,setSelected]=useState<Assignment|null>(null),[cases,setCases]=useState<SupportResult>({status:'loading'});
  const epoch=useRef(0),workRequest=useRef(0),caseRequest=useRef(0),owner=useRef<string|null>(null),controllers=useRef(new Set<AbortController>());
- function operation(){const controller=new AbortController();controllers.current.add(controller);const timeout=setTimeout(()=>controller.abort(),15000);return {controller,finish:()=>{clearTimeout(timeout);controllers.current.delete(controller);}};}
+ function operation(onDeadline:()=>void){const controller=new AbortController();controllers.current.add(controller);const timeout=setTimeout(()=>{controller.abort();onDeadline();},15000);return {controller,finish:()=>{clearTimeout(timeout);controllers.current.delete(controller);}};}
  function changedContext(){owner.current=null;++workRequest.current;++caseRequest.current;for(const controller of controllers.current)controller.abort();setSelected(null);setCases({status:'error'});setWork({status:'error'});}
  const loadWork=useCallback(async()=>{
-  const id=++workRequest.current,generation=epoch.current,op=operation();++caseRequest.current;owner.current=null;setSelected(null);setCases({status:'loading'});setWork({status:'loading'});
+  const id=++workRequest.current,generation=epoch.current,op=operation(()=>{if(id===workRequest.current&&generation===epoch.current)setWork({status:'error'});});++caseRequest.current;owner.current=null;setSelected(null);setCases({status:'loading'});setWork({status:'loading'});
   const isCurrent=()=>id===workRequest.current&&generation===epoch.current&&!op.controller.signal.aborted;
   try{
    const headers=await authHeaders();if(id!==workRequest.current||generation!==epoch.current)return;if(op.controller.signal.aborted)throw Error('deadline');if(!headers.Authorization)throw Error('session_required');
@@ -31,7 +31,7 @@ export function SupportHistory(){
  async function selectWork(assignment:Assignment){
   const authorization=owner.current;
   if(!authorization||work.status!=='ready'||!work.data.some(a=>a.id===assignment.id&&a.tenantId===assignment.tenantId))return;
-  const id=++caseRequest.current,generation=epoch.current,op=operation();setSelected(assignment);setCases({status:'loading'});
+  const id=++caseRequest.current,generation=epoch.current,op=operation(()=>{if(id===caseRequest.current&&generation===epoch.current)setCases({status:'error'});});setSelected(assignment);setCases({status:'loading'});
   const isCurrent=()=>id===caseRequest.current&&generation===epoch.current&&!op.controller.signal.aborted;
   try{
    const headers=await authHeaders();if(id!==caseRequest.current||generation!==epoch.current)return;if(op.controller.signal.aborted)throw Error('deadline');
