@@ -1,5 +1,40 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+## Revogação: prazo da interface e recibo de integração — 2026-10-11 06:31:01 UTC
+
+Estado atual revalidado no GitHub: main a4a4a730a77811da275b80e79103ebb0f2012580 (#437), tree7c2eac5e155bdc2998989edf8aee18c8d378b8be; zero PRs abertos antes desta correção não prova conclusão. README aponta o Documento ORIGINAL v1.104, memória e checkpoint foram relidos na main acima. #420–#437 integrados em ordem após retarget main, diff/bytes revistos, CI e APK próprios quando aplicáveis PASS, lease/head/main reconsultados. Pais e árvore de cada merge real verificados; nenhuma squash/reescrita/perda de predecessores. #435–#437 mudaram somente API/CI/testes/docs; native N/A provado por paths e mobile tree idêntica ao nativo aprovado #434, nunca artefato atribuído ao head API. CI pós-merge de TODOS #420–#437 PASS no SHA real. Native pós-merge #419–#424 PASS; #425–#434 ainda em execução na consulta, NÃO PASS. #437 CI pós-merge38117884742 attempt1 falhou no pull ECR postgres17 toomanyrequests antes de Checkout (job114406370358,06:23:25.7824511Z); após log integral e espera, rerun só job falho: attempt2/job114406796501 PASS4/699/169/3, HTTP06:28:24.8423915Z. Não mudou código/registry/gate para contornar falha.
+
+| PR | SHA merge real | CI / APK próprios | CI pós-merge | APK pós-merge |
+|---|---|---|---|---|
+| #420 | 64c5f2a09969e76d7077858af4a0623f2b43ce38 | 38112711675 / 38112711679 | 38114053725 | 38114053744 |
+| #421 | 9ff2ef5a3c30e42a1908949053e6849b07f50651 | 38112820567 / 38112820608 | 38114405806 | 38114405753 |
+| #422 | cfb7d838697006d03c0ac1c9873d4ad1da08679a | 38112956435 / 38112956424 | 38114552142 | 38114552077 |
+| #423 | 7993dd0c5f4646b2e9b48b79923041b9f3a842dc | 38113140672 / 38113140682 | 38114600972 | 38114601054 |
+| #424 | b00be864d6ed6c7383f9f5267df054dad6907535 | 38113453286 / 38113453352 | 38114903819 | 38114903781 |
+| #425 | c6334b4ec643a17a9420f1981c77e10d1488d9e0 | 38113622093 / 38113622026 | 38117688717 | PENDENTE 38117688718 |
+| #426 | 321aa035059347fb6cd734acce0045c0fd9fca0c | 38113777302 / 38113777319 | 38117698235 | PENDENTE 38117698241 |
+| #427 | 9678fb99a37b3f4bf699347ca439936ecc4dc25f | 38113969108 / 38113969118 | 38117706895 | PENDENTE 38117706908 |
+| #428 | b298d5291df5a657136c66d316055c7615c30a4d | 38114121811 / 38114121800 | 38117717030 | PENDENTE 38117716994 |
+| #429 | c05a95fc29490a5dff25d71546c2a535d6f97d33 | 38114334775 / 38114334761 | 38117728724 | PENDENTE 38117728773 |
+| #430 | 5aa8a055ab715e91e39dac4989039375b3a75c1f | 38114691222 / 38114691248 | 38117818305 | PENDENTE 38117818330 |
+| #431 | abf5f84304d7198fb75b999c4db3f5add54c8127 | 38115110022 / 38115110028 | 38117828679 | PENDENTE 38117828684 |
+| #432 | f580690d383eb6f8bc33d231849044b11f48c1ec | 38115345625 / 38115345646 | 38117838749 | PENDENTE 38117838770 |
+| #433 | 5aa264d3457f7146a2ab741890f7830c77f20a20 | 38115519749 / 38115519750 | 38117848157 | PENDENTE 38117848154 |
+| #434 | ed6d7efc9249b7dddf3b990f3fdc1b2caf728849 | 38115726584 / 38115726677 | 38117857810 | PENDENTE 38117857802 |
+| #435 | 65001ddccdcc401ee8113d141bfa63341ea70b3d | 38116648295 / N/A paths/mobile iguais | 38117867644 | N/A paths/mobile iguais |
+| #436 | 409dc05a90ca55520d28007464392442f324b65a | 38116970206 / N/A paths/mobile iguais | 38117877920 | N/A paths/mobile iguais |
+| #437 | a4a4a730a77811da275b80e79103ebb0f2012580 | 38117227111 / N/A paths/mobile iguais | 38117884742 | N/A paths/mobile iguais |
+
+Falha concreta: Membros.revoke tinha timer abort-only; auth/fetch/JSON/auth final e atualização GET pendentes deixavam busy/pending true indefinidamente e ocultavam atualização. 14 regressões novas reproduziram ANTES12FAIL/2PASS; DEPOIS14PASS. Matriz ampliada local67/67 (14novos+10company-members+43secondary-read), handlers pré-JSX e helpers reais, hooks/auth/fetch/timers explícitos; sem renderRN/SecureStore/Android físico ou rede externa. Revoke ganha ref controller acrescida após refs existentes e callback15s: somente na operação/generation atual invalida contexto e sequência de leitura, limpa lista para estado error e libera busy/pending. Antes de ACK exato não afirma revogação; após ACK válido bool/id e atualização pendente preserva confirmação, reporta falha da atualização. Guardas isCurrent com controller/epoch/abort impedem resposta, timer, catch ou finally antigo de modificar novo foco/tentativa. Troca de identity/tenant invalida autoridade e envia zero POST quando anterior ao transporte; id ausente/aceito/revogado não transporta. Rascunhos/email/código/unknown da criação preservados. Sem retry automático, navegação ou saveTenantForContext; fila nativa/sessão pareada não é removida nem ultrapassada.
+
+Backend existente revoga por id+tenant e accepted_at IS NULL, COALESCE(revoked_at,now()), ACK invitationId real; repetição EXPLÍCITA do mesmo ID é idempotente conforme contrato atual. Não inventar idempotência para criação/aceite, não desbloquear unknown mediante suposição de cancelamento no servidor. Corpo createInvite/acceptInvite e JSX/StyleSheets comparados byteidênticos; GET load/defaultoperation e protocolo/DB/API sem mudança nesta fatia. React19.1.4/RN0.81.6/lockfile/standalone sem Metro/RLS preservados.
+
+CI próprio novo exigido4/713/169/3 +typecheck/build/export/frozenlock/migrações/retention/HTTP/Production Truth e APK standalone no HEAD EXATO; ambos PENDENTES antes de publicar. Pós-merge desta fatia também será consultado no merge SHA real; nenhum sucesso antecipado. Atualizados originalDVT/memória/checkpoint/ledger/registro/evidência no mesmo commit. Gate Visual Truth/E2E/Android físico (todos estados/desenho original), SecureStore/piloto, pentest independente, PSP/KYC sandbox/FIN-RISK/providers e Web/Railway eventualmente pago continuam OPEN. Sem PSP/dinheiro real/novas cobranças/provider/deploy pago e sem alterar rotinas por bloqueio parcial.
+
+Próxima ação concreta: publicar fix/member-revoke-screen-deadline em PR sobre main, revisar bytes/diff/gates713/169 e APK, integrar só após aprovação exata; acompanhar native pós-merge425–434 e novo head, registrar resultados. Auditar changeMember em Equipes (POST/DELETE idempotentes por par team/professional, timer ainda abort-only) com foco/seleção/authority/ACK+reload preservados. Criação de convite/equipe/publicação e aceite pós-SecureStore têm contratos de resultado incerto/fila/durabilidade separados; não lançar reenvio não idempotente para simular progresso. Preferências/help nova sem membership/forecast/providers dependem contratos/dados/autoridade externos já registrados; não inventar defaults ou tenant global. Fim de rodada não equivale a conclusão; rotina permanece ativa até prova integral ou ordem expressa.
+
+
+### Histórico preservado
 ## Convites: contrato de entrada e ausência de coerção — 2026-10-11 06:10:55 UTC
 
 Falha real reproduzida no CompanyMembersController: String(body.email/role/inviteCode) aceitava arrays e podia revogar/gerar convites ou consumir código válido com JSON de tipo errado. revoke id não UUID podia alcançar cast PostgreSQL. Correção restrita: Body unknown precisa de objeto e campos string antes de trim/enum/hash/db.tenant; revoke rejeita ID não canônico após ownerContext. Autenticação/membership/papel owner precedem validação; enum MANAGEMENT_ROLES, advisory lock/revogação anterior, randomBytes32/base64url43, token hash, expiração7dias, matching de e-mail, membership/role atual, RLS e ACK preservados. Sem mudança no protocolo de consumo (não declarar replay aceito), segredo/authority não é inventado e erro DB continua incerto.
