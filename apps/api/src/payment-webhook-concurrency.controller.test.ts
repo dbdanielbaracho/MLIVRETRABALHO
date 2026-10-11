@@ -73,3 +73,9 @@ test('payment verification and assignment recipient boundaries precede event wri
  const wrong=fixture([[{professionalId:professional}]]);
  await assert.rejects(wrong.run({...payload,eventType:'payout_paid',recipientProfessionalId:'other'}),/payout_recipient_mismatch/);assert.equal(wrong.calls.length,1);
 });
+
+test('signed null webhook is an invalid event before any tenant lookup or financial write',async()=>{
+ const f=fixture([]);
+ await assert.rejects(f.run(null as unknown as Record<string,unknown>),/payment_event_invalid/);
+ assert.equal(f.tenants.length,0);assert.equal(f.calls.length,0);
+});
