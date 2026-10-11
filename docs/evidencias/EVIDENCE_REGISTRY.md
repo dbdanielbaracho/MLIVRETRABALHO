@@ -853,3 +853,8 @@ CAREER_CONVERSION_INPUT_v1.95.md: TypeError antigo reproduzido;12novos testes/51
 ## 2026-10-11 — leitura pareada na abertura
 
 - [STARTUP_SESSION_READ_DEADLINE_2026-10-11.md](STARTUP_SESSION_READ_DEADLINE_2026-10-11.md):5falhas/2sucessos por prazo ausente;7novos/PASS11local. Callback libera entrada após15s, leitura expirada não navega/mescla contexto. Resolver/fila/storage/JSX preservados. CI617mobile/145API+APK próprios pendentes;420–426CI comprovados, APKs em execução.
+
+
+## 2026-10-11 — recuperação de cadastro incerto
+
+- [SIGNUP_UNCERTAIN_DEADLINE_2026-10-11.md](SIGNUP_UNCERTAIN_DEADLINE_2026-10-11.md):6falhas/3sucessos antes;9novos/PASS20local. Prazo revela link Entrar sem desbloquear unknown/segundoPOST; drafts/ACK/layout preservados. CI626mobile/145API+APK próprios pendentes. #420merged apósCI/nativeown completos; pós420emexecução,421–427ownAPKs pendentes.
