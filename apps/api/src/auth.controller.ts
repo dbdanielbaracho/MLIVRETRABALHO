@@ -19,14 +19,16 @@ const emailInputValid=(value:string)=>{const v=normalizedEmail(value);return v.l
 @Controller('auth')
 export class AuthController {
  constructor(private readonly db:DatabaseService, private readonly auth:AuthService){}
- @Post('signup') async signup(@Body() body:{email?:string;password?:string;accountType?:'professional'|'company';workspaceName?:string}){
-  if(!body.email||!body.password||body.password.length<8||body.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(body.email)) throw new UnauthorizedException('invalid_signup');
-  const email=normalizedEmail(body.email); const accountType=body.accountType??'professional';
+ @Post('signup') async signup(@Body() body:unknown){
+  if(!body||typeof body!=='object'||Array.isArray(body))throw new UnauthorizedException('invalid_signup');
+  const input=body as Record<string,unknown>;
+  if(typeof input.email!=='string'||typeof input.password!=='string'||!input.email||!input.password||input.password.length<8||input.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(input.email)) throw new UnauthorizedException('invalid_signup');
+  const email=normalizedEmail(input.email); const accountType=input.accountType??'professional';
   if(accountType!=='professional'&&accountType!=='company')throw new BadRequestException('account_type_invalid');
-  const passwordHash=encodePassword(body.password);
+  const passwordHash=encodePassword(input.password);
   try{
    if(accountType==='company'){
-    const workspaceName=body.workspaceName?.trim();if(!workspaceName)throw new BadRequestException('workspace_name_required');
+    const workspaceName=typeof input.workspaceName==='string'?input.workspaceName.trim():undefined;if(!workspaceName)throw new BadRequestException('workspace_name_required');
     if(workspaceName.length>MAX_WORKSPACE_NAME_LENGTH)throw new BadRequestException('workspace_name_too_long');
     const slug=workspaceSlug(workspaceName);
     const r=await this.db.query<{id:string;email:string;tenantId:string;role:string}>(`WITH i AS (
@@ -45,10 +47,12 @@ export class AuthController {
    return {...r.rows[0],accountType:'professional'};
   }catch(e:any){if(e instanceof BadRequestException)throw e;if(e?.code==='23505')throw new UnauthorizedException('email_in_use');throw e;}
  }
- @Post('signin') async signin(@Body() body:{email?:string;password?:string}){
-  if(!body.email||!body.password||body.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(body.email))throw new UnauthorizedException();
-  const email=normalizedEmail(body.email);
-  const password=body.password;
+ @Post('signin') async signin(@Body() body:unknown){
+  if(!body||typeof body!=='object'||Array.isArray(body))throw new UnauthorizedException();
+  const input=body as Record<string,unknown>;
+  if(typeof input.email!=='string'||typeof input.password!=='string'||!input.email||!input.password||input.password.length>MAX_PASSWORD_LENGTH||!emailInputValid(input.email))throw new UnauthorizedException();
+  const email=normalizedEmail(input.email);
+  const password=input.password;
   const r=await this.db.query<{id:string;email:string;password_hash:string}>('SELECT id,email,password_hash FROM identities WHERE email=$1 AND deactivated_at IS NULL',[email]);
   const identity=r.rows[0];
   if(!identity){verifyPassword(password,DUMMY_PASSWORD_HASH);throw new UnauthorizedException();}

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
+[[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo "local_http_required" >&2; exit 2; }
 DB_URL="${DATABASE_URL:?DATABASE_URL_required}"
 STAMP="$(date +%s)-$RANDOM"
 EMAIL="signin-limit-${STAMP}@example.test"
@@ -17,6 +18,40 @@ status(){ local email="$1" password="$2" out="$3"; curl -sS -o "$out" -w '%{http
 signup_status(){ local body="$1" out="$2"; curl -sS -o "$out" -w '%{http_code}' -X POST "${BASE_URL%/}/v1/auth/signup" -H 'content-type: application/json' --data "$body"; }
 login_token(){ curl -sS --fail-with-body -X POST "${BASE_URL%/}/v1/auth/signin" -H 'content-type: application/json' --data "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}" | json_field accessToken; }
 
+
+# Runtime JSON validation must reject malformed credentials without creating identity,
+# workspace, membership, limiter or session state in this isolated CI database.
+AUTH_INPUT_DIR="$(mktemp -d)"
+trap 'rm -rf "$AUTH_INPUT_DIR"' EXIT
+auth_snapshot(){ psql "$DB_URL" -AtF '|' -c 'SELECT (SELECT count(*) FROM identities),(SELECT count(*) FROM tenants),(SELECT count(*) FROM tenant_memberships),(SELECT count(*) FROM auth_signin_limits),(SELECT count(*) FROM sessions)'; }
+node - "$EMAIL" "$PASSWORD" >"$AUTH_INPUT_DIR/credentials.jsonl" <<'NODE'
+const [email,password]=process.argv.slice(2);
+const rows=[null,[],true,42,"text",{}, {email,password:""}, {email:"",password}];
+for(const value of [null,42,true,false,{},[],["text"]])for(const field of ["email","password"])rows.push({...{email,password},[field]:value});
+for(const row of rows)console.log(JSON.stringify(row));
+NODE
+AUTH_BEFORE="$(auth_snapshot)"
+for endpoint in signup signin; do
+  while IFS= read -r body; do
+    code="$(curl -sS -o "$AUTH_INPUT_DIR/response.json" -w '%{http_code}' -X POST "${BASE_URL%/}/v1/auth/$endpoint" -H 'content-type: application/json' --data "$body")"
+    test "$code" = "401"
+    if [[ "$endpoint" = signup ]]; then grep -q 'invalid_signup' "$AUTH_INPUT_DIR/response.json"; fi
+  done <"$AUTH_INPUT_DIR/credentials.jsonl"
+done
+node - "$EMAIL" "$PASSWORD" >"$AUTH_INPUT_DIR/workspaces.jsonl" <<'NODE'
+const [email,password]=process.argv.slice(2);
+for(const workspaceName of [null,42,true,false,{},[],["Empresa"],"","   "])console.log(JSON.stringify({email,password,accountType:"company",workspaceName}));
+console.log(JSON.stringify({email,password,accountType:"company"}));
+NODE
+while IFS= read -r body; do
+  test "$(signup_status "$body" "$AUTH_INPUT_DIR/response.json")" = "400"
+  grep -q 'workspace_name_required' "$AUTH_INPUT_DIR/response.json"
+done <"$AUTH_INPUT_DIR/workspaces.jsonl"
+test "$(signup_status "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"admin\"}" "$AUTH_INPUT_DIR/response.json")" = "400"
+grep -q 'account_type_invalid' "$AUTH_INPUT_DIR/response.json"
+test "$(auth_snapshot)" = "$AUTH_BEFORE"
+echo 'PASS: auth malformed JSON rejects without identity, tenant, membership, limiter or session writes'
+
 # Input bounds must fail before expensive or persistent work.
 test "$(signup_status "{\"email\":\"bounds-pass-${STAMP}@example.test\",\"password\":\"$LONG_PASSWORD\",\"accountType\":\"professional\"}" /tmp/auth-bounds-password.json)" = "401"
 grep -q 'invalid_signup' /tmp/auth-bounds-password.json
@@ -29,6 +64,20 @@ test "$(status "$EMAIL" "$LONG_PASSWORD" /tmp/auth-bounds-signin-password.json)"
 curl -sS --fail-with-body -X POST "${BASE_URL%/}/v1/auth/signup" -H 'content-type: application/json' --data "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\",\"accountType\":\"professional\"}" >/dev/null
 IDENTITY_ID="$(psql "$DB_URL" -tAc "SELECT id FROM identities WHERE email='$EMAIL'")"
 test -n "$IDENTITY_ID"
+
+
+# Malformed passwords on a real identity must not consume its failure window or
+# create a session. Valid/wrong string credentials below still exercise real scrypt.
+AUTH_EXISTING_BEFORE="$(auth_snapshot)"
+node - "$EMAIL" >"$AUTH_INPUT_DIR/existing.jsonl" <<'NODE'
+const email=process.argv[2];
+for(const password of [null,42,true,false,{},[],["text"]])console.log(JSON.stringify({email,password}));
+NODE
+while IFS= read -r body; do
+  test "$(curl -sS -o "$AUTH_INPUT_DIR/response.json" -w '%{http_code}' -X POST "${BASE_URL%/}/v1/auth/signin" -H 'content-type: application/json' --data "$body")" = "401"
+done <"$AUTH_INPUT_DIR/existing.jsonl"
+test "$(auth_snapshot)" = "$AUTH_EXISTING_BEFORE"
+echo 'PASS: auth malformed passwords leave real identity limiter and sessions unchanged'
 
 for n in $(seq 1 7); do
   test "$(status "$EMAIL" "$WRONG_PASSWORD" "/tmp/signin-limit-$n.json")" = "401"
