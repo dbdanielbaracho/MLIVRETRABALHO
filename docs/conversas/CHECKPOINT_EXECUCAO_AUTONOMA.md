@@ -1,5 +1,16 @@
 # Checkpoint de execução autônoma — MLIVRETRABALHO
 
+## Pós-merge nativo #438 comprovado — 2026-10-11 11:18:07 UTC
+
+Reconsulta final do run38133235730: PASS no mergeSHA27e96142ecde5efa10adb05ef436bb5a3f123865, attempt1job114451722593, todos passos aplicáveis sucesso; instalação Success2026-10-11T11:14:10.8159307Z e DEVICE_SMOKE_OK2026-10-11T11:14:53.7258824Z package=com.predibeacon.mlivretrabalho.pilot metro_required=false. ZIP11700537236, sha256:de19b169e19ab8c59d27d30b462095220c44e167342d2b3a35602267206be510, 28910958bytes, não expirado, workflowhead EXATAMENTE27e96142. Digest refere-se ao ZIP; teste executado em emulador, NÃO aparelho físico. Entradas "pendente" abaixo são snapshots históricos anteriores a esta reconsulta, não o estado atual.
+
+Base de código main739908e026ac10bd254e9ea64aa940c404d2f5a0 (#441), todos próprios/pós-CI438–441 PASS e native próprio/pós438 PASS; API439–441 nativeN/A por árvore mobile4cb705aeb39244f46649bc5c569459ef9b0c5b7d idêntica ao aprovado e pathsstandalone. Original419 e425–434 pós-APKs já comprovados, retry427attempt2 PASS. VisualTruth/físico/E2E/SecureStore/piloto/pentest/PSP/KYC/FIN-RISK/providers/Web pago permanecem OPEN; projeto NÃO concluído.
+
+PR#442 de recibo somente docs tem head anterior22a0b4e066b6edb1a63890006b7557ac8bbe28e4 e CI38134968825 em execução na preparação desta atualização. Este novo registro material atualiza o head: aprovação anterior não pode ser reutilizada, exigir CI4/713/195/3 no NOVO SHA após publicação, revisar diff e main, N/A nativo confirmado por docs-only/mobiletree, integrar lease/head/pais/tree e verificar pós-CI. A própria PR deve conter o recibo final de SHA/runs gerados após este snapshot; evita hashes autorreferentes inventados. Não repetir merges438–441.
+
+Próxima tarefa de código permanece AuthController.signup/signin entrada runtime (null/tipos), mantendo auth/códigos/defaults/scrypt/timing-safe/rate-limit/lockout/sessões e queries; depois SupportController.status. Gate nativo em execução deixou de ser pendência nesta reconsulta, sem rerun/bypass. Rotina permanece ativa para tarefas seguras e externas, sem exigir continuar.
+
+
 ## Recibo de retomada verificada — 2026-10-11 11:16:34 UTC
 
 Base de código: main739908e026ac10bd254e9ea64aa940c404d2f5a0, tree56dea8f89da703f9dbeaf9cd0e321a191e25e04a (#441). Zero PR aberto na última consulta NÃO prova conclusão. README continua apontando ESTE Documento ORIGINALv1.104, todo histórico preservado em lugar. #438/#439/#440/#441 integrados com head próprio/diff/bytes/pais/tree/main/gates aplicáveis revistos. #438 corrige prazo da revogação; #439 entrada de talentos; #440 avaliações; #441 mensagens/UUID. 14+8+9+9 regressões novas, corpos inválidos não chegam a tenant/query nem modificam mensagens/avaliações/notificações reais de fixtures. Fixtures locais não equivalem a Android físico/Nest/PostgreSQL; CI completo/HTTP real comprova a camada servidor.

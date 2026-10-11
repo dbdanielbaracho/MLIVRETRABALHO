@@ -791,3 +791,58 @@ VisualTruth/desenhooriginal/todosestados e dados reais em Android FÍSICO, E2E/p
   ]
 }
 ```
+
+
+## Pós-merge nativo #438 comprovado — 2026-10-11 11:18:07 UTC
+
+Reconsulta final do run38133235730: PASS no mergeSHA27e96142ecde5efa10adb05ef436bb5a3f123865, attempt1job114451722593, todos passos aplicáveis sucesso; instalação Success2026-10-11T11:14:10.8159307Z e DEVICE_SMOKE_OK2026-10-11T11:14:53.7258824Z package=com.predibeacon.mlivretrabalho.pilot metro_required=false. ZIP11700537236, sha256:de19b169e19ab8c59d27d30b462095220c44e167342d2b3a35602267206be510, 28910958bytes, não expirado, workflowhead EXATAMENTE27e96142. Digest refere-se ao ZIP; teste executado em emulador, NÃO aparelho físico. Entradas "pendente" abaixo são snapshots históricos anteriores a esta reconsulta, não o estado atual.
+
+Base de código main739908e026ac10bd254e9ea64aa940c404d2f5a0 (#441), todos próprios/pós-CI438–441 PASS e native próprio/pós438 PASS; API439–441 nativeN/A por árvore mobile4cb705aeb39244f46649bc5c569459ef9b0c5b7d idêntica ao aprovado e pathsstandalone. Original419 e425–434 pós-APKs já comprovados, retry427attempt2 PASS. VisualTruth/físico/E2E/SecureStore/piloto/pentest/PSP/KYC/FIN-RISK/providers/Web pago permanecem OPEN; projeto NÃO concluído.
+
+PR#442 de recibo somente docs tem head anterior22a0b4e066b6edb1a63890006b7557ac8bbe28e4 e CI38134968825 em execução na preparação desta atualização. Este novo registro material atualiza o head: aprovação anterior não pode ser reutilizada, exigir CI4/713/195/3 no NOVO SHA após publicação, revisar diff e main, N/A nativo confirmado por docs-only/mobiletree, integrar lease/head/pais/tree e verificar pós-CI. A própria PR deve conter o recibo final de SHA/runs gerados após este snapshot; evita hashes autorreferentes inventados. Não repetir merges438–441.
+
+Próxima tarefa de código permanece AuthController.signup/signin entrada runtime (null/tipos), mantendo auth/códigos/defaults/scrypt/timing-safe/rate-limit/lockout/sessões e queries; depois SupportController.status. Gate nativo em execução deixou de ser pendência nesta reconsulta, sem rerun/bypass. Rotina permanece ativa para tarefas seguras e externas, sem exigir continuar.
+
+
+```json
+{
+  "post438APK": {
+    "head": "27e96142ecde5efa10adb05ef436bb5a3f123865",
+    "run": 38133235730,
+    "job": 114451722593,
+    "attempt": 1,
+    "markers": [
+      "2026-10-11T11:14:10.8159307Z Success",
+      "2026-10-11T11:14:53.7258824Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+    ],
+    "artifact": {
+      "id": 11700537236,
+      "name": "MLivreTrabalho-standalone-apk",
+      "size_in_bytes": 28910958,
+      "url": "https://api.github.com/repos/dbdanielbaracho/MLIVRETRABALHO/actions/artifacts/11700537236",
+      "archive_download_url": "https://api.github.com/repos/dbdanielbaracho/MLIVRETRABALHO/actions/artifacts/11700537236/zip",
+      "expired": false,
+      "created_at": "2026-10-11T11:14:57Z",
+      "expires_at": "2026-10-25T11:14:55Z",
+      "updated_at": "2026-10-11T11:14:57Z",
+      "digest": "sha256:de19b169e19ab8c59d27d30b462095220c44e167342d2b3a35602267206be510",
+      "workflow_run": {
+        "id": 38133235730,
+        "repository_id": 1378638985,
+        "head_repository_id": 1378638985,
+        "head_branch": "main",
+        "head_sha": "27e96142ecde5efa10adb05ef436bb5a3f123865"
+      }
+    },
+    "pending": false
+  },
+  "mainCode": {
+    "sha": "739908e026ac10bd254e9ea64aa940c404d2f5a0",
+    "tree": "56dea8f89da703f9dbeaf9cd0e321a191e25e04a",
+    "parents": [
+      "5389cb9d27e081892064b5b62740223373b67fd7",
+      "e910330627554c423b73993a8cc4b81be7fb3a20"
+    ]
+  }
+}
+```
