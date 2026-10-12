@@ -124,17 +124,17 @@ export default function Home(){
 
   async function createJob(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
-    const fd=new FormData(e.currentTarget);
+    const form=e.currentTarget;const fd=new FormData(form);
     try{
       await mutate('/v1/company/jobs',session,tenantId,{title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))});
-      e.currentTarget.reset();setRevision(x=>x+1);
+      form.reset();setRevision(x=>x+1);
     }catch(err){setError(err instanceof Error?err.message:'Falha ao criar vaga');}finally{setLoading(false);}
   }
 
   async function createTeam(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
-    const fd=new FormData(e.currentTarget);
-    try{await mutate('/v1/company/teams',session,tenantId,{name:fd.get('name')});e.currentTarget.reset();setRevision(x=>x+1);}
+    const form=e.currentTarget;const fd=new FormData(form);
+    try{await mutate('/v1/company/teams',session,tenantId,{name:fd.get('name')});form.reset();setRevision(x=>x+1);}
     catch(err){setError(err instanceof Error?err.message:'Falha ao criar equipe');}finally{setLoading(false);}
   }
 
@@ -159,13 +159,13 @@ export default function Home(){
   }
 
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const fd=new FormData(e.currentTarget);const id=String(fd.get('caseId')||'');if(!id)return;
-    setLoading(true);setError('');try{await mutate(`/v1/company/safety-cases/${id}/status`,session,tenantId,{status:fd.get('status'),note:fd.get('note')});e.currentTarget.reset();setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao revisar caso');}finally{setLoading(false);}
+    e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('caseId')||'');if(!id)return;
+    setLoading(true);setError('');try{await mutate(`/v1/company/safety-cases/${id}/status`,session,tenantId,{status:fd.get('status'),note:fd.get('note')});form.reset();setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao revisar caso');}finally{setLoading(false);}
   }
 
   async function updateSafetyAppeal(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const fd=new FormData(e.currentTarget);const id=String(fd.get('appealId')||'');if(!id)return;
-    setLoading(true);setError('');try{await mutate(`/v1/company/safety-appeals/${id}/status`,session,tenantId,{status:fd.get('status'),note:fd.get('note')});e.currentTarget.reset();setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao revisar recurso');}finally{setLoading(false);}
+    e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('appealId')||'');if(!id)return;
+    setLoading(true);setError('');try{await mutate(`/v1/company/safety-appeals/${id}/status`,session,tenantId,{status:fd.get('status'),note:fd.get('note')});form.reset();setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao revisar recurso');}finally{setLoading(false);}
   }
 
   async function requestReplacement(assignmentId:string){
