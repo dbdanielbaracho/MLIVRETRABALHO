@@ -10,7 +10,7 @@ const beforeJsx=source.slice(0,source.indexOf('  if(!session)return <main')).rep
 const executable=stripTypeScriptTypes(beforeJsx+'\n return null;\n}\nHome();',{mode:'strip'});
 type Pending={resolve:(value:unknown)=>void;reject:(reason:unknown)=>void;path:string;headers:Record<string,string>};
 function harness(){
- const values:any[]=[];let cursor=0;
+ const values:any[]=[],refs:{current:any}[]=[];let cursor=0,refCursor=0;
  const timers=new Map<number,()=>void>();let timerId=0;
  const setTimeout=(callback:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++timerId;timers.set(id,callback);return id;};
  const clearTimeout=(id:number)=>{timers.delete(id)};
@@ -22,9 +22,10 @@ function harness(){
   return {pending,fetch,pendingJson(){for(const p of pending)p.resolve({ok:true,json:()=>new Promise(()=>{})});},success(label:string){for(const p of pending)p.resolve({ok:true,json:async()=>p.path==='/v1/company/dashboard'?{openJobs:label}:p.path==='/v1/company/analytics'?{jobsCreated:label}:[{id:label,professionalId:label,displayName:label}]});},fail(){for(const p of pending)p.resolve({ok:false,status:500})}};
  };
  function render(tenant:string|null,network:ReturnType<typeof transport>,selected={job:'job',team:'team',replacement:'request'}){
-  cursor=0;const effects:(()=>unknown)[]=[];
+  cursor=0;refCursor=0;const effects:(()=>unknown)[]=[];
   const useState=(initial:any)=>{const index=cursor++;if(!(index in values))values[index]=initial;return [index===0?(tenant?base:null):index===1?(tenant??''):index===7?selected.job:index===12?selected.team:index===15?selected.replacement:values[index],(next:any)=>{values[index]=typeof next==='function'?next(values[index]):next}];};
-  vm.runInNewContext(executable,{useState,useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:network.fetch,setTimeout,clearTimeout,process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
+  const useRef=(initial:any)=>{const index=refCursor++;return refs[index]??(refs[index]={current:initial})};
+  vm.runInNewContext(executable,{useState,useRef,useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:network.fetch,setTimeout,clearTimeout,process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
   return effects;
  }
  return {values,transport,render,timers,expire};
