@@ -19,8 +19,8 @@ test('only existing backend replaceable states allow actions and context retains
  const h={'x-tenant-id':'t',Authorization:'Bearer a'};assert.equal(sameReplacementContext({...h},h),true);assert.equal(sameReplacementContext({...h,'x-tenant-id':'other'},h),false);assert.equal(sameReplacementContext({...h,Authorization:'Bearer b'},h),false);assert.equal(sameReplacementContext({},{}),false);
 });
 test('request acknowledgement must match the original assignment and preserves reason payload',async()=>{
- const calls=[];assert.equal(await requestReplacement(async(...args)=>{calls.push(args);return response(replacement)},'a','Pedido real'),true);assert.deepEqual(calls,[['/company/replacements/a','POST',{reason:'Pedido real'}]]);
- assert.equal(await requestReplacement(async()=>response({...replacement,assignmentId:'other'}),'a'),false);
+ const calls=[];assert.equal(await requestReplacement(async(...args)=>{calls.push(args);return response({...replacement,id:'abcdef12-2222-4333-8444-555555555555'})},'a','Pedido real'),true);assert.deepEqual(calls,[['/company/replacements/a','POST',{reason:'Pedido real'}]]);
+ assert.equal(await requestReplacement(async()=>response({...replacement,id:'abcdef12-2222-4333-8444-555555555555',assignmentId:'other'}),'a'),false);
 });
 test('only documented no_replacement_available HTTP400 means no substitute; other HTTP or network failures stay error',async()=>{
  assert.deepEqual(await matchReplacement(async()=>response({message:'no_replacement_available'},false,400),'r'),{status:'empty'});
@@ -32,7 +32,7 @@ test('matching validates the requested replacement and actual score/name without
  for(const delta of [{replacementRequestId:'other'},{recommendedProfessionalId:''},{score:NaN},{score:101},{reasons:null}])assert.equal((await matchReplacement(async()=>response({...recommendation,...delta}),'r')).status,'error');
 });
 test('selection acknowledges the requested replacement, professional and original assignment using existing manual payload',async()=>{
- const ack={replacementRequestId:'r',assignmentId:'new-a',replacedAssignmentId:'a',professionalId:'p',status:'matched'},calls=[];
+ const ack={replacementRequestId:'r',assignmentId:'abcdefab-8888-4777-8666-555555555555',replacedAssignmentId:'a',professionalId:'p',status:'matched'},calls=[];
  assert.equal(await selectReplacement(async(...args)=>{calls.push(args);return response(ack)},replacement,'p'),true);assert.deepEqual(calls,[['/company/replacements/r/select','POST',{professionalId:'p'}]]);
  for(const delta of [{professionalId:'other'},{replacedAssignmentId:'other'},{status:'open'}])assert.equal(await selectReplacement(async()=>response({...ack,...delta}),replacement,'p'),false);
 });
