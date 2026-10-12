@@ -3,6 +3,15 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/project-activity-watch.yml'
+      - 'scripts/tests/project-activity-watch.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/project-activity-watch.yml'
+      - 'scripts/tests/project-activity-watch.test.mjs'
 permissions:
   contents: read
   actions: read
@@ -48,6 +57,11 @@ jobs:
               '**Importante:** GitHub Actions ativo não comprova que um agente esteja programando. Ausência de commit também não prova ausência de trabalho. Este painel mostra somente sinais verificáveis do GitHub; não monitora o processo do ChatGPT. O agendamento de 15 minutos é aproximado e pode atrasar.'
             ];
             await core.summary.addRaw(lines.join('\n')).write();
+            core.info('ACTIVITY_WATCH_OBSERVED '+JSON.stringify({sha,state,ageMinutes:Math.max(0,Math.floor(age/60000)),openPrs:prs.data.length,activeRuns:active.length,event:context.eventName}));
+            if(context.eventName==='pull_request'){
+              core.info('ACTIVITY_WATCH_PREVIEW no_issue_writes=true');
+              return;
+            }
             const title='[Activity Watch] Sem commit por mais de 15 minutos';
             const existing=issues.find(i=>i.title===title);
             if(age>threshold && !existing){

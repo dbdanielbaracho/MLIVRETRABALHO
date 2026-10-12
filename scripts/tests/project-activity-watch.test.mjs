@@ -7,7 +7,7 @@ const script=workflow.split('          script: |\n')[1].split('\n').map(l=>l.sta
 const title='[Activity Watch] Sem commit por mais de 15 minutos';
 const sha='0123456789abcdef0123456789abcdef01234567';
 const now=Date.parse('2026-10-12T03:00:00Z');
-async function run({age=20,issues=[],active=[],failRead=false,observedCalls=[],observedSummary=[]}={}){
+async function run({age=20,issues=[],active=[],failRead=false,observedCalls=[],observedSummary=[],eventName='schedule'}={}){
  const calls=observedCalls,summary=observedSummary;
  const issueList=async({page=1,per_page=100})=>({data:issues.slice((page-1)*per_page,page*per_page)});
  const github={rest:{
@@ -17,8 +17,8 @@ async function run({age=20,issues=[],active=[],failRead=false,observedCalls=[],o
   issues:{listForRepo:issueList,create:async args=>{calls.push(['create',args]);return {data:{number:999}}},createComment:async args=>{calls.push(['comment',args]);return {}},update:async args=>{calls.push(['update',args]);return {}}}
  },paginate:async(method,args)=>{const all=[];for(let page=1;;page++){const r=await method({...args,page});all.push(...r.data);if(r.data.length<args.per_page)return all}}};
  class Clock extends Date {static now(){return now}}
- const core={summary:{addRaw(text){summary.push(text);return this},async write(){}}};
- await new vm.Script('(async()=>{'+script+'})()').runInNewContext({github,core,context:{repo:{owner:'fixture',repo:'MLIVRETRABALHO'},runId:7},Date:Clock});
+ const core={info(){},summary:{addRaw(text){summary.push(text);return this},async write(){}}};
+ await new vm.Script('(async()=>{'+script+'})()').runInNewContext({github,core,context:{repo:{owner:'fixture',repo:'MLIVRETRABALHO'},runId:7,eventName},Date:Clock});
  return {calls,summary:summary.join('\n')};
 }
 test('watch smoke opens one stale-commit alert with factual summary and no claim of an active developer',async()=>{
@@ -42,4 +42,15 @@ test('watch checks all issue pages before creating or closing its single alert',
  const issues=Array.from({length:100},(_,i)=>({number:i+1,title:'Other issue '+i})).concat({number:101,title});
  const stale=await run({issues});assert.equal(stale.calls.length,0,'existing alert on page two must prevent duplicate');
  const recent=await run({issues,age:2});assert.deepEqual(recent.calls.map(c=>[c[0],c[1].issue_number]),[['comment',101],['update',101]]);
+});
+
+test('pull-request preview reads and publishes factual status without creating, closing or commenting on issues',async()=>{
+ for(const age of [2,20]){
+  const r=await run({age,eventName:'pull_request',issues:[{title,number:19}]});
+  assert.equal(r.calls.length,0);assert.match(r.summary,new RegExp(sha));
+ }
+});
+test('push smoke observes a fresh main commit without manufacturing an alert',async()=>{
+ const r=await run({age:0,eventName:'push'});
+ assert.equal(r.calls.length,0);assert.match(r.summary,/COMMIT RECENTE/);
 });

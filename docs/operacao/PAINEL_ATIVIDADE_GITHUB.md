@@ -10,3 +10,5 @@ Este monitor **não cria nem executa um agente contínuo 24/7**, não invoca Cha
 ## Validação e limite atual (2026-10-12)
 
 O smoke automatizado `scripts/tests/project-activity-watch.test.mjs` executa a lógica real com fixtures de API e relógio, incluindo paginação de issues para impedir alertas duplicados. Passar esse teste não comprova execução do cron ou permissões reais de Issues. Até a consulta desta rodada, a API de runs agendados retornou zero; o primeiro run real continua sem evidência. Consultar runs gerais/event=schedule, job/logs/summary e o alerta antes de declarar o monitor executado.
+
+O workflow também executa uma prévia de leitura quando seus arquivos mudam em PR: consulta APIs reais e publica o resumo, sem criar/comentar/fechar issues. No merge de alterações do monitor, roda novamente na main com o comportamento normal. Esses eventos permitem comprovar execução sem disparo manual; continuam separados da prova do cron agendado. Os logs ACTIVITY_WATCH_OBSERVED registram os mesmos fatos do resumo. Nenhum destes eventos executa um agente de desenvolvimento.
