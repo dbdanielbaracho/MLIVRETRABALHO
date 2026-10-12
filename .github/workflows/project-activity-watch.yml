@@ -26,7 +26,7 @@ jobs:
               github.rest.repos.getCommit({owner,repo,ref:'main'}),
               github.rest.pulls.list({owner,repo,state:'open',per_page:100}),
               github.rest.actions.listWorkflowRunsForRepo({owner,repo,per_page:100}),
-              github.rest.issues.listForRepo({owner,repo,state:'open',per_page:100})
+              github.paginate(github.rest.issues.listForRepo,{owner,repo,state:'open',per_page:100})
             ]);
             const time=commit.data.commit.committer?.date ?? commit.data.commit.author?.date;
             const age=now-new Date(time).getTime();
@@ -49,7 +49,7 @@ jobs:
             ];
             await core.summary.addRaw(lines.join('\n')).write();
             const title='[Activity Watch] Sem commit por mais de 15 minutos';
-            const existing=issues.data.find(i=>i.title===title);
+            const existing=issues.find(i=>i.title===title);
             if(age>threshold && !existing){
               await github.rest.issues.create({owner,repo,title,body:lines.join('\n')+'\n\nO aviso é sobre ausência de commits, não um diagnóstico definitivo de agente parado.'});
             } else if(age<=threshold && existing){
