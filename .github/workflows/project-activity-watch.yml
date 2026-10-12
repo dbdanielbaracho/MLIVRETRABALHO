@@ -63,7 +63,7 @@ jobs:
               return;
             }
             const title='[Activity Watch] Sem commit por mais de 15 minutos';
-            const existing=issues.find(i=>i.title===title);
+            const existing=issues.find(i=>!i.pull_request && i.title===title);
             if(age>threshold && !existing){
               await github.rest.issues.create({owner,repo,title,body:lines.join('\n')+'\n\nO aviso é sobre ausência de commits, não um diagnóstico definitivo de agente parado.'});
             } else if(age<=threshold && existing){
