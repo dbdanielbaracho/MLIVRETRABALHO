@@ -196,6 +196,9 @@ NODE
 test "$(request GET /v1/company/replacements "$COMPANY_TOKEN" "$TENANT_ID")" = "$REPLACEMENTS"
 echo "PASS: professional and company cancellation retain real ACKs tenant scope and no financial compensation"
 
+# Separate fresh-job fixture preserves every assertion of the existing journey.
+REPLACE_COMPANY_TOKEN="$COMPANY_TOKEN" REPLACE_ORIGINAL_TOKEN="$PRO1_TOKEN" REPLACE_ORIGINAL_ID="$PRO1_ID" REPLACE_CANDIDATE_ID="$PRO2_ID" REPLACE_TENANT="$TENANT_ID" node scripts/replacement-selection-concurrency-e2e.cjs
+
 request POST /v1/auth/signout "$PRO1_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$PRO2_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
