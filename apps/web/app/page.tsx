@@ -1,5 +1,6 @@
 'use client';
 
+import {confirmSafetyStatus} from './safety-status-ack';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
@@ -174,12 +175,20 @@ export default function Home(){
 
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('caseId')||'');if(!id)return;
-    setLoading(true);setError('');try{await mutate(`/v1/company/safety-cases/${id}/status`,session,tenantId,{status:fd.get('status'),note:fd.get('note')});form.reset();setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao revisar caso');}finally{setLoading(false);}
+    setLoading(true);setError('');try{
+      const result=await confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-cases/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')});
+      if(result.status!=='confirmed')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A revisão do caso não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira os registros antes de qualquer novo envio.');
+      form.reset();setRevision(x=>x+1);
+    }catch(err){setError(err instanceof Error?err.message:'Falha ao revisar caso');}finally{setLoading(false);}
   }
 
   async function updateSafetyAppeal(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('appealId')||'');if(!id)return;
-    setLoading(true);setError('');try{await mutate(`/v1/company/safety-appeals/${id}/status`,session,tenantId,{status:fd.get('status'),note:fd.get('note')});form.reset();setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao revisar recurso');}finally{setLoading(false);}
+    setLoading(true);setError('');try{
+      const result=await confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-appeals/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')});
+      if(result.status!=='confirmed')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A revisão do recurso não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira os registros antes de qualquer novo envio.');
+      form.reset();setRevision(x=>x+1);
+    }catch(err){setError(err instanceof Error?err.message:'Falha ao revisar recurso');}finally{setLoading(false);}
   }
 
   async function requestReplacement(assignmentId:string){
