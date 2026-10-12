@@ -11,19 +11,23 @@ const executable=stripTypeScriptTypes(beforeJsx+'\n return null;\n}\nHome();',{m
 type Pending={resolve:(value:unknown)=>void;reject:(reason:unknown)=>void;path:string;headers:Record<string,string>};
 function harness(){
  const values:any[]=[];let cursor=0;
+ const timers=new Map<number,()=>void>();let timerId=0;
+ const setTimeout=(callback:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++timerId;timers.set(id,callback);return id;};
+ const clearTimeout=(id:number)=>{timers.delete(id)};
+ const expire=()=>{const callbacks=[...timers.values()];timers.clear();for(const callback of callbacks)callback()};
  const base={accessToken:'token',identity:{id:'identity',email:'fixture'},memberships:[{tenantId:'tenant-a',role:'owner'},{tenantId:'tenant-b',role:'owner'}]};
  const transport=()=>{
   const pending:Pending[]=[];
   const fetch=(url:string,options:any)=>new Promise((resolve,reject)=>pending.push({path:new URL(url).pathname,headers:options.headers,resolve,reject}));
-  return {pending,fetch,success(label:string){for(const p of pending)p.resolve({ok:true,json:async()=>p.path==='/v1/company/dashboard'?{openJobs:label}:p.path==='/v1/company/analytics'?{jobsCreated:label}:[{id:label,professionalId:label,displayName:label}]});},fail(){for(const p of pending)p.resolve({ok:false,status:500})}};
+  return {pending,fetch,pendingJson(){for(const p of pending)p.resolve({ok:true,json:()=>new Promise(()=>{})});},success(label:string){for(const p of pending)p.resolve({ok:true,json:async()=>p.path==='/v1/company/dashboard'?{openJobs:label}:p.path==='/v1/company/analytics'?{jobsCreated:label}:[{id:label,professionalId:label,displayName:label}]});},fail(){for(const p of pending)p.resolve({ok:false,status:500})}};
  };
  function render(tenant:string|null,network:ReturnType<typeof transport>,selected={job:'job',team:'team',replacement:'request'}){
   cursor=0;const effects:(()=>unknown)[]=[];
   const useState=(initial:any)=>{const index=cursor++;if(!(index in values))values[index]=initial;return [index===0?(tenant?base:null):index===1?(tenant??''):index===7?selected.job:index===12?selected.team:index===15?selected.replacement:values[index],(next:any)=>{values[index]=typeof next==='function'?next(values[index]):next}];};
-  vm.runInNewContext(executable,{useState,useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:network.fetch,process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
+  vm.runInNewContext(executable,{useState,useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:network.fetch,setTimeout,clearTimeout,process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
   return effects;
  }
- return {values,transport,render};
+ return {values,transport,render,timers,expire};
 }
 const flush=()=>new Promise<void>(resolve=>setImmediate(resolve));
 const targets=[{effect:1,index:2,empty:null},{effect:2,index:8,empty:[]},{effect:3,index:13,empty:[]},{effect:4,index:16,empty:[]}];
@@ -73,5 +77,60 @@ test('late Web candidate, member and substitute reads cannot overwrite a newer s
   fresh.success('current-selection');await flush();const current=h.values[target.index];
   assert.ok(fresh.pending.every(p=>p.path.includes('-new')));
   old.success('old-selection');await flush();assert.equal(h.values[target.index],current);
+ }
+});
+
+test('all four Web reads leave a pending fetch after the deadline and ignore late success',async()=>{
+ for(const target of targets){
+  const h=harness(),network=h.transport();h.render('tenant-a',network)[target.effect]();
+  assert.equal(h.timers.size,1);h.expire();await flush();
+  assert.match(h.values[21],/tempo.*Atualizar dados/i);
+  assert.equal(JSON.stringify(h.values[target.index]),JSON.stringify(target.empty));
+  if(target.effect===1)assert.equal(h.values[22],false);
+  network.success('late');await flush();
+  assert.equal(JSON.stringify(h.values[target.index]),JSON.stringify(target.empty));
+ }
+});
+test('the Web read deadline also covers response JSON that never settles',async()=>{
+ for(const target of targets){
+  const h=harness(),network=h.transport();h.render('tenant-a',network)[target.effect]();
+  network.pendingJson();await flush();h.expire();await flush();
+  assert.match(h.values[21],/tempo.*Atualizar dados/i);
+  assert.equal(JSON.stringify(h.values[target.index]),JSON.stringify(target.empty));
+  if(target.effect===1)assert.equal(h.values[22],false);
+ }
+});
+test('expired Web reads ignore late errors and recover through an explicit fresh read',async()=>{
+ for(const target of targets){
+  const h=harness(),old=h.transport();h.render('tenant-a',old)[target.effect]();h.expire();
+  const fresh=h.transport();h.render('tenant-a',fresh)[target.effect]();
+  old.fail();await flush();assert.equal(h.values[21],'');
+  if(target.effect===1)assert.equal(h.values[22],true);
+  fresh.success('verified');await flush();assert.equal(h.values[21],'');
+  assert.notDeepEqual(h.values[target.index],target.empty);assert.equal(h.timers.size,0);
+  h.expire();assert.equal(h.values[21],'');
+ }
+});
+test('cleaned up Web read timers cannot publish into another company, selection or signed out context',async()=>{
+ for(const target of targets){
+  for(const tenant of ['tenant-b',null]){
+   const h=harness(),old=h.transport();const cleanup=h.render('tenant-a',old)[target.effect]();
+   assert.equal(h.timers.size,1);const late=[...h.timers.values()][0];clean(cleanup);assert.equal(h.timers.size,0);
+   const fresh=h.transport();h.render(tenant,fresh,{job:'job-new',team:'team-new',replacement:'request-new'})[target.effect]();
+   const loading=h.values[22];late();assert.equal(h.values[21],'');assert.equal(h.values[22],loading);
+   if(tenant){fresh.success('current');await flush();assert.equal(h.timers.size,0);}
+  }
+ }
+});
+test('successful and failed Web reads clear their timers without introducing a later timeout',async()=>{
+ for(const target of targets){
+  for(const outcome of ['success','fail']){
+   const h=harness(),network=h.transport();h.render('tenant-a',network)[target.effect]();
+   assert.equal(h.timers.size,1);
+   if(outcome==='success')network.success('verified');else network.fail();
+   await flush();assert.equal(h.timers.size,0);
+   const error=h.values[21],records=h.values[target.index];h.expire();
+   assert.equal(h.values[21],error);assert.equal(h.values[target.index],records);
+  }
  }
 });

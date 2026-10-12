@@ -24,6 +24,8 @@ type SafetyCase={id:string;status:string;createdAt?:string;category?:string};
 type SafetyAppeal={id:string;safetyCaseId:string;status:string;createdAt?:string};
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
 
+const READ_TIMEOUT_MS=15000;
+
 async function remove(path:string,session:Session,tenantId:string):Promise<void>{
   const r=await fetch(`${API}${path}`,{method:'DELETE',headers:tenantHeaders(session.accessToken,tenantId)});
   if(!r.ok)throw new Error(`HTTP ${r.status}`);
@@ -76,6 +78,7 @@ export default function Home(){
     let current=true;
     setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);
     setLoading(true);setError('');
+    const deadline=setTimeout(()=>{if(!current)return;current=false;setError('O tempo de leitura da operação expirou. Use Atualizar dados para tentar novamente.');setLoading(false)},READ_TIMEOUT_MS);
     const admin=isAdminRole(membership?.role);
     Promise.all([
       api<Dashboard>('/v1/company/dashboard',session,tenantId),
@@ -90,22 +93,24 @@ export default function Home(){
       admin?api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId):Promise.resolve([]),
       admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
-    ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{if(!current)return;setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar operação')}).finally(()=>{if(current)setLoading(false)});
-    return()=>{current=false};
+    ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{if(!current)return;setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar operação')}).finally(()=>{clearTimeout(deadline);if(current)setLoading(false)});
+    return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,membership?.role,revision]);
 
   useEffect(()=>{
     if(!session||!tenantId||!selectedJobId){setCandidates([]);setRecommendations([]);return;}
     let current=true;setCandidates([]);setRecommendations([]);setError('');
-    Promise.all([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(([cs,rs])=>{if(!current)return;setCandidates(cs);setRecommendations(rs);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')});
-    return()=>{current=false};
+    const deadline=setTimeout(()=>{if(!current)return;current=false;setError('O tempo de leitura de candidatos expirou. Use Atualizar dados para tentar novamente.')},READ_TIMEOUT_MS);
+    Promise.all([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(([cs,rs])=>{if(!current)return;setCandidates(cs);setRecommendations(rs);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')}).finally(()=>{clearTimeout(deadline)});
+    return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,selectedJobId,revision]);
 
   useEffect(()=>{
     if(!session||!tenantId||!selectedTeamId){setTeamMembers([]);return;}
     let current=true;setTeamMembers([]);setError('');
-    api<TeamMember[]>(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId).then(rows=>{if(current)setTeamMembers(rows)}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar membros')});
-    return()=>{current=false};
+    const deadline=setTimeout(()=>{if(!current)return;current=false;setError('O tempo de leitura de membros da equipe expirou. Use Atualizar dados para tentar novamente.')},READ_TIMEOUT_MS);
+    api<TeamMember[]>(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId).then(rows=>{if(current)setTeamMembers(rows)}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar membros')}).finally(()=>{clearTimeout(deadline)});
+    return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,selectedTeamId,revision]);
 
   async function signin(e:FormEvent<HTMLFormElement>){
@@ -153,8 +158,9 @@ export default function Home(){
   useEffect(()=>{
     if(!session||!tenantId||!selectedReplacementId){setReplacementCandidates([]);return;}
     let current=true;setReplacementCandidates([]);setError('');
-    api<ReplacementCandidate[]>(`/v1/company/replacements/${selectedReplacementId}/candidates`,session,tenantId).then(rows=>{if(current)setReplacementCandidates(rows)}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')});
-    return()=>{current=false};
+    const deadline=setTimeout(()=>{if(!current)return;current=false;setError('O tempo de leitura de candidatos à substituição expirou. Use Atualizar dados para tentar novamente.')},READ_TIMEOUT_MS);
+    api<ReplacementCandidate[]>(`/v1/company/replacements/${selectedReplacementId}/candidates`,session,tenantId).then(rows=>{if(current)setReplacementCandidates(rows)}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')}).finally(()=>{clearTimeout(deadline)});
+    return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,selectedReplacementId,revision]);
 
   async function confirmCandidate(professionalId:string){
