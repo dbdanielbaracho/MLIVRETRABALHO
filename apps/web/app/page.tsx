@@ -4,6 +4,7 @@ import {confirmsCandidateAssignment,confirmsTalentAddition,confirmsTalentRemoval
 import {confirmsTeamMemberAddition,confirmsTeamMemberRemoval} from './team-membership-ack';
 import {confirmsReplacementCreation,confirmsReplacementSelection} from './replacement-ack';
 import {confirmSafetyStatus} from './safety-status-ack';
+import {readStoredCompanySession} from './stored-session';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
 import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -76,7 +77,7 @@ export default function Home(){
   const [loading,setLoading]=useState(false);
   const [revision,setRevision]=useState(0);
 
-  useEffect(()=>{const raw=sessionStorage.getItem('mlivre:web:session');if(raw){try{const s=JSON.parse(raw) as Session;setSession(s);setTenantId(s.memberships[0]?.tenantId||'');}catch{sessionStorage.removeItem('mlivre:web:session');}}},[]);
+  useEffect(()=>{const raw=sessionStorage.getItem('mlivre:web:session');if(!raw)return;const stored=readStoredCompanySession(raw);if(!stored){sessionStorage.removeItem('mlivre:web:session');return;}setSession(stored);setTenantId(stored.memberships[0].tenantId);},[]);
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
   const mutationContextKey=session?[session.accessToken,session.identity.id,tenantId,membership?.role||''].join('\u0000'):'';
   const mutationContext=useRef({key:mutationContextKey,mounted:false});
