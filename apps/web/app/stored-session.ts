@@ -1,4 +1,4 @@
-import {isCompanyRole} from './web-contract';
+import {isCompanyRole} from './web-contract.ts';
 
 export type StoredMembership={tenantId:string;role:string;displayName?:string;slug?:string};
 export type StoredSession={accessToken:string;identity:{id:string;email:string};memberships:StoredMembership[]};
