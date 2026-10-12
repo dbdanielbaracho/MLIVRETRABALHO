@@ -3,7 +3,7 @@
 import {confirmSafetyStatus} from './safety-status-ack';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders } from './web-contract';
 
 type Membership={tenantId:string;role:string;displayName?:string;slug?:string};
@@ -74,6 +74,13 @@ export default function Home(){
 
   useEffect(()=>{const raw=sessionStorage.getItem('mlivre:web:session');if(raw){try{const s=JSON.parse(raw) as Session;setSession(s);setTenantId(s.memberships[0]?.tenantId||'');}catch{sessionStorage.removeItem('mlivre:web:session');}}},[]);
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
+  const mutationContextKey=session?[session.accessToken,session.identity.id,tenantId,membership?.role||''].join('\u0000'):'';
+  const mutationContext=useRef({key:mutationContextKey,mounted:false});
+  useLayoutEffect(()=>{
+    mutationContext.current={key:mutationContextKey,mounted:true};
+    return()=>{if(mutationContext.current.key===mutationContextKey)mutationContext.current.mounted=false};
+  },[mutationContextKey]);
+  const isCurrentMutation=(key:string)=>mutationContext.current.mounted&&mutationContext.current.key===key;
 
   useEffect(()=>{
     if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);return;}
@@ -132,24 +139,26 @@ export default function Home(){
 
   async function createJob(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
-    const form=e.currentTarget;const fd=new FormData(form);
+    const context=mutationContextKey;const form=e.currentTarget;const fd=new FormData(form);
     try{
       const body={title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))};
       const result=await publishCompanyJob(payload=>fetch(`${API}/v1/company/jobs`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(payload)}),body);
+      if(!isCurrentMutation(context))return;
       if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A publicação não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as vagas antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
-    }catch(err){setError(err instanceof Error?err.message:'Falha ao criar vaga');}finally{setLoading(false);}
+    }catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao criar vaga');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function createTeam(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
-    const form=e.currentTarget;const fd=new FormData(form);
+    const context=mutationContextKey;const form=e.currentTarget;const fd=new FormData(form);
     try{
       const result=await publishCompanyTeam(body=>fetch(`${API}/v1/company/teams`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),{name:fd.get('name')});
+      if(!isCurrentMutation(context))return;
       if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A criação da equipe não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as equipes antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
     }
-    catch(err){setError(err instanceof Error?err.message:'Falha ao criar equipe');}finally{setLoading(false);}
+    catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao criar equipe');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function addTeamMember(e:FormEvent<HTMLFormElement>){
@@ -175,20 +184,22 @@ export default function Home(){
 
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('caseId')||'');if(!id)return;
-    setLoading(true);setError('');try{
+    const context=mutationContextKey;setLoading(true);setError('');try{
       const result=await confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-cases/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')});
+      if(!isCurrentMutation(context))return;
       if(result.status!=='confirmed')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A revisão do caso não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira os registros antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
-    }catch(err){setError(err instanceof Error?err.message:'Falha ao revisar caso');}finally{setLoading(false);}
+    }catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao revisar caso');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function updateSafetyAppeal(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('appealId')||'');if(!id)return;
-    setLoading(true);setError('');try{
+    const context=mutationContextKey;setLoading(true);setError('');try{
       const result=await confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-appeals/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')});
+      if(!isCurrentMutation(context))return;
       if(result.status!=='confirmed')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A revisão do recurso não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira os registros antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
-    }catch(err){setError(err instanceof Error?err.message:'Falha ao revisar recurso');}finally{setLoading(false);}
+    }catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao revisar recurso');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function requestReplacement(assignmentId:string){
