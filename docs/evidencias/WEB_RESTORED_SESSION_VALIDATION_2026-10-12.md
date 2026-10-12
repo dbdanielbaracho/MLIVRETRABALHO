@@ -1,0 +1,5 @@
+# MLivreTrabalho — validação da sessão restaurada (Web)
+
+Falha estática reproduzível no código anterior: `JSON.parse(raw) as Session` permitia valores válidos em JSON mas inválidos como sessão, como `null`, `{}` ou `memberships: null`, gerando acesso indevido a `s.memberships[0]` ou carregando um contexto empresarial não validado. O `catch` descartava alguns erros, mas não impedia sessões estruturalmente inválidas com memberships vazios/campos indevidos.
+
+Correção: `readStoredCompanySession` valida accessToken, identidade e lista de memberships de empresa de acordo com `isCompanyRole`, recria apenas os campos esperados e descarta registros inválidos do sessionStorage. A API segue como autoridade de sessão/autorização. Testes de regressão em `apps/web/app/stored-session.test.ts` verificam valores malformados e papel empresarial válido. Gate: CI próprio no head exato, diff revisado, CI pós-merge. Não se alega execução de browser físico nem segurança provada pela mera validação cliente. Sem alterar endpoints, lockfiles, mobile ou produção.
