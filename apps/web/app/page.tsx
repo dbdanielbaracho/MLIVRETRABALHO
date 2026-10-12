@@ -1,5 +1,6 @@
 'use client';
 
+import {confirmsTeamMemberAddition,confirmsTeamMemberRemoval} from './team-membership-ack';
 import {confirmsReplacementCreation,confirmsReplacementSelection} from './replacement-ack';
 import {confirmSafetyStatus} from './safety-status-ack';
 import {publishCompanyTeam} from './team-publication';
@@ -168,11 +169,11 @@ export default function Home(){
 
   async function addTeamMember(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!selectedTeamId)return;const fd=new FormData(e.currentTarget);const professionalId=String(fd.get('professionalId')||'');if(!professionalId)return;
-    const context=mutationContextKey;setLoading(true);setError('');try{await mutate(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao adicionar membro');}finally{if(isCurrentMutation(context))setLoading(false);}
+    const context=mutationContextKey;setLoading(true);setError('');try{const result=await mutate(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;if(!confirmsTeamMemberAddition(result,selectedTeamId,professionalId))throw new Error('A inclusão do membro não foi confirmada. Atualize os dados e confira a equipe antes de qualquer novo envio.');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao adicionar membro');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function removeTeamMember(professionalId:string){
-    if(!session||!tenantId||!selectedTeamId)return;const context=mutationContextKey;setLoading(true);setError('');try{await remove(`/v1/company/teams/${selectedTeamId}/members/${encodeURIComponent(professionalId)}`,session,tenantId);if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao remover membro');}finally{if(isCurrentMutation(context))setLoading(false);}
+    if(!session||!tenantId||!selectedTeamId)return;const context=mutationContextKey;setLoading(true);setError('');try{const response=await fetch(`${API}/v1/company/teams/${selectedTeamId}/members/${encodeURIComponent(professionalId)}`,{method:'DELETE',headers:tenantHeaders(session.accessToken,tenantId)});if(!response.ok)throw new Error(`HTTP ${response.status}`);const result:unknown=await response.json();if(!isCurrentMutation(context))return;if(!confirmsTeamMemberRemoval(result))throw new Error('A remoção do membro não foi confirmada. Atualize os dados e confira a equipe antes de qualquer novo envio.');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao remover membro');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   useEffect(()=>{
