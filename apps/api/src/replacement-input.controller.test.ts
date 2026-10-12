@@ -80,6 +80,14 @@ test('replacement create preserves missing assignment and replaceable status sco
  for(const status of ['confirmed','checked_in','in_progress']){const h=setup({status});assert.equal((await h.controller.create(ID,{},'Bearer fixture','trusted-tenant')).status,'open');}
  for(const status of ['cancelled','completed']){const h=setup({status});await assert.rejects(h.controller.create(ID,{},'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof BadRequestException&&e.message==='assignment_not_replaceable');assert.equal(h.queries.length,1);}
 });
+test('replacement creation and selection serialize by assignment before locking or writing the request',async()=>{
+ const created=setup();await created.controller.create(ID,{},'Bearer fixture','trusted-tenant');
+ assert.match(created.queries[0]!.sql,/FOR NO KEY UPDATE$/);assert.ok(created.queries[1]!.sql.startsWith('INSERT INTO replacement_requests'));
+ const selected=setup();await selected.controller.select(ID,{professionalId:PRO},'Bearer fixture','trusted-tenant');
+ assert.ok(selected.queries[0]!.sql.startsWith('SELECT assignment_id'));assert.doesNotMatch(selected.queries[0]!.sql,/FOR UPDATE/);
+ assert.match(selected.queries[1]!.sql,/FROM work_assignments .*FOR NO KEY UPDATE$/);
+ assert.match(selected.queries[2]!.sql,/FROM replacement_requests .*status='open' FOR UPDATE$/);
+});
 test('replacement DB failure propagates without fabricated success',async()=>{
  const error=new Error('fixture unavailable'),h=setup({error});await assert.rejects(h.controller.create(ID,{},'Bearer fixture','trusted-tenant'),(e:unknown)=>e===error);
 });
@@ -123,3 +131,4 @@ test('replacement cannot claim matched with an existing substitute assignment ou
  assert.deepEqual(await h.controller.select(ID,{professionalId:PRO},'Bearer fixture','trusted-tenant'),
   {replacementRequestId:ID,assignmentId:NEW,replacedAssignmentId:ID,professionalId:PRO,status:'matched'});
 });
+

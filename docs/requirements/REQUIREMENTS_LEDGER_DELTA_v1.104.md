@@ -1833,3 +1833,14 @@ Próximas frentes internas: contexto de mutations após await/troca sessão/empr
 - Escopo funcional: `apps/web/app/page.tsx` e novo `apps/web/app/web-auth-context.test.ts`. Entradas Android/native, dependências, lockfile, workflows, build e smoke permanecem candidatas a APK **N/A por identidade de árvore**, a comprovar na revisão do PR.
 - Project Activity Watch: a primeira execução agendada real `38217445193`/`114705385578` passou e abriu corretamente o alerta #493 ao observar 146 minutos sem commit. O alerta não prova agente parado e deve ser comentado/fechado pelo próprio monitor após detectar novo commit na main.
 - Próxima auditoria segura após os gates: concorrência de criação de substituição versus cancelamento/lifecycle e contratos reais de ACK de membership/substituição. Corrigir somente falha reproduzida; não inventar políticas para preferências, ajuda, previsão ou integrações sem contrato/dados.
+
+## Delta 2026-10-12 — REPLACEMENT-CANCEL-SERIALIZATION
+
+| Requisito | Evidência | Estado |
+|---|---|---|
+| Um assignment cancelado não conserva pedido de substituição `open` | CI RED `38238401435`/`114774652060`; barreira HTTP/Postgres | Falha reproduzida |
+| Create/select/cancel usam ordem única de serialização | `replacement.controller.ts`, `cancellation.controller.ts`, testes de controller | Implementado; CI próprio pendente |
+| Cancelamento encerra somente pedido `open` do mesmo tenant/assignment | SQL tenant-scoped + regressão HTTP/Postgres | Implementado; CI próprio pendente |
+| ACKs, roles, RLS, matching, notificações e finanças permanecem | testes anteriores preservados + CI completo obrigatório | Sem mudança deliberada |
+
+Evidência detalhada: `docs/evidencias/REPLACEMENT_CREATE_CANCEL_CONCURRENCY_2026-10-12.md`. Não fecha gates externos físico/Visual Truth/pentest/providers/PSP-KYC/FIN-RISK/Web pago.

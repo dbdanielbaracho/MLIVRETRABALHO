@@ -2311,3 +2311,10 @@ Próximas frentes internas: contexto de mutations após await/troca sessão/empr
 - Escopo funcional: `apps/web/app/page.tsx` e novo `apps/web/app/web-auth-context.test.ts`. Entradas Android/native, dependências, lockfile, workflows, build e smoke permanecem candidatas a APK **N/A por identidade de árvore**, a comprovar na revisão do PR.
 - Project Activity Watch: a primeira execução agendada real `38217445193`/`114705385578` passou e abriu corretamente o alerta #493 ao observar 146 minutos sem commit. O alerta não prova agente parado e deve ser comentado/fechado pelo próprio monitor após detectar novo commit na main.
 - Próxima auditoria segura após os gates: concorrência de criação de substituição versus cancelamento/lifecycle e contratos reais de ACK de membership/substituição. Corrigir somente falha reproduzida; não inventar políticas para preferências, ajuda, previsão ou integrações sem contrato/dados.
+
+## 2026-10-12 — replacement create/cancel concurrency
+
+- Evidência: `docs/evidencias/REPLACEMENT_CREATE_CANCEL_CONCURRENCY_2026-10-12.md`.
+- Reprodução primária: PR #495 head `aeb5a8d49a0350021873fffabd1fb7289a56f5ab`, CI `38238401435`, job `114774652060`, HTTP/Postgres RED com assignment `cancelled` e pedido `open`.
+- Correção: ordem de lock `assignment → replacement request`, fechamento tenant-scoped do pedido `open` e `resolved_at`.
+- Validação: regressão concorrente + dois testes de controller; CI próprio/pós-CI e revisão de árvore ainda obrigatórios neste snapshot.

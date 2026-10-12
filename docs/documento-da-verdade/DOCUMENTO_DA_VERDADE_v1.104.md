@@ -1947,3 +1947,12 @@ Próximas frentes internas: contexto de mutations após await/troca sessão/empr
 - Escopo funcional: `apps/web/app/page.tsx` e novo `apps/web/app/web-auth-context.test.ts`. Entradas Android/native, dependências, lockfile, workflows, build e smoke permanecem candidatas a APK **N/A por identidade de árvore**, a comprovar na revisão do PR.
 - Project Activity Watch: a primeira execução agendada real `38217445193`/`114705385578` passou e abriu corretamente o alerta #493 ao observar 146 minutos sem commit. O alerta não prova agente parado e deve ser comentado/fechado pelo próprio monitor após detectar novo commit na main.
 - Próxima auditoria segura após os gates: concorrência de criação de substituição versus cancelamento/lifecycle e contratos reais de ACK de membership/substituição. Corrigir somente falha reproduzida; não inventar políticas para preferências, ajuda, previsão ou integrações sem contrato/dados.
+
+### 2026-10-12 — serialização de criação de substituição e cancelamento
+
+- Base revalidada: `main` `10fc12c47f515dc38cf3bd0a8985b53754bfc364`, sem PR anterior pendente. README, DVT ORIGINAL, memória, checkpoint, ledger, registry, código e gates de #494 foram lidos sem repetir merge.
+- A fixture HTTP/Postgres do PR #495 bloqueou apenas o INSERT de `replacement_requests`, deixou o cancelamento concluir e liberou a criação. CI RED `38238401435`/`114774652060`: todos os passos anteriores passaram, mas a jornada observou assignment `cancelled` com pedido ainda `open` e falhou no assert terminal `cancelled`.
+- A correção usa ordem única `assignment → replacement request` para criação, seleção e cancelamento, com `FOR NO KEY UPDATE` no assignment e revalidação do pedido `open`. Cancelamento bem-sucedido encerra apenas pedidos `open` associados e preenche `resolved_at`.
+- ACKs, autenticação, papéis, tenant/RLS, matching, disponibilidade, notificação e política `none_until_fin_risk_policy_approved` permanecem intactos. Não há retry, compensação, culpa, dinheiro real ou regra nova.
+- Regressão HTTP/Postgres e dois testes de controller foram adicionados; nenhum assert anterior foi removido. Evidência: `docs/evidencias/REPLACEMENT_CREATE_CANCEL_CONCURRENCY_2026-10-12.md`.
+- CI próprio e pós-CI no SHA real continuam obrigatórios. APK só pode ser N/A por identidade de árvore dos inputs Android/native/dependências/lock/workflow/build/smoke. Gates físicos, Visual Truth, pentest, providers, PSP/KYC/FIN-RISK e Web pago permanecem OPEN separados.

@@ -76,7 +76,7 @@ async function ok(url,token,scope,body){const r=await request(url,token,scope,bo
    do{
     await client.query('SELECT pg_stat_clear_snapshot()');
     const r=await client.query(`SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'
-      AND (query LIKE 'INSERT INTO work_assignments%' OR query LIKE 'SELECT assignment_id%FROM replacement_requests%')`);
+      AND (query LIKE 'INSERT INTO work_assignments%' OR query LIKE 'SELECT assignment_id%FROM replacement_requests%' OR query LIKE 'SELECT job_id%FROM work_assignments%')`);
     blocked=r.rows[0].n;if(blocked===2)break;await delay(20);
    }while(Date.now()<deadline);
    assert.equal(blocked,2,'both actual selections must overlap at the database barrier');
@@ -102,5 +102,43 @@ async function ok(url,token,scope,body){const r=await request(url,token,scope,bo
   const replayRows=await client.query('SELECT id,professional_id,status FROM work_assignments WHERE tenant_id=$1 AND job_id=$2',[tenant,fresh.id]);
   assert.equal(JSON.stringify(replayRows.rows.sort((a,b)=>a.id.localeCompare(b.id))),beforeRetry);
   console.log('PASS: concurrent replacement selection crossed PostgreSQL barrier, one matched ACK, one closed-request rejection, one substitute and notification');
+
+  // A replacement request and cancellation can overlap after eligibility was read.
+  // Block only the replacement INSERT so both real HTTP transactions cross at PostgreSQL.
+  const lifecycleJob=await job('Replacement create/cancel race '+stamp,76,78);
+  await ok('/v1/jobs/'+lifecycleJob.id+'/interest',originalToken,undefined,{});
+  const lifecycleAssignment=await ok('/v1/company/jobs/'+lifecycleJob.id+'/confirm',company,tenant,{professionalId:originalId});
+  let createPromise,cancelPromise;
+  await client.query('BEGIN');
+  try{
+   await client.query("SET LOCAL statement_timeout='10s'");
+   await client.query('LOCK TABLE replacement_requests IN ACCESS EXCLUSIVE MODE');
+   createPromise=request('/v1/company/replacements/'+lifecycleAssignment.id,company,tenant,{reason:'CI create versus cancel'});
+   const deadline=Date.now()+5000;let blocked=0;
+   do{
+    await client.query('SELECT pg_stat_clear_snapshot()');
+    const r=await client.query(`SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database()
+      AND wait_event_type='Lock' AND query LIKE 'INSERT INTO replacement_requests%'`);
+    blocked=r.rows[0].n;if(blocked===1)break;await delay(20);
+   }while(Date.now()<deadline);
+   assert.equal(blocked,1,'replacement creation must reach the real blocked INSERT');
+   cancelPromise=request('/v1/assignments/'+lifecycleAssignment.id+'/cancel',company,tenant,{reason:'CI concurrent lifecycle cancellation'});
+   await delay(100);
+   await client.query('COMMIT');
+  }finally{await client.query('ROLLBACK');}
+  const [created,cancelled]=await Promise.all([createPromise,cancelPromise]);
+  assert.equal(created.status,201);assert.equal(created.body.assignmentId,lifecycleAssignment.id);
+  assert.equal(cancelled.status,201);assert.equal(cancelled.body.id,lifecycleAssignment.id);assert.equal(cancelled.body.status,'cancelled');
+  const lifecycleState=await client.query(`SELECT wa.status AS assignment_status,rr.status AS replacement_status,rr.resolved_at
+    FROM work_assignments wa JOIN replacement_requests rr ON rr.assignment_id=wa.id AND rr.tenant_id=wa.tenant_id
+    WHERE wa.id=$1 AND wa.tenant_id=$2`,[lifecycleAssignment.id,tenant]);
+  assert.equal(lifecycleState.rows.length,1);
+  assert.equal(lifecycleState.rows[0].assignment_status,'cancelled');
+  assert.equal(lifecycleState.rows[0].replacement_status,'cancelled','a cancelled assignment cannot retain an open replacement request');
+  assert.ok(lifecycleState.rows[0].resolved_at);
+  const cancellationRows=await client.query('SELECT count(*)::int AS n FROM assignment_cancellations WHERE assignment_id=$1 AND tenant_id=$2',[lifecycleAssignment.id,tenant]);
+  assert.equal(cancellationRows.rows[0].n,1);
+  console.log('PASS: concurrent replacement creation and cancellation leave assignment and request terminally cancelled');
  }finally{await client.end();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
+

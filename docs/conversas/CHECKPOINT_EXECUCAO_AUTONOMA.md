@@ -1899,3 +1899,12 @@ Próximas frentes internas: contexto de mutations após await/troca sessão/empr
 - Escopo funcional: `apps/web/app/page.tsx` e novo `apps/web/app/web-auth-context.test.ts`. Entradas Android/native, dependências, lockfile, workflows, build e smoke permanecem candidatas a APK **N/A por identidade de árvore**, a comprovar na revisão do PR.
 - Project Activity Watch: a primeira execução agendada real `38217445193`/`114705385578` passou e abriu corretamente o alerta #493 ao observar 146 minutos sem commit. O alerta não prova agente parado e deve ser comentado/fechado pelo próprio monitor após detectar novo commit na main.
 - Próxima auditoria segura após os gates: concorrência de criação de substituição versus cancelamento/lifecycle e contratos reais de ACK de membership/substituição. Corrigir somente falha reproduzida; não inventar políticas para preferências, ajuda, previsão ou integrações sem contrato/dados.
+
+## Checkpoint 2026-10-12 — PR #495
+
+- Base: `10fc12c47f515dc38cf3bd0a8985b53754bfc364`.
+- Reprodução: head `aeb5a8d49a0350021873fffabd1fb7289a56f5ab`, CI `38238401435`/job `114774652060` FAILURE somente na jornada HTTP/Postgres; observado assignment `cancelled` e pedido `open`, esperado pedido `cancelled`.
+- Causa: leitura sem lock na criação/cancelamento e ausência de encerramento do pedido aberto.
+- Correção: serialização `assignment → replacement request`, fechamento terminal do pedido aberto após cancelamento, regressão concorrente e dois testes de controller.
+- Próximo passo: publicar novo head com código/testes/evidência/cinco docs, exigir CI próprio green, revisar diff/bytes/modes/tree/ancestral, marcar ready e integrar uma vez; depois confirmar pais/tree/main e pós-CI real. APK N/A somente por identidade dos inputs protegidos.
+- Monitor: #493 deve continuar sendo gerido apenas pelo Project Activity Watch; não fechar manualmente. Reconsultar próximo schedule.
