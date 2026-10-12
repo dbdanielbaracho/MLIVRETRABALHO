@@ -16,3 +16,13 @@ test('accepts only validated enterprise membership and stable session fields',()
  assert.equal(session?.memberships[0]?.tenantId,'company-a');
  assert.equal(session?.identity.id,'user-id');
 });
+
+test('rejects duplicate tenant memberships rather than choosing an ambiguous authority',()=>{
+  const memberships=[{tenantId:'company-a',role:'owner'},{tenantId:'company-a',role:'manager'}];
+  assert.equal(readStoredCompanySession(JSON.stringify({...valid,memberships})),null);
+});
+test('preserves two distinct authorized companies',()=>{
+  const memberships=[{tenantId:'company-a',role:'owner'},{tenantId:'company-b',role:'manager'}];
+  const restored=readStoredCompanySession(JSON.stringify({...valid,memberships}));
+  assert.deepEqual(restored?.memberships.map(m=>m.tenantId),['company-a','company-b']);
+});
