@@ -54,3 +54,12 @@ test('push smoke observes a fresh main commit without manufacturing an alert',as
  const r=await run({age:0,eventName:'push'});
  assert.equal(r.calls.length,0);assert.match(r.summary,/COMMIT RECENTE/);
 });
+
+test('a pull request with the alert title does not suppress the actual stale-commit issue',async()=>{
+ const issues=[{title,number:123,pull_request:{url:'https://api.github.com/repos/fixture/MLIVRETRABALHO/pulls/123'}}];
+ const stale=await run({issues});assert.deepEqual(stale.calls.map(c=>c[0]),['create']);
+});
+test('a recent commit never closes or comments on a pull request mistaken for a monitor alert',async()=>{
+ const issues=[{title,number:123,pull_request:{url:'https://api.github.com/repos/fixture/MLIVRETRABALHO/pulls/123'}}];
+ const recent=await run({issues,age:2});assert.equal(recent.calls.length,0);
+});
