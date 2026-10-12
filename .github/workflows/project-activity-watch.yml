@@ -26,7 +26,7 @@ jobs:
               github.rest.repos.getCommit({owner,repo,ref:'main'}),
               github.rest.pulls.list({owner,repo,state:'open',per_page:100}),
               github.rest.actions.listWorkflowRunsForRepo({owner,repo,per_page:100}),
-              github.rest.issues.listForRepo({owner,repo,state:'open',labels:'activity-watch',per_page:100})
+              github.rest.issues.listForRepo({owner,repo,state:'open',per_page:100})
             ]);
             const time=commit.data.commit.committer?.date ?? commit.data.commit.author?.date;
             const age=now-new Date(time).getTime();
@@ -51,7 +51,7 @@ jobs:
             const title='[Activity Watch] Sem commit por mais de 15 minutos';
             const existing=issues.data.find(i=>i.title===title);
             if(age>threshold && !existing){
-              await github.rest.issues.create({owner,repo,title,labels:['activity-watch'],body:lines.join('\n')+'\n\nO aviso é sobre ausência de commits, não um diagnóstico definitivo de agente parado.'});
+              await github.rest.issues.create({owner,repo,title,body:lines.join('\n')+'\n\nO aviso é sobre ausência de commits, não um diagnóstico definitivo de agente parado.'});
             } else if(age<=threshold && existing){
               await github.rest.issues.createComment({owner,repo,issue_number:existing.number,body:'Novo commit detectado em '+new Date(now).toISOString()+': `'+sha+'`. Encerrando o alerta de ausência de commits.'});
               await github.rest.issues.update({owner,repo,issue_number:existing.number,state:'closed'});
