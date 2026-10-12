@@ -3797,3 +3797,9 @@ Próximas frentes internas: contexto de mutations após await/troca sessão/empr
 - Escopo funcional: `apps/web/app/page.tsx` e novo `apps/web/app/web-auth-context.test.ts`. Entradas Android/native, dependências, lockfile, workflows, build e smoke permanecem candidatas a APK **N/A por identidade de árvore**, a comprovar na revisão do PR.
 - Project Activity Watch: a primeira execução agendada real `38217445193`/`114705385578` passou e abriu corretamente o alerta #493 ao observar 146 minutos sem commit. O alerta não prova agente parado e deve ser comentado/fechado pelo próprio monitor após detectar novo commit na main.
 - Próxima auditoria segura após os gates: concorrência de criação de substituição versus cancelamento/lifecycle e contratos reais de ACK de membership/substituição. Corrigir somente falha reproduzida; não inventar políticas para preferências, ajuda, previsão ou integrações sem contrato/dados.
+
+## 2026-10-12 — concorrência criação/cancelamento de substituição
+
+Main de partida `10fc12c47f515dc38cf3bd0a8985b53754bfc364`. PR #495 reproduziu em HTTP/Postgres real do CI a inconsistência assignment `cancelled` + replacement request `open`: run RED `38238401435`, job `114774652060`, com typecheck/build/export/testes/migrações/privacidade aprovados e falha somente no novo assert da jornada.
+
+Correção preparada: ordem única de locks `assignment → replacement request` em create/select/cancel; cancelamento fecha apenas pedido `open` associado e define `resolved_at`. Dois testes de controller e a barreira concorrente preservam todos os asserts anteriores. Contratos de ACK, tenant/RLS, papéis, matching, notificações, finanças e política sem compensação não mudam. Aguardar CI próprio green no novo SHA, revisar árvore/diff e somente então integrar e verificar pós-CI.

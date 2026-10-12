@@ -21,7 +21,8 @@ test('cancellation keeps trimmed maximum reason and authenticated tenant, actor 
  assert.deepEqual(h.contexts,['trusted-tenant']);assert.deepEqual(h.memberships,[['trusted-identity','trusted-tenant']]);
  assert.deepEqual(h.queries[0]?.params,['trusted-tenant',ID]);
  assert.deepEqual(h.queries.find(q=>q.sql.startsWith('INSERT INTO assignment_cancellations'))?.params,['trusted-tenant',ID,'trusted-identity','x'.repeat(1000),'company']);
- assert.deepEqual(h.queries.at(-1)?.params,['trusted-tenant',ID,['confirmed','checked_in']]);
+ assert.deepEqual(h.queries.find(q=>q.sql.startsWith('UPDATE work_assignments'))?.params,['trusted-tenant',ID,['confirmed','checked_in']]);
+ assert.deepEqual(h.queries.find(q=>q.sql.startsWith('UPDATE replacement_requests'))?.params,['trusted-tenant',ID]);
 });
 test('cancellation rejects malformed assignment UUID before SQL',async()=>{
  for(const id of ['bad','',ID+'x']){const h=setup();await assert.rejects(h.controller.cancel(id,{reason:'Fixture'},'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof BadRequestException&&e.message==='assignment_invalid');assert.equal(h.contexts.length,0);}
@@ -44,9 +45,17 @@ test('cancellation keeps durable ON CONFLICT record and conditional update confl
  const h=setup({conflict:true});await assert.rejects(h.controller.cancel(ID,{reason:'Fixture'},'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof BadRequestException&&e.message==='cancellation_conflict');
  assert.match(h.queries[1]!.sql,/ON CONFLICT\(assignment_id\) DO NOTHING/);assert.match(h.queries[2]!.sql,/status=ANY\(\$3::text\[\]\)/);assert.equal(h.queries.length,3);
 });
+test('cancellation locks the assignment before writes and terminally closes only its open replacement request',async()=>{
+ const h=setup();await h.controller.cancel(ID,{reason:'Fixture'},'Bearer fixture','trusted-tenant');
+ assert.match(h.queries[0]!.sql,/FOR NO KEY UPDATE$/);
+ const close=h.queries.find(q=>q.sql.startsWith('UPDATE replacement_requests'));assert.ok(close);
+ assert.match(close.sql,/status='cancelled'/);assert.match(close.sql,/resolved_at=COALESCE\(resolved_at,now\(\)\)/);
+ assert.match(close.sql,/assignment_id=\$2 AND status='open'/);assert.deepEqual(close.params,['trusted-tenant',ID]);
+});
 test('cancellation missing assignment retains existing error without writes',async()=>{
  const h=setup({found:false});await assert.rejects(h.controller.cancel(ID,{reason:'Fixture'},'Bearer fixture','trusted-tenant'),(e:unknown)=>e instanceof BadRequestException&&e.message==='assignment_not_found');assert.equal(h.queries.length,1);
 });
 test('cancellation database error propagates instead of fabricating cancellation',async()=>{
  const error=new Error('fixture DB unavailable'),h=setup({error});await assert.rejects(h.controller.cancel(ID,{reason:'Fixture'},'Bearer fixture','trusted-tenant'),(e:unknown)=>e===error);
 });
+

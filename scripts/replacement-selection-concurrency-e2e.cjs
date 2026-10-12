@@ -76,7 +76,7 @@ async function ok(url,token,scope,body){const r=await request(url,token,scope,bo
    do{
     await client.query('SELECT pg_stat_clear_snapshot()');
     const r=await client.query(`SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'
-      AND (query LIKE 'INSERT INTO work_assignments%' OR query LIKE 'SELECT assignment_id%FROM replacement_requests%')`);
+      AND (query LIKE 'INSERT INTO work_assignments%' OR query LIKE 'SELECT assignment_id%FROM replacement_requests%' OR query LIKE 'SELECT job_id%FROM work_assignments%')`);
     blocked=r.rows[0].n;if(blocked===2)break;await delay(20);
    }while(Date.now()<deadline);
    assert.equal(blocked,2,'both actual selections must overlap at the database barrier');
@@ -141,3 +141,4 @@ async function ok(url,token,scope,body){const r=await request(url,token,scope,bo
   console.log('PASS: concurrent replacement creation and cancellation leave assignment and request terminally cancelled');
  }finally{await client.end();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
+
