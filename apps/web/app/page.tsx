@@ -163,11 +163,11 @@ export default function Home(){
 
   async function addTeamMember(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!selectedTeamId)return;const fd=new FormData(e.currentTarget);const professionalId=String(fd.get('professionalId')||'');if(!professionalId)return;
-    setLoading(true);setError('');try{await mutate(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId,{professionalId});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao adicionar membro');}finally{setLoading(false);}
+    const context=mutationContextKey;setLoading(true);setError('');try{await mutate(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao adicionar membro');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function removeTeamMember(professionalId:string){
-    if(!session||!tenantId||!selectedTeamId)return;setLoading(true);setError('');try{await remove(`/v1/company/teams/${selectedTeamId}/members/${encodeURIComponent(professionalId)}`,session,tenantId);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao remover membro');}finally{setLoading(false);}
+    if(!session||!tenantId||!selectedTeamId)return;const context=mutationContextKey;setLoading(true);setError('');try{await remove(`/v1/company/teams/${selectedTeamId}/members/${encodeURIComponent(professionalId)}`,session,tenantId);if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao remover membro');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   useEffect(()=>{
@@ -179,7 +179,7 @@ export default function Home(){
   },[session,tenantId,selectedReplacementId,revision]);
 
   async function confirmCandidate(professionalId:string){
-    if(!session||!tenantId||!selectedJobId)return;setLoading(true);setError('');try{await mutate(`/v1/company/jobs/${selectedJobId}/confirm`,session,tenantId,{professionalId});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao confirmar profissional');}finally{setLoading(false);}
+    if(!session||!tenantId||!selectedJobId)return;const context=mutationContextKey;setLoading(true);setError('');try{await mutate(`/v1/company/jobs/${selectedJobId}/confirm`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao confirmar profissional');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
@@ -203,19 +203,19 @@ export default function Home(){
   }
 
   async function requestReplacement(assignmentId:string){
-    if(!session||!tenantId)return;setLoading(true);setError('');try{const r=await mutate<Replacement>(`/v1/company/replacements/${assignmentId}`,session,tenantId,{reason:'Solicitação operacional via console Web'});setSelectedReplacementId(r.id);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao abrir substituição');}finally{setLoading(false);}
+    if(!session||!tenantId)return;const context=mutationContextKey;setLoading(true);setError('');try{const r=await mutate<Replacement>(`/v1/company/replacements/${assignmentId}`,session,tenantId,{reason:'Solicitação operacional via console Web'});if(!isCurrentMutation(context))return;setSelectedReplacementId(r.id);setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao abrir substituição');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function selectReplacement(professionalId:string){
-    if(!session||!tenantId||!selectedReplacementId)return;setLoading(true);setError('');try{await mutate(`/v1/company/replacements/${selectedReplacementId}/select`,session,tenantId,{professionalId});setSelectedReplacementId('');setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao confirmar substituto');}finally{setLoading(false);}
+    if(!session||!tenantId||!selectedReplacementId)return;const context=mutationContextKey;setLoading(true);setError('');try{await mutate(`/v1/company/replacements/${selectedReplacementId}/select`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;setSelectedReplacementId('');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao confirmar substituto');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function addTalentPool(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();if(!session||!tenantId)return;const fd=new FormData(e.currentTarget);setLoading(true);setError('');try{await mutate('/v1/company/talent-pools',session,tenantId,{professionalId:fd.get('professionalId'),pool:fd.get('pool')});setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao atualizar talent pool');}finally{setLoading(false);}
+    e.preventDefault();if(!session||!tenantId)return;const context=mutationContextKey;const fd=new FormData(e.currentTarget);setLoading(true);setError('');try{await mutate('/v1/company/talent-pools',session,tenantId,{professionalId:fd.get('professionalId'),pool:fd.get('pool')});if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao atualizar talent pool');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function removeTalentPool(pool:string,professionalId:string){
-    if(!session||!tenantId)return;setLoading(true);setError('');try{await remove(`/v1/company/talent-pools/${encodeURIComponent(pool)}/${encodeURIComponent(professionalId)}`,session,tenantId);setRevision(x=>x+1);}catch(err){setError(err instanceof Error?err.message:'Falha ao remover talent pool');}finally{setLoading(false);}
+    if(!session||!tenantId)return;const context=mutationContextKey;setLoading(true);setError('');try{await remove(`/v1/company/talent-pools/${encodeURIComponent(pool)}/${encodeURIComponent(professionalId)}`,session,tenantId);if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao remover talent pool');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function signout(){
