@@ -34,6 +34,33 @@ async function ok(url,token,scope,body){const r=await request(url,token,scope,bo
   await ok('/v1/jobs/'+seed.id+'/interest',thirdToken,undefined,{});
   await ok('/v1/company/jobs/'+seed.id+'/confirm',company,tenant,{professionalId:thirdId});
   await ok('/v1/company/talent-pools',company,tenant,{professionalId:thirdId,pool:'preferred'});
+
+  // Separate cases: a previous cancelled/completed candidate assignment cannot become a confirmed substitute.
+  for(const state of ['cancelled','completed']){
+   const closedJob=await job('Inactive replacement '+state+' '+stamp,60,64);
+   await ok('/v1/jobs/'+closedJob.id+'/interest',originalToken,undefined,{});
+   const closedOriginal=await ok('/v1/company/jobs/'+closedJob.id+'/confirm',company,tenant,{professionalId:originalId});
+   await ok('/v1/jobs/'+closedJob.id+'/interest',thirdToken,undefined,{});
+   const existingCandidate=await ok('/v1/company/jobs/'+closedJob.id+'/confirm',company,tenant,{professionalId:thirdId});
+   if(state==='cancelled')await ok('/v1/assignments/'+existingCandidate.id+'/cancel',company,tenant,{reason:'CI inactive replacement fixture'});
+   else{
+    for(const action of ['check-in','start','check-out','complete'])
+     await ok('/v1/assignments/'+existingCandidate.id+'/'+action,thirdToken,tenant,{});
+   }
+   const pending=await ok('/v1/company/replacements/'+closedOriginal.id,company,tenant,{reason:'CI validate inactive candidate'});
+   const snapshot=async()=>JSON.stringify({
+    assignments:(await client.query('SELECT id,professional_id,status,confirmed_at,checked_in_at,checked_out_at,completed_at FROM work_assignments WHERE tenant_id=$1 AND job_id=$2 ORDER BY id',[tenant,closedJob.id])).rows,
+    request:(await client.query('SELECT id,status,replacement_professional_id,resolved_at FROM replacement_requests WHERE tenant_id=$1 AND id=$2',[tenant,pending.id])).rows,
+    notices:(await client.query("SELECT count(*)::int AS n FROM notifications WHERE tenant_id=$1 AND type='replacement_confirmed'",[tenant])).rows,
+    earnings:(await client.query('SELECT id,assignment_id,amount_cents,status FROM earnings_ledger WHERE tenant_id=$1 AND assignment_id=ANY($2::uuid[]) ORDER BY id',[tenant,[closedOriginal.id,existingCandidate.id]])).rows,
+   });
+   const before=await snapshot();
+   const invalid=await request('/v1/company/replacements/'+pending.id+'/select',company,tenant,{professionalId:thirdId});
+   assert.equal(invalid.status,400);assert.equal(invalid.body.message,'replacement_assignment_failed');
+   assert.equal(await snapshot(),before,'inactive candidate rejection must roll back and preserve original/request/notices/earnings');
+   console.log('PASS: '+state+' substitute assignment cannot produce matched ACK, original request notices and earnings unchanged');
+  }
+
   const fresh=await job('Concurrent replacement '+stamp,60,64);
   await ok('/v1/jobs/'+fresh.id+'/interest',originalToken,undefined,{});
   const original=await ok('/v1/company/jobs/'+fresh.id+'/confirm',company,tenant,{professionalId:originalId});
