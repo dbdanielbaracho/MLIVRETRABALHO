@@ -1783,3 +1783,17 @@ Próxima auditoria segura após gates: contexto de sessão/empresa das mutations
   ]
 }
 ```
+
+## Web: confirmação contratual de criação de equipe — 2026-10-12
+
+Predecessor funcional PR #489/head 5889221a5a415318add6e31acf8e3501cc4c88fa/tree85af7eaeae821efb6cc7df7b7f990b320bbc897c: prazo das quatro leituras Web, CI38201650457 ainda EM EXECUÇÃO neste snapshot, não PASS. Esta preparação é independente de regras novas de negócio; integração exige primeiro o predecessor e seus gates. Documento ORIGINAL integral, memória/checkpoint/ledger/registry preservados por apêndice.
+
+Falha reproduzida no handler real createTeam: HTTP201 com {id:'fake'} limpa form e incrementa revision sem confirmar a equipe criada; regressão nova RED22PASS/1FAIL de23. Contrato existente apps/api/src/teams.controller.ts create autentica/membership antes de validação, exige name:string.trim não vazio e retorna SQL RETURNING id,name com name.trim. Nenhuma alteração no backend/mobile/roles/RLS/SQL.
+
+Novo apps/web/app/team-publication.ts usa apenas esse contrato: confirmação exige UUID do ACK e nome igual ao name.trim enviado; payload é mantido, sem adicionar tenantId/ID/normalizações à escrita. ACK ausente/fabricado/divergente, perda de JSON ou transporte permanecem unknown; 4xx rejected, 5xx unknown com HTTP explícito preservado. Não declarar inexistência de escrita quando retorno perdido, não auto-repetir POST. Handler guarda o form em resultado incerto e orienta Atualizar dados/conferir equipes antes de qualquer novo envio. Resultado válido limpa o form uma vez e dispara leitura existente. Campos de vaga/safety e seus ACKs, quatro efeitos de leitura/JSX/login/DELETE/RN intactos.
+
+Regressão do handler + três testes do helper: GREEN26PASS/0FAIL. Todos22 testes/asserts anteriores preservados; somente fixture positiva createTeam foi ajustada ao ACK real UUID+nome (antiga id fixture-ack incompleta). Cobertura de trim/payload por referência, nomes diferentes, UUID inválido/whitespace, JSON inválido/nulo/array, HTTP400/401/403/429/500 e perda de transporte/JSON com uma única chamada. Não é navegador renderizado, SQL real deste teste, nem E2E/aparelho físico. Testes HTTP Postgres existentes da API continuam no CI.
+
+Código/helper/testes/evidência docs/evidencias/WEB_TEAM_PUBLICATION_ACK_2026-10-12.md e cinco documentos originais no mesmo ciclo. CI esperado26Web/731mobile/383API/3CLI/10monitor=1153, todos steps/typecheck/build/export/migrations/privacy/HTTPjourney e pós-CI real. APK N/A exige prova de identidade SHA/modes de todos inputs native/deps/workflows/build/smoke, jamais pela ausência de run. Branch fix/web-team-publication-ack-20261012; own/merge/post pendentes neste snapshot. Revalidar base main após489 e diff/bytes/modes/ancestral/tree; merge somente green no head exato; registrar recibo real no PR e continuidade sem loop de commits de metadados.
+
+Próximas alternativas seguras: contexto de mutations após await/troca sessão/empresa; ACKs de membership/substituição/safety conforme contrato atual; concorrência RR/lifecycle/cancel. Reproduzir causa-raiz antes de novo código; não inventar tarefas. Monitor source inalterado: execução push487 comprovada, cron ainda não comprovado, [] não falha/PASS. Preservar gates OPEN separados físico/VisualTruth/E2E/SecureStore/piloto/pentest/providers/PSP-KYC/FIN-RISK/Web pago e proibições de custo/segredo/PSP real/produção/deploy pago. Projeto não concluído por0PR; rotina ativa sem CONTINUAR/sem alegar24h contínuo.
