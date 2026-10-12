@@ -1,5 +1,6 @@
 'use client';
 
+import {confirmsCandidateAssignment,confirmsTalentAddition,confirmsTalentRemoval} from './workforce-ack';
 import {confirmsTeamMemberAddition,confirmsTeamMemberRemoval} from './team-membership-ack';
 import {confirmsReplacementCreation,confirmsReplacementSelection} from './replacement-ack';
 import {confirmSafetyStatus} from './safety-status-ack';
@@ -30,9 +31,10 @@ const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibe
 
 const READ_TIMEOUT_MS=15000;
 
-async function remove(path:string,session:Session,tenantId:string):Promise<void>{
+async function remove(path:string,session:Session,tenantId:string):Promise<unknown>{
   const r=await fetch(`${API}${path}`,{method:'DELETE',headers:tenantHeaders(session.accessToken,tenantId)});
   if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return r.json();
 }
 
 async function mutate<T>(path:string,session:Session,tenantId:string,body:unknown):Promise<T>{
@@ -185,7 +187,7 @@ export default function Home(){
   },[session,tenantId,selectedReplacementId,revision]);
 
   async function confirmCandidate(professionalId:string){
-    if(!session||!tenantId||!selectedJobId)return;const context=mutationContextKey;setLoading(true);setError('');try{await mutate(`/v1/company/jobs/${selectedJobId}/confirm`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao confirmar profissional');}finally{if(isCurrentMutation(context))setLoading(false);}
+    if(!session||!tenantId||!selectedJobId)return;const context=mutationContextKey;setLoading(true);setError('');try{const result=await mutate(`/v1/company/jobs/${selectedJobId}/confirm`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;if(!confirmsCandidateAssignment(result,selectedJobId,professionalId,tenantId))throw new Error('A alocação do profissional não foi confirmada. Atualize os dados e confira os trabalhos antes de qualquer novo envio.');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao confirmar profissional');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
@@ -217,11 +219,11 @@ export default function Home(){
   }
 
   async function addTalentPool(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();if(!session||!tenantId)return;const context=mutationContextKey;const fd=new FormData(e.currentTarget);setLoading(true);setError('');try{await mutate('/v1/company/talent-pools',session,tenantId,{professionalId:fd.get('professionalId'),pool:fd.get('pool')});if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao atualizar talent pool');}finally{if(isCurrentMutation(context))setLoading(false);}
+    e.preventDefault();if(!session||!tenantId)return;const context=mutationContextKey;const fd=new FormData(e.currentTarget);setLoading(true);setError('');try{const body={professionalId:fd.get('professionalId'),pool:fd.get('pool')};const result=await mutate('/v1/company/talent-pools',session,tenantId,body);if(!isCurrentMutation(context))return;if(!confirmsTalentAddition(result,body.professionalId,body.pool))throw new Error('A inclusão no talent pool não foi confirmada. Atualize os dados e confira os registros antes de qualquer novo envio.');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao atualizar talent pool');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function removeTalentPool(pool:string,professionalId:string){
-    if(!session||!tenantId)return;const context=mutationContextKey;setLoading(true);setError('');try{await remove(`/v1/company/talent-pools/${encodeURIComponent(pool)}/${encodeURIComponent(professionalId)}`,session,tenantId);if(!isCurrentMutation(context))return;setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao remover talent pool');}finally{if(isCurrentMutation(context))setLoading(false);}
+    if(!session||!tenantId)return;const context=mutationContextKey;setLoading(true);setError('');try{const result=await remove(`/v1/company/talent-pools/${encodeURIComponent(pool)}/${encodeURIComponent(professionalId)}`,session,tenantId);if(!isCurrentMutation(context))return;if(!confirmsTalentRemoval(result))throw new Error('A remoção do talent pool não foi confirmada. Atualize os dados e confira os registros antes de qualquer novo envio.');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao remover talent pool');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function signout(){
