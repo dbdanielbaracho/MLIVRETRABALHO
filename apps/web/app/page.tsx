@@ -1,5 +1,6 @@
 'use client';
 
+import {publishCompanyJob} from './job-publication';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders } from './web-contract';
 
@@ -126,7 +127,9 @@ export default function Home(){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
     const form=e.currentTarget;const fd=new FormData(form);
     try{
-      await mutate('/v1/company/jobs',session,tenantId,{title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))});
+      const body={title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))};
+      const result=await publishCompanyJob(payload=>fetch(`${API}/v1/company/jobs`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(payload)}),body);
+      if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A publicação não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as vagas antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
     }catch(err){setError(err instanceof Error?err.message:'Falha ao criar vaga');}finally{setLoading(false);}
   }
@@ -192,7 +195,7 @@ export default function Home(){
   if(!session)return <main className="shell auth"><section className="login card"><h1>MLIVRETRABALHO</h1><p>Console empresarial complementar</p><form onSubmit={signin}><label>E-mail<input name="email" type="email" required autoComplete="username"/></label><label>Senha<input name="password" type="password" required minLength={8} autoComplete="current-password"/></label><button disabled={loading}>{loading?'Entrando…':'Entrar'}</button></form>{error&&<p role="alert" className="error">{error}</p>}<p className="muted">A sessão fica apenas nesta aba do navegador. A API continua sendo a autoridade de autenticação e autorização.</p></section></main>;
 
   return <main className="shell">
-    <header className="top"><div><h1>Operação</h1><p>{session.identity.email} · {membership?.role}</p></div><div className="actions"><select aria-label="Empresa ativa" value={tenantId} onChange={e=>setTenantId(e.target.value)}>{session.memberships.map(m=><option value={m.tenantId} key={m.tenantId}>{m.displayName||m.tenantId} · {m.role}</option>)}</select><button className="secondary" onClick={signout}>Sair</button></div></header>
+    <header className="top"><div><h1>Operação</h1><p>{session.identity.email} · {membership?.role}</p></div><div className="actions"><select aria-label="Empresa ativa" value={tenantId} onChange={e=>setTenantId(e.target.value)}>{session.memberships.map(m=><option value={m.tenantId} key={m.tenantId}>{m.displayName||m.tenantId} · {m.role}</option>)}</select><button className="secondary" disabled={loading} onClick={()=>setRevision(x=>x+1)}>Atualizar dados</button><button className="secondary" onClick={signout}>Sair</button></div></header>
     {error&&<p role="alert" className="error">{error}</p>}
     {loading&&<p>Atualizando dados…</p>}
     <section className="grid metrics">
