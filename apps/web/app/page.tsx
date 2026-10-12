@@ -72,6 +72,8 @@ export default function Home(){
 
   useEffect(()=>{
     if(!session||!tenantId){setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);return;}
+    let current=true;
+    setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);
     setLoading(true);setError('');
     const admin=isAdminRole(membership?.role);
     Promise.all([
@@ -87,17 +89,22 @@ export default function Home(){
       admin?api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId):Promise.resolve([]),
       admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
-    ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar operação')).finally(()=>setLoading(false));
+    ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{if(!current)return;setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar operação')}).finally(()=>{if(current)setLoading(false)});
+    return()=>{current=false};
   },[session,tenantId,membership?.role,revision]);
 
   useEffect(()=>{
     if(!session||!tenantId||!selectedJobId){setCandidates([]);setRecommendations([]);return;}
-    Promise.all([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(([cs,rs])=>{setCandidates(cs);setRecommendations(rs);}).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar candidatos'));
+    let current=true;setCandidates([]);setRecommendations([]);setError('');
+    Promise.all([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(([cs,rs])=>{if(!current)return;setCandidates(cs);setRecommendations(rs);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')});
+    return()=>{current=false};
   },[session,tenantId,selectedJobId,revision]);
 
   useEffect(()=>{
     if(!session||!tenantId||!selectedTeamId){setTeamMembers([]);return;}
-    api<TeamMember[]>(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId).then(setTeamMembers).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar membros'));
+    let current=true;setTeamMembers([]);setError('');
+    api<TeamMember[]>(`/v1/company/teams/${selectedTeamId}/members`,session,tenantId).then(rows=>{if(current)setTeamMembers(rows)}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar membros')});
+    return()=>{current=false};
   },[session,tenantId,selectedTeamId,revision]);
 
   async function signin(e:FormEvent<HTMLFormElement>){
@@ -142,7 +149,9 @@ export default function Home(){
 
   useEffect(()=>{
     if(!session||!tenantId||!selectedReplacementId){setReplacementCandidates([]);return;}
-    api<ReplacementCandidate[]>(`/v1/company/replacements/${selectedReplacementId}/candidates`,session,tenantId).then(setReplacementCandidates).catch(e=>setError(e instanceof Error?e.message:'Falha ao carregar candidatos'));
+    let current=true;setReplacementCandidates([]);setError('');
+    api<ReplacementCandidate[]>(`/v1/company/replacements/${selectedReplacementId}/candidates`,session,tenantId).then(rows=>{if(current)setReplacementCandidates(rows)}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')});
+    return()=>{current=false};
   },[session,tenantId,selectedReplacementId,revision]);
 
   async function confirmCandidate(professionalId:string){
