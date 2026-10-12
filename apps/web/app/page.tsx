@@ -1,5 +1,6 @@
 'use client';
 
+import {confirmsReplacementCreation,confirmsReplacementSelection} from './replacement-ack';
 import {confirmSafetyStatus} from './safety-status-ack';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
@@ -207,11 +208,11 @@ export default function Home(){
   }
 
   async function requestReplacement(assignmentId:string){
-    if(!session||!tenantId)return;const context=mutationContextKey;setLoading(true);setError('');try{const r=await mutate<Replacement>(`/v1/company/replacements/${assignmentId}`,session,tenantId,{reason:'Solicitação operacional via console Web'});if(!isCurrentMutation(context))return;setSelectedReplacementId(r.id);setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao abrir substituição');}finally{if(isCurrentMutation(context))setLoading(false);}
+    if(!session||!tenantId)return;const context=mutationContextKey;setLoading(true);setError('');try{const r=await mutate<Replacement>(`/v1/company/replacements/${assignmentId}`,session,tenantId,{reason:'Solicitação operacional via console Web'});if(!isCurrentMutation(context))return;if(!confirmsReplacementCreation(r,assignmentId))throw new Error('A solicitação de substituição não foi confirmada. Atualize os dados e confira os pedidos antes de qualquer novo envio.');setSelectedReplacementId(r.id);setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao abrir substituição');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function selectReplacement(professionalId:string){
-    if(!session||!tenantId||!selectedReplacementId)return;const context=mutationContextKey;setLoading(true);setError('');try{await mutate(`/v1/company/replacements/${selectedReplacementId}/select`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;setSelectedReplacementId('');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao confirmar substituto');}finally{if(isCurrentMutation(context))setLoading(false);}
+    if(!session||!tenantId||!selectedReplacementId)return;const context=mutationContextKey;const originalAssignmentId=replacements.find(r=>r.id===selectedReplacementId)?.assignmentId;setLoading(true);setError('');try{const result=await mutate(`/v1/company/replacements/${selectedReplacementId}/select`,session,tenantId,{professionalId});if(!isCurrentMutation(context))return;if(!confirmsReplacementSelection(result,selectedReplacementId,originalAssignmentId,professionalId))throw new Error('A seleção de substituto não foi confirmada. Atualize os dados e confira os pedidos antes de qualquer novo envio.');setSelectedReplacementId('');setRevision(x=>x+1);}catch(err){if(isCurrentMutation(context))setError(err instanceof Error?err.message:'Falha ao confirmar substituto');}finally{if(isCurrentMutation(context))setLoading(false);}
   }
 
   async function addTalentPool(e:FormEvent<HTMLFormElement>){
