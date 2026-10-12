@@ -1,5 +1,6 @@
 'use client';
 
+import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders } from './web-contract';
@@ -142,7 +143,11 @@ export default function Home(){
   async function createTeam(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
     const form=e.currentTarget;const fd=new FormData(form);
-    try{await mutate('/v1/company/teams',session,tenantId,{name:fd.get('name')});form.reset();setRevision(x=>x+1);}
+    try{
+      const result=await publishCompanyTeam(body=>fetch(`${API}/v1/company/teams`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),{name:fd.get('name')});
+      if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A criação da equipe não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as equipes antes de qualquer novo envio.');
+      form.reset();setRevision(x=>x+1);
+    }
     catch(err){setError(err instanceof Error?err.message:'Falha ao criar equipe');}finally{setLoading(false);}
   }
 
