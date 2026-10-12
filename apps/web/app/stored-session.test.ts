@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readStoredCompanySession} from './stored-session';
+import {readStoredCompanySession} from './stored-session.ts';
 
 const valid={accessToken:'test-token',identity:{id:'user-id',email:'a@example.test'},memberships:[{tenantId:'company-a',role:'company_admin'}]};
 test('rejects corrupt browser session without throwing',()=>{
