@@ -76,6 +76,7 @@ export default function Home(){
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
   const mutationContextKey=session?[session.accessToken,session.identity.id,tenantId,membership?.role||''].join('\u0000'):'';
   const mutationContext=useRef({key:mutationContextKey,mounted:false});
+  const signinAttempt=useRef(0);
   useLayoutEffect(()=>{
     mutationContext.current={key:mutationContextKey,mounted:true};
     return()=>{if(mutationContext.current.key===mutationContextKey)mutationContext.current.mounted=false};
@@ -124,17 +125,20 @@ export default function Home(){
 
   async function signin(e:FormEvent<HTMLFormElement>){
     e.preventDefault();setLoading(true);setError('');
+    const attempt=++signinAttempt.current;
     const fd=new FormData(e.currentTarget);
     try{
       const r=await fetch(`${API}/v1/auth/signin`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:fd.get('email'),password:fd.get('password')})});
+      if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
       if(!r.ok)throw new Error(r.status===429?'Muitas tentativas. Tente novamente mais tarde.':'E-mail ou senha inválidos.');
       const s=await r.json() as Session;
+      if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
       const companyMemberships=s.memberships.filter(m=>isCompanyRole(m.role));
       if(!companyMemberships.length)throw new Error('Esta conta não possui acesso empresarial.');
       const normalized={...s,memberships:companyMemberships};
       sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));
       setSession(normalized);setTenantId(companyMemberships[0].tenantId);
-    }catch(e){setError(e instanceof Error?e.message:'Falha no login');}finally{setLoading(false);}
+    }catch(e){if(attempt===signinAttempt.current&&mutationContext.current.mounted)setError(e instanceof Error?e.message:'Falha no login');}finally{if(attempt===signinAttempt.current&&mutationContext.current.mounted)setLoading(false);}
   }
 
   async function createJob(e:FormEvent<HTMLFormElement>){
@@ -219,8 +223,9 @@ export default function Home(){
   }
 
   async function signout(){
-    if(session){await fetch(`${API}/v1/auth/signout`,{method:'POST',headers:{Authorization:`Bearer ${session.accessToken}`}}).catch(()=>undefined);}
-    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setCompleted([]);setTeams([]);setReplacements([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);
+    const token=session?.accessToken;signinAttempt.current++;
+    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setSelectedJobId('');setCandidates([]);setRecommendations([]);setCompleted([]);setTeams([]);setSelectedTeamId('');setTeamMembers([]);setReplacements([]);setSelectedReplacementId('');setReplacementCandidates([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);setError('');setLoading(false);
+    if(token){void fetch(`${API}/v1/auth/signout`,{method:'POST',headers:{Authorization:`Bearer ${token}`}}).catch(()=>undefined);}
   }
 
   if(!session)return <main className="shell auth"><section className="login card"><h1>MLIVRETRABALHO</h1><p>Console empresarial complementar</p><form onSubmit={signin}><label>E-mail<input name="email" type="email" required autoComplete="username"/></label><label>Senha<input name="password" type="password" required minLength={8} autoComplete="current-password"/></label><button disabled={loading}>{loading?'Entrando…':'Entrar'}</button></form>{error&&<p role="alert" className="error">{error}</p>}<p className="muted">A sessão fica apenas nesta aba do navegador. A API continua sendo a autoridade de autenticação e autorização.</p></section></main>;
