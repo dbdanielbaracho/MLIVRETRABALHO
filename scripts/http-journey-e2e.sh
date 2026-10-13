@@ -353,6 +353,7 @@ node -e 'const p=JSON.parse(process.argv[1]);const tenant=process.argv[2];if(p.c
 
 # Preserve all previous journey assertions, then overlap confirmations for a fresh job.
 CONFIRM_COMPANY_TOKEN="$COMPANY_TOKEN" CONFIRM_PRO_TOKEN="$PRO_TOKEN" CONFIRM_OTHER_COMPANY_TOKEN="$COMPANY2_TOKEN" CONFIRM_TENANT="$TENANT_ID" CONFIRM_PROFESSIONAL="$PROFESSIONAL_ID" node scripts/company-confirmation-concurrency-e2e.cjs
+CONVERSATION_COMPANY_TOKEN="$COMPANY_TOKEN" CONVERSATION_PRO_TOKEN="$PRO_TOKEN" CONVERSATION_TENANT="$TENANT_ID" CONVERSATION_PROFESSIONAL_ID="$PROFESSIONAL_ID" node scripts/conversation-creation-concurrency-e2e.cjs
 
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null

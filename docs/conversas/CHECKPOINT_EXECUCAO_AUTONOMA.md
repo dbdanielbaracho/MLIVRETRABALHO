@@ -2032,3 +2032,15 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Escopo:** um workflow, um teste, esta evidência e os cinco documentos originais por apêndice. Código de produto, mobile, API, SQL, dependências, lockfile e workflows Android/build/smoke não foram alterados.
 - **Prova ainda pendente neste snapshot:** PR/CI próprio, preview read-only, merge, execução `push` no SHA real e fechamento/comentário efetivo de #493. Nenhuma dessas etapas é tratada como aprovada antes da evidência do GitHub.
 - **Próxima auditoria:** continuar a matriz das 13 áreas após fechar factual e automaticamente o alerta, sem criar commits apenas para atividade.
+
+
+## 2026-10-13 — conversa única por trabalho sob concorrência (#509 em preparação)
+
+- **Predecessor:** #508 integrado em `e702ffdce86bcc148029fbe2fa6e0163a14fb449`, árvore `f28b6ab0ca4731740c20079d6683c3d4aecd075e`, CI próprio/pós-CI e Activity Watch push aprovados; #493 encerrada automaticamente.
+- **Falha reproduzida:** duas primeiras mensagens simultâneas podiam fazer leitura vazia antes de duas inserções e criar duas conversas para o mesmo trabalho.
+- **RED válido:** head `218df1d25acea2a530fb32a12d8563d60429700a`, CI `38386686705`/job `115260103485`; typecheck/build/export Android aprovados, 385 testes API anteriores aprovados e nova regressão falhou com esperado 1/observado 2. A tentativa anterior com erro sintático do fixture foi descartada, não contada como prova funcional.
+- **Correção preparada:** consolidação segura de duplicatas históricas, índice único parcial `tenant_id + assignment_id`, upsert atômico no endpoint e E2E com barreira PostgreSQL real.
+- **Contratos preservados:** autorização, participante, tenant/RLS, mensagem, ACK e uma notificação por mensagem; nenhuma política nova.
+- **Escopo:** API/DB/teste/fixture/evidência e estes cinco documentos originais por apêndice. Mobile/dependências/lock/Android build/standalone smoke não mudam.
+- **Gates pendentes neste snapshot:** CI próprio no head corrigido, revisão de árvore, merge único e pós-CI no SHA real; nenhuma previsão é PASS.
+- **Próxima auditoria:** após os gates, continuar a matriz factual das 13 áreas sem repetir auth/deadlines/replacement/monitor já concluídos.
