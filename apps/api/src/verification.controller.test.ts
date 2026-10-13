@@ -17,7 +17,7 @@ function setup(){
     requireMembership:async()=>({role:'owner'})
   };
   const db={
-    tenant:async(_tenant:string,operation:(client:{query:(sql:string,params?:unknown[])=>Promise<{rows:Array<Record<string,unknown>>}>})=>Promise<unknown>)=>
+    tenant:async(_tenant:string,operation:(client:any)=>Promise<unknown>)=>
       operation({query:async(sql:string,params:unknown[]=[])=>{
         if(sql.startsWith('SELECT id,subject_type')){
           reads+=1;
