@@ -2020,3 +2020,15 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Gates:** branch/PR, CI próprio no head exato, revisão de árvore, merge e pós-CI no SHA real ainda são pendentes neste snapshot de preparação; nenhuma contagem esperada é tratada como aprovação.
 - **Próxima auditoria:** confrontar as mutações Web remanescentes e os demais requisitos das 13 áreas com contratos reais, corrigindo apenas nova falha reproduzida. Preferências, ajuda sem vínculo, previsão e integrações sem contrato/dados não autorizam política inventada.
 - **Gates externos preservados:** Android físico/E2E/Visual Truth/SecureStore/piloto, pentest independente, TRUST providers, PSP/KYC/FIN-RISK e implantação Web paga continuam separados e abertos.
+
+
+## 2026-10-13 — monitor observa todo push na main (#508 em preparação)
+
+- **Predecessor confirmado:** o PR #507 foi integrado em `c8e201868bcab5f872cb4e21a112fed56e2db94b`, pais ordenados [`a981a6ccc67787526ebbeeb299d5b2a8668096d8`, `609d7c6017b41a9b50a204f1ce12b97741555a5d`] e árvore `e1a029b6dd1a8c1ecf3d39d34f6c5ecc2f6e9845`. O CI próprio `38359817563`/job `115171098056` e o pós-CI real `38360258502`/job `115172509303` terminaram **SUCCESS**, com 120 Web, 731 mobile, 385 API, 3 CLI e 10 monitor, zero falhas e HTTP/Postgres/Production Truth aprovados.
+- **Falha real observada:** o alerta #493 foi criado por schedule em 2026-10-12 e permaneceu aberto, sem comentário, depois de vários commits novos. Não houve Project Activity Watch nos SHAs dos merges #506/#507. Causa no YAML: o evento `push` para `main` tinha filtro `paths` limitado ao próprio workflow e ao seu teste, então entregas normais não acionavam a rotina que detecta commit recente e fecha o alerta.
+- **RED:** 10 testes existentes aprovados e uma regressão nova falhando ao encontrar `push.paths` no workflow atual.
+- **Correção:** o filtro de paths foi removido apenas do evento `push`; qualquer commit na `main` passa a executar o monitor. O evento `pull_request` continua restrito aos dois arquivos do monitor e continua read-only para issues.
+- **GREEN local:** 11/11 testes do Project Activity Watch.
+- **Escopo:** um workflow, um teste, esta evidência e os cinco documentos originais por apêndice. Código de produto, mobile, API, SQL, dependências, lockfile e workflows Android/build/smoke não foram alterados.
+- **Prova ainda pendente neste snapshot:** PR/CI próprio, preview read-only, merge, execução `push` no SHA real e fechamento/comentário efetivo de #493. Nenhuma dessas etapas é tratada como aprovada antes da evidência do GitHub.
+- **Próxima auditoria:** continuar a matriz das 13 áreas após fechar factual e automaticamente o alerta, sem criar commits apenas para atividade.
