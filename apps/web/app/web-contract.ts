@@ -22,3 +22,11 @@ export function localDateTimeToIso(value:FormDataEntryValue|null){
  const local=[String(date.getFullYear()).padStart(4,'0'),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')+'T'+String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
  return local===value?date.toISOString():'';
 }
+
+export function validateCompanyJobPreflight(body:{startsAt:string;endsAt:string;payCents:number}):string|null{
+ if(!Number.isSafeInteger(body.payCents)||body.payCents<0)return 'Informe um valor válido em reais, com até duas casas decimais.';
+ const start=Date.parse(body.startsAt),end=Date.parse(body.endsAt);
+ if(!body.startsAt||!body.endsAt||!Number.isFinite(start)||!Number.isFinite(end))return 'Informe datas e horários válidos para a vaga.';
+ if(end<=start)return 'O horário de término deve ser posterior ao início.';
+ return null;
+}

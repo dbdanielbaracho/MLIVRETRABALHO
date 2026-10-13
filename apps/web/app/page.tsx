@@ -8,7 +8,7 @@ import {readStoredCompanySession,validateSigninCompanySession} from './stored-se
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
 import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders } from './web-contract';
+import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders, validateCompanyJobPreflight } from './web-contract';
 
 type Membership={tenantId:string;role:string;displayName?:string;slug?:string};
 type Session={accessToken:string;identity:{id:string;email:string};memberships:Membership[]};
@@ -163,6 +163,8 @@ export default function Home(){
     const context=mutationContextKey;const form=e.currentTarget;const fd=new FormData(form);
     try{
       const body={title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))};
+      const validationError=validateCompanyJobPreflight(body);
+      if(validationError)throw new Error(validationError);
       const result=await withinMutationDeadline(()=>publishCompanyJob(payload=>fetch(`${API}/v1/company/jobs`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(payload)}),body));
       if(!isCurrentMutation(context))return;
       if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A publicação não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as vagas antes de qualquer novo envio.');

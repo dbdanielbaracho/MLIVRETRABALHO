@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders} from './web-contract.ts';
+import {isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,validateCompanyJobPreflight} from './web-contract.ts';
 
 test('company role visibility does not broaden admin access',()=>{
  for(const role of ['owner','admin']){assert.equal(isCompanyRole(role),true);assert.equal(isAdminRole(role),true);}
@@ -38,4 +38,13 @@ test('job schedule rejects impossible or normalized wall-clock values',()=>{
  }
  assert.notEqual(localDateTimeToIso('2028-02-29T12:00'),'');
  assert.equal(localDateTimeToIso('2027-02-29T12:00'),'');
+});
+
+test('company job preflight rejects invalid shift and pay before transport',()=>{
+ const valid={startsAt:'2026-10-13T09:00:00.000Z',endsAt:'2026-10-13T17:00:00.000Z',payCents:12345};
+ assert.equal(validateCompanyJobPreflight(valid),null);
+ for(const payCents of [NaN,Infinity,-1,1.5])assert.match(validateCompanyJobPreflight({...valid,payCents})||'',/valor válido/);
+ for(const times of [{startsAt:'',endsAt:valid.endsAt},{startsAt:'invalid',endsAt:valid.endsAt},{startsAt:valid.endsAt,endsAt:valid.startsAt},{startsAt:valid.startsAt,endsAt:valid.startsAt}]){
+  assert.notEqual(validateCompanyJobPreflight({...valid,...times}),null);
+ }
 });
