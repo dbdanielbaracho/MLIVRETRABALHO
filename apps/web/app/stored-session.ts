@@ -15,12 +15,15 @@ export function readStoredCompanySession(raw:string|null):StoredSession|null{
     if(typeof identity.id!=='string'||!identity.id.trim()||typeof identity.email!=='string'||!identity.email.trim())return null;
     if(!Array.isArray(s.memberships))return null;
     const memberships:StoredMembership[]=[];
+    const seenTenantIds=new Set<string>();
     for(const candidate of s.memberships){
       if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))return null;
       const m=candidate as Record<string,unknown>;
       if(typeof m.tenantId!=='string'||!m.tenantId.trim()||typeof m.role!=='string'||!isCompanyRole(m.role))return null;
       if(m.displayName!==undefined&&typeof m.displayName!=='string')return null;
       if(m.slug!==undefined&&typeof m.slug!=='string')return null;
+      if(seenTenantIds.has(m.tenantId))return null;
+      seenTenantIds.add(m.tenantId);
       memberships.push({tenantId:m.tenantId,role:m.role,...(typeof m.displayName==='string'?{displayName:m.displayName}:{}),...(typeof m.slug==='string'?{slug:m.slug}:{})});
     }
     return memberships.length?{accessToken:s.accessToken,identity:{id:identity.id,email:identity.email},memberships}:null;
