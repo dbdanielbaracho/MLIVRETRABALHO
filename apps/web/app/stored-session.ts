@@ -29,3 +29,18 @@ export function readStoredCompanySession(raw:string|null):StoredSession|null{
     return memberships.length?{accessToken:s.accessToken,identity:{id:identity.id,email:identity.email},memberships}:null;
   }catch{return null}
 }
+
+export function validateSigninCompanySession(value:unknown):StoredSession|null{
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  const s=value as Record<string,unknown>;
+  if(!Array.isArray(s.memberships))return null;
+  const enterprise:unknown[]=[];
+  for(const item of s.memberships){
+    if(!item||typeof item!=='object'||Array.isArray(item))return null;
+    const candidate=item as Record<string,unknown>;
+    if(typeof candidate.role!=='string')return null;
+    if(isCompanyRole(candidate.role))enterprise.push(item);
+  }
+  if(!enterprise.length)return null;
+  return readStoredCompanySession(JSON.stringify({...s,memberships:enterprise}));
+}
