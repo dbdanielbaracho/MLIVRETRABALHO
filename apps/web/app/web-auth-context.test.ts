@@ -96,3 +96,17 @@ test('Web signout clears session even when browser sessionStorage rejects remova
  assert.equal(h.values[1],'');
  h.pending[0].resolve({ok:true,status:204});await done;
 });
+
+test('Web sign-in distinguishes non-credential HTTP failures without storing a session or retrying',async()=>{
+ for(const status of [400,403,404,500,502,503]){
+  const h=harness(),done=h.signin('failure');
+  h.pending[0].resolve({...h.response(session('failure'),false),status});await done;
+  assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.values[22],false);assert.match(h.values[21],new RegExp('HTTP '+status));assert.doesNotMatch(h.values[21],/senha inválidos/);assert.equal(h.calls.length,1);
+ }
+});
+test('Web sign-in retains credential rejection only for 401 and the existing throttling message for 429',async()=>{
+ for(const [status,message]of [[401,'E-mail ou senha inválidos.'],[429,'Muitas tentativas. Tente novamente mais tarde.']] as const){
+  const h=harness(),done=h.signin('rejected');h.pending[0].resolve({...h.response(session('rejected'),false),status});await done;
+  assert.equal(h.values[21],message);assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.calls.length,1);assert.equal(h.values[22],false);
+ }
+});
