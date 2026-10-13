@@ -2,6 +2,14 @@ import { BadRequestException, Body, Controller, Get, Headers, Post } from '@nest
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { isEngagementModality } from './engagement-modality';
+function parseCanonicalUtcDateTime(value:string){
+ const match=/^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})(?:\\.(\\d{1,3}))?Z$/.exec(value);
+ if(!match)return null;
+ const parsed=new Date(value);
+ if(Number.isNaN(parsed.getTime()))return null;
+ const normalized=`${match[1]}.${(match[2]??'').padEnd(3,'0')}Z`;
+ return parsed.toISOString()===normalized?parsed:null;
+}
 @Controller('company/jobs')
 export class CompanyJobCreateController {
  constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
@@ -18,8 +26,8 @@ export class CompanyJobCreateController {
   if(body.engagementModality!=null&&(typeof body.engagementModality!=='string'||!isEngagementModality(body.engagementModality)))throw new BadRequestException('engagement_modality_invalid');
   if(!body.startsAt||!body.endsAt)throw new BadRequestException('shift_window_required');
   if(typeof body.startsAt!=='string'||typeof body.endsAt!=='string')throw new BadRequestException('shift_window_invalid');
-  const startsAt=new Date(body.startsAt),endsAt=new Date(body.endsAt);
-  if(Number.isNaN(startsAt.getTime())||Number.isNaN(endsAt.getTime()))throw new BadRequestException('shift_window_invalid');
+  const startsAt=parseCanonicalUtcDateTime(body.startsAt),endsAt=parseCanonicalUtcDateTime(body.endsAt);
+  if(!startsAt||!endsAt)throw new BadRequestException('shift_window_invalid');
   if(endsAt<=startsAt)throw new BadRequestException('shift_window_invalid');
   const title=body.title.trim(),requiredRole=typeof body.requiredRole==='string'?body.requiredRole.trim()||title:title;
   return this.db.tenant(c.tenantId,async db=>(await db.query('INSERT INTO company_jobs(tenant_id,title,required_role,status,location,work_city,starts_at,ends_at,pay_cents,engagement_modality) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id,title,required_role AS "requiredRole",status,location,work_city AS "workCity",starts_at AS "startsAt",ends_at AS "endsAt",pay_cents AS "payCents",engagement_modality AS "engagementModality"',[c.tenantId,title,requiredRole,'open',typeof body.location==='string'?body.location.trim()||null:null,typeof body.workCity==='string'?body.workCity.trim()||null:null,startsAt.toISOString(),endsAt.toISOString(),body.payCents??0,body.engagementModality??'gig'])).rows[0]);
