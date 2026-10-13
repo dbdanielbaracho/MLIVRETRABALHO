@@ -45,7 +45,7 @@ function setup(){
           return {rows:[row]};
         }
         return {rows:[]};
-      }});
+      }})
   };
   return {controller:new VerificationController(db as unknown as DatabaseService,auth as unknown as AuthService),cases};
 }
