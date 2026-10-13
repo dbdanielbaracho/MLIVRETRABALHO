@@ -13,7 +13,7 @@ function setup(authorized=true,profile=true){
  return {controller:new AvailabilityController(db as unknown as DatabaseService,auth as unknown as AuthService),calls,authCalls,row};
 }
 test('malformed availability is a known400 rejection before a profile query or insert',async()=>{
- for(const body of [null,[],{}, {...valid,startsAt:42},{...valid,endsAt:{}},{...valid,endsAt:valid.startsAt}]){
+ for(const body of [null,[],{}, {...valid,startsAt:42},{...valid,endsAt:{}},{...valid,endsAt:valid.startsAt},{...valid,startsAt:'2026-02-30T18:00:00-03:00'},{...valid,startsAt:'2026-10-10T18:00:00'}]){
   const h=setup();await assert.rejects(h.controller.add(body,'Bearer fixture'),(e:unknown)=>e instanceof BadRequestException&&e.getStatus()===400&&e.message==='availability_range_invalid');
   assert.equal(h.calls.length,0);assert.deepEqual(h.authCalls,['Bearer fixture']);
  }
