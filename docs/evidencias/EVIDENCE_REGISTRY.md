@@ -2488,3 +2488,14 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Regressões preparadas:** datas impossíveis, sem zona, date-only, fração longa e horários inválidos são rejeitados; leap day real com offset continua aceito e preservado. Autenticação, perfil, SQL idempotente e ordem positiva permanecem cobertos.
 - **Escopo:** helper/teste API, input/controller tests, refatoração sem mudança funcional do job controller, evidência e cinco documentos originais. Mobile/dependências/lock/workflows/build/smoke permanecem inalterados.
 - **Gates neste snapshot:** novo head, CI próprio, revisão, merge e pós-CI ainda não são PASS.
+
+
+## Apêndice — 2026-10-13 — PR #517: preflight de publicação de vaga e regressão do harness
+
+- Base funcional confirmada: `main` `4e624c66a99bfd24e6f27b4cc82734203e0b3141` (PR #516 já integrado; não repetir).
+- Candidato inicial do PR #517: `bad3beb88640b424c7c4d925f9619f3a7a0710ec`.
+- Correção funcional: a publicação Web de vaga valida, antes do POST, remuneração em centavos como inteiro seguro e não negativo, datas válidas e término posterior ao início. Payload, headers, isolamento tenant/RLS, ACK e ausência de retry automático permanecem inalterados.
+- CI exato do candidato inicial: run `38450697584`, job `115480517944`, **FAILURE**. Typecheck, build e export Android passaram; a suíte parou com 8 falhas Web e os gates posteriores foram corretamente ignorados.
+- Causa reproduzida: o harness que avalia o prefixo real de `page.tsx` em VM não injetava o novo helper `validateCompanyJobPreflight`; por isso oito cenários existentes de criação de vaga não alcançavam o transporte (esperado 1 POST, observado 0).
+- Correção de regressão: importar e injetar o helper nos dois contextos VM de `web-form-target.test.ts`, preservando as fixtures válidas e todas as asserções anteriores. A falha não foi classificada como infraestrutura e o run antigo não deve ser reexecutado.
+- Estado deste apêndice: novo SHA e gates completos ainda pendentes; `queued`, `running` ou `[]` não equivalem a aprovação. O merge permanece proibido até CI próprio no novo HEAD e revisão final.

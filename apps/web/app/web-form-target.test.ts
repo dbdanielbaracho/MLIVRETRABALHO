@@ -6,7 +6,7 @@ import {confirmSafetyStatus} from './safety-status-ack.ts';
 import {publishCompanyTeam} from './team-publication.ts';
 import {publishCompanyJob} from './job-publication.ts';
 import {stripTypeScriptTypes} from 'node:module';
-import {isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders} from './web-contract.ts';
+import {isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,validateCompanyJobPreflight} from './web-contract.ts';
 const source=fs.readFileSync(new URL('./page.tsx',import.meta.url),'utf8');
 const prefix=source.slice(0,source.indexOf('  if(!session)return <main')).replace(/^import .*;\n/gm,'').replace('export default function Home(){','function Home(){');
 const js=stripTypeScriptTypes(prefix+'\n return {createJob,createTeam,addTeamMember,removeTeamMember,confirmCandidate,updateSafetyCase,updateSafetyAppeal,requestReplacement,selectReplacement,addTalentPool,removeTalentPool};\n}\nHome();',{mode:'strip'});
@@ -17,7 +17,7 @@ async function invoke(handler:string,ok=true,ackOverride?:unknown){
  const form={reset(){resets++}};
  class Data{constructor(target:unknown){assert.equal(target,form)}get(key:string){return fields[key]??null}}
  const useState=(initial:any)=>{const index=cursor++;values[index]=initial;return [index===0?session:index===1?'tenant':initial,(value:any)=>{values[index]=typeof value==='function'?value(values[index]):value}];};
- const handlers=vm.runInNewContext(js,{useState,useRef:(initial:unknown)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},fetch:(url:string,options:any)=>{calls.push({url,options});return new Promise(resolve=>pending.push(resolve))},setTimeout:(_:()=>void,ms:number)=>{assert.equal(ms,15000);return 1},clearTimeout(){},FormData:Data,process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
+ const handlers=vm.runInNewContext(js,{useState,useRef:(initial:unknown)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},fetch:(url:string,options:any)=>{calls.push({url,options});return new Promise(resolve=>pending.push(resolve))},setTimeout:(_:()=>void,ms:number)=>{assert.equal(ms,15000);return 1},clearTimeout(){},FormData:Data,process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,validateCompanyJobPreflight});
  const event:{currentTarget:unknown;preventDefault:()=>void}={currentTarget:form,preventDefault(){}};
  const done=handlers[handler](event);
  // The React19.1.4 dispatcher clears currentTarget immediately after listener(event) returns.
@@ -66,7 +66,7 @@ function contextHarness(){
   const useState=(initial:any)=>{const index=stateCursor++;if(!(index in values))values[index]=initial;return [index===0?session:index===1?(signedIn?tenant:''):index===7?'job-id':index===12?'team-id':index===15?'replacement-id':values[index],(value:any)=>{values[index]=typeof value==='function'?value(values[index]):value}];};
   const useRef=(initial:any)=>{const index=refCursor++;return refs[index]??(refs[index]={current:initial})};
   const layouts:(()=>unknown)[]=[];
-  const handlers=vm.runInNewContext(js,{useState,useRef,useLayoutEffect:(fn:()=>unknown)=>layouts.push(fn),useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:(url:string,options:any)=>{calls.push({url,options});return new Promise(resolve=>pending.push(resolve))},setTimeout:(callback:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++timerId;timers.set(id,callback);return id},clearTimeout:(id:number)=>timers.delete(id),FormData:Data,process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
+  const handlers=vm.runInNewContext(js,{useState,useRef,useLayoutEffect:(fn:()=>unknown)=>layouts.push(fn),useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:(url:string,options:any)=>{calls.push({url,options});return new Promise(resolve=>pending.push(resolve))},setTimeout:(callback:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++timerId;timers.set(id,callback);return id},clearTimeout:(id:number)=>timers.delete(id),FormData:Data,process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,validateCompanyJobPreflight});
   if(typeof layoutCleanup==='function')layoutCleanup();layoutSetup=layouts[0];layoutCleanup=layoutSetup?.();
   return handlers;
  };
