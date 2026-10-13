@@ -15,4 +15,10 @@ export function reaisToCents(value:FormDataEntryValue|null){
  const cents=Number(whole)*100+Number(fraction.padEnd(2,'0'));
  return Number.isSafeInteger(cents)?cents:NaN;
 }
-export function localDateTimeToIso(value:FormDataEntryValue|null){const d=new Date(String(value??''));return Number.isNaN(d.getTime())?'':d.toISOString();}
+export function localDateTimeToIso(value:FormDataEntryValue|null){
+ if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value))return '';
+ const date=new Date(value);
+ if(Number.isNaN(date.getTime()))return '';
+ const local=[String(date.getFullYear()).padStart(4,'0'),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')+'T'+String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
+ return local===value?date.toISOString():'';
+}
