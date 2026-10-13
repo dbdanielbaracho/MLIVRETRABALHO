@@ -77,7 +77,7 @@ export default function Home(){
   const [loading,setLoading]=useState(false);
   const [revision,setRevision]=useState(0);
 
-  useEffect(()=>{const raw=sessionStorage.getItem('mlivre:web:session');if(!raw)return;const stored=readStoredCompanySession(raw);if(!stored){sessionStorage.removeItem('mlivre:web:session');return;}setSession(stored);setTenantId(stored.memberships[0].tenantId);},[]);
+  useEffect(()=>{let raw:string|null;try{raw=sessionStorage.getItem('mlivre:web:session');}catch{return;}if(!raw)return;const stored=readStoredCompanySession(raw);if(!stored){try{sessionStorage.removeItem('mlivre:web:session');}catch{}return;}setSession(stored);setTenantId(stored.memberships[0].tenantId);},[]);
   const membership=useMemo(()=>session?.memberships.find(m=>m.tenantId===tenantId),[session,tenantId]);
   const mutationContextKey=session?[session.accessToken,session.identity.id,tenantId,membership?.role||''].join('\u0000'):'';
   const mutationContext=useRef({key:mutationContextKey,mounted:false});
@@ -140,7 +140,7 @@ export default function Home(){
       if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
       const normalized=validateSigninCompanySession(response);
       if(!normalized)throw new Error('Não foi possível validar a sessão empresarial. Entre novamente.');
-      sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));
+      try{sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));}catch{/* Valid API session remains usable in memory when browser storage is unavailable. */}
       setSession(normalized);setTenantId(normalized.memberships[0].tenantId);
     }catch(e){if(attempt===signinAttempt.current&&mutationContext.current.mounted)setError(e instanceof Error?e.message:'Falha no login');}finally{if(attempt===signinAttempt.current&&mutationContext.current.mounted)setLoading(false);}
   }
@@ -228,7 +228,7 @@ export default function Home(){
 
   async function signout(){
     const token=session?.accessToken;signinAttempt.current++;
-    sessionStorage.removeItem('mlivre:web:session');setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setSelectedJobId('');setCandidates([]);setRecommendations([]);setCompleted([]);setTeams([]);setSelectedTeamId('');setTeamMembers([]);setReplacements([]);setSelectedReplacementId('');setReplacementCandidates([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);setError('');setLoading(false);
+    try{sessionStorage.removeItem('mlivre:web:session');}catch{}setSession(null);setTenantId('');setDashboard(null);setAnalytics(null);setPlanner([]);setJobs([]);setAssignments([]);setSelectedJobId('');setCandidates([]);setRecommendations([]);setCompleted([]);setTeams([]);setSelectedTeamId('');setTeamMembers([]);setReplacements([]);setSelectedReplacementId('');setReplacementCandidates([]);setTalentPools([]);setPayments([]);setSafetyCases([]);setSafetyAppeals([]);setError('');setLoading(false);
     if(token){void fetch(`${API}/v1/auth/signout`,{method:'POST',headers:{Authorization:`Bearer ${token}`}}).catch(()=>undefined);}
   }
 
