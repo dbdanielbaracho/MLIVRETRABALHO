@@ -19,7 +19,7 @@ function session(label:string):Session{
  return {accessToken:'token-'+label,identity:{id:'identity-'+label,email:label+'@example.test'},memberships:[{tenantId:'tenant-'+label,role:'owner',displayName:'Company '+label}]};
 }
 
-function harness(initial:Session|null=null){
+function harness(initial:Session|null=null,storageBlocked=false){
  const values:any[]=[],pending:{resolve:(value:any)=>void;reject:(reason:any)=>void}[]=[],calls:{url:string;options:any}[]=[];
  const storage=new Map<string,string>();if(initial)storage.set('mlivre:web:session',JSON.stringify(initial));
  let stateCursor=0,refCursor=0;const refs:{current:any}[]=[],cleanups:(()=>void)[]=[];
@@ -30,7 +30,7 @@ function harness(initial:Session|null=null){
   useState,useRef,useLayoutEffect:(fn:()=>unknown)=>layouts.push(fn),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},
   fetch:(url:string,options:any)=>{calls.push({url,options});return new Promise((resolve,reject)=>pending.push({resolve,reject}))},
   FormData:class{form:any;constructor(form:any){this.form=form}get(key:string){return this.form[key]}},
-  sessionStorage:{getItem:(key:string)=>storage.get(key)??null,setItem:(key:string,value:string)=>storage.set(key,value),removeItem:(key:string)=>storage.delete(key)},
+  sessionStorage:{getItem:(key:string)=>{if(storageBlocked)throw new Error('storage blocked');return storage.get(key)??null;},setItem:(key:string,value:string)=>{if(storageBlocked)throw new Error('storage blocked');storage.set(key,value);},removeItem:(key:string)=>{if(storageBlocked)throw new Error('storage blocked');storage.delete(key);}},
   process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,validateSigninCompanySession,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders
  });
  for(const setup of layouts){const cleanup=setup();if(typeof cleanup==='function')cleanups.push(cleanup as ()=>void)}
@@ -81,4 +81,18 @@ test('Web signout remains local when the remote revocation request fails',async(
  assert.equal(h.values[0],null);assert.equal(h.storage.has('mlivre:web:session'),false);
  h.pending[0].reject(new Error('offline'));await done;
  assert.equal(h.values[0],null);assert.equal(h.values[21],'');
+});
+
+test('Web login remains usable in memory when browser sessionStorage rejects writes',async()=>{
+ const h=harness(null,true),login=h.signin('valid');
+ h.pending[0].resolve(h.response(session('valid')));await login;
+ assert.equal(h.values[0]?.identity.id,'identity-valid');
+ assert.equal(h.values[21],'');
+ assert.equal(h.storage.size,0);
+});
+test('Web signout clears session even when browser sessionStorage rejects removal',async()=>{
+ const h=harness(session('active'),true),done=h.signout();
+ assert.equal(h.values[0],null);
+ assert.equal(h.values[1],'');
+ h.pending[0].resolve({ok:true,status:204});await done;
 });
