@@ -9,9 +9,6 @@ on:
       - 'scripts/tests/project-activity-watch.test.mjs'
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/project-activity-watch.yml'
-      - 'scripts/tests/project-activity-watch.test.mjs'
 permissions:
   contents: read
   actions: read
@@ -70,3 +67,4 @@ jobs:
               await github.rest.issues.createComment({owner,repo,issue_number:existing.number,body:'Novo commit detectado em '+new Date(now).toISOString()+': `'+sha+'`. Encerrando o alerta de ausência de commits.'});
               await github.rest.issues.update({owner,repo,issue_number:existing.number,state:'closed'});
             }
+

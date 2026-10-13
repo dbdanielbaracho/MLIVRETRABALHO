@@ -55,6 +55,14 @@ test('push smoke observes a fresh main commit without manufacturing an alert',as
  assert.equal(r.calls.length,0);assert.match(r.summary,/COMMIT RECENTE/);
 });
 
+test('push trigger observes every main commit so a new delivery can close the stale alert',()=>{
+ const push=workflow.match(/^  push:\n[\s\S]*?(?=^\S)/m)?.[0]??'';
+ const pullRequest=workflow.match(/^  pull_request:\n[\s\S]*?(?=^  push:)/m)?.[0]??'';
+ assert.match(push,/branches:\s*\[main\]/);
+ assert.doesNotMatch(push,/^    paths:/m);
+ assert.match(pullRequest,/^    paths:/m,'PR preview remains scoped to monitor changes');
+});
+
 test('a pull request with the alert title does not suppress the actual stale-commit issue',async()=>{
  const issues=[{title,number:123,pull_request:{url:'https://api.github.com/repos/fixture/MLIVRETRABALHO/pulls/123'}}];
  const stale=await run({issues});assert.deepEqual(stale.calls.map(c=>c[0]),['create']);
@@ -63,3 +71,4 @@ test('a recent commit never closes or comments on a pull request mistaken for a 
  const issues=[{title,number:123,pull_request:{url:'https://api.github.com/repos/fixture/MLIVRETRABALHO/pulls/123'}}];
  const recent=await run({issues,age:2});assert.equal(recent.calls.length,0);
 });
+
