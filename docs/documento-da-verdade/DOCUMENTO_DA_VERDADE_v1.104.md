@@ -2104,3 +2104,14 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Escopo:** controller/teste API, fixture HTTP/PostgreSQL, esta evidência e os cinco documentos originais por apêndice. Mobile, React/RN, dependências, lockfile, build Android e standalone smoke permanecem inalterados.
 - **Gates ainda pendentes neste snapshot:** novo head, CI completo, revisão de árvore, merge único e pós-CI no SHA real. Nenhuma previsão é tratada como PASS.
 - **Externos preservados:** contratação/integração real de KYC/PSP, físico, pentest e implantação paga continuam separados; esta correção trata apenas consistência interna do pedido simulado.
+
+
+## Apêndice — 2026-10-13 — Validação UTC estrita de turnos na API
+
+- **Base revalidada:** `main` em `b8073e48632a8f33baef20e3026ab948a83f6d5b`, após o PR #513.
+- **Recibo final do PR #513:** head `f96b63abfc5d83818e89eb60c4e9084c35df6d12`; CI próprio `38431609273`/`115414933714` SUCCESS; merge `b8073e48632a8f33baef20e3026ab948a83f6d5b`, pais ordenados `[84b8bfc117ab4a20b1d982d1eda7fe9635c4d265, f96b63abfc5d83818e89eb60c4e9084c35df6d12]`, tree `e852c9b035df7279d1a3d64ab90b0b853c1b510e`; pós-CI `38433558501`/`115421654529` SUCCESS com todos os passos. O escopo foi Web e documentação; APK foi N/A por identidade dos insumos Android/native/dependências/lock/workflows/build/smoke, não por ausência de run.
+- **Falha reproduzida na autoridade API:** o runtime JavaScript aceita `2026-02-30T18:00:00Z` e o normaliza para `2026-03-02T18:00:00.000Z`; também interpreta strings sem fuso. O controller de criação de vaga usava apenas `new Date(...)`, podendo persistir um turno diferente do solicitado.
+- **Correção candidata:** exigir instante UTC canônico `YYYY-MM-DDTHH:mm:ss[.SSS]Z`, aceitar frações de um a três dígitos com canonicalização e validar round-trip antes de qualquer escrita tenant. Datas impossíveis, date-only, sem fuso, offset e frações maiores são rejeitadas como `shift_window_invalid`.
+- **Invariantes preservadas:** autenticação e papel antecedem validação; tenant vem do cabeçalho confiável; RLS/SQL, payload válido, ordenação início/fim, remuneração e modalidade não mudam; não há retry nem escrita em erro.
+- **Prova preparada:** regressões unitárias cobrem 30 de fevereiro, formatos ambíguos e leap day real. Evidência: `docs/evidencias/API_JOB_UTC_DATETIME_VALIDATION_2026-10-13.md`.
+- **Gates neste snapshot:** branch e conteúdo preparados; CI próprio, revisão final, merge e pós-CI ainda não são PASS até evidência do SHA exato.
