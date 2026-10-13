@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readStoredCompanySession} from './stored-session.ts';
+import {readStoredCompanySession,validateSigninCompanySession} from './stored-session.ts';
 
 const valid={accessToken:'test-token',identity:{id:'user-id',email:'a@example.test'},memberships:[{tenantId:'company-a',role:'company_admin'}]};
 test('rejects corrupt browser session without throwing',()=>{
@@ -25,4 +25,14 @@ test('preserves two distinct authorized companies',()=>{
   const memberships=[{tenantId:'company-a',role:'owner'},{tenantId:'company-b',role:'manager'}];
   const restored=readStoredCompanySession(JSON.stringify({...valid,memberships}));
   assert.deepEqual(restored?.memberships.map(m=>m.tenantId),['company-a','company-b']);
+});
+
+test('sign-in response rejects malformed identity, missing memberships and duplicate tenant roles',()=>{
+ for(const response of [null,{},[],{...valid,memberships:null},{...valid,identity:null},{...valid,memberships:[null]},{...valid,memberships:[{tenantId:'company-a',role:'owner'},{tenantId:'company-a',role:'manager'}]}]){
+  assert.equal(validateSigninCompanySession(response),null);
+ }
+});
+test('sign-in response retains only company memberships when professional memberships coexist',()=>{
+ const result=validateSigninCompanySession({...valid,memberships:[{tenantId:'personal',role:'professional'},{tenantId:'company-a',role:'owner'}]});
+ assert.deepEqual(result?.memberships.map(m=>m.tenantId),['company-a']);
 });
