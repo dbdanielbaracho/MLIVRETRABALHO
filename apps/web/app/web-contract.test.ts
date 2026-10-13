@@ -23,3 +23,11 @@ test('form transforms preserve cents and emit absolute timestamps',()=>{
  assert.match(localDateTimeToIso('2026-09-28T12:00'),/^2026-09-28T\d{2}:00:00\.000Z$/);
  assert.equal(localDateTimeToIso('invalid'),'');
 });
+
+test('job payment cents reject missing, negative, overprecision and unsafe values',()=>{
+ for(const value of [null,'',' ','-1','1.234','1e3','1,50','90071992547410.00'])assert.equal(Number.isNaN(reaisToCents(value)),true);
+ assert.equal(reaisToCents('0'),0);
+ assert.equal(reaisToCents('0.01'),1);
+ assert.equal(reaisToCents('12.3'),1230);
+ assert.equal(reaisToCents('123456.78'),12345678);
+});
