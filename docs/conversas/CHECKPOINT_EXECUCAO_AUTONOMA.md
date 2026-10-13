@@ -2089,3 +2089,16 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Causa reproduzida: o harness que avalia o prefixo real de `page.tsx` em VM não injetava o novo helper `validateCompanyJobPreflight`; por isso oito cenários existentes de criação de vaga não alcançavam o transporte (esperado 1 POST, observado 0).
 - Correção de regressão: importar e injetar o helper nos dois contextos VM de `web-form-target.test.ts`, preservando as fixtures válidas e todas as asserções anteriores. A falha não foi classificada como infraestrutura e o run antigo não deve ser reexecutado.
 - Estado deste apêndice: novo SHA e gates completos ainda pendentes; `queued`, `running` ou `[]` não equivalem a aprovação. O merge permanece proibido até CI próprio no novo HEAD e revisão final.
+
+
+## Recibo final — PR #517 — 2026-10-13
+
+- Base: `main` `4e624c66a99bfd24e6f27b4cc82734203e0b3141`.
+- HEAD aprovado: `7b10b1595531a84f3a2e359d74358e0f581ecd36`; árvore `ee4429a1a38bee2eed32bc068d9b19a55748c7ed`.
+- CI próprio: run `38473361533`, attempt 2, job `115558139667`, **SUCCESS**; contagens Web/mobile/API/CLI/monitor `123/731/392/3/11`, zero falhas, migrações, privacidade, HTTP/Postgres, readiness e Production Truth aprovados.
+- A tentativa 1 do mesmo run, job `115557829125`, falhou antes do checkout/testes por `toomanyrequests: Data limit exceeded` nas três tentativas de baixar `postgres:17`; a reexecução limitada do job foi autorizada por essa causa primária de infraestrutura.
+- Merge real: `a44e0d2b48a52b15f91e73573006df624778a22f`; pais ordenados [`4e624c66a99bfd24e6f27b4cc82734203e0b3141`, `7b10b1595531a84f3a2e359d74358e0f581ecd36`]; árvore do merge e da `main`: `ee4429a1a38bee2eed32bc068d9b19a55748c7ed`.
+- Pós-merge CI no SHA real: run `38473994135`, job `115559989818`, **SUCCESS**, mesmas contagens e todos os gates acima.
+- Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
+- Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
+- O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
