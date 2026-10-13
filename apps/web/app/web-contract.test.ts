@@ -31,3 +31,11 @@ test('job payment cents reject missing, negative, overprecision and unsafe value
  assert.equal(reaisToCents('12.3'),1230);
  assert.equal(reaisToCents('123456.78'),12345678);
 });
+
+test('job schedule rejects impossible or normalized wall-clock values',()=>{
+ for(const raw of [null,'','2026-02-30T12:00','2026-13-01T09:00','2026-09-31T09:00','2026-09-28T24:00','2026-09-28T12:60','2026-09-28','2026-09-28T12:00Z']){
+  assert.equal(localDateTimeToIso(raw),'',String(raw));
+ }
+ assert.notEqual(localDateTimeToIso('2028-02-29T12:00'),'');
+ assert.equal(localDateTimeToIso('2027-02-29T12:00'),'');
+});
