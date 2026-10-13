@@ -13,7 +13,7 @@ async function invoke(handler:string,ack:unknown,ok=true,status=201,failure?:'ne
  const values:any[]=[],calls:any[]=[];let cursor=0;
  const session={accessToken:'token',identity:{id:'identity',email:'fixture'},memberships:[{tenantId:'tenant',role:'owner'}]};
  const useState=(initial:any)=>{const index=cursor++;values[index]=initial;const value=index===0?session:index===1?'tenant':index===14?[{id:REQUEST,assignmentId:ORIGINAL,status:'open'}]:index===15?REQUEST:initial;values[index]=value;return [value,(next:any)=>{values[index]=typeof next==='function'?next(values[index]):next}];};
- const h=vm.runInNewContext(js,{useState,useRef:(initial:any)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},process:{env:{}},confirmsReplacementCreation,confirmsReplacementSelection,isAdminRole,isCompanyRole,tenantHeaders,fetch:async(url:string,options:any)=>{calls.push({url,options});if(failure==='network')throw new Error('lost transport');return {ok,status,json:async()=>{if(failure==='json')throw new Error('lost JSON');return ack}}}});
+ const h=vm.runInNewContext(js,{useState,useRef:(initial:any)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},setTimeout,clearTimeout,process:{env:{}},confirmsReplacementCreation,confirmsReplacementSelection,isAdminRole,isCompanyRole,tenantHeaders,fetch:async(url:string,options:any)=>{calls.push({url,options});if(failure==='network')throw new Error('lost transport');return {ok,status,json:async()=>{if(failure==='json')throw new Error('lost JSON');return ack}}}});
  await h[handler](handler==='requestReplacement'?ORIGINAL:PRO);
  return {values,calls};
 }
@@ -53,3 +53,4 @@ test('lost replacement transport or JSON preserves request and refresh and sends
   const h=await invoke(handler,{},true,201,failure);assert.equal(h.values[15],REQUEST);assert.equal(h.values[23],0);assert.equal(h.calls.length,1);assert.ok(h.values[21]);assert.equal(h.values[22],false);
  }
 });
+

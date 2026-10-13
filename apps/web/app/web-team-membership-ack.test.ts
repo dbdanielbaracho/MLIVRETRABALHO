@@ -9,7 +9,7 @@ const values:any[]=[],calls:any[]=[];let cursor=0;
 const session={accessToken:'token',identity:{id:'identity'},memberships:[{tenantId:'tenant',role:'owner'}]};
 class Data{get(name:string){return name==='professionalId'?PRO:null}}
 const useState=(initial:any)=>{const index=cursor++;const v=index===0?session:index===1?'tenant':index===12?TEAM:initial;values[index]=v;return[v,(next:any)=>values[index]=typeof next==='function'?next(values[index]):next];};
-const h=vm.runInNewContext(js,{useState,useRef:(initial:any)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},FormData:Data,confirmsTeamMemberAddition,confirmsTeamMemberRemoval,isAdminRole,isCompanyRole,tenantHeaders,process:{env:{}},fetch:async(url:string,options:any)=>{calls.push({url,options});if(failure==='network')throw new Error('lost transport');return{ok,status,json:async()=>{if(failure==='json')throw new Error('lost JSON');return ack}}}});
+const h=vm.runInNewContext(js,{useState,useRef:(initial:any)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},setTimeout,clearTimeout,FormData:Data,confirmsTeamMemberAddition,confirmsTeamMemberRemoval,isAdminRole,isCompanyRole,tenantHeaders,process:{env:{}},fetch:async(url:string,options:any)=>{calls.push({url,options});if(failure==='network')throw new Error('lost transport');return{ok,status,json:async()=>{if(failure==='json')throw new Error('lost JSON');return ack}}}});
 await(handler==='addTeamMember'?h[handler]({preventDefault(){},currentTarget:{}}):h[handler](PRO));return{values,calls};}
 test('Web team add cannot refresh on missing mismatched or malformed canonical membership ACK',async()=>{
 for(const ack of [{},{teamId:'fake',professionalId:PRO},{teamId:TEAM,professionalId:'other'},null,[]]){
@@ -41,3 +41,4 @@ test('team membership lost transport or JSON remains uncertain with one call and
  const h=await invoke(handler,{},true,201,failure);assert.equal(h.values[23],0);assert.ok(h.values[21]);assert.equal(h.values[12],TEAM);assert.equal(h.calls.length,1);assert.equal(h.values[22],false);
  }
 });
+

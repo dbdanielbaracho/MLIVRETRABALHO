@@ -9,7 +9,7 @@ const values:any[]=[],calls:any[]=[];let cursor=0;
 const session={accessToken:'token',identity:{id:'identity'},memberships:[{tenantId:TENANT,role:'owner'}]};
 class Data{get(name:string){return name==='professionalId'?PRO:name==='pool'?'preferred':null}}
 const useState=(initial:any)=>{const index=cursor++;const v=index===0?session:index===1?TENANT:index===7?JOB:initial;values[index]=v;return[v,(next:any)=>values[index]=typeof next==='function'?next(values[index]):next];};
-const h=vm.runInNewContext(js,{useState,useRef:(initial:any)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},FormData:Data,confirmsCandidateAssignment,confirmsTalentAddition,confirmsTalentRemoval,isAdminRole,isCompanyRole,tenantHeaders,process:{env:{}},fetch:async(url:string,options:any)=>{calls.push({url,options});if(failure==='network')throw new Error('lost transport');return{ok,status,json:async()=>{if(failure==='json')throw new Error('lost JSON');return ack}}}});
+const h=vm.runInNewContext(js,{useState,useRef:(initial:any)=>({current:initial}),useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect(){},setTimeout,clearTimeout,FormData:Data,confirmsCandidateAssignment,confirmsTalentAddition,confirmsTalentRemoval,isAdminRole,isCompanyRole,tenantHeaders,process:{env:{}},fetch:async(url:string,options:any)=>{calls.push({url,options});if(failure==='network')throw new Error('lost transport');return{ok,status,json:async()=>{if(failure==='json')throw new Error('lost JSON');return ack}}}});
 await(handler==='addTalentPool'?h[handler]({preventDefault(){},currentTarget:{}}):handler==='removeTalentPool'?h[handler]('preferred',PRO):h[handler](PRO));return{values,calls};}
 const assignmentAck={id:ASSIGNMENT,jobId:JOB,professionalId:PRO,tenantId:TENANT,status:'confirmed',confirmedAt:'2026-10-12T12:00:00Z'};
 test('Web candidate confirmation cannot refresh on fabricated or mismatched assignment ACK',async()=>{
@@ -46,3 +46,4 @@ test('workforce transport and JSON loss stay uncertain without refresh or retry'
 for(const handler of ['confirmCandidate','addTalentPool','removeTalentPool'])for(const failure of ['network','json'] as const){
 const h=await invoke(handler,{},true,201,failure);assert.equal(h.values[23],0);assert.ok(h.values[21]);assert.equal(h.calls.length,1);assert.equal(h.values[22],false);
 }});
+
