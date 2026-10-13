@@ -31,6 +31,13 @@ type SafetyAppeal={id:string;safetyCaseId:string;status:string;createdAt?:string
 const API=(process.env.NEXT_PUBLIC_API_BASE_URL||'https://mlivretrabalho.predibeacon.com').replace(/\/$/,'');
 
 const READ_TIMEOUT_MS=15000;
+const MUTATION_TIMEOUT_MESSAGE='A operação não respondeu no prazo. O resultado pode ser desconhecido. Atualize os dados antes de qualquer novo envio.';
+
+async function withinMutationDeadline<T>(operation:()=>Promise<T>):Promise<T>{
+  let deadline:ReturnType<typeof setTimeout>|undefined;
+  try{return await Promise.race([operation(),new Promise<never>((_,reject)=>{deadline=setTimeout(()=>reject(new Error(MUTATION_TIMEOUT_MESSAGE)),READ_TIMEOUT_MS)})]);}
+  finally{if(deadline!==undefined)clearTimeout(deadline);}
+}
 
 async function remove(path:string,session:Session,tenantId:string):Promise<unknown>{
   const r=await fetch(`${API}${path}`,{method:'DELETE',headers:tenantHeaders(session.accessToken,tenantId)});
@@ -156,7 +163,7 @@ export default function Home(){
     const context=mutationContextKey;const form=e.currentTarget;const fd=new FormData(form);
     try{
       const body={title:fd.get('title'),requiredRole:fd.get('requiredRole'),location:fd.get('location'),workCity:fd.get('workCity'),startsAt:localDateTimeToIso(fd.get('startsAt')),endsAt:localDateTimeToIso(fd.get('endsAt')),payCents:reaisToCents(fd.get('payReais'))};
-      const result=await publishCompanyJob(payload=>fetch(`${API}/v1/company/jobs`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(payload)}),body);
+      const result=await withinMutationDeadline(()=>publishCompanyJob(payload=>fetch(`${API}/v1/company/jobs`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(payload)}),body));
       if(!isCurrentMutation(context))return;
       if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A publicação não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as vagas antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
@@ -167,7 +174,7 @@ export default function Home(){
     e.preventDefault();if(!session||!tenantId)return;setLoading(true);setError('');
     const context=mutationContextKey;const form=e.currentTarget;const fd=new FormData(form);
     try{
-      const result=await publishCompanyTeam(body=>fetch(`${API}/v1/company/teams`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),{name:fd.get('name')});
+      const result=await withinMutationDeadline(()=>publishCompanyTeam(body=>fetch(`${API}/v1/company/teams`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),{name:fd.get('name')}));
       if(!isCurrentMutation(context))return;
       if(result.status!=='created')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A criação da equipe não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira as equipes antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
@@ -199,7 +206,7 @@ export default function Home(){
   async function updateSafetyCase(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('caseId')||'');if(!id)return;
     const context=mutationContextKey;setLoading(true);setError('');try{
-      const result=await confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-cases/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')});
+      const result=await withinMutationDeadline(()=>confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-cases/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')}));
       if(!isCurrentMutation(context))return;
       if(result.status!=='confirmed')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A revisão do caso não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira os registros antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
@@ -209,7 +216,7 @@ export default function Home(){
   async function updateSafetyAppeal(e:FormEvent<HTMLFormElement>){
     e.preventDefault();if(!session||!tenantId||!isAdminRole(membership?.role))return;const form=e.currentTarget;const fd=new FormData(form);const id=String(fd.get('appealId')||'');if(!id)return;
     const context=mutationContextKey;setLoading(true);setError('');try{
-      const result=await confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-appeals/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')});
+      const result=await withinMutationDeadline(()=>confirmSafetyStatus(body=>fetch(`${API}/v1/company/safety-appeals/${id}/status`,{method:'POST',headers:{...tenantHeaders(session.accessToken,tenantId),'content-type':'application/json'},body:JSON.stringify(body)}),id,{status:fd.get('status'),note:fd.get('note')}));
       if(!isCurrentMutation(context))return;
       if(result.status!=='confirmed')throw new Error(result.httpStatus?`HTTP ${result.httpStatus}`:'A revisão do recurso não foi confirmada. Seus dados foram mantidos. Atualize os dados e confira os registros antes de qualquer novo envio.');
       form.reset();setRevision(x=>x+1);
@@ -279,3 +286,4 @@ export default function Home(){
     <section className="card tableCard"><h2>Planner</h2>{planner.length===0?<p className="muted">Nenhuma vaga no planner.</p>:<div className="tableWrap"><table><thead><tr><th>Vaga</th><th>Status</th><th>Cidade</th><th>Interesse</th><th>Confirmados</th><th>Ativos</th><th>Concluídos</th></tr></thead><tbody>{planner.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.jobStatus}</td><td>{x.workCity||'—'}</td><td>{x.interestCount}</td><td>{x.confirmedCount}</td><td>{x.activeCount}</td><td>{x.completedCount}</td></tr>)}</tbody></table></div>}</section>
   </main>;
 }
+
