@@ -2044,3 +2044,15 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Escopo:** API/DB/teste/fixture/evidência e estes cinco documentos originais por apêndice. Mobile/dependências/lock/Android build/standalone smoke não mudam.
 - **Gates pendentes neste snapshot:** CI próprio no head corrigido, revisão de árvore, merge único e pós-CI no SHA real; nenhuma previsão é PASS.
 - **Próxima auditoria:** após os gates, continuar a matriz factual das 13 áreas sem repetir auth/deadlines/replacement/monitor já concluídos.
+
+
+## 2026-10-13 — pedidos concorrentes de verificação (#511 em preparação)
+
+- **Predecessor confirmado:** #509 integrado em `d497517b3425b95305eac6f2bd6643bd161565b9`, pais [`e702ffdce86bcc148029fbe2fa6e0163a14fb449`, `22a66883853bbe5591b5a8bfb559736c4ad29d97`], árvore `6701ce5fc2f538ecfc62e91dd21c2502a2cd07ab`. CI próprio `38387496348`/job `115262763619` e pós-CI `38388020400`/job `115264507377` SUCCESS com 120 Web, 731 mobile, 386 API, 3 CLI e 11 monitor; Activity Watch push `38388020355` SUCCESS.
+- **Falha reproduzida:** dois pedidos iniciais simultâneos de verificação do mesmo usuário ou empresa podiam ler ausência e competir pelo INSERT. O índice único evitava duplicidade física, mas uma requisição recebia erro `23505` em vez do mesmo caso pendente.
+- **RED válido:** head `b30c4c8e06bea4ba5e6db81e376e7785c9423369`, CI `38392760549`/job `115280347562`; typecheck/build/export Android passaram, 386 testes API anteriores passaram e somente a nova regressão falhou. Duas tentativas anteriores com erro sintático no fixture foram descartadas e não contam como prova.
+- **Correção preparada:** UPSERT atômico usa os índices parciais existentes de identidade e empresa, mantém o estado factual da linha vencedora e devolve o mesmo ACK. Não cria fornecedor, não aprova KYC, não chama produção e não altera a política de retry de casos rejeitados/expirados.
+- **Prova adicional preparada:** E2E local/CI trava `verification_cases` em SHARE, exige duas requisições HTTP simultaneamente bloqueadas no INSERT e comprova dois HTTP 201, mesmo ID e uma linha pendente para identidade e empresa.
+- **Escopo:** controller/teste API, fixture HTTP/PostgreSQL, esta evidência e os cinco documentos originais por apêndice. Mobile, React/RN, dependências, lockfile, build Android e standalone smoke permanecem inalterados.
+- **Gates ainda pendentes neste snapshot:** novo head, CI completo, revisão de árvore, merge único e pós-CI no SHA real. Nenhuma previsão é tratada como PASS.
+- **Externos preservados:** contratação/integração real de KYC/PSP, físico, pentest e implantação paga continuam separados; esta correção trata apenas consistência interna do pedido simulado.
