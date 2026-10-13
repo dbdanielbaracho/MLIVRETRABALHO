@@ -45,7 +45,7 @@ test('concurrent first messages use one conversation row for the assignment',asy
   }
   if(sql.startsWith('SELECT DISTINCT p.identity_id'))return {rows:[]};
   return {rows:[]};
- }}};
+ }})};
  const controller=new ConversationsController(db as unknown as DatabaseService,auth as unknown as AuthService);
  const [first,second]=await Promise.all([
   controller.send(ID,{body:'Primeira'},'Bearer fixture','trusted-tenant'),
