@@ -96,6 +96,23 @@ for(const handler of ['createJob','createTeam','updateSafetyCase','updateSafetyA
 }
 
 for(const handler of ['addTeamMember','removeTeamMember','confirmCandidate','requestReplacement','selectReplacement','addTalentPool','removeTalentPool']){
+ test(handler+' releases loading after a pending mutation transport deadline without retry',async()=>{
+  const h=contextHarness(),done=h.start(handler);h.expire();await flushMutationMicrotasks();
+  assert.equal(h.values[22],false);assert.match(h.values[21],/resultado pode ser desconhecido/i);assert.equal(h.values[23],0);assert.equal(h.calls.length,1);
+  h.resolve(handler,true);await done;
+  assert.equal(h.values[23],0);assert.equal(h.calls.length,1);assert.equal(h.timers.size,0);
+ });
+ test(handler+' releases loading when mutation JSON exceeds the deadline and ignores its late ACK',async()=>{
+  const h=contextHarness(),done=h.start(handler);let finish!:(value:unknown)=>void;
+  h.resolveRaw({ok:true,status:201,json:()=>new Promise(resolve=>{finish=resolve})});await flushMutationMicrotasks();
+  h.expire();await flushMutationMicrotasks();
+  assert.equal(h.values[22],false);assert.match(h.values[21],/resultado pode ser desconhecido/i);assert.equal(h.values[23],0);assert.equal(h.calls.length,1);
+  finish(h.ack(handler));await done;
+  assert.equal(h.values[23],0);assert.equal(h.calls.length,1);assert.equal(h.timers.size,0);
+ });
+}
+
+for(const handler of ['addTeamMember','removeTeamMember','confirmCandidate','requestReplacement','selectReplacement','addTalentPool','removeTalentPool']){
  test(handler+' ignores late failure from another company without changing current feedback or loading',async()=>{
   const h=contextHarness(),done=h.start(handler);h.setTenant('tenant-b');h.render();h.values[21]='current feedback';h.values[22]=true;h.resolve(handler,false);await done;
   assert.equal(h.calls[0].options.headers['x-tenant-id'],'tenant-a');assert.equal(h.values[21],'current feedback');assert.equal(h.values[22],true);assert.equal(h.values[23],0);
