@@ -6,8 +6,12 @@ test('availability accepts actual string timestamps and preserves original offse
 test('availability rejects nonobject and nonstring timestamps instead of epoch coercion or trim crashes',()=>{
  for(const value of [null,undefined,[],42,{}, {...valid,startsAt:0},{...valid,startsAt:{}},{...valid,endsAt:42},{...valid,endsAt:null}])assert.equal(availabilityInput(value),null);
 });
-test('availability rejects malformed dates and empty strings',()=>{
- for(const key of ['startsAt','endsAt'])for(const value of ['',' ','bad-date'])assert.equal(availabilityInput({...valid,[key]:value}),null);
+test('availability rejects malformed ambiguous and silently normalized timestamps',()=>{
+ for(const key of ['startsAt','endsAt'])for(const value of ['',' ','bad-date','2026-10-10','2026-10-10T18:00:00','2026-02-30T18:00:00-03:00','2026-10-10T18:00:00.1234Z'])assert.equal(availabilityInput({...valid,[key]:value}),null);
+});
+test('availability preserves explicit offsets and accepts a real leap day',()=>{
+ const leap={startsAt:'2028-02-29T18:00:00-03:00',endsAt:'2028-03-01T01:00:00Z'};
+ assert.deepEqual(availabilityInput(leap),leap);
 });
 test('availability retains the existing positive interval rule across timezone offsets',()=>{
  assert.equal(availabilityInput({...valid,endsAt:'2026-10-10T21:00:00Z'}),null);

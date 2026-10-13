@@ -2477,3 +2477,14 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Invariantes preservadas:** autenticação e papel antecedem validação; tenant vem do cabeçalho confiável; RLS/SQL, payload válido, ordenação início/fim, remuneração e modalidade não mudam; não há retry nem escrita em erro.
 - **Prova preparada:** regressões unitárias cobrem 30 de fevereiro, formatos ambíguos e leap day real. Evidência: `docs/evidencias/API_JOB_UTC_DATETIME_VALIDATION_2026-10-13.md`.
 - **Gates neste snapshot:** branch e conteúdo preparados; CI próprio, revisão final, merge e pós-CI ainda não são PASS até evidência do SHA exato.
+
+
+## Apêndice — 2026-10-13 — Datas explícitas na disponibilidade profissional
+
+- **Base revalidada:** `main` em `273169f5150f4dcef77e30b028a0f7597c9f4755`, sem PRs abertos.
+- **Recibo final do PR #514:** head `884d9b57e6d67fa5909545436920b11915b6bc12`; CI próprio `38442378668`/`115451969431` SUCCESS com contagens 122/731/388/3/11 e zero falhas; merge `273169f5150f4dcef77e30b028a0f7597c9f4755`, pais ordenados `[b8073e48632a8f33baef20e3026ab948a83f6d5b, 884d9b57e6d67fa5909545436920b11915b6bc12]`, tree `62aad0f67c8f34dd6e787d1b07fa1d3162423c6f`; pós-CI `38443075923`/`115454365042` SUCCESS e Activity Watch `38443076014` SUCCESS.
+- **Falha reproduzida:** `availabilityInput` ainda aceitava `2026-02-30T18:00:00-03:00` e o runtime o normalizava para 2 de março; também aceitava date-only e data/hora sem fuso, persistindo a string ambígua original.
+- **Correção candidata:** parser compartilhado valida calendário e zona explícita. Disponibilidade preserva offsets explícitos válidos, enquanto criação de vaga continua exigindo UTC `Z`; a regra já integrada no PR #514 deixa de ficar duplicada no controller.
+- **Regressões preparadas:** datas impossíveis, sem zona, date-only, fração longa e horários inválidos são rejeitados; leap day real com offset continua aceito e preservado. Autenticação, perfil, SQL idempotente e ordem positiva permanecem cobertos.
+- **Escopo:** helper/teste API, input/controller tests, refatoração sem mudança funcional do job controller, evidência e cinco documentos originais. Mobile/dependências/lock/workflows/build/smoke permanecem inalterados.
+- **Gates neste snapshot:** novo head, CI próprio, revisão, merge e pós-CI ainda não são PASS.

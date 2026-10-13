@@ -2,14 +2,7 @@ import { BadRequestException, Body, Controller, Get, Headers, Post } from '@nest
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { isEngagementModality } from './engagement-modality';
-function parseCanonicalUtcDateTime(value:string){
- const match=/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,3}))?Z$/.exec(value);
- if(!match)return null;
- const parsed=new Date(value);
- if(Number.isNaN(parsed.getTime()))return null;
- const normalized=`${match[1]}.${(match[2]??'').padEnd(3,'0')}Z`;
- return parsed.toISOString()===normalized?parsed:null;
-}
+import {parseCanonicalUtcDateTime} from './iso-datetime';
 @Controller('company/jobs')
 export class CompanyJobCreateController {
  constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
