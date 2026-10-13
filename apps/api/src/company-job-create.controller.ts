@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { isEngagementModality } from './engagement-modality';
 function parseCanonicalUtcDateTime(value:string){
- const match=/^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})(?:\\.(\\d{1,3}))?Z$/.exec(value);
+ const match=/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,3}))?Z$/.exec(value);
  if(!match)return null;
  const parsed=new Date(value);
  if(Number.isNaN(parsed.getTime()))return null;
