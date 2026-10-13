@@ -21,3 +21,38 @@ test('conversation requires real assignment and participant ACL before messages 
 test('valid conversation send preserves trusted tenant, trimmed message and real recipient notifications',async()=>{const h=setup();assert.deepEqual(await h.controller.send(ID,{body:' Hello ',tenantId:'untrusted',senderIdentityId:'untrusted'} as never,'Bearer fixture','trusted-tenant'),h.row);assert.deepEqual(h.contexts,['trusted-tenant']);const msg=h.queries.find(q=>q.sql.startsWith('INSERT INTO conversation_messages'))!;assert.deepEqual(msg.params,['trusted-tenant','fixture-conversation','trusted','Hello']);const alerts=h.queries.filter(q=>q.sql.startsWith('INSERT INTO notifications'));assert.equal(alerts.length,1);assert.equal(alerts[0]!.params[0],'trusted-tenant');assert.equal(alerts[0]!.params[1],'fixture-recipient');assert.ok(h.queries.some(q=>q.sql.includes('wa.tenant_id=$4')));});
 test('valid conversation creation retains actual assignment bind and database acknowledgement',async()=>{const h=setup(true,true,true,false);assert.deepEqual(await h.controller.send(ID,{body:'Hello'},'Bearer fixture','trusted-tenant'),h.row);assert.deepEqual(h.queries.find(q=>q.sql.startsWith('INSERT INTO conversations'))!.params,['trusted-tenant',ID]);assert.equal(h.queries.filter(q=>q.sql.startsWith('INSERT INTO conversation_messages')).length,1);});
 test('conversation database errors stay uncertain without inventing ACK or input failure',async()=>{const e=new Error('fixture_db'),auth={identityFromAuthorization:async()=>({id:'fixture'}),requireMembership:async()=>({role:'owner'})},db={tenant:async()=>{throw e}},c=new ConversationsController(db as unknown as DatabaseService,auth as unknown as AuthService);await assert.rejects(c.send(ID,{body:'Hello'},'Bearer fixture','trusted-tenant'),x=>x===e);});
+
+
+test('concurrent first messages use one conversation row for the assignment',async()=>{
+ const conversations:{id:string}[]=[],messages:{conversationId:string;body:string}[]=[];
+ let selects=0,releaseReads!:()=>void;
+ const bothReads=new Promise<void>(resolve=>{releaseReads=resolve;});
+ const auth={identityFromAuthorization:async()=>({id:'trusted'}),requireMembership:async()=>({role:'owner'})};
+ const db={tenant:async(_tenant:string,op:(db:{query:(sql:string,params?:unknown[])=>Promise<{rows:any[]}>})=>Promise<unknown>)=>op({query:async(sql:string,params:unknown[]=[])=>{
+  if(sql.startsWith('SELECT 1 FROM work_assignments wa JOIN'))return {rows:[{found:1}]};
+  if(sql.startsWith('SELECT 1 FROM work_assignments WHERE'))return {rows:[{found:1}]};
+  if(sql.startsWith('SELECT id FROM conversations')){
+   selects+=1;if(selects===2)releaseReads();await bothReads;return {rows:[]};
+  }
+  if(sql.startsWith('INSERT INTO conversations')){
+   const existing=conversations[0];
+   if(existing&&sql.includes('ON CONFLICT'))return {rows:[existing]};
+   const row={id:'conversation-'+(conversations.length+1)};conversations.push(row);return {rows:[row]};
+  }
+  if(sql.startsWith('INSERT INTO conversation_messages')){
+   messages.push({conversationId:String(params[1]),body:String(params[3])});
+   return {rows:[{id:'message-'+messages.length,body:params[3],createdAt:'2026-10-13T00:00:00Z'}]};
+  }
+  if(sql.startsWith('SELECT DISTINCT p.identity_id'))return {rows:[]};
+  return {rows:[]};
+ }}};
+ const controller=new ConversationsController(db as unknown as DatabaseService,auth as unknown as AuthService);
+ const [first,second]=await Promise.all([
+  controller.send(ID,{body:'Primeira'},'Bearer fixture','trusted-tenant'),
+  controller.send(ID,{body:'Segunda'},'Bearer fixture','trusted-tenant')
+ ]);
+ assert.equal(conversations.length,1,'two overlapping first sends must share one conversation row');
+ assert.equal(messages.length,2);
+ assert.equal(messages[0]!.conversationId,messages[1]!.conversationId);
+ assert.deepEqual([first.body,second.body].sort(),['Primeira','Segunda']);
+});
