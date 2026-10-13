@@ -21,6 +21,7 @@ function session(label:string):Session{
 
 function harness(initial:Session|null=null,storageBlocked=false){
  const values:any[]=[],pending:{resolve:(value:any)=>void;reject:(reason:any)=>void}[]=[],calls:{url:string;options:any}[]=[];
+ const timers=new Map<number,()=>void>();let timerId=0;
  const storage=new Map<string,string>();if(initial)storage.set('mlivre:web:session',JSON.stringify(initial));
  let stateCursor=0,refCursor=0;const refs:{current:any}[]=[],cleanups:(()=>void)[]=[];
  const useState=(value:any)=>{const index=stateCursor++;values[index]=index===0?initial:index===1?(initial?.memberships[0]?.tenantId||''):value;return [values[index],(next:any)=>{values[index]=typeof next==='function'?next(values[index]):next}];};
@@ -32,11 +33,12 @@ function harness(initial:Session|null=null,storageBlocked=false){
   FormData:class{form:any;constructor(form:any){this.form=form}get(key:string){return this.form[key]}},
   sessionStorage:{getItem:(key:string)=>{if(storageBlocked)throw new Error('storage blocked');return storage.get(key)??null;},setItem:(key:string,value:string)=>{if(storageBlocked)throw new Error('storage blocked');storage.set(key,value);},removeItem:(key:string)=>{if(storageBlocked)throw new Error('storage blocked');storage.delete(key);}},
   process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,validateSigninCompanySession,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders
+  ,setTimeout:(callback:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++timerId;timers.set(id,callback);return id;},clearTimeout:(id:number)=>timers.delete(id)
  });
  for(const setup of layouts){const cleanup=setup();if(typeof cleanup==='function')cleanups.push(cleanup as ()=>void)}
  const signin=(label:string)=>handlers.signin({currentTarget:{email:label+'@example.test',password:'password-'+label},preventDefault(){}});
  const response=(payload:Session,ok=true)=>({ok,status:ok?200:401,json:async()=>payload});
- return {values,pending,calls,storage,signin,response,signout:()=>handlers.signout(),unmount(){for(const cleanup of cleanups)cleanup()}};
+ return {values,pending,calls,storage,signin,response,timers,expire(){const callbacks=[...timers.values()];timers.clear();for(const callback of callbacks)callback();},signout:()=>handlers.signout(),unmount(){for(const cleanup of cleanups)cleanup()}};
 }
 
 test('the newest Web signin attempt owns the session when an older success arrives later',async()=>{
@@ -47,6 +49,33 @@ test('the newest Web signin attempt owns the session when an older success arriv
  h.pending[0].resolve(h.response(session('older')));await older;
  assert.equal(h.values[0].identity.id,'identity-newer');
  assert.equal(JSON.parse(h.storage.get('mlivre:web:session')!).identity.id,'identity-newer');
+});
+
+test('Web signin fetch pending at the deadline releases loading and ignores its late success without retry',async()=>{
+ const h=harness(),done=h.signin('pending');h.expire();await Promise.resolve();await Promise.resolve();
+ assert.equal(h.values[22],false);assert.match(h.values[21],/tempo.*login.*expirou/i);
+ assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.calls.length,1);
+ h.pending[0].resolve(h.response(session('pending')));await done;
+ assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.calls.length,1);assert.equal(h.timers.size,0);
+});
+test('Web signin JSON pending at the deadline releases loading and ignores late decoded session',async()=>{
+ const h=harness(),done=h.signin('json');let finish!:(value:Session)=>void;
+ h.pending[0].resolve({ok:true,status:200,json:()=>new Promise(resolve=>{finish=resolve})});
+ await Promise.resolve();h.expire();await Promise.resolve();await Promise.resolve();
+ assert.equal(h.values[22],false);assert.match(h.values[21],/tempo.*login.*expirou/i);
+ finish(session('json'));await done;assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.calls.length,1);assert.equal(h.timers.size,0);
+});
+test('a Web signin expired response cannot replace an explicitly retried successful session',async()=>{
+ const h=harness(),older=h.signin('older');h.expire();await Promise.resolve();await Promise.resolve();
+ const newer=h.signin('newer');h.pending[1].resolve(h.response(session('newer')));await newer;
+ assert.equal(h.values[0].identity.id,'identity-newer');assert.equal(h.timers.size,0);
+ h.pending[0].resolve(h.response(session('older')));await older;
+ assert.equal(h.values[0].identity.id,'identity-newer');assert.equal(h.calls.length,2);
+});
+test('Web signin deadline after unmount cannot publish timeout feedback',async()=>{
+ const h=harness(),done=h.signin('unmounted');h.unmount();h.values[21]='unmounted feedback';h.expire();
+ h.pending[0].resolve(h.response(session('unmounted')));await done;
+ assert.equal(h.values[21],'unmounted feedback');assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.timers.size,0);
 });
 
 test('an older Web signin failure cannot publish over a newer authenticated session',async()=>{
@@ -110,3 +139,4 @@ test('Web sign-in retains credential rejection only for 401 and the existing thr
   assert.equal(h.values[21],message);assert.equal(h.values[0],null);assert.equal(h.storage.size,0);assert.equal(h.calls.length,1);assert.equal(h.values[22],false);
  }
 });
+

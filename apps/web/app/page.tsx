@@ -132,17 +132,23 @@ export default function Home(){
     e.preventDefault();setLoading(true);setError('');
     const attempt=++signinAttempt.current;
     const fd=new FormData(e.currentTarget);
+    let deadline:ReturnType<typeof setTimeout>|undefined;
     try{
-      const r=await fetch(`${API}/v1/auth/signin`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:fd.get('email'),password:fd.get('password')})});
-      if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
-      if(!r.ok)throw new Error(r.status===429?'Muitas tentativas. Tente novamente mais tarde.':r.status===401?'E-mail ou senha inválidos.':`Não foi possível concluir o login (HTTP ${r.status}). Tente novamente.`);
-      const response:unknown=await r.json();
+      const response:unknown=await Promise.race([
+        (async()=>{
+          const r=await fetch(`${API}/v1/auth/signin`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:fd.get('email'),password:fd.get('password')})});
+          if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
+          if(!r.ok)throw new Error(r.status===429?'Muitas tentativas. Tente novamente mais tarde.':r.status===401?'E-mail ou senha inválidos.':`Não foi possível concluir o login (HTTP ${r.status}). Tente novamente.`);
+          return r.json();
+        })(),
+        new Promise<never>((_,reject)=>{deadline=setTimeout(()=>reject(new Error('O tempo de login expirou. Tente novamente.')),READ_TIMEOUT_MS)})
+      ]);
       if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
       const normalized=validateSigninCompanySession(response);
       if(!normalized)throw new Error('Não foi possível validar a sessão empresarial. Entre novamente.');
       try{sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));}catch{/* Valid API session remains usable in memory when browser storage is unavailable. */}
       setSession(normalized);setTenantId(normalized.memberships[0].tenantId);
-    }catch(e){if(attempt===signinAttempt.current&&mutationContext.current.mounted)setError(e instanceof Error?e.message:'Falha no login');}finally{if(attempt===signinAttempt.current&&mutationContext.current.mounted)setLoading(false);}
+    }catch(e){if(attempt===signinAttempt.current&&mutationContext.current.mounted)setError(e instanceof Error?e.message:'Falha no login');}finally{clearTimeout(deadline);if(attempt===signinAttempt.current&&mutationContext.current.mounted)setLoading(false);}
   }
 
   async function createJob(e:FormEvent<HTMLFormElement>){
