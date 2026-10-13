@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {stripTypeScriptTypes} from 'node:module';
 import {confirmSafetyStatus} from './safety-status-ack.ts';
+import {validateSigninCompanySession} from './stored-session.ts';
 import {publishCompanyTeam} from './team-publication.ts';
 import {publishCompanyJob} from './job-publication.ts';
 import {isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders} from './web-contract.ts';
@@ -30,7 +31,7 @@ function harness(initial:Session|null=null){
   fetch:(url:string,options:any)=>{calls.push({url,options});return new Promise((resolve,reject)=>pending.push({resolve,reject}))},
   FormData:class{form:any;constructor(form:any){this.form=form}get(key:string){return this.form[key]}},
   sessionStorage:{getItem:(key:string)=>storage.get(key)??null,setItem:(key:string,value:string)=>storage.set(key,value),removeItem:(key:string)=>storage.delete(key)},
-  process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders
+  process:{env:{}},publishCompanyJob,publishCompanyTeam,confirmSafetyStatus,validateSigninCompanySession,isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders
  });
  for(const setup of layouts){const cleanup=setup();if(typeof cleanup==='function')cleanups.push(cleanup as ()=>void)}
  const signin=(label:string)=>handlers.signin({currentTarget:{email:label+'@example.test',password:'password-'+label},preventDefault(){}});

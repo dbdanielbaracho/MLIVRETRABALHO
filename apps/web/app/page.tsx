@@ -4,7 +4,7 @@ import {confirmsCandidateAssignment,confirmsTalentAddition,confirmsTalentRemoval
 import {confirmsTeamMemberAddition,confirmsTeamMemberRemoval} from './team-membership-ack';
 import {confirmsReplacementCreation,confirmsReplacementSelection} from './replacement-ack';
 import {confirmSafetyStatus} from './safety-status-ack';
-import {readStoredCompanySession} from './stored-session';
+import {readStoredCompanySession,validateSigninCompanySession} from './stored-session';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
 import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -136,13 +136,12 @@ export default function Home(){
       const r=await fetch(`${API}/v1/auth/signin`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:fd.get('email'),password:fd.get('password')})});
       if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
       if(!r.ok)throw new Error(r.status===429?'Muitas tentativas. Tente novamente mais tarde.':'E-mail ou senha inválidos.');
-      const s=await r.json() as Session;
+      const response:unknown=await r.json();
       if(attempt!==signinAttempt.current||!mutationContext.current.mounted)return;
-      const companyMemberships=s.memberships.filter(m=>isCompanyRole(m.role));
-      if(!companyMemberships.length)throw new Error('Esta conta não possui acesso empresarial.');
-      const normalized={...s,memberships:companyMemberships};
+      const normalized=validateSigninCompanySession(response);
+      if(!normalized)throw new Error('Não foi possível validar a sessão empresarial. Entre novamente.');
       sessionStorage.setItem('mlivre:web:session',JSON.stringify(normalized));
-      setSession(normalized);setTenantId(companyMemberships[0].tenantId);
+      setSession(normalized);setTenantId(normalized.memberships[0].tenantId);
     }catch(e){if(attempt===signinAttempt.current&&mutationContext.current.mounted)setError(e instanceof Error?e.message:'Falha no login');}finally{if(attempt===signinAttempt.current&&mutationContext.current.mounted)setLoading(false);}
   }
 
