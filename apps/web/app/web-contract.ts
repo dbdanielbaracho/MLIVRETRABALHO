@@ -9,5 +9,10 @@ export function tenantHeaders(accessToken:string,tenantId?:string){
 }
 export function clearTenantData<T>(empty:T):T{return empty;}
 
-export function reaisToCents(value:FormDataEntryValue|null){const n=Number(value??0);return Number.isFinite(n)?Math.round(n*100):NaN;}
+export function reaisToCents(value:FormDataEntryValue|null){
+ if(typeof value!=='string'||!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(value))return NaN;
+ const [whole,fraction='']=value.split('.');
+ const cents=Number(whole)*100+Number(fraction.padEnd(2,'0'));
+ return Number.isSafeInteger(cents)?cents:NaN;
+}
 export function localDateTimeToIso(value:FormDataEntryValue|null){const d=new Date(String(value??''));return Number.isNaN(d.getTime())?'':d.toISOString();}
