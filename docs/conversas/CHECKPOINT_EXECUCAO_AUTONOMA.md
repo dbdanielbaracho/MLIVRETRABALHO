@@ -2201,3 +2201,16 @@ Escopo exclusivo: MLIVRETRABALHO. A auditoria reproduziu que o validador móvel 
 Correção candidata na branch `fix/mobile-strict-response-dates-20261014`: validação explícita dos componentes ano/mês/dia ISO antes do timestamp. Regressões cobrem assignment em `startsAt`/ `endsAt` e janela de disponibilidade; datas legítimas, offsets, payloads, headers, tenant/RLS, endpoints, retry e escrita no servidor permanecem sem alteração. Evidência: `docs/evidencias/MOBILE_STRICT_RESPONSE_DATES_2026-10-14.md`.
 
 Estado factual nesta entrada: reproduzido e codificado; CI/APK no SHA da branch ainda pendente. APK só será exigido se os insumos mobile/build/smoke mudarem, e emulador não será tratado como aparelho físico. Não é aceite integral das 13 áreas nem fechamento de gates externos. Não misturar este registro com Creator Commerce OS.
+
+
+## APÊNDICE DE RECIBO FINAL — PR #532 — 2026-10-14
+
+- **Correção:** o leitor móvel de agenda rejeita datas de calendário ISO impossíveis antes de usar `Date`; regressões cobrem assignments e disponibilidade. Escopo exclusivo MLIVRETRABALHO.
+- **Merge real:** `c8fceda23f0f0a423efff2fcc47d80f93b564126`.
+- **Pais ordenados:** `260a2b27b25cde8571eae2dcb93db373e7cd4f24`, `442442c7fcd77afb1cef0190d30b3cd5a2ea0892`.
+- **Árvore da main:** `df233cd974eadb953271e0d76c9e8d63ce39c630`, confirmada no branch `main`.
+- **CI próprio do HEAD:** run `38619287186`, job `116042294770`, SUCCESS em todos os passos, incluindo testes, HTTP/Postgres e Production Truth.
+- **APK próprio do HEAD:** run `38619287198`, job `116042294382`, SUCCESS em build, KVM, instalação, smoke sem Metro e upload do APK. Isso é emulador/standalone, não aparelho físico.
+- **Pós-merge real:** CI run `38626600072`, job `116067212891`, SUCCESS; APK run `38626599740`, job `116067209142`, SUCCESS; Activity Watch run `38626599724`, job `116067209613`, SUCCESS.
+- **Revisão:** alteração restrita a mobile/teste/evidência/documentação; sem mudança de dependências, lockfile, API, payload, headers, tenant/RLS ou produção.
+- **Estado de aceite:** este recibo não declara aceite integral das 13 áreas; gates externos #215, #219, #220, #224 e #228 permanecem separados. Não misturar com Creator Commerce OS.
