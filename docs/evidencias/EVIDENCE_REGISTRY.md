@@ -2523,3 +2523,6 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 
 
 - **MOBILE_REPLACEMENT_UUID_CONTRACT gate correction:** CI `38503240745` falhou somente em quatro assertions da fixture textual `fixture-professional`; typecheck/build/export passaram. Fixture corrigida para UUID no novo HEAD; não tratar CI/APK anterior como PASS.
+
+
+- **MOBILE_REPLACEMENT_UUID segundo ajuste:** CI `38503481351` confirmou quatro falhas de fixture textual em `secondary-read-deadline.test.mjs` após typecheck/build/export green; IDs de assignment/replacement agora são UUIDs canônicos no novo HEAD. Sem aprovação anterior reutilizada.

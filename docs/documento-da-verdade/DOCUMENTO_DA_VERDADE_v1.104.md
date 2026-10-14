@@ -2163,3 +2163,6 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 
 
 - **Gate correction 2026-10-14:** o CI próprio `38503240745` executou typecheck/build/export com sucesso, mas encontrou quatro falhas no teste preexistente `company-replacement-ack-uuid.test.mjs`: a fixture usava `fixture-professional`, embora o endpoint exija UUID. A fixture foi alinhada a UUID sem relaxar o guard, e os gates serão reexecutados automaticamente no novo HEAD; o APK do HEAD anterior continua independente e não autoriza merge.
+
+
+- **Segundo ajuste de gate 2026-10-14:** o novo CI `38503481351` passou typecheck/build/export e expôs quatro assertions em `secondary-read-deadline.test.mjs`, cujas fixtures de assignments/replacements ainda tinham IDs textuais (`fixture-work`/`fixture-replacement`). Foram alinhadas a UUIDs canônicos; nenhuma validação foi relaxada e novo CI/APK será observado no HEAD seguinte.
