@@ -8,7 +8,9 @@ export const loadingCompany=():CompanyData=>({dashboard:{status:'loading'},activ
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const text=(x:unknown)=>x==null||typeof x==='string';
 const nonempty=(x:unknown):x is string=>typeof x==='string'&&!!x.trim();
-const optionalDate=(x:unknown)=>x==null||(typeof x==='string'&&Number.isFinite(new Date(x).getTime()));
+const hasValidIsoCalendarDate=(value:string):boolean=>{const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3]);};
+const validDate=(value:unknown):value is string=>typeof value==='string'&&hasValidIsoCalendarDate(value)&&Number.isFinite(new Date(value).getTime());
+const optionalDate=(x:unknown)=>x==null||validDate(x);
 const assignment=(x:unknown):x is Record<string,unknown>=>record(x)&&nonempty(x.id)&&nonempty(x.professionalId)&&nonempty(x.title)&&nonempty(x.professionalName)&&text(x.location);
 export async function loadCompanyDashboard(request:Request,isCurrent:()=>boolean=()=>true):Promise<CompanyData>{
  async function read<T>(path:string,valid:(data:unknown)=>data is T):Promise<Section<T>>{
