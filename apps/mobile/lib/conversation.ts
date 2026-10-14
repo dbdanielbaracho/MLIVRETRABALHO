@@ -4,9 +4,10 @@ export type Request=(path:string,body?:{body:string})=>Promise<{ok:boolean;statu
 export type Sent={status:'sent';id:string}|{status:'rejected'|'unknown'};
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const id=(x:unknown)=>typeof x==='string'&&!!x.trim();
+const uuid=(x:unknown):x is string=>typeof x==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x);
 const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(new Date(x).getTime());
 const valid=(x:unknown):x is Message=>record(x)&&id(x.id)&&typeof x.body==='string'&&id(x.senderIdentityId)&&date(x.createdAt);
-export const routeId=(x:unknown):string=>typeof x==='string'&&x.trim().length>0?x:'';
+export const routeId=(x:unknown):string=>uuid(x)?x:'';
 export const messagePath=(assignmentId:string)=>'/conversations/'+encodeURIComponent(assignmentId)+'/messages';
 export async function loadMessages(request:Request,assignmentId:string):Promise<Messages>{if(!routeId(assignmentId))return {status:'error'};try{const r=await request(messagePath(assignmentId));if(!r.ok)return {status:'error',forbidden:r.status===403,missing:r.status===404};const data:unknown=await r.json();return Array.isArray(data)&&data.every(valid)?{status:'ready',data}:{status:'error'};}catch{return {status:'error'};}}
 export function sameConversationSession(a:Record<string,string>,b:Record<string,string>):boolean{return !!b.Authorization&&a.Authorization===b.Authorization;}

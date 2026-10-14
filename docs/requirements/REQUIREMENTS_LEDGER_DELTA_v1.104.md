@@ -2054,3 +2054,13 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 
 
 - **Segundo ajuste de gate 2026-10-14:** o novo CI `38503481351` passou typecheck/build/export e expôs quatro assertions em `secondary-read-deadline.test.mjs`, cujas fixtures de assignments/replacements ainda tinham IDs textuais (`fixture-work`/`fixture-replacement`). Foram alinhadas a UUIDs canônicos; nenhuma validação foi relaxada e novo CI/APK será observado no HEAD seguinte.
+
+
+## Apêndice — 2026-10-14 — UUID de assignment nas conversas mobile
+
+- **Escopo exclusivo:** `dbdanielbaracho/MLIVRETRABALHO`; não pertence ao Creator Commerce OS.
+- **Base:** main `a52b3e7374ddbae3cd3c0556a4f53a18dd136239`, árvore do merge `926a230b45c001cd73098e70d347a9162862a18a`.
+- **Falha reproduzida:** `apps/api/src/conversations.controller.ts` rejeita `assignmentId` não UUID antes do SQL, enquanto `apps/mobile/lib/conversation.ts` aceitava qualquer texto não vazio em `routeId`; os testes usavam fixtures textuais e podiam mascarar uma rota que a API rejeita.
+- **Correção:** `routeId` agora aceita somente UUID canônico; leituras e envios inválidos são bloqueados antes do transporte. Fixtures de deadline/send/read foram alinhadas a UUIDs, sem mudar payload, sessão, tenant/RLS, autorização, ACK, retry humano ou notificações.
+- **Regressão/evidência:** `apps/mobile/tests/conversation.test.mjs`, `conversation-read-deadline.test.mjs`, `conversation-send-screen-deadline.test.mjs` e `docs/evidencias/MOBILE_CONVERSATION_UUID_CONTRACT_2026-10-14.md`.
+- **Estado:** candidato em validação; não declarar aceite de área nem das 13 áreas até CI/APK/merge/pós-gates do SHA exato.

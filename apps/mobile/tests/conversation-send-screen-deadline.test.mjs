@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {stripTypeScriptTypes} from 'node:module';
 import {routeId,loadMessages,sendMessage} from '../lib/conversation.ts';
 import {runForSession} from '../lib/session-context.ts';
+const ASSIGNMENT_A='11111111-2222-3333-4444-555555555555',ASSIGNMENT_B='22222222-3333-4444-8555-666666666666';
 // Production pre-JSX send/load and parsers with explicit hook/route/auth/transport/timer fixtures.
 const draft=' Fixture draft ',messages=[{id:'message-fixture',body:'Existing fixture',senderIdentityId:'fixture-person',createdAt:'2026-10-11T00:00:00Z'}];
 const deferred=()=>{let resolve;return {promise:new Promise(r=>{resolve=r}),resolve:value=>resolve(value)};};
@@ -11,7 +12,7 @@ function screen(){
  const source=fs.readFileSync(new URL('../app/conversa.tsx',import.meta.url),'utf8'),start=source.indexOf('export default function Conversa()'),end=source.indexOf('\n const blocked=',start);assert.ok(start>=0&&end>start);
  const prefix=stripTypeScriptTypes(source.slice(start,end).replace('export default ','')+'\nreturn {send,load};\n}',{mode:'strip'});
  const create=new Function('useState','useRef','useCallback','useFocusEffect','useLocalSearchParams','authHeaders','apiUrl','fetch','runForSession','routeId','loadMessages','sendMessage','setTimeout','clearTimeout',prefix+'\nreturn Conversa();');
- const state=[],refs=[],calls=[],timers=new Map(),held=[];let si=0,ri=0,focus,cleanup,handlers,reads=0,id=0,armed=null,owner='Bearer fixture-owner',kind='sent',params={assignmentId:'fixture-assignment',tenantId:'fixture-tenant'};
+ const state=[],refs=[],calls=[],timers=new Map(),held=[];let si=0,ri=0,focus,cleanup,handlers,reads=0,id=0,armed=null,owner='Bearer fixture-owner',kind='sent',params={assignmentId:ASSIGNMENT_A,tenantId:'fixture-tenant'};
  function hold(value){armed=null;const gate=deferred();held.push({gate,value});return gate.promise;}
  const auth=async()=>{const value={Authorization:owner},phase={1:'auth',2:'final-auth',3:'reload-auth',4:'reload-final-auth'}[++reads];return armed===phase?hold(value):value;};
  const fetch=async(path,options)=>{calls.push({path,options});const post=options.method==='POST',payload=post?JSON.parse(options.body):null,data=post?{id:'sent-fixture',body:payload.body,createdAt:'2026-10-11T00:00:01Z'}:messages;
