@@ -4071,3 +4071,19 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Arquivos funcionais/evidência:** `apps/web/app/page.tsx`, `apps/web/app/independent-reads.ts`, `apps/web/app/independent-reads.test.ts`, `apps/web/app/web-read-context.test.ts` e `docs/evidencias/WEB_INDEPENDENT_DASHBOARD_READS_2026-10-14.md`.
 - **APK:** N/A para o PR Web-only; inputs mobile/native/dependências/lock/build/smoke não foram alterados. Isso não é prova de teste físico.
 - **Estado de aceite:** este recibo não declara aceite integral das 13 áreas; gates externos #215, #219, #220, #224 e #228 permanecem separados.
+
+
+---
+
+## Recibo append-only — PR #530 — 2026-10-14
+
+- **Escopo:** somente MLIVRETRABALHO; esta atualização não pertence ao Creator Commerce OS.
+- **Main corrente:** `6b736fda484aa7a72ffada15560bb32e6fe3db68`.
+- **Pais ordenados do merge:** `fb19fd936011a6f412739814896b7ef13b4d2ca7`, `0de4ea4dc35efb7f802a25b5f874044bab54be70`.
+- **Árvore do merge:** `1926803e965701f0fcc191666f4fb73df0e60fbc`.
+- **PR:** #530, head final `0de4ea4dc35efb7f802a25b5f874044bab54be70`, preserva dados de candidatos quando recomendações falham, com `Promise.allSettled`, helpers independentes e mensagem explícita de falha parcial.
+- **Falha de CI corrigida:** o primeiro CI `38603296094` falhou somente porque o harness esperava `HTTP 500`; o contrato atual para candidatos/recomendações é `2 consulta(s) de candidatos ou recomendações falharam`. O teste foi alinhado sem alterar o contrato de membros/substituições.
+- **CI próprio:** run `38609828461`, SUCCESS no HEAD exato, com todos os gates aplicáveis.
+- **Pós-merge:** CI run `38610522373`, SUCCESS no SHA real; Project Activity Watch run `38610522341`, SUCCESS.
+- **APK:** N/A por mudança exclusivamente Web/teste/evidência e identidade dos inputs mobile/native/dependências/lock/build/smoke; isso não é prova de teste físico.
+- **Estado de aceite:** não declara aceite integral das 13 áreas; os gates externos #215, #219, #220, #224 e #228 permanecem separados.
