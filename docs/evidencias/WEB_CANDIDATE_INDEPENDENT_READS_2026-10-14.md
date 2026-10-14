@@ -1,0 +1,3 @@
+# Web — leituras independentes de candidatos e recomendações
+
+Falha confirmada no código anterior: `Promise.all` acoplava GET candidatos e GET recomendações. Quando qualquer consulta falhava, a outra seção bem-sucedida também permanecia vazia, apesar de dados reais recebidos. A correção usa `Promise.allSettled` e os helpers do painel já existentes, preservando cada sucesso e mostrando erro de consulta parcial. O estado é limpo na troca de vaga/tenant e a proteção `current` contra respostas antigas continua. Testes exercitam falha em cada lado e sucesso independente. A API permanece autoridade da autorização; não são fabricadas recomendações nem reenvios de confirmação. Gate: CI exato, revisão e pós-merge. Documento da Verdade normativo original preservado.
