@@ -2102,3 +2102,19 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## Apêndice — 2026-10-14 — Contrato UUID das substituições mobile
+
+- **Escopo exclusivo:** `dbdanielbaracho/MLIVRETRABALHO`; não pertence ao Creator Commerce OS nem altera outra rotina.
+- **Base:** main `23ddd7a0c61cbdb5002eec9b85ca69ab8126ef97`, árvore `177bf5e8a9e09b2fdf63d8d553140ef5c6b59744`.
+- **Falha reproduzida:** a API rejeita `assignmentId`, `replacementId` e `professionalId` não UUID antes do SQL, enquanto o cliente mobile aceitava strings arbitrárias em leituras e mutações de substituição.
+- **Correção candidata:** validar UUID canônico em assignments/replacements/recommendations e bloquear request/match/select inválidos antes do transporte; payload válido, autorização, tenant/RLS, ACK e retry humano preservados.
+- **Regressão/evidência:** `apps/mobile/tests/company-replacements.test.mjs` e `docs/evidencias/MOBILE_REPLACEMENT_UUID_CONTRACT_2026-10-14.md`.
+- **Estado:** branch `fix/mobile-replacement-uuid-contract-20261014`; CI/revisão/merge/pós-CI pendentes. Não declarar aceite de área ou das 13 áreas.
+
+
+- **Gate correction 2026-10-14:** o CI próprio `38503240745` executou typecheck/build/export com sucesso, mas encontrou quatro falhas no teste preexistente `company-replacement-ack-uuid.test.mjs`: a fixture usava `fixture-professional`, embora o endpoint exija UUID. A fixture foi alinhada a UUID sem relaxar o guard, e os gates serão reexecutados automaticamente no novo HEAD; o APK do HEAD anterior continua independente e não autoriza merge.
+
+
+- **Segundo ajuste de gate 2026-10-14:** o novo CI `38503481351` passou typecheck/build/export e expôs quatro assertions em `secondary-read-deadline.test.mjs`, cujas fixtures de assignments/replacements ainda tinham IDs textuais (`fixture-work`/`fixture-replacement`). Foram alinhadas a UUIDs canônicos; nenhuma validação foi relaxada e novo CI/APK será observado no HEAD seguinte.

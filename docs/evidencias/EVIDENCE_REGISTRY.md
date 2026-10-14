@@ -2512,3 +2512,17 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## MOBILE_REPLACEMENT_UUID_CONTRACT_2026-10-14.md
+
+- Projeto exclusivo `dbdanielbaracho/MLIVRETRABALHO`; não é documentação do Creator Commerce OS.
+- Base `23ddd7a0c61cbdb5002eec9b85ca69ab8126ef97`; branch `fix/mobile-replacement-uuid-contract-20261014`.
+- API replacement controller valida UUID antes do SQL; mobile antigo aceitava IDs textuais e podia despachar rotas impossíveis.
+- Correção: guards UUID no parser e mutações, regressão e evidência; gates pendentes, não contar como aceite.
+
+
+- **MOBILE_REPLACEMENT_UUID_CONTRACT gate correction:** CI `38503240745` falhou somente em quatro assertions da fixture textual `fixture-professional`; typecheck/build/export passaram. Fixture corrigida para UUID no novo HEAD; não tratar CI/APK anterior como PASS.
+
+
+- **MOBILE_REPLACEMENT_UUID segundo ajuste:** CI `38503481351` confirmou quatro falhas de fixture textual em `secondary-read-deadline.test.mjs` após typecheck/build/export green; IDs de assignment/replacement agora são UUIDs canônicos no novo HEAD. Sem aprovação anterior reutilizada.

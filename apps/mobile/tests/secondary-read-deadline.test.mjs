@@ -10,17 +10,18 @@ import {loadPrivacyRequests} from '../lib/privacy-requests.ts';
 import {samePrivacySession} from '../lib/privacy-actions.ts';
 import {runForSession} from '../lib/session-context.ts';
 const names={members:'Membros',replacements:'Substituicoes',safety:'CasosSeguranca',payments:'Pagamentos',privacy:'Privacidade'};
+const WORK='11111111-2222-3333-4444-555555555555',REPL='66666666-7777-4888-8999-000000000000';
 const files={members:'membros',replacements:'substituicoes',safety:'casos-seguranca',payments:'pagamentos',privacy:'privacidade'};
 const ends={members:'\n async function createInvite(',replacements:'\n async function action(',safety:'\n async function update(',payments:'\n  return (\n',privacy:'\n  async function operate'};
 const parts={members:['members','invitations'],replacements:['assignments','replacements'],safety:['cases','appeals']};
 const at='2026-10-11T00:00:00Z',facts={
  '/company/members':[{identityId:'fixture-owner',email:'fixture@example.invalid',role:'owner',createdAt:at}],
  '/company/members/invitations':[{id:'fixture-invitation',email:'fixture@example.invalid',role:'manager',expiresAt:at}],
- '/company/dashboard/assignments':[{id:'fixture-work',status:'confirmed',title:'Fixture work',professionalName:'Fixture person',replacementOpen:false}],
- '/company/replacements':[{id:'fixture-replacement',assignmentId:'fixture-work',status:'open'}],
+ '/company/dashboard/assignments':[{id:WORK,status:'confirmed',title:'Fixture work',professionalName:'Fixture person',replacementOpen:false}],
+ '/company/replacements':[{id:REPL,assignmentId:WORK,status:'open'}],
  '/company/safety-cases':[{id:'fixture-case',category:'other',description:'Fixture report',status:'open',createdAt:at}],
  '/company/safety-appeals':[{id:'fixture-appeal',safetyCaseId:'fixture-case',appellantIdentityId:'fixture-person',reason:'Fixture reason',status:'submitted',createdAt:at}],
- '/company/payment-events/reconciliation':[{assignmentId:'fixture-work',title:'Fixture work',professionalName:'Fixture person',payableCents:null,capturedCents:0,refundedCents:0,paidOutCents:0,reconciliationStatus:'no_earning'}],
+ '/company/payment-events/reconciliation':[{assignmentId:WORK,title:'Fixture work',professionalName:'Fixture person',payableCents:null,capturedCents:0,refundedCents:0,paidOutCents:0,reconciliationStatus:'no_earning'}],
  '/privacy/requests':[{id:'fixture-request',requestType:'correction',status:'submitted',createdAt:at}]
 };
 const errors=kind=>parts[kind]?Object.fromEntries(parts[kind].map(p=>[p,{status:'error'}])):{status:'error'};
@@ -63,7 +64,7 @@ test('members read deadline preserves draft and unknown invitation state without
  const t=screen('members','auth');t.state[1]='fixture@example.invalid';t.state[3]='fixture-invite-code';t.state[7]=true;await t.pump();t.timer()();assert.deepEqual(t.state[0],errors('members'));assert.equal(t.state[1],'fixture@example.invalid');assert.equal(t.state[3],'fixture-invite-code');assert.equal(t.state[7],true);t.resume();await t.pump();assert.equal(t.state[7],true);assert.equal(t.calls.length,0);t.blur();
 });
 test('replacement read deadline preserves typed reasons without creating or selecting a replacement',async()=>{
- const t=screen('replacements','auth');t.state[1]={'fixture-work':'Fixture draft reason'};await t.pump();t.timer()();assert.deepEqual(t.state[0],errors('replacements'));assert.deepEqual(t.state[1],{'fixture-work':'Fixture draft reason'});t.resume();await t.pump();assert.deepEqual(t.state[1],{'fixture-work':'Fixture draft reason'});assert.equal(t.calls.length,0);t.blur();
+ const t=screen('replacements','auth');t.state[1]={WORK:'Fixture draft reason'};await t.pump();t.timer()();assert.deepEqual(t.state[0],errors('replacements'));assert.deepEqual(t.state[1],{WORK:'Fixture draft reason'});t.resume();await t.pump();assert.deepEqual(t.state[1],{WORK:'Fixture draft reason'});assert.equal(t.calls.length,0);t.blur();
 });
 test('privacy read deadline preserves draft and uncertain action guard without another privacy action',async()=>{
  const t=screen('privacy','auth');t.state[2]='Fixture private draft';t.state[5]=true;await t.pump();t.timer()();assert.deepEqual(t.state[0],errors('privacy'));assert.equal(t.state[2],'Fixture private draft');assert.equal(t.state[5],true);t.resume();await t.pump();assert.equal(t.state[2],'Fixture private draft');assert.equal(t.state[5],true);assert.equal(t.calls.length,0);t.blur();
