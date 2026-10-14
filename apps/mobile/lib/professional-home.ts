@@ -9,7 +9,7 @@ type Request = (path: string) => Promise<{ ok: boolean; json(): Promise<unknown>
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
 const nonempty = (value: unknown): value is string => typeof value === 'string' && !!value.trim();
 const hasValidIsoCalendarDate = (value: string): boolean => {
- const match = /^(\\d{4})-(\\d{2})-(\\d{2})(?:T|$)/.exec(value);
+ const match = /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);
  if (!match) return false;
  const calendar = new Date(0);
  calendar.setUTCHours(0, 0, 0, 0);
