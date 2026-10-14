@@ -2526,3 +2526,14 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 
 
 - **MOBILE_REPLACEMENT_UUID segundo ajuste:** CI `38503481351` confirmou quatro falhas de fixture textual em `secondary-read-deadline.test.mjs` após typecheck/build/export green; IDs de assignment/replacement agora são UUIDs canônicos no novo HEAD. Sem aprovação anterior reutilizada.
+
+
+## MOBILE_CONVERSATION_UUID_CONTRACT_2026-10-14.md
+
+- Escopo exclusivo `dbdanielbaracho/MLIVRETRABALHO`; não é documentação do Creator Commerce OS.
+- Base `a52b3e7374ddbae3cd3c0556a4f53a18dd136239`; backend rejeita assignment IDs não UUID e o mobile antigo aceitava texto livre.
+- Correção candidata: `routeId` exige UUID canônico; regressões de leitura/envio/deadline usam IDs válidos e casos inválidos não fazem transporte.
+- CI/APK/merge/pós-gates do novo SHA ainda pendentes; não contar como aceite.
+
+
+- **Correção de gate 2026-10-14:** o CI próprio `38507724368` passou typecheck, build e export, mas o teste mobile terminou com 24 falhas porque `routeId` também valida o `tenantId` selecionado na rota; as fixtures ainda usavam `tenant-a`, `tenant-b` e `fixture-tenant`. Esses valores foram alinhados a UUIDs canônicos no novo HEAD. A validação não foi relaxada e o APK anterior não autoriza merge.

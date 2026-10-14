@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {stripTypeScriptTypes} from 'node:module';
 import {routeId,loadMessages,sendMessage} from '../lib/conversation.ts';
 import {runForSession} from '../lib/session-context.ts';
+const ASSIGNMENT_A='11111111-2222-3333-4444-555555555555',ASSIGNMENT_B='22222222-3333-4444-8555-666666666666',TENANT_A='33333333-4444-4555-8666-777777777777',TENANT_B='44444444-5555-4666-8777-888888888888';
 // Production pre-JSX send/load and parsers with explicit hook/route/auth/transport/timer fixtures.
 const draft=' Fixture draft ',messages=[{id:'message-fixture',body:'Existing fixture',senderIdentityId:'fixture-person',createdAt:'2026-10-11T00:00:00Z'}];
 const deferred=()=>{let resolve;return {promise:new Promise(r=>{resolve=r}),resolve:value=>resolve(value)};};
@@ -11,7 +12,7 @@ function screen(){
  const source=fs.readFileSync(new URL('../app/conversa.tsx',import.meta.url),'utf8'),start=source.indexOf('export default function Conversa()'),end=source.indexOf('\n const blocked=',start);assert.ok(start>=0&&end>start);
  const prefix=stripTypeScriptTypes(source.slice(start,end).replace('export default ','')+'\nreturn {send,load};\n}',{mode:'strip'});
  const create=new Function('useState','useRef','useCallback','useFocusEffect','useLocalSearchParams','authHeaders','apiUrl','fetch','runForSession','routeId','loadMessages','sendMessage','setTimeout','clearTimeout',prefix+'\nreturn Conversa();');
- const state=[],refs=[],calls=[],timers=new Map(),held=[];let si=0,ri=0,focus,cleanup,handlers,reads=0,id=0,armed=null,owner='Bearer fixture-owner',kind='sent',params={assignmentId:'fixture-assignment',tenantId:'fixture-tenant'};
+ const state=[],refs=[],calls=[],timers=new Map(),held=[];let si=0,ri=0,focus,cleanup,handlers,reads=0,id=0,armed=null,owner='Bearer fixture-owner',kind='sent',params={assignmentId:ASSIGNMENT_A,tenantId:TENANT_A};
  function hold(value){armed=null;const gate=deferred();held.push({gate,value});return gate.promise;}
  const auth=async()=>{const value={Authorization:owner},phase={1:'auth',2:'final-auth',3:'reload-auth',4:'reload-final-auth'}[++reads];return armed===phase?hold(value):value;};
  const fetch=async(path,options)=>{calls.push({path,options});const post=options.method==='POST',payload=post?JSON.parse(options.body):null,data=post?{id:'sent-fixture',body:payload.body,createdAt:'2026-10-11T00:00:01Z'}:messages;
@@ -28,10 +29,10 @@ for(const phase of ['reload-auth','reload-fetch','reload-json','reload-final-aut
  const h=await ready();h.arm(phase);const pending=h.send();await h.pump();assert.equal(h.blocked,1);assert.equal(h.busy,true);assert.equal(h.state[1],'');h.timer()();assert.equal(h.busy,false);assert.match(h.message,/Mensagem enviada/);assert.equal(h.state[0].status,'error');assert.equal(h.refs[5].current,null);h.release();await pending;assert.equal(h.state[1],'');assert.equal(h.state[0].status,'error');assert.equal(h.refs[5].current,null);assert.equal(h.posts.length,1);h.blur();
 });
 test('manual inspection reload does not resend; old finally and timer cannot unlock the next explicit pending send',async()=>{
- const h=await ready();h.arm('fetch');const old=h.send();await h.pump();const expire=h.timer();expire();await h.load();h.edit(' New fixture draft ');h.arm('fetch');const next=h.send();await h.pump();assert.equal(h.posts.length,2);h.release();await old;assert.equal(h.busy,true);assert.equal(h.state[1],' New fixture draft ');expire();assert.equal(h.busy,true);h.release();await next;assert.equal(h.busy,false);assert.equal(h.state[1],'');assert.equal(h.posts[0].options.headers['x-tenant-id'],'fixture-tenant');assert.deepEqual(JSON.parse(h.posts[0].options.body),{body:'Fixture draft'});assert.deepEqual(JSON.parse(h.posts[1].options.body),{body:'New fixture draft'});h.blur();
+ const h=await ready();h.arm('fetch');const old=h.send();await h.pump();const expire=h.timer();expire();await h.load();h.edit(' New fixture draft ');h.arm('fetch');const next=h.send();await h.pump();assert.equal(h.posts.length,2);h.release();await old;assert.equal(h.busy,true);assert.equal(h.state[1],' New fixture draft ');expire();assert.equal(h.busy,true);h.release();await next;assert.equal(h.busy,false);assert.equal(h.state[1],'');assert.equal(h.posts[0].options.headers['x-tenant-id'],TENANT_A);assert.deepEqual(JSON.parse(h.posts[0].options.body),{body:'Fixture draft'});assert.deepEqual(JSON.parse(h.posts[1].options.body),{body:'New fixture draft'});h.blur();
 });
 test('new identity and route after blur keep their current conversation against old send ACK and timer',async()=>{
- const h=await ready();h.arm('fetch');const old=h.send();await h.pump();const expire=h.timer();h.blur();h.owner('Bearer new-owner');h.route({assignmentId:'new-assignment',tenantId:'new-tenant'});h.refocus();await h.pump();h.edit('New owner draft');expire();h.release();await old;assert.equal(h.state[1],'New owner draft');assert.deepEqual(h.state[0],{status:'ready',data:messages});assert.equal(h.refs[5].current.tenantId,'new-tenant');assert.equal(h.posts.length,1);assert.equal(h.busy,false);h.blur();
+ const h=await ready();h.arm('fetch');const old=h.send();await h.pump();const expire=h.timer();h.blur();h.owner('Bearer new-owner');h.route({assignmentId:ASSIGNMENT_B,tenantId:TENANT_B});h.refocus();await h.pump();h.edit('New owner draft');expire();h.release();await old;assert.equal(h.state[1],'New owner draft');assert.deepEqual(h.state[0],{status:'ready',data:messages});assert.equal(h.refs[5].current.tenantId,TENANT_B);assert.equal(h.posts.length,1);assert.equal(h.busy,false);h.blur();
 });
 test('finite unknown response keeps the text and reloads solely for inspection without an automatic POST',async()=>{
  const h=await ready();h.arm(null);h.response('unknown');await h.send();assert.equal(h.state[1],draft);assert.equal(h.posts.length,1);assert.equal(h.busy,false);assert.doesNotMatch(h.message,/Mensagem enviada/);assert.deepEqual(h.state[0],{status:'ready',data:messages});h.blur();
