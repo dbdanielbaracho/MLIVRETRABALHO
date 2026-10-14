@@ -19,3 +19,8 @@ O cliente agora exige UUID canônico para os IDs de assignments, replacement req
 ## Gates
 
 Branch `fix/mobile-replacement-uuid-contract-20261014`. CI próprio, APK standalone aplicável, revisão, merge e pós-gates ainda pendentes. Não tratar `[]`, queued ou running como PASS; não emprestar artefato de outro SHA.
+
+
+## Correção de gate — 2026-10-14
+
+O CI `38503240745` passou por typecheck, build e export mobile, mas falhou em quatro assertions do teste existente `company-replacement-ack-uuid.test.mjs`, que usava `fixture-professional` textual. Isso confirmou a necessidade de alinhar a fixture ao contrato UUID da API, não de remover a validação. O novo candidato usa UUID e aguarda novos CI/APK; nenhum resultado anterior autoriza merge.

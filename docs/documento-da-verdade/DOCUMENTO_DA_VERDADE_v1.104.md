@@ -2160,3 +2160,6 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Correção candidata:** validar UUID canônico em assignments/replacements/recommendations e bloquear request/match/select inválidos antes do transporte; payload válido, autorização, tenant/RLS, ACK e retry humano preservados.
 - **Regressão/evidência:** `apps/mobile/tests/company-replacements.test.mjs` e `docs/evidencias/MOBILE_REPLACEMENT_UUID_CONTRACT_2026-10-14.md`.
 - **Estado:** branch `fix/mobile-replacement-uuid-contract-20261014`; CI/revisão/merge/pós-CI pendentes. Não declarar aceite de área ou das 13 áreas.
+
+
+- **Gate correction 2026-10-14:** o CI próprio `38503240745` executou typecheck/build/export com sucesso, mas encontrou quatro falhas no teste preexistente `company-replacement-ack-uuid.test.mjs`: a fixture usava `fixture-professional`, embora o endpoint exija UUID. A fixture foi alinhada a UUID sem relaxar o guard, e os gates serão reexecutados automaticamente no novo HEAD; o APK do HEAD anterior continua independente e não autoriza merge.
