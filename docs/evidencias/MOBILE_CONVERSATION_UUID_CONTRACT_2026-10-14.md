@@ -15,3 +15,6 @@ O controller de conversas da API valida `assignmentId` com UUID antes de consult
 ## Gates
 
 Branch prevista: `fix/mobile-conversation-uuid-contract-20261014`. CI próprio, APK standalone aplicável, revisão, merge e pós-gates ainda pendentes. Não tratar `[]`, queued ou running como PASS e não emprestar artefato de outro SHA.
+
+
+- **Correção de gate 2026-10-14:** o CI próprio `38507724368` passou typecheck, build e export, mas o teste mobile terminou com 24 falhas porque `routeId` também valida o `tenantId` selecionado na rota; as fixtures ainda usavam `tenant-a`, `tenant-b` e `fixture-tenant`. Esses valores foram alinhados a UUIDs canônicos no novo HEAD. A validação não foi relaxada e o APK anterior não autoriza merge.
