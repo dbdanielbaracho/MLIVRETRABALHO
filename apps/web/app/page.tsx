@@ -7,6 +7,7 @@ import {confirmSafetyStatus} from './safety-status-ack';
 import {readStoredCompanySession,validateSigninCompanySession} from './stored-session';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
+import {readSettledSection,failedSectionCount} from './independent-reads';
 import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders, validateCompanyJobPreflight } from './web-contract';
 
@@ -116,10 +117,10 @@ export default function Home(){
       admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
     ]).then(results=>{if(!current)return;
-      const read=<T,>(index:number,fallback:T):T=>results[index].status==='fulfilled'?(results[index] as PromiseFulfilledResult<T>).value:fallback;
+      const read=<T,>(index:number,fallback:T)=>readSettledSection<T>(results,index,fallback);
       setDashboard(read<Dashboard|null>(0,null));setAnalytics(read<Analytics|null>(1,null));setPlanner(read<PlannerRow[]>(2,[]));setJobs(read<Job[]>(3,[]));setAssignments(read<Assignment[]>(4,[]));setCompleted(read<CompletedAssignment[]>(5,[]));setTeams(read<Team[]>(6,[]));setReplacements(read<Replacement[]>(7,[]));setTalentPools(read<TalentPool[]>(8,[]));setPayments(read<PaymentEvent[]>(9,[]));setSafetyCases(read<SafetyCase[]>(10,[]));setSafetyAppeals(read<SafetyAppeal[]>(11,[]));
-      const failed=results.filter(result=>result.status==='rejected');
-      if(failed.length)setError(`${failed.length} seção(ões) da operação não puderam ser carregadas. Atualize os dados para tentar novamente.`);
+      const failed=failedSectionCount(results);
+      if(failed)setError(`${failed} seção(ões) da operação não puderam ser carregadas. Atualize os dados para tentar novamente.`);
     }).finally(()=>{clearTimeout(deadline);if(current)setLoading(false)});
     return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,membership?.role,revision]);
