@@ -7,6 +7,7 @@ import {confirmSafetyStatus} from './safety-status-ack';
 import {readStoredCompanySession,validateSigninCompanySession} from './stored-session';
 import {publishCompanyTeam} from './team-publication';
 import {publishCompanyJob} from './job-publication';
+import {readSettledSection,failedSectionCount} from './independent-reads';
 import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { isAdminRole, isCompanyRole, localDateTimeToIso, reaisToCents, tenantHeaders, validateCompanyJobPreflight } from './web-contract';
 
@@ -102,7 +103,7 @@ export default function Home(){
     setLoading(true);setError('');
     const deadline=setTimeout(()=>{if(!current)return;current=false;setError('O tempo de leitura da operação expirou. Use Atualizar dados para tentar novamente.');setLoading(false)},READ_TIMEOUT_MS);
     const admin=isAdminRole(membership?.role);
-    Promise.all([
+    Promise.allSettled([
       api<Dashboard>('/v1/company/dashboard',session,tenantId),
       api<Analytics>('/v1/company/analytics',session,tenantId),
       api<PlannerRow[]>('/v1/company/planner',session,tenantId),
@@ -115,7 +116,12 @@ export default function Home(){
       admin?api<PaymentEvent[]>('/v1/company/payment-events/reconciliation',session,tenantId):Promise.resolve([]),
       admin?api<SafetyCase[]>('/v1/company/safety-cases',session,tenantId):Promise.resolve([]),
       admin?api<SafetyAppeal[]>('/v1/company/safety-appeals',session,tenantId):Promise.resolve([])
-    ]).then(([d,a,p,j,wa,done,t,r,tp,pe,sc,sa])=>{if(!current)return;setDashboard(d);setAnalytics(a);setPlanner(p);setJobs(j);setAssignments(wa);setCompleted(done);setTeams(t);setReplacements(r);setTalentPools(tp);setPayments(pe);setSafetyCases(sc);setSafetyAppeals(sa);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar operação')}).finally(()=>{clearTimeout(deadline);if(current)setLoading(false)});
+    ]).then(results=>{if(!current)return;
+      const read=<T,>(index:number,fallback:T)=>readSettledSection<T>(results,index,fallback);
+      setDashboard(read<Dashboard|null>(0,null));setAnalytics(read<Analytics|null>(1,null));setPlanner(read<PlannerRow[]>(2,[]));setJobs(read<Job[]>(3,[]));setAssignments(read<Assignment[]>(4,[]));setCompleted(read<CompletedAssignment[]>(5,[]));setTeams(read<Team[]>(6,[]));setReplacements(read<Replacement[]>(7,[]));setTalentPools(read<TalentPool[]>(8,[]));setPayments(read<PaymentEvent[]>(9,[]));setSafetyCases(read<SafetyCase[]>(10,[]));setSafetyAppeals(read<SafetyAppeal[]>(11,[]));
+      const failed=failedSectionCount(results);
+      if(failed)setError(`${failed} seção(ões) da operação não puderam ser carregadas. Atualize os dados para tentar novamente.`);
+    }).finally(()=>{clearTimeout(deadline);if(current)setLoading(false)});
     return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,membership?.role,revision]);
 
