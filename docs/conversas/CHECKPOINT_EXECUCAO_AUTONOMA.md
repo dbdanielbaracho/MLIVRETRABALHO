@@ -2192,3 +2192,12 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Pós-merge:** CI run `38610522373`, SUCCESS no SHA real; Project Activity Watch run `38610522341`, SUCCESS.
 - **APK:** N/A por mudança exclusivamente Web/teste/evidência e identidade dos inputs mobile/native/dependências/lock/build/smoke; isso não é prova de teste físico.
 - **Estado de aceite:** não declara aceite integral das 13 áreas; os gates externos #215, #219, #220, #224 e #228 permanecem separados.
+
+
+## APÊNDICE DE EXECUÇÃO — 2026-10-14 — datas impossíveis em respostas móveis
+
+Escopo exclusivo: MLIVRETRABALHO. A auditoria reproduziu que o validador móvel de `apps/mobile/lib/professional-home.ts` aceitava `2026-02-30T12:00:00Z`, pois `new Date` o normalizava para `2026-03-02T12:00:00.000Z` com timestamp finito. Isso poderia apresentar uma agenda impossível como horário real.
+
+Correção candidata na branch `fix/mobile-strict-response-dates-20261014`: validação explícita dos componentes ano/mês/dia ISO antes do timestamp. Regressões cobrem assignment em `startsAt`/ `endsAt` e janela de disponibilidade; datas legítimas, offsets, payloads, headers, tenant/RLS, endpoints, retry e escrita no servidor permanecem sem alteração. Evidência: `docs/evidencias/MOBILE_STRICT_RESPONSE_DATES_2026-10-14.md`.
+
+Estado factual nesta entrada: reproduzido e codificado; CI/APK no SHA da branch ainda pendente. APK só será exigido se os insumos mobile/build/smoke mudarem, e emulador não será tratado como aparelho físico. Não é aceite integral das 13 áreas nem fechamento de gates externos. Não misturar este registro com Creator Commerce OS.

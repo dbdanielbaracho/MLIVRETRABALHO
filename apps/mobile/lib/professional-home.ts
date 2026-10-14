@@ -8,7 +8,18 @@ export const loadingHome = (): HomeData => ({ profile: {status:'loading'}, assig
 type Request = (path: string) => Promise<{ ok: boolean; json(): Promise<unknown> }>;
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
 const nonempty = (value: unknown): value is string => typeof value === 'string' && !!value.trim();
-const validDate = (value: unknown): value is string => typeof value === 'string' && Number.isFinite(new Date(value).getTime());
+const hasValidIsoCalendarDate = (value: string): boolean => {
+ const match = /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);
+ if (!match) return false;
+ const calendar = new Date(0);
+ calendar.setUTCHours(0, 0, 0, 0);
+ calendar.setUTCFullYear(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+ return calendar.getUTCFullYear() === Number(match[1]) &&
+  calendar.getUTCMonth() === Number(match[2]) - 1 &&
+  calendar.getUTCDate() === Number(match[3]);
+};
+const validDate = (value: unknown): value is string => typeof value === 'string' &&
+ hasValidIsoCalendarDate(value) && Number.isFinite(new Date(value).getTime());
 const optionalDate = (value: unknown) => value == null || validDate(value);
 const optionalText = (value: unknown) => value == null || typeof value === 'string';
 const validProfile = (value: unknown): value is Profile | null => value === null || (record(value) && (value.displayName == null || nonempty(value.displayName)));
