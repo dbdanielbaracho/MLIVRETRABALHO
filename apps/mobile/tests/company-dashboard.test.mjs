@@ -55,6 +55,14 @@ test('active company date errors are not ready/empty and do not erase other vali
   assert.deepEqual(result.active,{status:'error'});assert.equal(result.completed.status,'ready');assert.equal(result.dashboard.status,'ready');
  }
 });
+test('impossible ISO calendar dates are rejected instead of normalized into company records',async()=>{
+ for(const value of ['2026-02-30T12:00:00Z','2025-02-29T12:00:00Z']){
+  const activeResult=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[{...active,startsAt:value}],'/company/dashboard/completed':[completed]}));
+  assert.deepEqual(activeResult.active,{status:'error'});assert.equal(activeResult.dashboard.status,'ready');assert.equal(activeResult.completed.status,'ready');
+  const completedResult=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[active],'/company/dashboard/completed':[{...completed,completedAt:value}]}));
+  assert.deepEqual(completedResult.completed,{status:'error'});assert.equal(completedResult.dashboard.status,'ready');assert.equal(completedResult.active.status,'ready');
+ }
+});
 test('completed company records reject blank references/names and unparseable completion timestamps',async()=>{
  for(const patch of [{id:' '},{professionalId:''},{professionalName:' '},{title:''},{completedAt:'bad-date'},{completedAt:''},{completedAt:42}]){
   const result=await loadCompanyDashboard(request({'/company/dashboard':dashboard,'/company/dashboard/assignments':[active],'/company/dashboard/completed':[{...completed,...patch}]}));
