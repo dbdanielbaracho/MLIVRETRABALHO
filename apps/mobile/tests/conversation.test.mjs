@@ -20,7 +20,7 @@ test('message send remains bound to the identity which read the explicit convers
  const h={Authorization:'Bearer a'};assert.equal(sameConversationSession({...h},h),true);assert.equal(sameConversationSession({Authorization:'Bearer b'},h),false);assert.equal(sameConversationSession({},{}),false);
 });
 test('send clears a draft only for a matching real message acknowledgement and preserves the existing payload',async()=>{
- const calls=[];assert.deepEqual(await sendMessage(async(...args)=>{calls.push(args);return response({id:'m',body:message.body,createdAt:message.createdAt})},ASSIGNMENT,message.body),{status:'sent',id:'m'});assert.deepEqual(calls,[['/conversations/a/messages',{body:message.body}]]);
+ const calls=[];assert.deepEqual(await sendMessage(async(...args)=>{calls.push(args);return response({id:'m',body:message.body,createdAt:message.createdAt})},ASSIGNMENT,message.body),{status:'sent',id:'m'});assert.deepEqual(calls,[['/conversations/'+ASSIGNMENT+'/messages',{body:message.body}]]);
  assert.deepEqual(await sendMessage(async()=>response({...message,body:'Other'}),ASSIGNMENT,message.body),{status:'unknown'});assert.deepEqual(await sendMessage(async()=>response({},false,403),ASSIGNMENT,message.body),{status:'rejected'});
 });
 test('lost message response stays unknown and never automatically duplicates a message or notification',async()=>{
@@ -54,7 +54,7 @@ test('conversation assignment routes require canonical UUIDs before any transpor
  let calls=0;const request=async()=>{calls++;throw Error('unexpected transport')};
  for(const invalid of ['assignment-text','fixture-assignment','', ' ',123,{},[]]){
   assert.equal((await loadMessages(request,invalid)).status,'error');
-  assert.equal(await sendMessage(request,invalid,message.body),invalid&&typeof invalid==='string'&&invalid.trim()===''?'rejected':'rejected');
+  assert.deepEqual(await sendMessage(request,invalid,message.body),{status:'rejected'});
  }
  assert.equal(calls,0);
 });
