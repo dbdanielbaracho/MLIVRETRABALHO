@@ -20,34 +20,34 @@ test('only existing backend replaceable states allow actions and context retains
  const h={'x-tenant-id':'t',Authorization:'Bearer a'};assert.equal(sameReplacementContext({...h},h),true);assert.equal(sameReplacementContext({...h,'x-tenant-id':'other'},h),false);assert.equal(sameReplacementContext({...h,Authorization:'Bearer b'},h),false);assert.equal(sameReplacementContext({},{}),false);
 });
 test('request acknowledgement must match the original assignment and preserves reason payload',async()=>{
- const calls=[];assert.equal(await requestReplacement(async(...args)=>{calls.push(args);return response({...replacement,id:'abcdef12-2222-4333-8444-555555555555'})},ID,'Pedido real'),true);assert.deepEqual(calls,[['/company/replacements/'+ID,'POST',{reason:'Pedido real'}]]);
+ const calls=[];assert.equal(await requestReplacement(async(...args)=>{calls.push(args);return response({...replacement,id:'abcdef12-2222-4333-8444-555555555555'})},ID,'Pedido real'),true);assert.deepEqual(calls,[['/company/replacements/'+ID+'','POST',{reason:'Pedido real'}]]);
  assert.equal(await requestReplacement(async()=>response({...replacement,id:'abcdef12-2222-4333-8444-555555555555',assignmentId:'other'}),ID),false);
 });
 test('only documented no_replacement_available HTTP400 means no substitute; other HTTP or network failures stay error',async()=>{
  assert.deepEqual(await matchReplacement(async()=>response({message:'no_replacement_available'},false,400),REPL),{status:'empty'});
- assert.deepEqual(await matchReplacement(async()=>response({message:'no_replacement_available'},false,500),'r'),{status:'error'});
+ assert.deepEqual(await matchReplacement(async()=>response({message:'no_replacement_available'},false,500),REPL),{status:'error'});
  assert.equal((await matchReplacement(async()=>{throw Error('timeout')},REPL)).status,'error');
 });
 test('matching validates the requested replacement and actual score/name without manufacturing a recommendation',async()=>{
- assert.deepEqual(await matchReplacement(async()=>response(recommendation),'r'),{status:'ready',data:recommendation});
- for(const delta of [{replacementRequestId:'other'},{recommendedProfessionalId:''},{score:NaN},{score:101},{reasons:null}])assert.equal((await matchReplacement(async()=>response({...recommendation,...delta}),'r')).status,'error');
+ assert.deepEqual(await matchReplacement(async()=>response(recommendation),REPL),{status:'ready',data:recommendation});
+ for(const delta of [{replacementRequestId:'other'},{recommendedProfessionalId:''},{score:NaN},{score:101},{reasons:null}])assert.equal((await matchReplacement(async()=>response({...recommendation,...delta}),REPL)).status,'error');
 });
 test('selection acknowledges the requested replacement, professional and original assignment using existing manual payload',async()=>{
- const ack={replacementRequestId:'r',assignmentId:'abcdefab-8888-4777-8666-555555555555',replacedAssignmentId:'a',professionalId:'p',status:'matched'},calls=[];
- assert.equal(await selectReplacement(async(...args)=>{calls.push(args);return response(ack)},replacement,PRO),true);assert.deepEqual(calls,[['/company/replacements/r/select','POST',{professionalId:'p'}]]);
+ const ack={replacementRequestId:REPL,assignmentId:'abcdefab-8888-4777-8666-555555555555',replacedAssignmentId:ID,professionalId:PRO,status:'matched'},calls=[];
+ assert.equal(await selectReplacement(async(...args)=>{calls.push(args);return response(ack)},replacement,PRO),true);assert.deepEqual(calls,[['/company/replacements/'+REPL+'/select','POST',{professionalId:PRO}]]);
  for(const delta of [{professionalId:'other'},{replacedAssignmentId:'other'},{status:'open'}])assert.equal(await selectReplacement(async()=>response({...ack,...delta}),replacement,PRO),false);
 });
 test('lost request or selection response cannot imply success or automatically repeat manual operations',async()=>{
- let calls=0;const request=async()=>{calls++;throw Error('lost response')};assert.equal(await requestReplacement(request,'a'),false);assert.equal(await selectReplacement(request,replacement,'p'),false);assert.equal(calls,2);
+ let calls=0;const request=async()=>{calls++;throw Error('lost response')};assert.equal(await requestReplacement(request,ID),false);assert.equal(await selectReplacement(request,replacement,PRO),false);assert.equal(calls,2);
 });
 import {runForSession} from '../lib/session-context.ts';
 test('replacement mutations reject missing IDs before transport and whitespace ACKs remain unconfirmed',async()=>{
- let calls=0;const request=async()=>{calls++;return response({})};assert.equal(await requestReplacement(request,' '),false);assert.equal((await matchReplacement(request,'')).status,'error');assert.equal(await selectReplacement(request,{...replacement,id:' '},'p'),false);assert.equal(await selectReplacement(request,replacement,' '),false);assert.equal(calls,0);
- assert.equal(await requestReplacement(async()=>response({...replacement,id:' '}),'a'),false);assert.equal((await matchReplacement(async()=>response({...recommendation,recommendedProfessionalId:' '}),'r')).status,'error');
+ let calls=0;const request=async()=>{calls++;return response({})};assert.equal(await requestReplacement(request,' '),false);assert.equal((await matchReplacement(request,'')).status,'error');assert.equal(await selectReplacement(request,{...replacement,id:' '},PRO),false);assert.equal(await selectReplacement(request,replacement,' '),false);assert.equal(calls,0);
+ assert.equal(await requestReplacement(async()=>response({...replacement,id:' '}),ID),false);assert.equal((await matchReplacement(async()=>response({...recommendation,recommendedProfessionalId:' '}),REPL)).status,'error');
  assert.equal((await loadReplacements(async p=>response(p.endsWith('assignments')?[{...assignment,id:' '}]:[{...replacement,assignmentId:' '}]))).replacements.status,'error');
 });
 test('a matching response cannot be applied after the originating company changes',async()=>{
- let tenant='t',calls=0;const result=await runForSession(async()=>({Authorization:'Bearer a','x-tenant-id':tenant}),headers=>matchReplacement(async()=>{calls++;assert.equal(headers['x-tenant-id'],'t');tenant='other';return response(recommendation)},'r'),()=>true,'Bearer a','t');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
+ let tenant='t',calls=0;const result=await runForSession(async()=>({Authorization:'Bearer a','x-tenant-id':tenant}),headers=>matchReplacement(async()=>{calls++;assert.equal(headers['x-tenant-id'],'t');tenant='other';return response(recommendation)},REPL),()=>true,'Bearer a','t');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
 });
 
 
