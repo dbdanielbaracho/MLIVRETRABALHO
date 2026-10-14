@@ -88,3 +88,17 @@ test('home preserves valid opaque references, future statuses, optional hours an
  const data=await loadProfessionalHome(homeResponse({'/assignments/mine':[work],'/earnings/mine':[earning],'/availability/mine':[window]}));
  assert.deepEqual(data.assignments,{status:'ready',data:[work]});assert.deepEqual(data.earnings,{status:'ready',data:[earning]});assert.deepEqual(data.availability,{status:'ready',data:[window]});
 });
+
+test('home rejects impossible ISO calendar dates instead of accepting JavaScript normalization',async()=>{
+ const work=assignment('real',10);
+ for(const field of ['startsAt','endsAt']){
+  const data=await loadProfessionalHome(homeResponse({'/assignments/mine':[{
+   ...work,[field]:'2026-02-30T12:00:00Z'
+  }]}));
+  assert.equal(data.assignments.status,'error');
+ }
+ const availability=await loadProfessionalHome(homeResponse({'/availability/mine':[{
+  startsAt:'2026-02-30T12:00:00Z',endsAt:'2026-03-01T12:00:00Z'
+ }]}));
+ assert.equal(availability.availability.status,'error');
+});
