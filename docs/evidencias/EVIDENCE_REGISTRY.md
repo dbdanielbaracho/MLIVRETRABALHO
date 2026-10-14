@@ -2512,3 +2512,12 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## MOBILE_JOB_UUID_CONTRACT_2026-10-14.md
+
+- **Projeto:** dbdanielbaracho/MLIVRETRABALHO בלבד; não é documentação do Creator Commerce OS.
+- **Base:** main `23ddd7a0c61cbdb5002eec9b85ca69ab8126ef97`; árvore `177bf5e8a9e09b2fdf63d8d553140ef5c6b59744`.
+- **Falha:** catálogo mobile aceitava ID textual não UUID e o interesse tentava rota que a API rejeita.
+- **Mudança:** `apps/mobile/lib/jobs.ts` + `apps/mobile/tests/jobs.test.mjs`, guarda UUID e regressão de zero POST.
+- **Estado:** branch `fix/mobile-job-uuid-contract-20261014`; CI/revisão/merge/pós-CI pendentes. Não contar como aceite até recibo real.

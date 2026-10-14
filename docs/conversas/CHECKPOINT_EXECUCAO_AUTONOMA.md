@@ -2102,3 +2102,12 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## Checkpoint 2026-10-14 — PR em preparação: contrato UUID de vagas mobile
+
+- **Base:** main `23ddd7a0c61cbdb5002eec9b85ca69ab8126ef97`, tree `177bf5e8a9e09b2fdf63d8d553140ef5c6b59744`; PRs abertos eram zero na revalidação antes desta branch.
+- **Falha factual:** API `JobsController` exige UUID em `jobId`; mobile `loadJobs/sendInterest` aceitavam string arbitrária e poderiam enviar rota inválida.
+- **Branch:** `fix/mobile-job-uuid-contract-20261014`; arquivos de produto/teste: `apps/mobile/lib/jobs.ts`, `apps/mobile/tests/jobs.test.mjs`; evidência: `docs/evidencias/MOBILE_JOB_UUID_CONTRACT_2026-10-14.md`.
+- **Gates:** CI próprio no HEAD, revisão, merge e pós-CI ainda pendentes; não usar resultados de outro SHA nem declarar APK antes de revisar aplicabilidade.
+- **Próxima ação:** confirmar commit/PR e CI no HEAD exato; corrigir falhas reais dos gates se houver, integrar uma única vez somente com gates green e verificar ordered parents/tree/main/pós-CI. Depois retomar a matriz das 13 áreas sem confundir zero PR com conclusão.

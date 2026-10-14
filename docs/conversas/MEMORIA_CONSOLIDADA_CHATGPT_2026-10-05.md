@@ -3997,3 +3997,11 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## 2026-10-14 — MLIVRETRABALHO — fronteira UUID do catálogo mobile
+
+- Este registro pertence exclusivamente ao projeto `dbdanielbaracho/MLIVRETRABALHO`. Creator Commerce OS, Growth OS e quaisquer outros projetos permanecem separados; esta alteração não atualiza nem interrompe suas rotinas.
+- Após a integração documental #520, a auditoria da matriz encontrou uma falha concreta: a API exige UUID para `jobs/:jobId/interest`, enquanto o cliente mobile aceitava qualquer string no catálogo e no envio de interesse.
+- A correção mínima prepara validação UUID em `apps/mobile/lib/jobs.ts` e regressão em `apps/mobile/tests/jobs.test.mjs`, com evidência `MOBILE_JOB_UUID_CONTRACT_2026-10-14.md`. CI/merge/pós-CI ainda não são PASS.
+- Restrições mantidas: sem custo, produção, PSP, dinheiro real, credenciais ou misturas documentais; React19.1.4/RN0.81.6, lockfile, tenant/RLS e standalone sem Metro preservados.

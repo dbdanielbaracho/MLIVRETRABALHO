@@ -2150,3 +2150,12 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## Apêndice — 2026-10-14 — Contrato UUID no catálogo mobile de vagas
+
+- **Base revalidada:** `main` `23ddd7a0c61cbdb5002eec9b85ca69ab8126ef97`, árvore `177bf5e8a9e09b2fdf63d8d553140ef5c6b59744`. O PR documental #520 foi integrado antes desta auditoria; sua matriz não declara aceite integral das 13 áreas.
+- **Falha reproduzida no contrato:** `apps/api/src/jobs.controller.ts` rejeita `jobId` não UUID antes do SQL, mas `apps/mobile/lib/jobs.ts` aceitava qualquer string no catálogo e em `sendInterest`, podendo exibir item inválido e fazer POST impossível para a API.
+- **Correção candidata:** validar UUID no parser de catálogo e antes do interesse; adicionar regressão no teste real do módulo. Payloads válidos, ACK, autorização, tenant/RLS e retry humano permanecem inalterados.
+- **Evidência:** `docs/evidencias/MOBILE_JOB_UUID_CONTRACT_2026-10-14.md`.
+- **Estado:** branch `fix/mobile-job-uuid-contract-20261014`; CI próprio, revisão, merge e pós-CI ainda pendentes. Nenhuma conclusão das 13 áreas é declarada.

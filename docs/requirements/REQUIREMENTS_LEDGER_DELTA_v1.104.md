@@ -2038,3 +2038,11 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - Project Activity Watch pós-merge: run `38473994102`, job `115559996397`, **SUCCESS** no SHA real, marcador `ACTIVITY_WATCH_OBSERVED`, `ageMinutes=0`, `openPrs=0`, `activeRuns=1`.
 - Escopo: 10 paths, todos modo `100644`; os cinco documentos preservam integralmente o prefixo anterior; nenhum input mobile/Android, dependência, lockfile, workflow, build ou smoke mudou. APK N/A por identidade comprovada da árvore, não por ausência de run.
 - O PR #517 está merged e não deve ser repetido. Este apêndice corrige apenas a defasagem de recibo dos documentos; não altera produto.
+
+
+## Delta 2026-10-14 — UUID de vagas no cliente mobile
+
+- Requisito confrontado: identificadores de vagas são UUID no contrato API/DB; cliente não deve exibir nem despachar referências impossíveis.
+- Falha reproduzida: `loadJobs` aceitava `id: "job-real"` e `sendInterest` chegava ao transporte com o mesmo ID, enquanto `JobsController` rejeita o parâmetro antes do SQL.
+- Correção candidata: guarda UUID no parser e no envio, com teste regressivo e evidência dedicada. Não modifica payload válido, ACK, tenant/RLS, autorização ou retry humano.
+- Estado de prova: branch criada sobre `23ddd7a0c61cbdb5002eec9b85ca69ab8126ef97`; gates próprios e pós-merge ainda pendentes. Não é aceite integral da área nem das 13 áreas.
