@@ -64,7 +64,7 @@ test('new Web reads clear previous records, report current failure and recover o
  for(const target of targets){
   const h=harness(),first=h.transport();h.values[target.index]={id:'previous'};
   h.render('tenant-b',first)[target.effect]();assert.equal(JSON.stringify(h.values[target.index]),JSON.stringify(target.empty));
-  first.fail();await flush();if(target.effect===1)assert.match(h.values[21],/12 seção\(ões\) da operação não puderam ser carregadas/i);else assert.equal(h.values[21],'HTTP 500');
+  first.fail();await flush();if(target.effect===1)assert.match(h.values[21],/12 seção\(ões\) da operação não puderam ser carregadas/i);else if(target.effect===2)assert.match(h.values[21],/2 consulta\(s\) de candidatos ou recomendações falharam/i);else assert.equal(h.values[21],'HTTP 500');
   const retry=h.transport();h.render('tenant-b',retry)[target.effect]();retry.success('verified');await flush();
   assert.notDeepEqual(h.values[target.index],target.empty);
  }
