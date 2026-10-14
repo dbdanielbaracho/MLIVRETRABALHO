@@ -25,7 +25,7 @@ function harness(){
   cursor=0;refCursor=0;const effects:(()=>unknown)[]=[];
   const useState=(initial:any)=>{const index=cursor++;if(!(index in values))values[index]=initial;return [index===0?(tenant?base:null):index===1?(tenant??''):index===7?selected.job:index===12?selected.team:index===15?selected.replacement:values[index],(next:any)=>{values[index]=typeof next==='function'?next(values[index]):next}];};
   const useRef=(initial:any)=>{const index=refCursor++;return refs[index]??(refs[index]={current:initial})};
-  vm.runInNewContext(executable,{useState,useRef,useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:network.fetch,setTimeout,clearTimeout,process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders});
+  vm.runInNewContext(executable,{useState,useRef,useLayoutEffect:(fn:()=>unknown)=>fn(),useMemo:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:network.fetch,setTimeout,clearTimeout,process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,readSettledSection:(results:any[],index:number,fallback:any)=>{const result=results[index];return result?.status==='fulfilled'?result.value:fallback;},failedSectionCount:(results:any[])=>results.filter(result=>result.status==='rejected').length});
   return effects;
  }
  return {values,transport,render,timers,expire};
