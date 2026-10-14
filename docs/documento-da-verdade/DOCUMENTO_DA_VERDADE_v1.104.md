@@ -2207,3 +2207,20 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **#524:** recibo documental append-only nos cinco documentos originais e evidência mobile; CI próprio run `38524643905` SUCCESS; pós-CI run `38525021106` SUCCESS; Activity Watch run `38525020959` SUCCESS; APK não aplicável por identidade integral dos insumos mobile/native/dependências/build/smoke.
 - **Auditoria desta rodada:** `apps/mobile/lib/bootstrap.ts` contém `bootstrapTenant`, mas a função não possui referências no conjunto de telas/componentes/libs auditado; não foi criada correção especulativa. As rotas móveis verificadas mantêm deadlines, AbortController e guardas de lifecycle/contexto já existentes.
 - **Estado de aceite:** a matriz continua histórica e conservadora: as 13 áreas permanecem pendentes de reconciliação independente; emulador não é dispositivo físico e os gates externos #215/#219/#220/#224/#228 permanecem separados.
+
+
+---
+
+## Recibo append-only — PR #528 — 2026-10-14
+
+- **Escopo:** somente MLIVRETRABALHO; esta atualização não pertence ao Creator Commerce OS.
+- **Main corrente:** `fdef52f7fd61779c378294d0555e01b4db610e94`.
+- **Pais ordenados do merge:** `99dda3d93a3375c20d6d208512f15e1e30a18d23`, `c821e7b1fdf9a3f7e594384237154091c6136885`.
+- **Árvore do merge:** `73bfe5be8f54f988cf4e9d60334fb71a9c69547d`; a `main` foi revalidada nesse SHA.
+- **PR:** #528, head final `c821e7b1fdf9a3f7e594384237154091c6136885`, corrigiu a perda de resultados do dashboard Web quando uma das 12 leituras independentes falhava, usando `Promise.allSettled`, fallback explícito e contagem de seções indisponíveis.
+- **Falhas e correções de CI:** o primeiro run `38587399213` falhou em seis harnesses VM por `readSettledSection is not defined`; o segundo run `38592768248` revelou apenas expectativa antiga de `HTTP 500`. O harness foi injetado com os helpers e a asserção do dashboard foi alinhada ao novo contrato.
+- **CI próprio final:** run `38593259613`, SUCCESS no head exato, incluindo typecheck, build, export Android, testes, migração, privacidade e HTTP/Production Truth.
+- **Pós-merge:** CI run `38594046674`, SUCCESS no SHA real; Project Activity Watch run `38594046648`, SUCCESS no mesmo SHA.
+- **Arquivos funcionais/evidência:** `apps/web/app/page.tsx`, `apps/web/app/independent-reads.ts`, `apps/web/app/independent-reads.test.ts`, `apps/web/app/web-read-context.test.ts` e `docs/evidencias/WEB_INDEPENDENT_DASHBOARD_READS_2026-10-14.md`.
+- **APK:** N/A para o PR Web-only; inputs mobile/native/dependências/lock/build/smoke não foram alterados. Isso não é prova de teste físico.
+- **Estado de aceite:** este recibo não declara aceite integral das 13 áreas; gates externos #215, #219, #220, #224 e #228 permanecem separados.
