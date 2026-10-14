@@ -2128,3 +2128,6 @@ Próxima ação após os gates: auditar, reproduzir e tratar separadamente prazo
 - **Correção:** `routeId` agora aceita somente UUID canônico; leituras e envios inválidos são bloqueados antes do transporte. Fixtures de deadline/send/read foram alinhadas a UUIDs, sem mudar payload, sessão, tenant/RLS, autorização, ACK, retry humano ou notificações.
 - **Regressão/evidência:** `apps/mobile/tests/conversation.test.mjs`, `conversation-read-deadline.test.mjs`, `conversation-send-screen-deadline.test.mjs` e `docs/evidencias/MOBILE_CONVERSATION_UUID_CONTRACT_2026-10-14.md`.
 - **Estado:** candidato em validação; não declarar aceite de área nem das 13 áreas até CI/APK/merge/pós-gates do SHA exato.
+
+
+- **Correção de gate 2026-10-14:** o CI próprio `38507724368` passou typecheck, build e export, mas o teste mobile terminou com 24 falhas porque `routeId` também valida o `tenantId` selecionado na rota; as fixtures ainda usavam `tenant-a`, `tenant-b` e `fixture-tenant`. Esses valores foram alinhados a UUIDs canônicos no novo HEAD. A validação não foi relaxada e o APK anterior não autoriza merge.
