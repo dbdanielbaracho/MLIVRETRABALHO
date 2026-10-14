@@ -16,3 +16,16 @@ test('all failures retain explicit empty fallback and count failures',async()=>{
  assert.equal(readSettledSection(settled,3,null),null);
  assert.equal(failedSectionCount(settled),2);
 });
+
+test('candidate results remain available when recommendations fail',async()=>{
+ const results=await Promise.allSettled([Promise.resolve([{professionalId:'p-1'}]),Promise.reject(new Error('recommendations offline'))]);
+ assert.deepEqual(readSettledSection(results,0,[]),[{professionalId:'p-1'}]);
+ assert.deepEqual(readSettledSection(results,1,[]),[]);
+ assert.equal(failedSectionCount(results),1);
+});
+test('recommendations remain available when candidates fail',async()=>{
+ const results=await Promise.allSettled([Promise.reject(new Error('candidates offline')),Promise.resolve([{professionalId:'p-1',score:80}])]);
+ assert.deepEqual(readSettledSection(results,0,[]),[]);
+ assert.deepEqual(readSettledSection(results,1,[]),[{professionalId:'p-1',score:80}]);
+ assert.equal(failedSectionCount(results),1);
+});
