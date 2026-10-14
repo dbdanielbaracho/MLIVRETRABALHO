@@ -129,7 +129,7 @@ export default function Home(){
     if(!session||!tenantId||!selectedJobId){setCandidates([]);setRecommendations([]);return;}
     let current=true;setCandidates([]);setRecommendations([]);setError('');
     const deadline=setTimeout(()=>{if(!current)return;current=false;setError('O tempo de leitura de candidatos expirou. Use Atualizar dados para tentar novamente.')},READ_TIMEOUT_MS);
-    Promise.all([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(([cs,rs])=>{if(!current)return;setCandidates(cs);setRecommendations(rs);}).catch(e=>{if(current)setError(e instanceof Error?e.message:'Falha ao carregar candidatos')}).finally(()=>{clearTimeout(deadline)});
+    Promise.allSettled([api<Candidate[]>(`/v1/company/jobs/${selectedJobId}/candidates`,session,tenantId),api<Recommendation[]>(`/v1/company/jobs/${selectedJobId}/recommendations`,session,tenantId)]).then(results=>{if(!current)return;setCandidates(readSettledSection<Candidate[]>(results,0,[]));setRecommendations(readSettledSection<Recommendation[]>(results,1,[]));const failed=failedSectionCount(results);if(failed)setError(`${failed} consulta(s) de candidatos ou recomendações falharam. Atualize os dados para tentar novamente.`);}).finally(()=>{clearTimeout(deadline)});
     return()=>{current=false;clearTimeout(deadline)};
   },[session,tenantId,selectedJobId,revision]);
 
