@@ -25,5 +25,7 @@ export function earningsWeek(items:Earning[],now=new Date()){
  return {total:daily.reduce((sum,value)=>sum+value,0),daily};
 }
 export function earningStatus(status:string){
- return ({pending:'Em processamento',payable:'A receber',paid:'Pago',reversed:'Estornado'} as Record<string,string>)[status]??'Status não identificado';
+ const labels:Record<string,string>={pending:'Em processamento',payable:'A receber',paid:'Pago',reversed:'Estornado'};
+ return Object.prototype.hasOwnProperty.call(labels,status)?labels[status]:'Status não identificado';
 }
+
