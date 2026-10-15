@@ -12,10 +12,38 @@ function diagnosticConfiguration(value='instrumented'){
  return{mode:value,...cases[value]};
 }
 const diagnostic=diagnosticConfiguration(process.env.BROWSER_DIAGNOSTIC_MODE);
+function transportScenario(value='journey'){
+ assert.ok(['minimal','journey'].includes(value),'Unknown browser transport scenario');return value;
+}
+const scenario=transportScenario(process.env.BROWSER_SCENARIO);
 const api=new URL(process.env.BROWSER_API_URL||'http://127.0.0.1:3002');
 const web=new URL(process.env.BROWSER_WEB_URL||'http://127.0.0.1:3001');
 for(const u of [api,web])assert.ok(u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)&&u.port&&u.pathname==='/'&&!u.username&&!u.password,'Local disposable origins required');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const readPaths=['/v1/company/dashboard','/v1/company/analytics','/v1/company/planner','/v1/company/jobs','/v1/company/dashboard/assignments','/v1/company/dashboard/completed','/v1/company/teams','/v1/company/replacements','/v1/company/talent-pools','/v1/company/payment-events/reconciliation','/v1/company/safety-cases','/v1/company/safety-appeals'];
+function isTransportDocument(url,method,type){
+ return scenario==='minimal'&&url.origin===web.origin&&url.pathname==='/__mlivre_transport_fixture'&&!url.search&&!url.username&&!url.password&&method==='GET'&&type==='Document';
+}
+async function browserTransportProbe(apiOrigin,accessToken,tenantId,paths,teamName){
+ const headers={Authorization:'Bearer '+accessToken,'x-tenant-id':tenantId};
+ const rows=[];
+ const read=async(path,stage)=>{
+  try{const r=await fetch(apiOrigin+path,{headers,cache:'no-store'});const body=await r.json();const row={stage,path,status:r.status,jsonKind:Array.isArray(body)?'array':typeof body};rows.push(row);return{ok:r.status===200,body};}
+  catch(error){rows.push({stage,path,status:null,errorName:error?.name});return{ok:false};}
+ };
+ if(!(await read(paths[0],'single')).ok)return{failedStage:'single',rows};
+ if(!(await Promise.all(paths.map(path=>read(path,'parallel-before')))).every(x=>x.ok))return{failedStage:'parallel-before',rows};
+ let created;
+ try{
+  const r=await fetch(apiOrigin+'/v1/company/teams',{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({name:teamName})});
+  created=await r.json();rows.push({stage:'create-team',path:'/v1/company/teams',status:r.status});
+  if(r.status!==201||typeof created?.id!=='string')return{failedStage:'create-team',rows};
+ }catch(error){rows.push({stage:'create-team',path:'/v1/company/teams',status:null,errorName:error?.name});return{failedStage:'create-team',rows};}
+ const teams=await read('/v1/company/teams','read-created');
+ if(!teams.ok||!Array.isArray(teams.body)||!teams.body.some(x=>x.id===created.id))return{failedStage:'read-created',rows};
+ if(!(await Promise.all(paths.map(path=>read(path,'parallel-after')))).every(x=>x.ok))return{failedStage:'parallel-after',rows};
+ return{failedStage:null,teamId:created.id,rows};
+}
 function actualWireValidator(){
  const clean=s=>stripTypeScriptTypes(s.replace(/import\s[^;]+;/g,''),{mode:'transform'}).replace(/\bexport\s+/g,'');
  return vm.runInNewContext(clean(readFileSync('apps/web/app/web-contract.ts','utf8'))+'\n'+clean(readFileSync('apps/web/app/stored-session.ts','utf8'))+'\nvalidateSigninCompanySession');
@@ -85,10 +113,10 @@ async function dashboard(email){
 async function capture(label){
  await evaluate('window.scrollTo(0,0)');const r=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
  const bytes=Buffer.from(r.data,'base64'),sha256=createHash('sha256').update(bytes).digest('hex');
- captures.push({label,sha256,bytes:bytes.length});console.log('WEB_BROWSER_CAPTURE '+JSON.stringify({diagnostic:diagnostic.mode,label,sha256,bytes:bytes.length,pngBase64:r.data}));
+ captures.push({label,sha256,bytes:bytes.length});console.log('WEB_BROWSER_CAPTURE '+JSON.stringify({scenario,diagnostic:diagnostic.mode,label,sha256,bytes:bytes.length,pngBase64:r.data}));
 }
 (async()=>{
- console.log('WEB_BROWSER_DIAGNOSTIC_CASE_START '+JSON.stringify(diagnostic));
+ console.log('WEB_BROWSER_DIAGNOSTIC_CASE_START '+JSON.stringify({scenario,...diagnostic}));
  const accounts=[];
  for(const label of ['A','B']){
   const email='web-browser-'+label.toLowerCase()+'-'+stamp+'@example.test';
@@ -120,6 +148,9 @@ async function capture(label){
    const u=new URL(m.params.request.url),allowed=['data:','about:','blob:'].includes(u.protocol)||[api.origin,web.origin].includes(u.origin);
    if(!allowed)networkViolation='Non-local application request blocked: '+u.origin;
    const trace={event:'intercept',at:Date.now(),id:m.params.requestId,networkId:m.params.networkId,path:u.pathname,origin:u.origin,method:m.params.request.method,allowed,sessionMatches:m.sessionId===sessionId};networkEvents.push(trace);
+   if(allowed&&isTransportDocument(u,m.params.request.method,m.params.resourceType)){
+    cdp('Fetch.fulfillRequest',{requestId:m.params.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/html; charset=utf-8'},{name:'Cache-Control',value:'no-store'}],body:Buffer.from('<!doctype html><meta charset="utf-8"><title>Local transport fixture</title><p id="transport-fixture">Explicit local transport fixture; no app scripts</p>').toString('base64')}).catch(()=>{networkViolation='Local transport fixture document failed';});return;
+   }
    cdp(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:m.params.requestId,...(!allowed?{errorReason:'BlockedByClient'}:{})}).then(()=>networkEvents.push({...trace,event:'intercept-ack',at:Date.now()})).catch(error=>networkEvents.push({...trace,event:'intercept-error',at:Date.now(),code:error.code,message:error.protocolMessage||error.message}));
   }
   if(m.method==='Network.requestWillBeSent'){
@@ -128,7 +159,7 @@ async function capture(label){
   if(m.method==='Network.loadingFailed'&&requestMethods.has(m.params.requestId))networkEvents.push({event:'failed',id:m.params.requestId,method:requestMethods.get(m.params.requestId),errorText:m.params.errorText,blockedReason:m.params.blockedReason,corsErrorStatus:m.params.corsErrorStatus,canceled:m.params.canceled});
   if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
- const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({diagnostic:diagnostic.mode,product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
+ const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({scenario,diagnostic:diagnostic.mode,product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
  if(diagnostic.log)await cdp('Log.enable');
@@ -139,6 +170,18 @@ async function capture(label){
  await cdp('Fetch.enable',{patterns:[{urlPattern:'*',requestStage:'Request'}]});
  await cdp('Emulation.setDeviceMetricsOverride',{width:1365,height:900,deviceScaleFactor:1,mobile:false});
  await cdp('Emulation.setTimezoneOverride',{timezoneId:'UTC'});
+ if(scenario==='minimal'){
+  await cdp('Page.navigate',{url:new URL('/__mlivre_transport_fixture',web).href});
+  await until('!!document.getElementById("transport-fixture")&&document.readyState==="complete"','minimal local fixture document');
+  assert.equal(await evaluate('location.origin'),web.origin,'Minimal probe must retain the same real CORS origin');
+  const report=await evaluate('('+browserTransportProbe.toString()+')('+[api.origin,accounts[0].token,accounts[0].tenant,readPaths,'Transport team '+stamp].map(x=>JSON.stringify(x)).join(',')+')');
+  console.log('WEB_BROWSER_MINIMAL_TRANSPORT_OBSERVED '+JSON.stringify({scenario,diagnostic:diagnostic.mode,...report}));
+  assert.equal(report.failedStage,null,'Minimal native browser transport failed; no React/Next scripts run in this fixture document');
+  const teams=await apiCall('/v1/company/teams',{token:accounts[0].token,tenant:accounts[0].tenant});
+  assert.ok(teams.some(x=>x.id===report.teamId),'Minimal browser POST must really persist in the local API/Postgres');
+  if(networkViolation)throw Error(networkViolation);
+  console.log('WEB_BROWSER_MINIMAL_TRANSPORT_PASS '+JSON.stringify({scenario,diagnostic:diagnostic.mode,scope:'native browser + real local API/Postgres, explicitly not app UI evidence',tenantId:accounts[0].tenant,teamId:report.teamId,rows:report.rows}));return;
+ }
  await cdp('Page.navigate',{url:web.href});
  await until('!!document.querySelector("input[name=email]")','login render');
  await capture('login');
@@ -163,7 +206,6 @@ async function capture(label){
  assert.ok(job?.id&&team?.id,'Real persisted job/team required');assert.equal(job.payCents,12345);assert.equal(job.startsAt,new Date(start+'Z').toISOString());assert.equal(job.endsAt,new Date(end+'Z').toISOString());
  await dashboard(accounts[0].email);await capture('company-a-created');
  const signinCount=responses.filter(x=>x.path==='/v1/auth/signin').length;
- const readPaths=['/v1/company/dashboard','/v1/company/analytics','/v1/company/planner','/v1/company/jobs','/v1/company/dashboard/assignments','/v1/company/dashboard/completed','/v1/company/teams','/v1/company/replacements','/v1/company/talent-pools','/v1/company/payment-events/reconciliation','/v1/company/safety-cases','/v1/company/safety-appeals'];
  for(let refresh=1;refresh<=5;refresh++){
   const from=responses.length,posts=responses.filter(x=>x.method==='POST').length;
   console.log('WEB_BROWSER_REFRESH_START '+JSON.stringify({refresh}));
@@ -197,14 +239,14 @@ async function capture(label){
  assert.equal(revoked.status,401,'Explicit signout must revoke the actual browser bearer');await revoked.arrayBuffer();
  await apiCall('/v1/me',{token:accounts[0].token});
  if(networkViolation)throw Error(networkViolation);
- console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({diagnostic:diagnostic.mode,scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated','five-explicit-dashboard-refresh-waves'],apiResponses:responses}));
+ console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scenario,diagnostic:diagnostic.mode,scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated','five-explicit-dashboard-refresh-waves'],apiResponses:responses}));
 })().catch(async e=>{
- console.error('WEB_BROWSER_JOURNEY_FAIL '+JSON.stringify({diagnostic:diagnostic.mode,error:e.message}));
+ console.error('WEB_BROWSER_JOURNEY_FAIL '+JSON.stringify({scenario,diagnostic:diagnostic.mode,error:e.message}));
  if(ws&&sessionId){
   try{
    const state=await evaluate('({h1:document.querySelector("h1")?.textContent,alert:document.querySelector("[role=alert]")?.textContent,metricValues:Array.from(document.querySelectorAll(".metrics strong")).map(x=>x.textContent),bodyText:document.body.innerText.slice(0,1800)})');
-   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({diagnostic:diagnostic.mode,state,apiResponses:responses,networkViolation}));
-   console.log('WEB_BROWSER_NETWORK_DIAGNOSTIC '+JSON.stringify({diagnostic:diagnostic.mode,events:networkEvents}));
+   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({scenario,diagnostic:diagnostic.mode,state,apiResponses:responses,networkViolation}));
+   console.log('WEB_BROWSER_NETWORK_DIAGNOSTIC '+JSON.stringify({scenario,diagnostic:diagnostic.mode,events:networkEvents}));
    await capture('failure');
   }catch{console.error('WEB_BROWSER_FAILURE_STATE unavailable');}
  }
@@ -212,6 +254,7 @@ async function capture(label){
 }).finally(async()=>{
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
+
 
 
 

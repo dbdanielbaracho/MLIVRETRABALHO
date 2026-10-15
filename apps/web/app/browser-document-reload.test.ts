@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,mkdtempSync,writeFileSync,unlinkSync,rmdirSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import vm from 'node:vm';
 import {spawnSync} from 'node:child_process';
 
@@ -97,19 +99,67 @@ const wrapper=readFileSync(new URL('../../../scripts/web-browser-journey-e2e.sh'
 const matrixSource=wrapper.slice(wrapper.indexOf('BROWSER_MATRIX_STATUS=0'));
 function matrixFixture(failed:string){
  // Execute the real shell aggregation; only the child executable is an offline fixture.
- const stub='node(){ if [[ "$1" == scripts/web-browser-journey-e2e.cjs ]]; then echo "FIXTURE_CASE $BROWSER_DIAGNOSTIC_MODE"; if [[ "$BROWSER_DIAGNOSTIC_MODE" == "$FIXTURE_FAILED_CASE" ]]; then return 17; fi; fi; return 0; };\n';
- return spawnSync('bash',['-euc',stub+matrixSource],{encoding:'utf8',env:{...process.env,BROWSER_LOG_DIR:'/unused-fixture',FIXTURE_FAILED_CASE:failed}});
+ const stub='wc(){ echo 0; }; node(){ if [[ "$1" == scripts/web-browser-journey-e2e.cjs ]]; then echo "FIXTURE_CASE $BROWSER_SCENARIO/$BROWSER_DIAGNOSTIC_MODE"; if [[ "$BROWSER_SCENARIO" == journey && "$BROWSER_DIAGNOSTIC_MODE" == "$FIXTURE_FAILED_CASE" ]]; then return 17; fi; fi; return 0; };\n';
+ const folder=mkdtempSync(join(tmpdir(),'mlivre-matrix-unit-')),file=join(folder,'api.log');writeFileSync(file,'');
+ try{return spawnSync('bash',['-euc',stub+matrixSource],{encoding:'utf8',env:{...process.env,BROWSER_LOG_DIR:folder,FIXTURE_FAILED_CASE:failed}});}
+ finally{unlinkSync(file);rmdirSync(folder);}
 }
-test('real matrix shell completes all four distinct controls and returns success only when all pass',()=>{
+test('real matrix shell completes minimal and journey controls and returns success only when all eight pass',()=>{
  const result=matrixFixture('none');assert.equal(result.status,0,result.stderr);
- assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,4);
- assert.equal((result.stdout.match(/DIAGNOSTIC_CASE_RESULT \S+ PASS/g)||[]).length,4);
+ assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,8);
+ assert.equal((result.stdout.match(/DIAGNOSTIC_CASE_RESULT \S+ PASS/g)||[]).length,8);
 });
 test('real matrix shell retains one case failure even when subsequent independent cases pass',()=>{
  const result=matrixFixture('log-only');assert.equal(result.status,1,result.stderr);
- assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,4);
- assert.match(result.stdout,/log-only FAIL exit=17/);
+ assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,8);
+ assert.match(result.stdout,/journey\/log-only FAIL exit=17/);
  assert.match(result.stdout,/instrumented PASS/);
  assert.match(result.stdout,/MATRIX_RESULT status=1/);
 });
+
+test('transport scenario cannot silently select an unknown or inherited mode',()=>{
+ const s=source.slice(source.indexOf('function transportScenario('),source.indexOf('\nconst scenario='));
+ const choose=vm.runInNewContext(s+'\ntransportScenario',{assert}) as (s?:string)=>string;
+ assert.equal(choose(),'journey');assert.equal(choose('minimal'),'minimal');
+ for(const value of ['skip','__proto__','constructor',''])assert.throws(()=>choose(value),/Unknown browser transport scenario/);
+});
+const documentSource=source.slice(source.indexOf('function isTransportDocument('),source.indexOf('\nasync function browserTransportProbe('));
+test('minimal document fixture is restricted to its own explicit GET document URL and scenario',()=>{
+ const configure=(scenario:string)=>vm.runInNewContext(documentSource+'\nisTransportDocument',{scenario,web:new URL('http://127.0.0.1:3001')}) as (u:URL,m:string,t:string)=>boolean;
+ const isDocument=configure('minimal'),url=new URL('http://127.0.0.1:3001/__mlivre_transport_fixture');
+ assert.equal(isDocument(url,'GET','Document'),true);assert.equal(configure('journey')(url,'GET','Document'),false);
+ for(const [u,m,t] of [[url.href,'POST','Document'],[url.href,'GET','Fetch'],['http://127.0.0.1:3001/','GET','Document'],[url.href+'?extra=1','GET','Document'],['https://example.invalid/__mlivre_transport_fixture','GET','Document']])assert.equal(isDocument(new URL(u),m,t),false);
+});
+const probeSource=source.slice(source.indexOf('async function browserTransportProbe('),source.indexOf('\nfunction actualWireValidator('));
+function transportFixture(rejectPost:boolean){
+ const calls:Array<{method:string;cache?:string}>=[];
+ const fetch=async(url:string,options:{method?:string;headers:Record<string,string>;cache?:string})=>{
+  const method=options.method||'GET';calls.push({method,cache:options.cache});assert.equal(options.headers.Authorization,'Bearer fixture-private');assert.equal(options.headers['x-tenant-id'],'fixture-tenant');
+  if(method==='POST'&&rejectPost)throw new TypeError('private bearer text must not enter metadata');
+  return{status:method==='POST'?201:200,json:async()=>method==='POST'?{id:'fixture-team'}:url.endsWith('/teams')?[{id:'fixture-team'}]:{count:0}};
+ };
+ const probe=vm.runInNewContext(probeSource+'\nbrowserTransportProbe',{fetch}) as (origin:string,token:string,tenant:string,paths:string[],team:string)=>Promise<{failedStage:string|null;rows:unknown[]}>;
+ return{calls,run:()=>probe('http://127.0.0.1:3002','fixture-private','fixture-tenant',Array.from({length:12},(_,i)=>'/section/'+i),'fixture-team-name')};
+}
+test('minimal native transport helper reads JSON and real-shaped ACK once with no-store only on reads',async()=>{
+ const f=transportFixture(false),r=await f.run();assert.equal(r.failedStage,null);assert.equal(r.rows.length,27);
+ assert.equal(f.calls.filter(x=>x.method==='POST').length,1);assert.ok(f.calls.filter(x=>x.method==='GET').every(x=>x.cache==='no-store'));
+ assert.equal(f.calls.find(x=>x.method==='POST')?.cache,undefined);
+ assert.ok(!JSON.stringify(r).includes('fixture-private'));
+});
+test('minimal native transport helper preserves POST rejection as failure without retry or credential text',async()=>{
+ const f=transportFixture(true),r=await f.run();assert.equal(r.failedStage,'create-team');assert.equal(f.calls.filter(x=>x.method==='POST').length,1);
+ assert.equal(f.calls.length,14);assert.ok(!JSON.stringify(r).includes('private bearer text'));
+});
+test('actual server diagnostic formatter isolates case byte windows and omits credentials and query strings',()=>{
+ const start=wrapper.indexOf("const fs=require('node:fs');const events=[];"),end=wrapper.indexOf('\nNODE',start);
+ const formatter=wrapper.slice(start,end),old=JSON.stringify({reqId:'old',time:1,req:{method:'GET',url:'/old?secret=private'},note:'á'})+'\n';
+ const bytes=Buffer.from(old+JSON.stringify({reqId:'current',time:2,req:{method:'GET',url:'/current?secret=private',headers:{authorization:'private'}},body:'private'})+'\n');
+ const lines:string[]=[];
+ vm.runInNewContext(formatter,{require:()=>({readFileSync:()=>bytes}),URL,process:{argv:['node','-', '/fixture','baseline','minimal',String(Buffer.byteLength(old))]},console:{log:(s:string)=>lines.push(s)}});
+ const report=JSON.parse(lines[0].slice('WEB_BROWSER_SERVER_DIAGNOSTIC '.length));
+ assert.equal(report.scenario,'minimal');assert.equal(report.events.length,1);assert.equal(report.events[0].id,'current');assert.equal(report.events[0].path,'/current');
+ assert.ok(!lines[0].includes('private'));assert.ok(!lines[0].includes('headers'));
+});
+
 
