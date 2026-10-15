@@ -240,6 +240,65 @@ request GET /v1/planner/my-week "$TOKEN_P" | node -e 'const x=JSON.parse(require
 expect_status week-auth 401 GET /v1/planner/my-week invalid-token '' ''
 echo 'PASS: professional week returns real PostgreSQL opportunity timestamps in chronological Tuesday/Thursday order across companies'
 
+# A separate public-API fixture proves real assignment DELETE, not manual link nulling.
+# All earlier support/planner/conversion fixtures remain untouched.
+RETAIN_WINDOW="$(node -e 'const start=Date.now()+10*24*3600000;process.stdout.write(JSON.stringify({startsAt:new Date(start).toISOString(),endsAt:new Date(start+8*3600000).toISOString()}))')"
+request POST /v1/availability/mine "$TOKEN_P" '' "$RETAIN_WINDOW" >/dev/null
+RETAIN_JOB_BODY="$(node -e 'process.stdout.write(JSON.stringify({...JSON.parse(process.argv[1]),title:"Optional assignment retention fixture",requiredRole:process.argv[2],payCents:10000}))' -- "$RETAIN_WINDOW" "$PLAN_ROLE")"
+RETAIN_JOB="$(request POST /v1/company/jobs "$TOKEN_A" "$TENANT_A" "$RETAIN_JOB_BODY" | json_field id)"
+request POST "/v1/jobs/$RETAIN_JOB/interest" "$TOKEN_P" >/dev/null
+RETAIN_ASSIGNMENT="$(request POST "/v1/company/jobs/$RETAIN_JOB/confirm" "$TOKEN_A" "$TENANT_A" "$CONFIRM_BODY" | json_field id)"
+RETAIN_BODY="$(case_body "$RETAIN_ASSIGNMENT")"
+RETAIN_KEY="$(request POST /v1/support-cases/intent "$TOKEN_P" "$TENANT_A" "$RETAIN_BODY" | json_field requestKey)"
+RETAIN_SUPPORT="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$RETAIN_BODY" "$RETAIN_KEY" | json_field id)"
+request POST "/v1/company/support-cases/$RETAIN_SUPPORT/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Retained human review"}' >/dev/null
+RETAIN_ACK="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$RETAIN_BODY" "$RETAIN_KEY")"
+RETAIN_SAFETY_BODY="$(node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],category:"other",description:"Retained safety fixture"}))' -- "$RETAIN_ASSIGNMENT")"
+RETAIN_SAFETY="$(request POST /v1/safety-cases "$TOKEN_P" "$TENANT_A" "$RETAIN_SAFETY_BODY" | json_field id)"
+request POST "/v1/company/safety-cases/$RETAIN_SAFETY/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Retained safety history"}' >/dev/null
+RETAIN_APPEAL_BODY="$(node -e 'process.stdout.write(JSON.stringify({safetyCaseId:process.argv[1],reason:"Retained appeal reason"}))' -- "$RETAIN_SAFETY")"
+RETAIN_APPEAL="$(request POST /v1/safety-appeals "$TOKEN_P" "$TENANT_A" "$RETAIN_APPEAL_BODY" | json_field id)"
+request POST "/v1/company/safety-appeals/$RETAIN_APPEAL/status" "$TOKEN_A" "$TENANT_A" '{"status":"reviewing","note":"Retained appeal history"}' >/dev/null
+RETAIN_EVENTS="$(request GET "/v1/company/safety-cases/$RETAIN_SAFETY/events" "$TOKEN_A" "$TENANT_A")"
+RETAIN_APPEAL_EVENTS="$(request GET "/v1/company/safety-appeals/$RETAIN_APPEAL/events" "$TOKEN_A" "$TENANT_A")"
+RETAIN_TRUST_BODY="$(node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],professionalId:process.argv[2],eventType:"commendation",cause:"company",notes:"Optional assignment trust fixture"}))' -- "$RETAIN_ASSIGNMENT" "$PROFILE_ID")"
+RETAIN_TRUST="$(request POST /v1/company/trust-events "$TOKEN_A" "$TENANT_A" "$RETAIN_TRUST_BODY" | json_field id)"
+request GET "/v1/company/trust-events/$PROFILE_ID" "$TOKEN_A" "$TENANT_A" | node -e 'const rows=JSON.parse(require("fs").readFileSync(0,"utf8"));if(!rows.some(r=>r.id===process.argv[1]&&r.assignmentId===process.argv[2]))throw Error("retention_trust_fixture_missing");' -- "$RETAIN_TRUST" "$RETAIN_ASSIGNMENT"
+RETAIN_IDENTITY_BEFORE="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -qAt -v case_id="$RETAIN_SUPPORT" -v tenant_id="$TENANT_A" <<'SQL'
+SELECT jsonb_build_object('tenant',tenant_id,'reporter',reporter_identity_id,'key',request_key,'hash',request_payload_hash)
+ FROM support_cases WHERE id=:'case_id'::uuid AND tenant_id=:'tenant_id'::uuid;
+SQL
+)"
+DELETED_ASSIGNMENT="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -qAt -v assignment_id="$RETAIN_ASSIGNMENT" -v tenant_id="$TENANT_A" <<'SQL'
+DELETE FROM work_assignments WHERE id=:'assignment_id'::uuid AND tenant_id=:'tenant_id'::uuid RETURNING id;
+SQL
+)"
+test "$DELETED_ASSIGNMENT" = "$RETAIN_ASSIGNMENT"
+RETAIN_IDENTITY_AFTER="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -qAt -v case_id="$RETAIN_SUPPORT" -v tenant_id="$TENANT_A" <<'SQL'
+SELECT jsonb_build_object('tenant',tenant_id,'reporter',reporter_identity_id,'key',request_key,'hash',request_payload_hash)
+ FROM support_cases WHERE id=:'case_id'::uuid AND tenant_id=:'tenant_id'::uuid;
+SQL
+)"
+RETAIN_ACK_AFTER="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$RETAIN_BODY" "$RETAIN_KEY")"
+node - "$RETAIN_ACK" "$RETAIN_ACK_AFTER" "$RETAIN_IDENTITY_BEFORE" "$RETAIN_IDENTITY_AFTER" <<'JS'
+const a=require('node:assert/strict');
+const [before,after,identityBefore,identityAfter]=process.argv.slice(2).map(JSON.parse);
+a.deepEqual(after,before);a.equal(after.status,'reviewing');a.deepEqual(identityAfter,identityBefore);
+for(const key of ['requestHash','requestKey','request_payload_hash'])a.equal(key in after,false);
+JS
+request GET /v1/support-cases/mine "$TOKEN_P" "$TENANT_A" | node -e 'const rows=JSON.parse(require("fs").readFileSync(0,"utf8")),r=rows.find(r=>r.id===process.argv[1]);if(!r||r.assignmentId!==null||r.status!=="reviewing"||r.description!=="Support fixture")throw Error("support_case_not_retained_after_delete");' -- "$RETAIN_SUPPORT"
+request GET /v1/safety-cases/mine "$TOKEN_P" "$TENANT_A" | node -e 'const rows=JSON.parse(require("fs").readFileSync(0,"utf8")),r=rows.find(r=>r.id===process.argv[1]);if(!r||r.assignmentId!==null||r.tenantId!==process.argv[2]||r.description!=="Retained safety fixture"||r.status!=="reviewing")throw Error("safety_case_not_retained_after_delete");' -- "$RETAIN_SAFETY" "$TENANT_A"
+RETAIN_EVENTS_AFTER="$(request GET "/v1/company/safety-cases/$RETAIN_SAFETY/events" "$TOKEN_A" "$TENANT_A")"
+RETAIN_APPEAL_EVENTS_AFTER="$(request GET "/v1/company/safety-appeals/$RETAIN_APPEAL/events" "$TOKEN_A" "$TENANT_A")"
+node - "$RETAIN_EVENTS" "$RETAIN_EVENTS_AFTER" "$RETAIN_APPEAL_EVENTS" "$RETAIN_APPEAL_EVENTS_AFTER" <<'JS'
+const a=require('node:assert/strict'),[events,eventsAfter,appealEvents,appealEventsAfter]=process.argv.slice(2).map(JSON.parse);
+a.equal(events.length,1);a.equal(appealEvents.length,1);a.deepEqual(eventsAfter,events);a.deepEqual(appealEventsAfter,appealEvents);
+JS
+request GET /v1/safety-appeals/mine "$TOKEN_P" "$TENANT_A" | node -e 'const rows=JSON.parse(require("fs").readFileSync(0,"utf8")),r=rows.find(r=>r.id===process.argv[1]);if(!r||r.safetyCaseId!==process.argv[2]||r.reason!=="Retained appeal reason"||r.status!=="reviewing")throw Error("appeal_not_retained_after_assignment_delete");' -- "$RETAIN_APPEAL" "$RETAIN_SAFETY"
+request GET "/v1/company/trust-events/$PROFILE_ID" "$TOKEN_A" "$TENANT_A" | node -e 'const rows=JSON.parse(require("fs").readFileSync(0,"utf8"));if(rows.some(r=>r.id===process.argv[1]))throw Error("trust_assignment_cascade_regressed");' -- "$RETAIN_TRUST"
+echo 'PASS: real assignment DELETE retains safety/support and audit history, immutable support intent replay ACK, and original trust cascade via HTTP/PostgreSQL'
+
+
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
 expect_status contexts-revoked 401 GET /v1/me/support-contexts "$TOKEN_P" '' ''
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'
