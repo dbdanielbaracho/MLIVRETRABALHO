@@ -318,6 +318,97 @@ SQL
 echo 'PASS: conversation tenant FKs reject four cross-tenant writes; own writes, NULL assignment and cascade preserved'
 
 
+# Both directions of a private rating must reference an assignment in the same tenant.
+# Positive UPSERT, visibility, immutable grants, shared aggregate and cascade controls.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO identities(id,email,password_hash)
+ VALUES('c6666666-6666-4666-8666-666666666666','rating-boundary-foreign@example.test','x');
+INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status) VALUES
+ ('a7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','completed'),
+ ('a8888888-8888-4888-8888-888888888888','$T2','$J2','$PROFILE','completed');
+INSERT INTO work_ratings(id,tenant_id,assignment_id,rater_identity_id,professional_id,score)
+ VALUES('c4444444-4444-4444-8444-444444444444','$T2','a8888888-8888-4888-8888-888888888888','c6666666-6666-4666-8666-666666666666','$PROFILE',2);
+INSERT INTO company_work_ratings(id,tenant_id,assignment_id,rater_identity_id,professional_id,score)
+ VALUES('c5555555-5555-4555-8555-555555555555','$T2','a8888888-8888-4888-8888-888888888888','c6666666-6666-4666-8666-666666666666','$PROFILE',2);
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE
+ probe record;
+ violations integer := 0;
+ affected integer;
+ rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM work_assignments WHERE id='a8888888-8888-4888-8888-888888888888')
+    OR EXISTS(SELECT 1 FROM work_ratings WHERE id='c4444444-4444-4444-8444-444444444444')
+    OR EXISTS(SELECT 1 FROM company_work_ratings WHERE id='c5555555-5555-4555-8555-555555555555') THEN
+  RAISE EXCEPTION 'foreign_rating_or_assignment_visible';
+ END IF;
+ IF NOT has_table_privilege(current_user,'work_ratings','DELETE')
+    OR has_table_privilege(current_user,'company_work_ratings','DELETE') THEN
+  RAISE EXCEPTION 'rating_delete_grants_regressed';
+ END IF;
+ INSERT INTO work_ratings(id,tenant_id,assignment_id,rater_identity_id,professional_id,score,comment)
+ VALUES('c2222222-2222-4222-8222-222222222222','$T1','a7777777-7777-4777-8777-777777777777','$IDENTITY','$PROFILE',4,'own professional rating');
+ INSERT INTO company_work_ratings(id,tenant_id,assignment_id,rater_identity_id,professional_id,score,comment)
+ VALUES('c3333333-3333-4333-8333-333333333333','$T1','a7777777-7777-4777-8777-777777777777','$IDENTITY','$PROFILE',4,'own company rating');
+ INSERT INTO work_ratings(tenant_id,assignment_id,rater_identity_id,professional_id,score,comment)
+ VALUES('$T1','a7777777-7777-4777-8777-777777777777','$IDENTITY','$PROFILE',5,'updated professional rating')
+ ON CONFLICT(assignment_id,rater_identity_id) DO UPDATE SET score=EXCLUDED.score,comment=EXCLUDED.comment;
+ INSERT INTO company_work_ratings(tenant_id,assignment_id,rater_identity_id,professional_id,score,comment)
+ VALUES('$T1','a7777777-7777-4777-8777-777777777777','$IDENTITY','$PROFILE',3,'updated company rating')
+ ON CONFLICT(assignment_id,rater_identity_id) DO UPDATE SET score=EXCLUDED.score,comment=EXCLUDED.comment,updated_at=now();
+ IF (SELECT count(*) FROM work_ratings)<>1 OR (SELECT count(*) FROM company_work_ratings)<>1
+    OR NOT EXISTS(SELECT 1 FROM work_ratings WHERE id='c2222222-2222-4222-8222-222222222222' AND score=5 AND comment='updated professional rating')
+    OR NOT EXISTS(SELECT 1 FROM company_work_ratings WHERE id='c3333333-3333-4333-8333-333333333333' AND score=3 AND comment='updated company rating')
+    OR NOT EXISTS(SELECT 1 FROM marketplace_company_reputation WHERE tenant_id='$T1' AND rating_count=1 AND average_rating=3)
+    OR NOT EXISTS(SELECT 1 FROM marketplace_company_reputation WHERE tenant_id='$T2' AND rating_count=1 AND average_rating=2) THEN
+  RAISE EXCEPTION 'rating_own_upsert_or_shared_aggregate_regressed';
+ END IF;
+ FOR probe IN SELECT * FROM (VALUES
+  ('professional rating INSERT','work_ratings_assignment_tenant_fk','INSERT INTO work_ratings(tenant_id,assignment_id,rater_identity_id,professional_id,score) VALUES(''$T1'',''a8888888-8888-4888-8888-888888888888'',''$IDENTITY'',''$PROFILE'',4)'),
+  ('professional rating UPDATE','work_ratings_assignment_tenant_fk','UPDATE work_ratings SET assignment_id=''a8888888-8888-4888-8888-888888888888'' WHERE id=''c2222222-2222-4222-8222-222222222222'''),
+  ('company rating INSERT','company_work_ratings_assignment_tenant_fk','INSERT INTO company_work_ratings(tenant_id,assignment_id,rater_identity_id,professional_id,score) VALUES(''$T1'',''a8888888-8888-4888-8888-888888888888'',''$IDENTITY'',''$PROFILE'',4)'),
+  ('company rating UPDATE','company_work_ratings_assignment_tenant_fk','UPDATE company_work_ratings SET assignment_id=''a8888888-8888-4888-8888-888888888888'' WHERE id=''c3333333-3333-4333-8333-333333333333''')
+ ) AS cases(label,expected_constraint,statement)
+ LOOP
+  BEGIN
+   EXECUTE probe.statement;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   IF affected<>1 THEN RAISE EXCEPTION 'rating_probe_did_not_write_one_row'; END IF;
+   RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+  EXCEPTION
+   WHEN SQLSTATE 'P9001' THEN
+    violations := violations+1;
+    RAISE NOTICE 'FAIL: cross-tenant % accepted',probe.label;
+   WHEN foreign_key_violation THEN
+    GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+    IF rejected_by<>probe.expected_constraint THEN RAISE; END IF;
+  END;
+ END LOOP;
+ IF violations<>0 THEN
+  RAISE EXCEPTION 'rating_assignment_tenant_integrity: % cross-tenant writes accepted',violations;
+ END IF;
+END;
+\$\$;
+RESET ROLE;
+DELETE FROM work_assignments WHERE id='a7777777-7777-4777-8777-777777777777';
+DO \$\$ BEGIN
+ IF EXISTS(SELECT 1 FROM work_ratings WHERE id='c2222222-2222-4222-8222-222222222222')
+    OR EXISTS(SELECT 1 FROM company_work_ratings WHERE id='c3333333-3333-4333-8333-333333333333')
+    OR EXISTS(SELECT 1 FROM marketplace_company_reputation WHERE tenant_id='$T1')
+    OR NOT EXISTS(SELECT 1 FROM work_ratings WHERE id='c4444444-4444-4444-8444-444444444444' AND score=2)
+    OR NOT EXISTS(SELECT 1 FROM company_work_ratings WHERE id='c5555555-5555-4555-8555-555555555555' AND score=2)
+    OR NOT EXISTS(SELECT 1 FROM marketplace_company_reputation WHERE tenant_id='$T2' AND rating_count=1 AND average_rating=2) THEN
+  RAISE EXCEPTION 'rating_cascade_or_foreign_aggregate_regressed';
+ END IF;
+END \$\$;
+ROLLBACK;
+SQL
+echo 'PASS: rating tenant FKs reject four cross-tenant writes; own UPSERT, private rows, shared aggregates, grants and cascade preserved'
+
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
