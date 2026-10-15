@@ -409,6 +409,98 @@ SQL
 echo 'PASS: rating tenant FKs reject four cross-tenant writes; own UPSERT, private rows, shared aggregates, grants and cascade preserved'
 
 
+# Case events, appeals and appeal events are immutable private tenant chains.
+# Do not grant UPDATE/DELETE merely to test them; roll back the complete fixture.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO identities(id,email,password_hash)
+ VALUES('d9999999-9999-4999-8999-999999999999','safety-chain-foreign@example.test','x');
+INSERT INTO safety_cases(id,tenant_id,reporter_identity_id,assignment_id,category,description) VALUES
+ ('d1111111-1111-4111-8111-111111111111','$T1','$IDENTITY',NULL,'other','own fixture case'),
+ ('d2222222-2222-4222-8222-222222222222','$T2','$IDENTITY',NULL,'other','foreign fixture case');
+INSERT INTO safety_case_appeals(id,tenant_id,safety_case_id,appellant_identity_id,reason)
+ VALUES('d3333333-3333-4333-8333-333333333333','$T2','d2222222-2222-4222-8222-222222222222','d9999999-9999-4999-8999-999999999999','foreign fixture appeal');
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE
+ probe record;
+ relation_name text;
+ violations integer := 0;
+ affected integer;
+ rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM safety_cases WHERE id='d2222222-2222-4222-8222-222222222222')
+    OR EXISTS(SELECT 1 FROM safety_case_appeals WHERE id='d3333333-3333-4333-8333-333333333333') THEN
+  RAISE EXCEPTION 'foreign_safety_parent_visible';
+ END IF;
+ FOREACH relation_name IN ARRAY ARRAY['safety_case_events','safety_case_appeals','safety_case_appeal_events']
+ LOOP
+  IF has_table_privilege(current_user,relation_name,'UPDATE')
+     OR has_table_privilege(current_user,relation_name,'DELETE') THEN
+   RAISE EXCEPTION 'safety_chain_immutable_grants_regressed: %',relation_name;
+  END IF;
+ END LOOP;
+ IF has_table_privilege(current_user,'safety_cases','DELETE') THEN
+  RAISE EXCEPTION 'safety_case_delete_grant_regressed';
+ END IF;
+ INSERT INTO safety_case_events(id,tenant_id,safety_case_id,actor_identity_id,from_status,to_status,note)
+ VALUES('d4444444-4444-4444-8444-444444444444','$T1','d1111111-1111-4111-8111-111111111111','$IDENTITY','open','reviewing','own fixture event');
+ INSERT INTO safety_case_appeals(id,tenant_id,safety_case_id,appellant_identity_id,reason)
+ VALUES('d5555555-5555-4555-8555-555555555555','$T1','d1111111-1111-4111-8111-111111111111','$IDENTITY','own fixture appeal');
+ INSERT INTO safety_case_appeals(tenant_id,safety_case_id,appellant_identity_id,reason)
+ VALUES('$T1','d1111111-1111-4111-8111-111111111111','$IDENTITY','duplicate fixture appeal')
+ ON CONFLICT(safety_case_id,appellant_identity_id) DO NOTHING;
+ GET DIAGNOSTICS affected=ROW_COUNT;
+ IF affected<>0 THEN RAISE EXCEPTION 'safety_appeal_idempotency_regressed'; END IF;
+ INSERT INTO safety_case_appeal_events(id,tenant_id,appeal_id,actor_identity_id,from_status,to_status,note)
+ VALUES('d6666666-6666-4666-8666-666666666666','$T1','d5555555-5555-4555-8555-555555555555','$IDENTITY','submitted','reviewing','own fixture appeal event');
+ IF (SELECT count(*) FROM safety_case_events)<>1
+    OR (SELECT count(*) FROM safety_case_appeals)<>1
+    OR (SELECT count(*) FROM safety_case_appeal_events)<>1 THEN
+  RAISE EXCEPTION 'safety_chain_own_insert_or_visibility_regressed';
+ END IF;
+ FOR probe IN SELECT * FROM (VALUES
+  ('case event INSERT','safety_case_events_case_tenant_fk','INSERT INTO safety_case_events(tenant_id,safety_case_id,actor_identity_id,from_status,to_status) VALUES(''$T1'',''d2222222-2222-4222-8222-222222222222'',''$IDENTITY'',''open'',''reviewing'')'),
+  ('appeal INSERT','safety_case_appeals_case_tenant_fk','INSERT INTO safety_case_appeals(tenant_id,safety_case_id,appellant_identity_id,reason) VALUES(''$T1'',''d2222222-2222-4222-8222-222222222222'',''$IDENTITY'',''foreign case probe'')'),
+  ('appeal event INSERT','safety_case_appeal_events_appeal_tenant_fk','INSERT INTO safety_case_appeal_events(tenant_id,appeal_id,actor_identity_id,from_status,to_status) VALUES(''$T1'',''d3333333-3333-4333-8333-333333333333'',''$IDENTITY'',''submitted'',''reviewing'')')
+ ) AS cases(label,expected_constraint,statement)
+ LOOP
+  BEGIN
+   EXECUTE probe.statement;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   IF affected<>1 THEN RAISE EXCEPTION 'safety_chain_probe_did_not_write_one_row'; END IF;
+   RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+  EXCEPTION
+   WHEN SQLSTATE 'P9001' THEN
+    violations := violations+1;
+    RAISE NOTICE 'FAIL: cross-tenant % accepted',probe.label;
+   WHEN foreign_key_violation THEN
+    GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+    IF rejected_by<>probe.expected_constraint THEN RAISE; END IF;
+  END;
+ END LOOP;
+ IF violations<>0 THEN
+  RAISE EXCEPTION 'safety_chain_tenant_integrity: % cross-tenant writes accepted',violations;
+ END IF;
+END;
+\$\$;
+RESET ROLE;
+DELETE FROM safety_cases WHERE id='d1111111-1111-4111-8111-111111111111';
+DO \$\$ BEGIN
+ IF EXISTS(SELECT 1 FROM safety_case_events WHERE id='d4444444-4444-4444-8444-444444444444')
+    OR EXISTS(SELECT 1 FROM safety_case_appeals WHERE id='d5555555-5555-4555-8555-555555555555')
+    OR EXISTS(SELECT 1 FROM safety_case_appeal_events WHERE id='d6666666-6666-4666-8666-666666666666')
+    OR NOT EXISTS(SELECT 1 FROM safety_cases WHERE id='d2222222-2222-4222-8222-222222222222' AND tenant_id='$T2' AND assignment_id IS NULL)
+    OR NOT EXISTS(SELECT 1 FROM safety_case_appeals WHERE id='d3333333-3333-4333-8333-333333333333' AND tenant_id='$T2') THEN
+  RAISE EXCEPTION 'safety_chain_cascade_or_foreign_rows_regressed';
+ END IF;
+END \$\$;
+ROLLBACK;
+SQL
+echo 'PASS: safety chain tenant FKs reject three cross-tenant INSERTs; own immutable events, appeal idempotency and cascade preserved'
+
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
