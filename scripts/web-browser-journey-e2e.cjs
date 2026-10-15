@@ -1,7 +1,8 @@
 'use strict';
 const assert=require('node:assert/strict');
 const {spawn,spawnSync}=require('node:child_process');
-const {mkdtempSync}=require('node:fs');
+const {mkdtempSync,readFileSync}=require('node:fs');
+const vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
 const {tmpdir}=require('node:os');
 const {join}=require('node:path');
 const {randomUUID,createHash}=require('node:crypto');
@@ -9,6 +10,11 @@ const api=new URL(process.env.BROWSER_API_URL||'http://127.0.0.1:3002');
 const web=new URL(process.env.BROWSER_WEB_URL||'http://127.0.0.1:3001');
 for(const u of [api,web])assert.ok(u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)&&u.port&&u.pathname==='/'&&!u.username&&!u.password,'Local disposable origins required');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function actualWireValidator(){
+ const clean=s=>stripTypeScriptTypes(s.replace(/import\s[^;]+;/g,''),{mode:'transform'}).replace(/\bexport\s+/g,'');
+ return vm.runInNewContext(clean(readFileSync('apps/web/app/web-contract.ts','utf8'))+'\n'+clean(readFileSync('apps/web/app/stored-session.ts','utf8'))+'\nvalidateSigninCompanySession');
+}
+const validateActualSignin=actualWireValidator();
 const password='BrowserFixture123!';
 const stamp=Date.now()+'-'+randomUUID().slice(0,8);
 let chrome,ws,sessionId,commandId=0,networkViolation;
@@ -54,13 +60,17 @@ async function capture(label){
   const signup=await apiCall('/v1/auth/signup',{method:'POST',body:{email,password,accountType:'company',workspaceName:'Browser company '+label+' '+stamp}});
   const auth=await apiCall('/v1/auth/signin',{method:'POST',body:{email,password}});
   console.log('WEB_BROWSER_FIXTURE_AUTH '+JSON.stringify({label,tenantId:signup.tenantId,memberships:auth.memberships}));
+  const normalized=validateActualSignin(auth);
+  console.log('WEB_BROWSER_WIRE_OBSERVED '+JSON.stringify({label,normalized:!!normalized,membershipKeys:auth.memberships.map(x=>Object.keys(x))}));
+  assert.ok(normalized,'Actual API signin response rejected by current Web validator');
+  assert.equal(normalized.memberships[0]?.tenantId,signup.tenantId,'Actual signin authority must remain its real tenant');
   accounts.push({email,tenant:signup.tenantId,token:auth.accessToken,identity:auth.identity.id});
  }
  const binary=process.env.CHROME_BIN||['google-chrome','google-chrome-stable','chromium','chromium-browser'].find(p=>spawnSync('which',[p],{stdio:'ignore'}).status===0);
  assert.ok(binary,'Installed browser required; no skipped UI evidence');
  const profile=mkdtempSync(join(tmpdir(),'mlivre-web-browser-'));
  chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','ignore','pipe']});
- const endpoint=await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>reject(Error('Browser startup timeout')),15000);chrome.stderr.on('data',b=>{out+=b;const m=out.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:[^\s]+)/);if(m){clearTimeout(timer);resolve(m[1]);}});chrome.once('error',reject);chrome.once('exit',()=>{clearTimeout(timer);reject(Error('Browser exited before debugger ready'));});});
+ const endpoint=await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>{console.error('WEB_BROWSER_STARTUP_DIAGNOSTIC '+out.slice(-5000).replace(/DevTools listening on \S+/g,'DevTools endpoint omitted'));reject(Error('Browser startup timeout'));},15000);chrome.stderr.on('data',b=>{out+=b;const m=out.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:[^\s]+)/);if(m){clearTimeout(timer);resolve(m[1]);}});chrome.once('error',reject);chrome.once('exit',()=>{clearTimeout(timer);reject(Error('Browser exited before debugger ready'));});});
  ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',()=>reject(Error('Debugger connection failed')),{once:true});});
  ws.addEventListener('message',event=>{
   const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error('CDP command failed')):p.resolve(m.result);}return;}
