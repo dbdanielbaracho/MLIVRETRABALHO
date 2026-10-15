@@ -114,9 +114,13 @@ async function capture(label){
  assert.ok(job?.id&&team?.id,'Real persisted job/team required');assert.equal(job.payCents,12345);assert.equal(job.startsAt,new Date(start+'Z').toISOString());assert.equal(job.endsAt,new Date(end+'Z').toISOString());
  await dashboard(accounts[0].email);await capture('company-a-created');
  const signinCount=responses.filter(x=>x.path==='/v1/auth/signin').length;
- await cdp('Page.reload',{ignoreCache:true});await dashboard(accounts[0].email);
- assert.ok(await evaluate('document.body.innerText.includes('+JSON.stringify(jobTitle)+')'),'Reload lost persisted own data');
- assert.equal(responses.filter(x=>x.path==='/v1/auth/signin').length,signinCount,'Reload must reuse tab session, not invent signin retry');
+ for(let reload=1;reload<=5;reload++){
+  console.log('WEB_BROWSER_RELOAD_START '+JSON.stringify({reload}));
+  await cdp('Page.reload',{ignoreCache:true});await dashboard(accounts[0].email);
+  assert.ok(await evaluate('document.body.innerText.includes('+JSON.stringify(jobTitle)+')'),'Reload lost persisted own data');
+  assert.equal(responses.filter(x=>x.path==='/v1/auth/signin').length,signinCount,'Reload must reuse tab session, not invent signin retry');
+  console.log('WEB_BROWSER_RELOAD_PASS '+JSON.stringify({reload}));
+ }
  const browserToken=await evaluate('JSON.parse(sessionStorage.getItem("mlivre:web:session")).accessToken');
  assert.ok(typeof browserToken==='string'&&browserToken.length>0&&browserToken!==accounts[0].token,'Browser session must be distinct from fixture session');
  await click('Array.from(document.querySelectorAll("button")).find(x=>x.textContent==="Sair")');
