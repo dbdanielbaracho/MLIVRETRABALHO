@@ -18,7 +18,7 @@ const validateActualSignin=actualWireValidator();
 const password='BrowserFixture123!';
 const stamp=Date.now()+'-'+randomUUID().slice(0,8);
 let chrome,ws,sessionId,commandId=0,networkViolation;
-const pending=new Map(),responses=[],captures=[];
+const pending=new Map(),responses=[],captures=[],networkEvents=[],requestMethods=new Map();
 async function apiCall(path,{token,tenant,method='GET',body}={}){
  const r=await fetch(new URL(path,api),{method,headers:{...(token?{authorization:'Bearer '+token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body?{'content-type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
  assert.ok(r.ok,'Local fixture API failed: '+method+' '+path+' HTTP'+r.status);return r.json();
@@ -79,7 +79,11 @@ async function capture(label){
    if(!allowed)networkViolation='Non-local application request blocked: '+u.origin;
    cdp(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:m.params.requestId,...(!allowed?{errorReason:'BlockedByClient'}:{})}).catch(()=>{});
   }
-  if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin)responses.push({path:u.pathname,status:m.params.response.status});}
+  if(m.method==='Network.requestWillBeSent'){
+   const u=new URL(m.params.request.url);if(u.origin===api.origin){requestMethods.set(m.params.requestId,m.params.request.method);networkEvents.push({event:'request',id:m.params.requestId,path:u.pathname,method:m.params.request.method,headerNames:Object.keys(m.params.request.headers).map(x=>x.toLowerCase()).sort()});}
+  }
+  if(m.method==='Network.loadingFailed'&&requestMethods.has(m.params.requestId))networkEvents.push({event:'failed',id:m.params.requestId,method:requestMethods.get(m.params.requestId),errorText:m.params.errorText,blockedReason:m.params.blockedReason,corsErrorStatus:m.params.corsErrorStatus,canceled:m.params.canceled});
+  if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
@@ -123,7 +127,7 @@ async function capture(label){
  assert.deepEqual(await apiCall('/v1/company/jobs',{token:accounts[1].token,tenant:accounts[1].tenant}),[]);
  assert.deepEqual(await apiCall('/v1/company/teams',{token:accounts[1].token,tenant:accounts[1].tenant}),[]);
  await capture('company-b-isolated');
- assert.ok(responses.some(x=>x.path==='/v1/auth/signout'&&x.status>=200&&x.status<300),'Actual remote signout response required');
+ assert.ok(responses.some(x=>x.path==='/v1/auth/signout'&&x.method==='POST'&&x.status===201),'Actual POST201 remote signout response required; OPTIONS204 is not acknowledgement');
  const revoked=await fetch(new URL('/v1/me',api),{headers:{authorization:'Bearer '+browserToken},signal:AbortSignal.timeout(15000)});
  assert.equal(revoked.status,401,'Explicit signout must revoke the actual browser bearer');await revoked.arrayBuffer();
  await apiCall('/v1/me',{token:accounts[0].token});
@@ -135,6 +139,7 @@ async function capture(label){
   try{
    const state=await evaluate('({h1:document.querySelector("h1")?.textContent,alert:document.querySelector("[role=alert]")?.textContent,metricValues:Array.from(document.querySelectorAll(".metrics strong")).map(x=>x.textContent),bodyText:document.body.innerText.slice(0,1800)})');
    console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({state,apiResponses:responses,networkViolation}));
+   console.log('WEB_BROWSER_NETWORK_DIAGNOSTIC '+JSON.stringify(networkEvents));
    await capture('failure');
   }catch{console.error('WEB_BROWSER_FAILURE_STATE unavailable');}
  }
@@ -142,3 +147,4 @@ async function capture(label){
 }).finally(async()=>{
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
+
