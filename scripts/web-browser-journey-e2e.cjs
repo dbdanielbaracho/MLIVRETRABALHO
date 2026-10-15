@@ -115,11 +115,14 @@ async function capture(label){
  await dashboard(accounts[0].email);await capture('company-a-created');
  const signinCount=responses.filter(x=>x.path==='/v1/auth/signin').length;
  for(let reload=1;reload<=5;reload++){
-  console.log('WEB_BROWSER_RELOAD_START '+JSON.stringify({reload}));
+  const previousTimeOrigin=await evaluate('performance.timeOrigin');
+  console.log('WEB_BROWSER_RELOAD_START '+JSON.stringify({reload,previousTimeOrigin}));
   await cdp('Page.reload',{ignoreCache:true});await dashboard(accounts[0].email);
+  const currentTimeOrigin=await evaluate('performance.timeOrigin');
+  assert.notEqual(currentTimeOrigin,previousTimeOrigin,'Reload assertion must observe a new document, not the previous dashboard DOM');
   assert.ok(await evaluate('document.body.innerText.includes('+JSON.stringify(jobTitle)+')'),'Reload lost persisted own data');
   assert.equal(responses.filter(x=>x.path==='/v1/auth/signin').length,signinCount,'Reload must reuse tab session, not invent signin retry');
-  console.log('WEB_BROWSER_RELOAD_PASS '+JSON.stringify({reload}));
+  console.log('WEB_BROWSER_RELOAD_PASS '+JSON.stringify({reload,previousTimeOrigin,currentTimeOrigin}));
  }
  const browserToken=await evaluate('JSON.parse(sessionStorage.getItem("mlivre:web:session")).accessToken');
  assert.ok(typeof browserToken==='string'&&browserToken.length>0&&browserToken!==accounts[0].token,'Browser session must be distinct from fixture session');

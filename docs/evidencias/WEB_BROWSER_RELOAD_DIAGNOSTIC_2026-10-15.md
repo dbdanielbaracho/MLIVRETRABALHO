@@ -20,3 +20,8 @@ Head386e800747f378d98fa363a03d131afa7a33bf64/CI38754463700/job116489109517 attem
 ## Capture provenance preserved with this functional regression extension
 
 Directory `web-browser-2026-10-15/`: six actual PNGs from PR556 own SUCCESS and actual post FAILURE, plus PR556_CAPTURE_PROVENANCE.json. Independently decoded PNG signature89504e470d0a1a0a, byte counts, SHA256 and1365x900dimensions for all six, failure capture visually inspected. Own and post fixture IDs/hash differ; never attributed to PR558. Original CI logs remain primary sources. Five consecutive hard reloads retain `ignoreCache:true`, all twelve completed reads, exact persisted job DOM, no extra signin, and POST201 logout+revoked browser token401+other sameidentity session200; no skip or application changes.
+
+
+### 2026-10-15 —558 cinco recargas medidas, identidade de documento agora exigida
+
+Headc2d61915167ac224eea6d743fb6e1864c51e66cd/CI38755422965/job116492445552 attempt1SUCCESS com5marcadores reloadPASS14:56:34.514Z..998Z e jornada real. Ainda não é causa resolvida do pós556falho. Os tempos curtos suscitam hipótese de DOMantigo; novo gate compara performance.timeOrigin antes/depois deCADA reload e exige documento diferente, sem aguardar/corrigir automaticamente neste estágio. Isso é regressão maisestrita, não prova prévia dahipótese. Se falhar, ler origem real registrada antesde fixdeharness. API/CORS/app/segurança intactos; CI novoHEAD PENDENTE,12áreaspendentes.

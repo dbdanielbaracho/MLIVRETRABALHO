@@ -3884,3 +3884,8 @@ PR556 já merged em dd715c6573bcc6d6e5e3c749cc634e276db83ef0, tree90aec6eeb7e3e0
 ### 2026-10-15 — diagnóstico558: primeiro resultado medido e regressão intermitente
 
 Head386e800747f378d98fa363a03d131afa7a33bf64/CI38754463700/job116489109517 attempt1SUCCESS1308+Chrome14:50:32.7732259Z, sem alterar aplicação/API/CORS. Isso NÃO determina causa nem reclassifica a falha pós556 como PASS. Teste agora exige5recargas consecutivas com mesmos assertions/cache/CORS/interceptação/sessão, não retry de falha; qualquer falha interrompe o gate. Preservados PNGs556 próprios/pós-falhos+manifesto no repositório comorigem/SHA/bytes/dimensões verificados, não atribuídos a558. Novocandidato/exactheadCI/pós aindaPENDENTES. Nenhum fix especulativo deproduto foi feito; causa eminvestigação. Somenteárea10aceita tecnicamente;12pendentes.
+
+
+### 2026-10-15 —558 cinco recargas medidas, identidade de documento agora exigida
+
+Headc2d61915167ac224eea6d743fb6e1864c51e66cd/CI38755422965/job116492445552 attempt1SUCCESS com5marcadores reloadPASS14:56:34.514Z..998Z e jornada real. Ainda não é causa resolvida do pós556falho. Os tempos curtos suscitam hipótese de DOMantigo; novo gate compara performance.timeOrigin antes/depois deCADA reload e exige documento diferente, sem aguardar/corrigir automaticamente neste estágio. Isso é regressão maisestrita, não prova prévia dahipótese. Se falhar, ler origem real registrada antesde fixdeharness. API/CORS/app/segurança intactos; CI novoHEAD PENDENTE,12áreaspendentes.
