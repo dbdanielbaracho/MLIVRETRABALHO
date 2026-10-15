@@ -610,6 +610,116 @@ SQL
 echo 'PASS: optional assignment tenant FKs reject five cross-tenant writes; NULL, retained case/history/intent identity and trust cascade preserved'
 
 
+# Independent RESTRICT fixtures prevent one family's FK from masking another's delete behavior.
+# Runtime negative writes and the entire disposable transaction roll back.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO company_jobs(id,tenant_id,title,status) VALUES
+ ('f1111111-1111-4111-8111-111111111111','$T1','Conversion tenant fixture','open'),
+ ('f2222222-2222-4222-8222-222222222222','$T1','Integrity tenant fixture','open');
+INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status) VALUES
+ ('f3333333-3333-4333-8333-333333333333','$T1','$J1','$PROFILE','cancelled'),
+ ('f4444444-4444-4444-8444-444444444444','$T1','f1111111-1111-4111-8111-111111111111','$PROFILE','completed'),
+ ('f5555555-5555-4555-8555-555555555555','$T1','f2222222-2222-4222-8222-222222222222','$PROFILE','completed'),
+ ('f6666666-6666-4666-8666-666666666666','$T2','$J2','$PROFILE','completed');
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE probe record; violations integer := 0; affected integer; rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM work_assignments WHERE id='f6666666-6666-4666-8666-666666666666') THEN
+  RAISE EXCEPTION 'restrict_foreign_assignment_visible';
+ END IF;
+ IF has_table_privilege(current_user,'assignment_cancellations','UPDATE')
+    OR has_table_privilege(current_user,'assignment_cancellations','DELETE')
+    OR has_table_privilege(current_user,'direct_hire_conversions','DELETE')
+    OR has_table_privilege(current_user,'marketplace_integrity_cases','DELETE') THEN
+  RAISE EXCEPTION 'restrict_assignment_immutable_grants_regressed';
+ END IF;
+ INSERT INTO assignment_cancellations(id,tenant_id,assignment_id,initiator_identity_id,reason,initiator_kind)
+ VALUES('f7777777-7777-4777-8777-777777777777','$T1','f3333333-3333-4333-8333-333333333333','$IDENTITY','own cancellation fixture','company');
+ INSERT INTO assignment_cancellations(tenant_id,assignment_id,initiator_identity_id,reason,initiator_kind)
+ VALUES('$T1','f3333333-3333-4333-8333-333333333333','$IDENTITY','replay must not replace reason','company')
+ ON CONFLICT(assignment_id) DO NOTHING;
+ IF (SELECT count(*) FROM assignment_cancellations)<>1
+    OR (SELECT reason FROM assignment_cancellations WHERE id='f7777777-7777-4777-8777-777777777777')<>'own cancellation fixture' THEN
+  RAISE EXCEPTION 'cancellation_own_insert_or_replay_regressed';
+ END IF;
+ INSERT INTO direct_hire_conversions(id,tenant_id,professional_id,source_assignment_id,modality,proposed_by_identity_id,note)
+ VALUES('f8888888-8888-4888-8888-888888888888','$T1','$PROFILE','f4444444-4444-4444-8444-444444444444','temp_to_hire','$IDENTITY','own conversion fixture');
+ INSERT INTO direct_hire_conversions(tenant_id,professional_id,source_assignment_id,modality,proposed_by_identity_id,note)
+ VALUES('$T1','$PROFILE','f4444444-4444-4444-8444-444444444444','temp_to_hire','$IDENTITY','legitimate updated note')
+ ON CONFLICT(tenant_id,source_assignment_id,modality) DO UPDATE SET note=EXCLUDED.note;
+ IF (SELECT count(*) FROM direct_hire_conversions)<>1
+    OR (SELECT note FROM direct_hire_conversions WHERE id='f8888888-8888-4888-8888-888888888888')<>'legitimate updated note' THEN
+  RAISE EXCEPTION 'conversion_own_upsert_regressed';
+ END IF;
+ INSERT INTO marketplace_integrity_cases(id,tenant_id,assignment_id,kind,evidence,created_by_identity_id)
+ VALUES('f9999999-9999-4999-8999-999999999999','$T1','f5555555-5555-4555-8555-555555555555','other','own integrity fixture','$IDENTITY');
+ UPDATE marketplace_integrity_cases SET status='needs_more_info',reviewed_by_identity_id='$IDENTITY',review_note='human review',reviewed_at=now()
+ WHERE id='f9999999-9999-4999-8999-999999999999';
+ IF NOT FOUND OR (SELECT status FROM marketplace_integrity_cases WHERE id='f9999999-9999-4999-8999-999999999999')<>'needs_more_info' THEN
+  RAISE EXCEPTION 'integrity_own_review_regressed';
+ END IF;
+ FOR probe IN SELECT * FROM (VALUES
+  ('cancellation INSERT','assignment_cancellations_assignment_tenant_fk','INSERT INTO assignment_cancellations(tenant_id,assignment_id,initiator_identity_id,reason,initiator_kind) VALUES(''$T1'',''f6666666-6666-4666-8666-666666666666'',''$IDENTITY'',''foreign cancellation probe'',''company'')'),
+  ('conversion INSERT','direct_hire_conversions_assignment_tenant_fk','INSERT INTO direct_hire_conversions(tenant_id,professional_id,source_assignment_id,modality,proposed_by_identity_id) VALUES(''$T1'',''$PROFILE'',''f6666666-6666-4666-8666-666666666666'',''permanent'',''$IDENTITY'')'),
+  ('conversion UPDATE','direct_hire_conversions_assignment_tenant_fk','UPDATE direct_hire_conversions SET source_assignment_id=''f6666666-6666-4666-8666-666666666666'' WHERE id=''f8888888-8888-4888-8888-888888888888'''),
+  ('integrity INSERT','marketplace_integrity_cases_assignment_tenant_fk','INSERT INTO marketplace_integrity_cases(tenant_id,assignment_id,kind,evidence,created_by_identity_id) VALUES(''$T1'',''f6666666-6666-4666-8666-666666666666'',''other'',''foreign integrity probe'',''$IDENTITY'')'),
+  ('integrity UPDATE','marketplace_integrity_cases_assignment_tenant_fk','UPDATE marketplace_integrity_cases SET assignment_id=''f6666666-6666-4666-8666-666666666666'' WHERE id=''f9999999-9999-4999-8999-999999999999''')
+ ) AS cases(label,expected_constraint,statement)
+ LOOP
+  BEGIN
+   EXECUTE probe.statement;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   IF affected<>1 THEN RAISE EXCEPTION 'restrict_assignment_probe_did_not_write_one_row'; END IF;
+   RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+  EXCEPTION
+   WHEN SQLSTATE 'P9001' THEN
+    violations := violations+1;
+    RAISE NOTICE 'FAIL: cross-tenant % accepted',probe.label;
+   WHEN foreign_key_violation THEN
+    GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+    IF rejected_by<>probe.expected_constraint THEN RAISE; END IF;
+  END;
+ END LOOP;
+ IF violations<>0 THEN RAISE EXCEPTION 'restrict_assignment_tenant_integrity: % cross-tenant writes accepted',violations; END IF;
+END;
+\$\$;
+RESET ROLE;
+DO \$\$
+DECLARE probe record; affected integer; rejected_by text;
+BEGIN
+ FOR probe IN SELECT * FROM (VALUES
+  ('f3333333-3333-4333-8333-333333333333'::uuid,'assignment_cancellations_assignment_id_fkey','assignment_cancellations_assignment_tenant_fk'),
+  ('f4444444-4444-4444-8444-444444444444'::uuid,'direct_hire_conversions_source_assignment_id_fkey','direct_hire_conversions_assignment_tenant_fk'),
+  ('f5555555-5555-4555-8555-555555555555'::uuid,'marketplace_integrity_cases_assignment_id_fkey','marketplace_integrity_cases_assignment_tenant_fk')
+ ) AS cases(assignment_id,old_constraint,new_constraint)
+ LOOP
+  BEGIN
+   DELETE FROM work_assignments WHERE id=probe.assignment_id;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   RAISE EXCEPTION 'restrict_assignment_delete_unexpectedly_allowed: % rows',affected;
+  EXCEPTION WHEN foreign_key_violation THEN
+   GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+   IF rejected_by NOT IN(probe.old_constraint,probe.new_constraint) THEN RAISE; END IF;
+  END;
+  IF NOT EXISTS(SELECT 1 FROM work_assignments WHERE id=probe.assignment_id AND tenant_id='$T1') THEN
+   RAISE EXCEPTION 'restrict_assignment_parent_not_retained';
+  END IF;
+ END LOOP;
+ IF (SELECT count(*) FROM assignment_cancellations WHERE id='f7777777-7777-4777-8777-777777777777' AND reason='own cancellation fixture')<>1
+    OR (SELECT count(*) FROM direct_hire_conversions WHERE id='f8888888-8888-4888-8888-888888888888' AND note='legitimate updated note')<>1
+    OR (SELECT count(*) FROM marketplace_integrity_cases WHERE id='f9999999-9999-4999-8999-999999999999' AND status='needs_more_info' AND review_note='human review')<>1
+    OR NOT EXISTS(SELECT 1 FROM work_assignments WHERE id='f6666666-6666-4666-8666-666666666666' AND tenant_id='$T2') THEN
+  RAISE EXCEPTION 'restrict_assignment_history_or_foreign_parent_regressed';
+ END IF;
+END;
+\$\$;
+ROLLBACK;
+SQL
+echo 'PASS: restricted assignment tenant FKs reject five cross-tenant writes; own replay, upsert, review, immutable grants and three independent DELETE restrictions preserved'
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
