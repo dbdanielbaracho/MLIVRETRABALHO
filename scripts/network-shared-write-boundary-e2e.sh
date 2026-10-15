@@ -9,6 +9,30 @@ PROFILE="a4444444-4444-4444-8444-444444444444"
 J1="a5555555-5555-4555-8555-555555555555"
 J2="a6666666-6666-4666-8666-666666666666"
 
+# Read-only catalog evidence: every public-schema child FK, including ALTER-added ones.
+# RLS flags are observed metadata, not a substitute for approved data-scope classification.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -At <<'SQL'
+SELECT 'TENANT_FK_INVENTORY ' || jsonb_build_object(
+ 'schema','public','foreignKeyCount',count(*),'foreignKeys',coalesce(jsonb_agg(
+ jsonb_build_object(
+  'child',child.relname,'parentSchema',parent_ns.nspname,'parent',parent.relname,
+  'constraint',c.conname,'validated',c.convalidated,
+  'childRls',child.relrowsecurity,'childForceRls',child.relforcerowsecurity,
+  'parentRls',parent.relrowsecurity,'parentForceRls',parent.relforcerowsecurity,
+  'columns',ARRAY(SELECT a.attname FROM unnest(c.conkey) WITH ORDINALITY k(attnum,position)
+    JOIN pg_attribute a ON a.attrelid=c.conrelid AND a.attnum=k.attnum ORDER BY k.position),
+  'parentColumns',ARRAY(SELECT a.attname FROM unnest(c.confkey) WITH ORDINALITY k(attnum,position)
+    JOIN pg_attribute a ON a.attrelid=c.confrelid AND a.attnum=k.attnum ORDER BY k.position),
+  'definition',pg_get_constraintdef(c.oid)
+ ) ORDER BY child.relname,c.conname),'[]'::jsonb))::text
+FROM pg_constraint c
+JOIN pg_class child ON child.oid=c.conrelid
+JOIN pg_namespace child_ns ON child_ns.oid=child.relnamespace
+JOIN pg_class parent ON parent.oid=c.confrelid
+JOIN pg_namespace parent_ns ON parent_ns.oid=parent.relnamespace
+WHERE c.contype='f' AND child_ns.nspname='public';
+SQL
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 INSERT INTO tenants(id,slug,display_name) VALUES
  ('$T1','network-boundary-t1','Network Boundary T1'),
@@ -218,6 +242,80 @@ END \$\$;
 ROLLBACK;
 SQL
 echo 'PASS: financial assignment tenant FKs reject cross-tenant ledger INSERT/UPDATE and event INSERT; own writes, immutable grants and cascade preserved'
+
+
+
+# Both links in the private conversation chain must remain within one tenant.
+# Keep NULL assignment compatibility and the original cascade; roll back all fixtures.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status) VALUES
+ ('a7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','confirmed'),
+ ('a8888888-8888-4888-8888-888888888888','$T2','$J2','$PROFILE','confirmed');
+INSERT INTO conversations(id,tenant_id,assignment_id)
+VALUES('b2222222-2222-4222-8222-222222222222','$T2','a8888888-8888-4888-8888-888888888888');
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE
+ probe record;
+ violations integer := 0;
+ affected integer;
+ rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM work_assignments WHERE id='a8888888-8888-4888-8888-888888888888')
+    OR EXISTS(SELECT 1 FROM conversations WHERE id='b2222222-2222-4222-8222-222222222222') THEN
+  RAISE EXCEPTION 'foreign_chat_parent_visible';
+ END IF;
+ INSERT INTO conversations(id,tenant_id,assignment_id) VALUES
+ ('b1111111-1111-4111-8111-111111111111','$T1','a7777777-7777-4777-8777-777777777777'),
+ ('b4444444-4444-4444-8444-444444444444','$T1',NULL);
+ INSERT INTO conversation_messages(id,tenant_id,conversation_id,sender_identity_id,body)
+ VALUES('b3333333-3333-4333-8333-333333333333','$T1','b1111111-1111-4111-8111-111111111111','$IDENTITY','own message');
+ UPDATE conversation_messages SET body='own message updated' WHERE id='b3333333-3333-4333-8333-333333333333';
+ IF NOT FOUND THEN RAISE EXCEPTION 'chat_own_update_failed'; END IF;
+ IF (SELECT count(*) FROM conversations WHERE tenant_id='$T1')<>2
+    OR (SELECT body FROM conversation_messages WHERE id='b3333333-3333-4333-8333-333333333333')<>'own message updated' THEN
+  RAISE EXCEPTION 'chat_own_positive_control_failed';
+ END IF;
+ FOR probe IN SELECT * FROM (VALUES
+  ('conversation INSERT','conversations_assignment_tenant_fk','INSERT INTO conversations(tenant_id,assignment_id) VALUES(''$T1'',''a8888888-8888-4888-8888-888888888888'')'),
+  ('conversation UPDATE','conversations_assignment_tenant_fk','UPDATE conversations SET assignment_id=''a8888888-8888-4888-8888-888888888888'' WHERE id=''b1111111-1111-4111-8111-111111111111'''),
+  ('message INSERT','conversation_messages_conversation_tenant_fk','INSERT INTO conversation_messages(tenant_id,conversation_id,sender_identity_id,body) VALUES(''$T1'',''b2222222-2222-4222-8222-222222222222'',''$IDENTITY'',''foreign conversation probe'')'),
+  ('message UPDATE','conversation_messages_conversation_tenant_fk','UPDATE conversation_messages SET conversation_id=''b2222222-2222-4222-8222-222222222222'' WHERE id=''b3333333-3333-4333-8333-333333333333''')
+ ) AS cases(label,expected_constraint,statement)
+ LOOP
+  BEGIN
+   EXECUTE probe.statement;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   IF affected<>1 THEN RAISE EXCEPTION 'chat_probe_did_not_write_one_row'; END IF;
+   RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+  EXCEPTION
+   WHEN SQLSTATE 'P9001' THEN
+    violations := violations+1;
+    RAISE NOTICE 'FAIL: cross-tenant % accepted',probe.label;
+   WHEN foreign_key_violation THEN
+    GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+    IF rejected_by<>probe.expected_constraint THEN RAISE; END IF;
+  END;
+ END LOOP;
+ IF violations<>0 THEN
+  RAISE EXCEPTION 'conversation_tenant_integrity: % cross-tenant writes accepted',violations;
+ END IF;
+END;
+\$\$;
+RESET ROLE;
+DELETE FROM work_assignments WHERE id='a7777777-7777-4777-8777-777777777777';
+DO \$\$ BEGIN
+ IF EXISTS(SELECT 1 FROM conversations WHERE id='b1111111-1111-4111-8111-111111111111')
+    OR EXISTS(SELECT 1 FROM conversation_messages WHERE id='b3333333-3333-4333-8333-333333333333')
+    OR NOT EXISTS(SELECT 1 FROM conversations WHERE id='b4444444-4444-4444-8444-444444444444' AND assignment_id IS NULL) THEN
+  RAISE EXCEPTION 'conversation_cascade_or_nullable_contract_regressed';
+ END IF;
+END \$\$;
+ROLLBACK;
+SQL
+echo 'PASS: conversation tenant FKs reject four cross-tenant writes; own writes, NULL assignment and cascade preserved'
 
 
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
