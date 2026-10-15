@@ -131,6 +131,95 @@ grep -qi 'work_assignments_job_tenant_fk' /tmp/assignment-job-update.err
 echo 'PASS: assignment job FK rejects cross-tenant INSERT and UPDATE while own-tenant assignment remains allowed'
 
 
+
+# Financial child rows must belong to the same tenant as their assignment.
+# Only synthetic fixtures in the existing disposable CI database; all probes
+# and cascade checks below are rolled back, including accepted negative writes.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status) VALUES
+ ('a7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','confirmed'),
+ ('a8888888-8888-4888-8888-888888888888','$T2','$J2','$PROFILE','confirmed');
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE
+ violations integer := 0;
+ rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM work_assignments WHERE id='a8888888-8888-4888-8888-888888888888') THEN
+  RAISE EXCEPTION 'foreign_assignment_visible';
+ END IF;
+ INSERT INTO earnings_ledger(tenant_id,assignment_id,professional_id,amount_cents)
+ VALUES('$T1','a7777777-7777-4777-8777-777777777777','$PROFILE',100);
+ INSERT INTO payment_events(tenant_id,assignment_id,event_type,amount_cents,provider,idempotency_key)
+ VALUES('$T1','a7777777-7777-4777-8777-777777777777','captured',100,'ci_fixture','financial-parent-own');
+ IF (SELECT count(*) FROM earnings_ledger WHERE tenant_id='$T1')<>1
+    OR (SELECT count(*) FROM payment_events WHERE tenant_id='$T1')<>1 THEN
+  RAISE EXCEPTION 'financial_own_tenant_positive_control_failed';
+ END IF;
+ UPDATE earnings_ledger SET status='payable' WHERE assignment_id='a7777777-7777-4777-8777-777777777777';
+ IF NOT FOUND THEN RAISE EXCEPTION 'ledger_own_update_failed'; END IF;
+ IF has_table_privilege(current_user,'payment_events','UPDATE')
+    OR has_table_privilege(current_user,'payment_events','DELETE')
+    OR has_table_privilege(current_user,'earnings_ledger','DELETE') THEN
+  RAISE EXCEPTION 'financial_immutable_grants_regressed';
+ END IF;
+ BEGIN
+  INSERT INTO earnings_ledger(tenant_id,assignment_id,professional_id,amount_cents)
+  VALUES('$T1','a8888888-8888-4888-8888-888888888888','$PROFILE',100);
+  RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+ EXCEPTION
+  WHEN SQLSTATE 'P9001' THEN
+   violations := violations+1;
+   RAISE NOTICE 'FAIL: cross-tenant ledger INSERT accepted';
+  WHEN foreign_key_violation THEN
+   GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+   IF rejected_by<>'earnings_ledger_assignment_tenant_fk' THEN RAISE; END IF;
+ END;
+ BEGIN
+  UPDATE earnings_ledger SET assignment_id='a8888888-8888-4888-8888-888888888888'
+   WHERE assignment_id='a7777777-7777-4777-8777-777777777777';
+  IF NOT FOUND THEN RAISE EXCEPTION 'ledger_probe_updated_zero_rows'; END IF;
+  RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+ EXCEPTION
+  WHEN SQLSTATE 'P9001' THEN
+   violations := violations+1;
+   RAISE NOTICE 'FAIL: cross-tenant ledger UPDATE accepted';
+  WHEN foreign_key_violation THEN
+   GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+   IF rejected_by<>'earnings_ledger_assignment_tenant_fk' THEN RAISE; END IF;
+ END;
+ BEGIN
+  INSERT INTO payment_events(tenant_id,assignment_id,event_type,amount_cents,provider,idempotency_key)
+  VALUES('$T1','a8888888-8888-4888-8888-888888888888','captured',100,'ci_fixture','financial-parent-foreign');
+  RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+ EXCEPTION
+  WHEN SQLSTATE 'P9001' THEN
+   violations := violations+1;
+   RAISE NOTICE 'FAIL: cross-tenant payment event INSERT accepted';
+  WHEN foreign_key_violation THEN
+   GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+   IF rejected_by<>'payment_events_assignment_tenant_fk' THEN RAISE; END IF;
+ END;
+ IF violations<>0 THEN
+  RAISE EXCEPTION 'financial_assignment_tenant_integrity: % cross-tenant writes accepted',violations;
+ END IF;
+END;
+\$\$;
+RESET ROLE;
+DELETE FROM work_assignments WHERE id='a7777777-7777-4777-8777-777777777777';
+DO \$\$ BEGIN
+ IF EXISTS(SELECT 1 FROM earnings_ledger WHERE assignment_id='a7777777-7777-4777-8777-777777777777')
+    OR EXISTS(SELECT 1 FROM payment_events WHERE assignment_id='a7777777-7777-4777-8777-777777777777') THEN
+  RAISE EXCEPTION 'financial_assignment_cascade_regressed';
+ END IF;
+END \$\$;
+ROLLBACK;
+SQL
+echo 'PASS: financial assignment tenant FKs reject cross-tenant ledger INSERT/UPDATE and event INSERT; own writes, immutable grants and cascade preserved'
+
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
