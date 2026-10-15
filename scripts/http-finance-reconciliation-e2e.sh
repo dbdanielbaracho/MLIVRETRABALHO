@@ -56,6 +56,25 @@ node "$(dirname "$0")/payment-webhook-concurrency-e2e.cjs" "$TENANT_A" "$ASSIGNM
 EVENTS_B="$(request GET /v1/company/payment-events "$B_TOKEN" "$TENANT_B")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];if(rows.some(v=>v.assignmentId===id))process.exit(1)' "$EVENTS_B" "$ASSIGNMENT_ID"
 
+
+# Aggregate totals must remain numeric/exact even when individually valid events
+# exceed PostgreSQL int32 after summation. This fixture uses only local CI HTTP.
+case "$BASE_URL" in http://127.0.0.1:*|http://localhost:*) ;; *) echo 'local finance fixture required' >&2; exit 1;; esac
+for KIND in captured refunded payout_paid; do
+  for PART in 1 2; do
+    KEY="finance-wide-$KIND-$PART-$STAMP"
+    WIDE_BODY="$(node -e 'process.stdout.write(JSON.stringify({tenantId:process.argv[1],assignmentId:process.argv[2],eventType:process.argv[3],amountCents:2147483647,recipientProfessionalId:process.argv[4],idempotencyKey:process.argv[5]}))' "$TENANT_A" "$ASSIGNMENT_ID" "$KIND" "$PRO_ID" "$KEY")"
+    WIDE_ACK="$(signed_webhook "$WIDE_BODY")"
+    node -e 'const assert=require("node:assert/strict"),x=JSON.parse(process.argv[1]);assert.equal(x.amountCents,2147483647);assert.equal(x.idempotencyKey,process.argv[2]);' "$WIDE_ACK" "$KEY"
+    test "$(signed_webhook "$WIDE_BODY")" = "$WIDE_ACK"
+  done
+done
+WIDE_RECON="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
+node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]),x=rows.find(v=>v.assignmentId===process.argv[2]);assert.ok(x);assert.equal(x.capturedCents,4294992294);assert.equal(x.refundedCents,4294967294);assert.equal(x.paidOutCents,4294992294);for(const k of ["capturedCents","refundedCents","paidOutCents"])assert.ok(Number.isSafeInteger(x[k]));assert.equal(x.payableCents,25000);assert.equal(x.reconciliationStatus,"overpaid");' "$WIDE_RECON" "$ASSIGNMENT_ID"
+WIDE_OTHER="$(request GET /v1/company/payment-events/reconciliation "$B_TOKEN" "$TENANT_B")"
+node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]);assert.equal(rows.some(v=>v.assignmentId===process.argv[2]),false);' "$WIDE_OTHER" "$ASSIGNMENT_ID"
+echo "PASS: reconciliation totals beyond int32 are exact JSON numbers, replay-safe and tenant-isolated"
+
 for TOKEN in "$PRO_TOKEN" "$PRO2_TOKEN"; do request POST /v1/auth/signout "$TOKEN" '' '{}' >/dev/null; done
 request POST /v1/auth/signout "$A_TOKEN" '' '{}' >/dev/null; request POST /v1/auth/signout "$B_TOKEN" '' '{}' >/dev/null
 echo "PASS: signed finance events are idempotent, recipient-bound, duplicate-payout-safe, tenant-isolated and reconciled"
