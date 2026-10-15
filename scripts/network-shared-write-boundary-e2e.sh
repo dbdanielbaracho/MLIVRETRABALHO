@@ -720,6 +720,106 @@ ROLLBACK;
 SQL
 echo 'PASS: restricted assignment tenant FKs reject five cross-tenant writes; own replay, upsert, review, immutable grants and three independent DELETE restrictions preserved'
 
+# Private legacy interests are not the NETWORK_SHARED marketplace interests.
+# Probe the two remaining candidate pairs without changing shared/global classification.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status) VALUES
+ ('b7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','confirmed'),
+ ('b8888888-8888-4888-8888-888888888888','$T2','$J2','$PROFILE','confirmed');
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE probe record; violations integer:=0; affected integer; rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM company_jobs WHERE id='$J2')
+    OR EXISTS(SELECT 1 FROM work_assignments WHERE id='b8888888-8888-4888-8888-888888888888') THEN
+  RAISE EXCEPTION 'workforce_private_foreign_parent_visible';
+ END IF;
+ IF NOT EXISTS(SELECT 1 FROM marketplace_jobs WHERE job_id='$J2')
+    OR NOT EXISTS(SELECT 1 FROM marketplace_interests WHERE job_id='$J2' AND professional_id='$PROFILE') THEN
+  RAISE EXCEPTION 'workforce_shared_marketplace_read_regressed';
+ END IF;
+ IF EXISTS(
+  SELECT 1 FROM unnest(ARRAY['job_interests','replacement_requests']) AS tables(name)
+  CROSS JOIN unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE']) AS privileges(name)
+  WHERE NOT has_table_privilege(current_user,tables.name,privileges.name)
+ ) THEN
+  RAISE EXCEPTION 'workforce_private_grants_regressed';
+ END IF;
+ INSERT INTO job_interests(id,tenant_id,job_id,professional_id,status)
+ VALUES('c7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','interested');
+ UPDATE job_interests SET status='withdrawn' WHERE id='c7777777-7777-4777-8777-777777777777';
+ IF NOT FOUND THEN RAISE EXCEPTION 'legacy_interest_own_update_failed'; END IF;
+ DELETE FROM job_interests WHERE id='c7777777-7777-4777-8777-777777777777';
+ IF NOT FOUND THEN RAISE EXCEPTION 'legacy_interest_own_delete_failed'; END IF;
+ INSERT INTO job_interests(id,tenant_id,job_id,professional_id,status)
+ VALUES('c7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','interested');
+ INSERT INTO replacement_requests(id,tenant_id,assignment_id,status,reason)
+ VALUES('c8888888-8888-4888-8888-888888888888','$T1','b7777777-7777-4777-8777-777777777777','open','own request fixture');
+ INSERT INTO replacement_requests(tenant_id,assignment_id,status,reason)
+ VALUES('$T1','b7777777-7777-4777-8777-777777777777','open','legitimate updated reason')
+ ON CONFLICT(assignment_id,status) DO UPDATE SET reason=EXCLUDED.reason;
+ IF (SELECT count(*) FROM replacement_requests)<>1
+    OR (SELECT reason FROM replacement_requests WHERE id='c8888888-8888-4888-8888-888888888888')<>'legitimate updated reason' THEN
+  RAISE EXCEPTION 'replacement_own_upsert_failed';
+ END IF;
+ UPDATE replacement_requests SET status='cancelled' WHERE id='c8888888-8888-4888-8888-888888888888';
+ IF NOT FOUND THEN RAISE EXCEPTION 'replacement_own_update_failed'; END IF;
+ DELETE FROM replacement_requests WHERE id='c8888888-8888-4888-8888-888888888888';
+ IF NOT FOUND THEN RAISE EXCEPTION 'replacement_own_delete_failed'; END IF;
+ INSERT INTO replacement_requests(id,tenant_id,assignment_id,status,reason)
+ VALUES('c8888888-8888-4888-8888-888888888888','$T1','b7777777-7777-4777-8777-777777777777','open','retained cascade fixture');
+ FOR probe IN SELECT * FROM (VALUES
+  ('legacy interest INSERT','job_interests_job_tenant_fk','INSERT INTO job_interests(tenant_id,job_id,professional_id) VALUES(''$T1'',''$J2'',''$PROFILE'')'),
+  ('legacy interest UPDATE','job_interests_job_tenant_fk','UPDATE job_interests SET job_id=''$J2'' WHERE id=''c7777777-7777-4777-8777-777777777777'''),
+  ('replacement INSERT','replacement_requests_assignment_tenant_fk','INSERT INTO replacement_requests(tenant_id,assignment_id,status) VALUES(''$T1'',''b8888888-8888-4888-8888-888888888888'',''open'')'),
+  ('replacement UPDATE','replacement_requests_assignment_tenant_fk','UPDATE replacement_requests SET assignment_id=''b8888888-8888-4888-8888-888888888888'' WHERE id=''c8888888-8888-4888-8888-888888888888''')
+ ) AS cases(label,expected_constraint,statement)
+ LOOP
+  BEGIN
+   EXECUTE probe.statement;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   IF affected<>1 THEN RAISE EXCEPTION 'workforce_probe_did_not_write_one_row'; END IF;
+   RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+  EXCEPTION
+   WHEN SQLSTATE 'P9001' THEN
+    violations:=violations+1;
+    RAISE NOTICE 'FAIL: cross-tenant % accepted',probe.label;
+   WHEN foreign_key_violation THEN
+    GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+    IF rejected_by<>probe.expected_constraint THEN RAISE; END IF;
+  END;
+ END LOOP;
+ IF violations<>0 THEN RAISE EXCEPTION 'workforce_cascade_tenant_integrity: % cross-tenant writes accepted',violations; END IF;
+END;
+\$\$;
+RESET ROLE;
+DO \$\$
+BEGIN
+ DELETE FROM work_assignments WHERE id='b7777777-7777-4777-8777-777777777777';
+ IF EXISTS(SELECT 1 FROM replacement_requests WHERE id='c8888888-8888-4888-8888-888888888888')
+    OR NOT EXISTS(SELECT 1 FROM job_interests WHERE id='c7777777-7777-4777-8777-777777777777' AND tenant_id='$T1' AND job_id='$J1') THEN
+  RAISE EXCEPTION 'workforce_assignment_cascade_or_interest_retention_regressed';
+ END IF;
+ DELETE FROM company_jobs WHERE id='$J1';
+ IF EXISTS(SELECT 1 FROM job_interests WHERE id='c7777777-7777-4777-8777-777777777777')
+    OR EXISTS(SELECT 1 FROM marketplace_jobs WHERE job_id='$J1')
+    OR EXISTS(SELECT 1 FROM marketplace_interests WHERE job_id='$J1')
+    OR NOT EXISTS(SELECT 1 FROM company_jobs WHERE id='$J2' AND tenant_id='$T2')
+    OR NOT EXISTS(SELECT 1 FROM work_assignments WHERE id='b8888888-8888-4888-8888-888888888888' AND tenant_id='$T2')
+    OR NOT EXISTS(SELECT 1 FROM marketplace_jobs WHERE job_id='$J2')
+    OR NOT EXISTS(SELECT 1 FROM marketplace_interests WHERE job_id='$J2' AND professional_id='$PROFILE')
+    OR NOT EXISTS(SELECT 1 FROM professional_profiles WHERE id='$PROFILE')
+    OR NOT EXISTS(SELECT 1 FROM identities WHERE id='$IDENTITY') THEN
+  RAISE EXCEPTION 'workforce_job_cascade_shared_or_global_classification_regressed';
+ END IF;
+END;
+\$\$;
+ROLLBACK;
+SQL
+echo 'PASS: private legacy interest and replacement tenant FKs reject four cross-tenant writes; own CRUD/upsert, cascades and NETWORK_SHARED/global classification preserved'
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
