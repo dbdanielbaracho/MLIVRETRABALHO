@@ -31,6 +31,12 @@ async function evaluate(expression){const r=await cdp('Runtime.evaluate',{expres
 async function until(expression,label,timeout=20000){
  const end=Date.now()+timeout;while(Date.now()<end){if(networkViolation)throw Error(networkViolation);if(await evaluate(expression))return;await sleep(100);}throw Error('Browser condition timeout: '+label);
 }
+async function reloadDocument(){
+ const previousTimeOrigin=await evaluate('performance.timeOrigin');
+ await cdp('Page.reload',{ignoreCache:true});
+ await until('performance.timeOrigin!=='+JSON.stringify(previousTimeOrigin)+'&&document.readyState==="complete"','new complete reload document');
+ return{previousTimeOrigin,currentTimeOrigin:await evaluate('performance.timeOrigin')};
+}
 async function click(expression){
  await until('(()=>{const e='+expression+';return !!e&&!e.disabled})()','enabled click target');
  const p=await evaluate('(()=>{const e='+expression+';if(!e||e.disabled)throw Error("Missing enabled target");e.scrollIntoView({block:"center"});const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()');
@@ -115,10 +121,9 @@ async function capture(label){
  await dashboard(accounts[0].email);await capture('company-a-created');
  const signinCount=responses.filter(x=>x.path==='/v1/auth/signin').length;
  for(let reload=1;reload<=5;reload++){
-  const previousTimeOrigin=await evaluate('performance.timeOrigin');
-  console.log('WEB_BROWSER_RELOAD_START '+JSON.stringify({reload,previousTimeOrigin}));
-  await cdp('Page.reload',{ignoreCache:true});await dashboard(accounts[0].email);
-  const currentTimeOrigin=await evaluate('performance.timeOrigin');
+  console.log('WEB_BROWSER_RELOAD_START '+JSON.stringify({reload}));
+  const{previousTimeOrigin,currentTimeOrigin}=await reloadDocument();
+  await dashboard(accounts[0].email);
   assert.notEqual(currentTimeOrigin,previousTimeOrigin,'Reload assertion must observe a new document, not the previous dashboard DOM');
   assert.ok(await evaluate('document.body.innerText.includes('+JSON.stringify(jobTitle)+')'),'Reload lost persisted own data');
   assert.equal(responses.filter(x=>x.path==='/v1/auth/signin').length,signinCount,'Reload must reuse tab session, not invent signin retry');
