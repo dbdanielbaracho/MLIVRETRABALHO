@@ -1,11 +1,17 @@
 import type {Earning as HomeEarning,Section} from './professional-home';
 export type Earning=HomeEarning & {id:string;tenantId:string;title:string};
 type Response={ok:boolean;json():Promise<unknown>};
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
 export async function loadEarnings(request:()=>Promise<Response>):Promise<Section<Earning[]>>{
  try{
   const response=await request();if(!response.ok)return {status:'error'};
   const data:unknown=await response.json();
-  if(!Array.isArray(data)||!data.every(e=>e&&typeof e==='object'&&typeof e.id==='string'&&typeof e.tenantId==='string'&&typeof e.title==='string'&&Number.isSafeInteger(e.amountCents)&&typeof e.status==='string'&&typeof e.createdAt==='string'&&Number.isFinite(new Date(e.createdAt).getTime())))return {status:'error'};
+  if(!Array.isArray(data)||!data.every(e=>e&&typeof e==='object'&&typeof e.id==='string'&&typeof e.tenantId==='string'&&typeof e.title==='string'&&Number.isSafeInteger(e.amountCents)&&typeof e.status==='string'&&date(e.createdAt)))return {status:'error'};
   return {status:'ready',data};
  }catch{return {status:'error'};}
 }

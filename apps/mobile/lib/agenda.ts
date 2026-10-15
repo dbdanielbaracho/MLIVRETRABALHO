@@ -2,7 +2,13 @@ import type {Section} from './professional-home';
 export type Assignment={id:string;tenantId:string;status:string;title:string;location?:string|null;startsAt?:string|null;endsAt?:string|null;payCents?:number|null;companyRatingScore?:number|null};
 type Response={ok:boolean;json():Promise<unknown>};
 const nonempty=(value:unknown):value is string=>typeof value==='string'&&!!value.trim();
-const optionalDate=(value:unknown)=>value==null||(typeof value==='string'&&Number.isFinite(new Date(value).getTime()));
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
+const optionalDate=(value:unknown)=>value==null||date(value);
 export async function loadAgenda(request:()=>Promise<Response>,isCurrent:()=>boolean=()=>true):Promise<Section<Assignment[]>>{
  try{
   if(!isCurrent())return {status:'error'};const response=await request();if(!isCurrent())return {status:'error'};if(!response.ok)return {status:'error'};const data:unknown=await response.json();if(!isCurrent())return {status:'error'};
@@ -14,7 +20,6 @@ type Coordinates={lat:number;lng:number};
 type Request=(path:string,body?:Record<string,number>)=>Promise<{ok:boolean;status?:number;json():Promise<unknown>}>;
 export type AgendaActionResult={status:'confirmed';endpoint:string;coordinatesSent:boolean}|{status:'rejected'|'unknown'};
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
-const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(new Date(x).getTime());
 export async function submitAgendaAction(request:Request,assignment:Assignment,score?:number,coordinates:Coordinates|null=null,isCurrent:()=>boolean=()=>true):Promise<AgendaActionResult>{
  const state=assignmentState(assignment.status),endpoint=score!==undefined?(state.canRate?'company-rating':null):state.endpoint;
  if(!assignment.id.trim()||!assignment.tenantId.trim()||!endpoint||(score!==undefined&&(!Number.isInteger(score)||score<1||score>5)))return {status:'rejected'};
