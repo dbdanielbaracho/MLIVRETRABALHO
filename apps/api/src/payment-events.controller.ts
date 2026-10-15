@@ -2,6 +2,18 @@ import { BadRequestException,ForbiddenException,Controller,Get,Headers } from '@
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 
+
+function exactReconciliationCents(value: unknown): number {
+  // SUM(integer) is int8. Read decimal text so no global pg parser or int32
+  // narrowing can silently change cents before this explicit JSON boundary.
+  if (typeof value !== 'string' || !/^(0|[1-9][0-9]*)$/.test(value)) {
+    throw new Error('reconciliation_total_out_of_range');
+  }
+  const cents = Number(value);
+  if (!Number.isSafeInteger(cents)) throw new Error('reconciliation_total_out_of_range');
+  return cents;
+}
+
 @Controller('company/payment-events')
 export class PaymentEventsController {
   constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
@@ -23,9 +35,9 @@ export class PaymentEventsController {
               p.display_name AS "professionalName",
               el.amount_cents AS "payableCents",
               el.status AS "earningStatus",
-              COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='captured'),0)::int AS "capturedCents",
-              COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='refunded'),0)::int AS "refundedCents",
-              COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='payout_paid'),0)::int AS "paidOutCents",
+              COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='captured'),0)::text AS "capturedCents",
+              COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='refunded'),0)::text AS "refundedCents",
+              COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='payout_paid'),0)::text AS "paidOutCents",
               CASE
                 WHEN el.amount_cents IS NULL THEN 'no_earning'
                 WHEN COALESCE(sum(pe.amount_cents) FILTER(WHERE pe.event_type='payout_paid'),0)=el.amount_cents THEN 'reconciled'
@@ -41,7 +53,12 @@ export class PaymentEventsController {
      GROUP BY wa.id,j.title,p.display_name,el.amount_cents,el.status
      ORDER BY wa.confirmed_at DESC`,
       [tenant]
-    )).rows);
+    )).rows.map(row => ({
+      ...row,
+      capturedCents: exactReconciliationCents(row.capturedCents),
+      refundedCents: exactReconciliationCents(row.refundedCents),
+      paidOutCents: exactReconciliationCents(row.paidOutCents),
+    })));
   }
 
   @Get()
