@@ -501,6 +501,115 @@ SQL
 echo 'PASS: safety chain tenant FKs reject three cross-tenant INSERTs; own immutable events, appeal idempotency and cascade preserved'
 
 
+# Optional assignment links must match their case/event tenant without losing NULL/history semantics.
+# Only disposable CI fixtures; negative probes and the full transaction roll back.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+INSERT INTO work_assignments(id,tenant_id,job_id,professional_id,status) VALUES
+ ('a7777777-7777-4777-8777-777777777777','$T1','$J1','$PROFILE','confirmed'),
+ ('a8888888-8888-4888-8888-888888888888','$T2','$J2','$PROFILE','confirmed');
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$
+DECLARE
+ probe record;
+ violations integer := 0;
+ affected integer;
+ rejected_by text;
+BEGIN
+ IF EXISTS(SELECT 1 FROM work_assignments WHERE id='a8888888-8888-4888-8888-888888888888') THEN
+  RAISE EXCEPTION 'foreign_optional_assignment_visible';
+ END IF;
+ IF has_table_privilege(current_user,'safety_cases','DELETE')
+    OR has_table_privilege(current_user,'support_cases','DELETE')
+    OR has_table_privilege(current_user,'trust_events','UPDATE')
+    OR has_table_privilege(current_user,'trust_events','DELETE') THEN
+  RAISE EXCEPTION 'optional_assignment_grants_regressed';
+ END IF;
+ INSERT INTO safety_cases(id,tenant_id,reporter_identity_id,assignment_id,category,description) VALUES
+ ('e1111111-1111-4111-8111-111111111111','$T1','$IDENTITY','a7777777-7777-4777-8777-777777777777','other','retained safety fixture'),
+ ('e2222222-2222-4222-8222-222222222222','$T1','$IDENTITY',NULL,'other','unlinked safety fixture');
+ INSERT INTO support_cases(id,tenant_id,reporter_identity_id,assignment_id,category,description,request_key,request_payload_hash) VALUES
+ ('e3333333-3333-4333-8333-333333333333','$T1','$IDENTITY','a7777777-7777-4777-8777-777777777777','other','retained support fixture','eeeeeeee-1111-4111-8111-111111111111',repeat('a',64)),
+ ('e4444444-4444-4444-8444-444444444444','$T1','$IDENTITY',NULL,'other','unlinked support fixture',NULL,NULL);
+ UPDATE safety_cases SET status='reviewing' WHERE id='e1111111-1111-4111-8111-111111111111';
+ UPDATE support_cases SET status='reviewing',resolution_note='human fixture review' WHERE id='e3333333-3333-4333-8333-333333333333';
+ INSERT INTO trust_events(id,tenant_id,assignment_id,professional_id,event_type,cause,reported_by_identity_id,notes) VALUES
+ ('e5555555-5555-4555-8555-555555555555','$T1','a7777777-7777-4777-8777-777777777777','$PROFILE','commendation','company','$IDENTITY','linked trust fixture'),
+ ('e6666666-6666-4666-8666-666666666666','$T1',NULL,'$PROFILE','incident','undetermined','$IDENTITY','unlinked trust fixture');
+ INSERT INTO safety_case_events(id,tenant_id,safety_case_id,actor_identity_id,from_status,to_status,note)
+ VALUES('e7777777-7777-4777-8777-777777777777','$T1','e1111111-1111-4111-8111-111111111111','$IDENTITY','open','reviewing','retained history');
+ INSERT INTO safety_case_appeals(id,tenant_id,safety_case_id,appellant_identity_id,reason)
+ VALUES('e8888888-8888-4888-8888-888888888888','$T1','e1111111-1111-4111-8111-111111111111','$IDENTITY','retained appeal reason');
+ INSERT INTO safety_case_appeal_events(id,tenant_id,appeal_id,actor_identity_id,from_status,to_status,note)
+ VALUES('e9999999-9999-4999-8999-999999999999','$T1','e8888888-8888-4888-8888-888888888888','$IDENTITY','submitted','reviewing','retained appeal history');
+ IF (SELECT count(*) FROM safety_cases)<>2 OR (SELECT count(*) FROM support_cases)<>2
+    OR (SELECT count(*) FROM trust_events)<>2 THEN
+  RAISE EXCEPTION 'optional_assignment_own_insert_or_null_regressed';
+ END IF;
+ FOR probe IN SELECT * FROM (VALUES
+  ('safety INSERT','safety_cases_assignment_tenant_fk','INSERT INTO safety_cases(tenant_id,reporter_identity_id,assignment_id,category,description) VALUES(''$T1'',''$IDENTITY'',''a8888888-8888-4888-8888-888888888888'',''other'',''foreign assignment probe'')'),
+  ('safety UPDATE','safety_cases_assignment_tenant_fk','UPDATE safety_cases SET assignment_id=''a8888888-8888-4888-8888-888888888888'' WHERE id=''e1111111-1111-4111-8111-111111111111'''),
+  ('support INSERT','support_cases_assignment_tenant_fk','INSERT INTO support_cases(tenant_id,reporter_identity_id,assignment_id,category,description) VALUES(''$T1'',''$IDENTITY'',''a8888888-8888-4888-8888-888888888888'',''other'',''foreign assignment probe'')'),
+  ('support UPDATE','support_cases_assignment_tenant_fk','UPDATE support_cases SET assignment_id=''a8888888-8888-4888-8888-888888888888'' WHERE id=''e3333333-3333-4333-8333-333333333333'''),
+  ('trust INSERT','trust_events_assignment_tenant_fk','INSERT INTO trust_events(tenant_id,assignment_id,professional_id,event_type,reported_by_identity_id) VALUES(''$T1'',''a8888888-8888-4888-8888-888888888888'',''$PROFILE'',''incident'',''$IDENTITY'')')
+ ) AS cases(label,expected_constraint,statement)
+ LOOP
+  BEGIN
+   EXECUTE probe.statement;
+   GET DIAGNOSTICS affected=ROW_COUNT;
+   IF affected<>1 THEN RAISE EXCEPTION 'optional_assignment_probe_did_not_write_one_row'; END IF;
+   RAISE EXCEPTION USING ERRCODE='P9001',MESSAGE='probe_accepted';
+  EXCEPTION
+   WHEN SQLSTATE 'P9001' THEN
+    violations := violations+1;
+    RAISE NOTICE 'FAIL: cross-tenant % accepted',probe.label;
+   WHEN foreign_key_violation THEN
+    GET STACKED DIAGNOSTICS rejected_by=CONSTRAINT_NAME;
+    IF rejected_by<>probe.expected_constraint THEN RAISE; END IF;
+  END;
+ END LOOP;
+ IF violations<>0 THEN
+  RAISE EXCEPTION 'optional_assignment_tenant_integrity: % cross-tenant writes accepted',violations;
+ END IF;
+END;
+\$\$;
+RESET ROLE;
+DO \$\$
+DECLARE before_support jsonb; after_support jsonb; before_safety jsonb; after_safety jsonb; before_history jsonb; after_history jsonb;
+BEGIN
+ SELECT to_jsonb(s)-'assignment_id' INTO before_support FROM support_cases s WHERE id='e3333333-3333-4333-8333-333333333333';
+ SELECT to_jsonb(s)-'assignment_id' INTO before_safety FROM safety_cases s WHERE id='e1111111-1111-4111-8111-111111111111';
+ SELECT jsonb_build_array(
+  (SELECT to_jsonb(e) FROM safety_case_events e WHERE id='e7777777-7777-4777-8777-777777777777'),
+  (SELECT to_jsonb(a) FROM safety_case_appeals a WHERE id='e8888888-8888-4888-8888-888888888888'),
+  (SELECT to_jsonb(e) FROM safety_case_appeal_events e WHERE id='e9999999-9999-4999-8999-999999999999')
+ ) INTO before_history;
+ DELETE FROM work_assignments WHERE id='a7777777-7777-4777-8777-777777777777';
+ SELECT to_jsonb(s)-'assignment_id' INTO after_support FROM support_cases s WHERE id='e3333333-3333-4333-8333-333333333333' AND assignment_id IS NULL;
+ SELECT to_jsonb(s)-'assignment_id' INTO after_safety FROM safety_cases s WHERE id='e1111111-1111-4111-8111-111111111111' AND assignment_id IS NULL;
+ SELECT jsonb_build_array(
+  (SELECT to_jsonb(e) FROM safety_case_events e WHERE id='e7777777-7777-4777-8777-777777777777'),
+  (SELECT to_jsonb(a) FROM safety_case_appeals a WHERE id='e8888888-8888-4888-8888-888888888888'),
+  (SELECT to_jsonb(e) FROM safety_case_appeal_events e WHERE id='e9999999-9999-4999-8999-999999999999')
+ ) INTO after_history;
+ IF before_support IS NULL OR before_safety IS NULL
+    OR before_support IS DISTINCT FROM after_support OR before_safety IS DISTINCT FROM after_safety
+    OR before_history IS DISTINCT FROM after_history
+    OR EXISTS(SELECT 1 FROM trust_events WHERE id='e5555555-5555-4555-8555-555555555555')
+    OR NOT EXISTS(SELECT 1 FROM safety_cases WHERE id='e2222222-2222-4222-8222-222222222222' AND tenant_id='$T1' AND assignment_id IS NULL)
+    OR NOT EXISTS(SELECT 1 FROM support_cases WHERE id='e4444444-4444-4444-8444-444444444444' AND tenant_id='$T1' AND assignment_id IS NULL)
+    OR NOT EXISTS(SELECT 1 FROM trust_events WHERE id='e6666666-6666-4666-8666-666666666666' AND tenant_id='$T1' AND assignment_id IS NULL)
+    OR NOT EXISTS(SELECT 1 FROM work_assignments WHERE id='a8888888-8888-4888-8888-888888888888' AND tenant_id='$T2') THEN
+  RAISE EXCEPTION 'optional_assignment_setnull_history_idempotency_or_cascade_regressed';
+ END IF;
+END;
+\$\$;
+ROLLBACK;
+SQL
+echo 'PASS: optional assignment tenant FKs reject five cross-tenant writes; NULL, retained case/history/intent identity and trust cascade preserved'
+
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
