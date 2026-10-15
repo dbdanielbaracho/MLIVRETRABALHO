@@ -20,30 +20,47 @@ function validateFixtureEnvironment(env) {
   return {database, base};
 }
 
-function failureDDL(suffix, tenant, recipient, type) {
+function failureDDL(suffix, tenant, recipient, type, secondRecipient) {
   assert.match(suffix, /^[a-f0-9]{24}$/);
   assert.match(tenant, uuid); assert.match(recipient, uuid);
   assert.ok(['assignment_confirmed', 'new_message', 'replacement_confirmed'].includes(type));
+  if (secondRecipient !== undefined) {
+    assert.match(secondRecipient, uuid); assert.notEqual(secondRecipient, recipient);
+    assert.equal(type, 'new_message', 'only the actual chat recipient loop has a two-recipient fixture');
+  }
   const name = 'ci_notify_' + suffix;
+  const expectedAttempts = secondRecipient === undefined ? 1 : 2;
+  const recipientPredicate = secondRecipient === undefined ? `NEW.identity_id='${recipient}'::uuid` : `(NEW.identity_id='${recipient}'::uuid OR NEW.identity_id='${secondRecipient}'::uuid)`;
+  const batchCheck = secondRecipient === undefined ? '' : `
+ IF attempted=2 AND (SELECT count(*) FROM public.notifications WHERE tenant_id='${tenant}'::uuid AND type='new_message' AND identity_id IN ('${recipient}'::uuid,'${secondRecipient}'::uuid))<>2 THEN
+  -- A distinguishable non-rollback witness prevents a generic500 from faking this control.
+  PERFORM pg_catalog.nextval('public.${name}_seq'::pg_catalog.regclass);
+  RAISE EXCEPTION 'ci_notification_batch_rows_missing';
+ END IF;`;
   // nextval is deliberately non-transactional: it witnesses that THIS HTTP call reached
   // the guarded AFTER INSERT hook, even though all application rows must roll back.
   // SECURITY DEFINER is limited to this fixture sequence; no existing grants are changed.
   const create = `CREATE SEQUENCE public.${name}_seq CACHE 1;
 CREATE FUNCTION public.${name}_fn() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $fixture$
+DECLARE attempted bigint;
 BEGIN
  IF current_setting('role') <> 'app_runtime' OR current_setting('app.tenant_id',true) IS DISTINCT FROM '${tenant}' THEN
   RAISE EXCEPTION 'ci_notification_wrong_runtime_context';
  END IF;
- PERFORM pg_catalog.nextval('public.${name}_seq'::pg_catalog.regclass);
- RAISE EXCEPTION USING ERRCODE='P0001', MESSAGE='ci_notification_insert_failure';
+ attempted := pg_catalog.nextval('public.${name}_seq'::pg_catalog.regclass);
+ ${batchCheck}
+ IF attempted=${expectedAttempts} THEN
+  RAISE EXCEPTION USING ERRCODE='P0001', MESSAGE='ci_notification_insert_failure';
+ END IF;
+ RETURN NEW;
 END $fixture$;
 REVOKE ALL ON FUNCTION public.${name}_fn() FROM PUBLIC;
 CREATE TRIGGER ${name}_trigger AFTER INSERT ON public.notifications FOR EACH ROW
- WHEN (NEW.tenant_id='${tenant}'::uuid AND NEW.identity_id='${recipient}'::uuid AND NEW.type='${type}')
+ WHEN (NEW.tenant_id='${tenant}'::uuid AND ${recipientPredicate} AND NEW.type='${type}')
  EXECUTE FUNCTION public.${name}_fn();`;
   const drop = `DROP TRIGGER ${name}_trigger ON public.notifications;
 DROP FUNCTION public.${name}_fn(); DROP SEQUENCE public.${name}_seq;`;
-  return {name, create, drop};
+  return {name, create, drop, expectedAttempts};
 }
 
 async function main(env = process.env) {
@@ -88,7 +105,7 @@ async function main(env = process.env) {
     const signup = await request('POST', '/v1/auth/signup', null, null, {email, password, accountType, ...(accountType === 'company' ? {workspaceName: 'Atomic fixture ' + label} : {})});
     const signin = await request('POST', '/v1/auth/signin', null, null, {email, password});
     assert.match(signup.id, uuid); assert.ok(signin.accessToken); assert.equal(signin.identity.id, signup.id);
-    const actor = {id: signup.id, token: signin.accessToken, tenant: signup.tenantId};
+    const actor = {id: signup.id, token: signin.accessToken, tenant: signup.tenantId, email};
     signups.push(actor);
     if (accountType === 'professional') {
       const profile = await request('PUT', '/v1/professional-profile', actor, null, {displayName: 'Atomic fixture ' + label, primaryRole: 'Bartender', homeCity: 'São Paulo'});
@@ -103,16 +120,16 @@ async function main(env = process.env) {
     assert.match(value.id, uuid); return value;
   }
   const confirm = (company, j, pro, status = 201) => request('POST', '/v1/company/jobs/' + j.id + '/confirm', company, company.tenant, {professionalId: pro.professional}, status);
-  async function failAndProve(label, company, recipient, type, operation, other) {
+  async function failAndProve(label, company, recipient, type, operation, other, secondRecipient) {
     const before = await snapshot(company.tenant), foreign = await snapshot(other.tenant);
-    const hook = failureDDL(randomUUID().replaceAll('-', '').slice(0, 24), company.tenant, recipient.id, type);
+    const hook = failureDDL(randomUUID().replaceAll('-', '').slice(0, 24), company.tenant, recipient.id, type, secondRecipient?.id);
     await transaction(() => db.query(hook.create));
     installed = hook;
     const sequence = await rows(`SELECT last_value::text,is_called FROM public.${installed.name}_seq`);
     assert.equal(sequence[0].is_called, false);
     await operation(); // A single deliberate failure-injection HTTP call, not an application retry.
     const attempt = (await rows(`SELECT last_value::text,is_called FROM public.${installed.name}_seq`))[0];
-    assert.deepEqual(attempt, {last_value: '1', is_called: true}, 'exactly one targeted notification insert reached app_runtime/tenant hook');
+    assert.deepEqual(attempt, {last_value: String(hook.expectedAttempts), is_called: true}, 'exact targeted notification insert count reached app_runtime/tenant hook');
     assert.deepEqual(await snapshot(company.tenant), before, label + ' must roll back ALL fixture tenant rows');
     assert.deepEqual(await snapshot(other.tenant), foreign, label + ' must preserve the other tenant');
     await transaction(() => db.query(installed.drop));
@@ -120,7 +137,7 @@ async function main(env = process.env) {
     assert.equal((await rows('SELECT 1 FROM pg_trigger WHERE tgname=$1', [name + '_trigger'])).length, 0);
     assert.equal((await rows('SELECT 1 FROM pg_proc WHERE proname=$1', [name + '_fn'])).length, 0);
     assert.equal((await rows('SELECT 1 FROM pg_class WHERE relname=$1', [name + '_seq'])).length, 0);
-    console.log('NOTIFICATION_ATOMICITY_ROLLBACK_PASS ' + JSON.stringify({flow: label, http: 500, targetedInsertAttempts: 1, runtime: 'app_runtime', tenantRowsUnchanged: true, otherTenantUnchanged: true, hookRemoved: true}));
+    console.log('NOTIFICATION_ATOMICITY_ROLLBACK_PASS ' + JSON.stringify({flow: label, http: 500, targetedInsertAttempts: hook.expectedAttempts, ...(secondRecipient ? {bothPendingAlertsSeenBeforeFailure: true} : {}), runtime: 'app_runtime', tenantRowsUnchanged: true, otherTenantUnchanged: true, hookRemoved: true}));
   }
   await db.connect();
   try {
@@ -174,6 +191,31 @@ async function main(env = process.env) {
     assert.deepEqual(await request('GET', '/v1/conversations/' + assignment.id + '/messages', pro, company.tenant), visible);
     console.log('NOTIFICATION_ATOMICITY_POSITIVE_PASS chat real message ACK/read, one conversation/message/notification, prior history retained');
 
+    // Obtain the second company recipient through the real invitation contract, not SQL role seeding.
+    const manager = await account('manager', 'professional');
+    const invitation = await request('POST', '/v1/company/members/invitations', company, company.tenant, {email: manager.email, role: 'manager'});
+    assert.ok(invitation.inviteCode);
+    const accepted = await request('POST', '/v1/company/members/invitations/accept', manager, null, {inviteCode: invitation.inviteCode});
+    assert.equal(accepted.accepted, true); assert.equal(accepted.tenantId, company.tenant); assert.equal(accepted.role, 'manager');
+    const companyRecipients = await rows("SELECT identity_id FROM tenant_memberships WHERE tenant_id=$1 AND role=ANY($2::text[]) ORDER BY identity_id", [company.tenant, ['owner', 'admin', 'manager', 'company']]);
+    assert.deepEqual(companyRecipients.map(x => x.identity_id).sort(), [company.id, manager.id].sort());
+    const recipientAlerts = async () => rows("SELECT identity_id,count(*)::int AS n FROM notifications WHERE tenant_id=$1 AND type='new_message' AND identity_id=ANY($2::uuid[]) GROUP BY identity_id ORDER BY identity_id", [company.tenant, [company.id, manager.id]]);
+    assert.deepEqual(await recipientAlerts(), [], 'both company inboxes start without new-message alerts');
+    const professionalSend = (body, status) => request('POST', '/v1/conversations/' + assignment.id + '/messages', pro, company.tenant, {body}, status);
+    await failAndProve('chat-second-recipient', company, company, 'new_message', () => professionalSend('Injected second alert failure', 500), other, manager);
+    assert.deepEqual(await recipientAlerts(), [], 'the first successful alert INSERT must also roll back when the second fails');
+    assert.deepEqual(await request('GET', '/v1/conversations/' + assignment.id + '/messages', pro, company.tenant), visible);
+    const twoRecipientMessage = await professionalSend('Committed message to both company recipients', 201);
+    assert.match(twoRecipientMessage.id, uuid); assert.equal(twoRecipientMessage.body, 'Committed message to both company recipients');
+    assert.deepEqual(await recipientAlerts(), [company.id, manager.id].sort().map(identity_id => ({identity_id, n: 1})));
+    for (const actor of [company, manager]) {
+      const inbox = await request('GET', '/v1/notifications/mine', actor, company.tenant);
+      assert.equal(inbox.filter(n => n.type === 'new_message').length, 1);
+    }
+    assert.equal(await countNotifications('new_message'), 3, 'one earlier professional alert plus two actual company alerts');
+    assert.equal((await request('GET', '/v1/conversations/' + assignment.id + '/messages', company, company.tenant)).length, 2);
+    console.log('NOTIFICATION_ATOMICITY_POSITIVE_PASS chat-two-recipients one real message ACK, two persisted recipient alerts, both authorized inboxes');
+
     const seed = await job(company, 'candidate-membership', 14);
     await request('POST', '/v1/jobs/' + seed.id + '/interest', candidate, null, {});
     await confirm(company, seed, candidate);
@@ -196,7 +238,7 @@ async function main(env = process.env) {
     console.log('NOTIFICATION_ATOMICITY_POSITIVE_PASS replacement real matched ACK, original cancelled, new confirmed, request resolved, one notification');
     assert.deepEqual(await schema(), originalSchema, 'table RLS/policies/grants/runtime privileges unchanged');
     for (const actor of signups) await request('POST', '/v1/auth/signout', actor, null, {});
-    console.log('NOTIFICATION_ATOMICITY_PASS four injected HTTP500 rollbacks plus three positive flows; no delivery/provider/outbox claim');
+    console.log('NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim');
   } finally {
     try { if (installed) await transaction(() => db.query(installed.drop)); }
     finally { await db.end(); }

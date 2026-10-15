@@ -6,6 +6,15 @@ test('notification failure fixture accepts only explicit local disposable CI ori
  const x=validateFixtureEnvironment(local);assert.equal(x.database.pathname,'/mlivretrabalho_http');assert.equal(x.base.origin,local.BASE_URL);
  for(const CI of ['','false','production'])assert.throws(()=>validateFixtureEnvironment({...local,CI}));
 });
+test('notification batch fixture fails only the second of two exact chat recipients without changing grants',()=>{
+ const tenant='11111111-1111-4111-8111-111111111111',first='22222222-2222-4222-8222-222222222222',second='33333333-3333-4333-8333-333333333333',suffix='1234567890abcdef12345678';
+ const ddl=failureDDL(suffix,tenant,first,'new_message',second);
+ assert.equal(ddl.expectedAttempts,2);assert.ok(ddl.create.includes('IF attempted=2 THEN'));assert.ok(ddl.create.includes('RETURN NEW;'));
+ assert.ok(ddl.create.includes('SELECT count(*) FROM public.notifications WHERE tenant_id='));assert.ok(ddl.create.includes('ci_notification_batch_rows_missing'));
+ assert.ok(ddl.create.includes("NEW.identity_id='"+first+"'::uuid OR NEW.identity_id='"+second+"'::uuid"));
+ assert.ok(!/GRANT |ALTER ROLE|DISABLE ROW|CASCADE/i.test(ddl.create+ddl.drop));
+ for(const args of [[suffix,tenant,first,'new_message',first],[suffix,tenant,first,'new_message','invalid'],[suffix,tenant,first,'assignment_confirmed',second],[suffix,tenant,first,'replacement_confirmed',second]])assert.throws(()=>failureDDL(...args));
+});
 test('notification failure fixture refuses foreign databases query overrides and wrong database names before connecting',()=>{
  for(const DATABASE_URL of ['postgresql://fixture:fixture@db.example:5432/mlivretrabalho_http','postgresql://fixture:fixture@localhost/mlivretrabalho_http','postgresql://fixture:fixture@localhost:5432/production','postgresql://fixture:fixture@localhost:5432/mlivretrabalho_http?host=elsewhere','postgresql://fixture:fixture@localhost:5432/mlivretrabalho_http#ignored','https://localhost:5432/mlivretrabalho_http'])assert.throws(()=>validateFixtureEnvironment({...local,DATABASE_URL}));
 });
