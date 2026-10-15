@@ -36,3 +36,16 @@ test('financial and planning rows require a real nonblank record identity',async
 test('verified financial zero aggregates are discarded when the originating account changes during GET',async()=>{
  let authorization='Bearer a',calls=0;const result=await runForSession(async()=>({Authorization:authorization,'x-tenant-id':'t'}),headers=>loadReconciliation(async()=>{calls++;assert.equal(headers.Authorization,'Bearer a');authorization='Bearer b';return response([financial])}),()=>true,'Bearer a','t');assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
 });
+
+test('money formatting preserves every cent of large safe integer amounts',()=>{
+ for(const [cents,label] of [[0,'R$ 0,00'],[1,'R$ 0,01'],[99,'R$ 0,99'],[100,'R$ 1,00'],[12550,'R$ 125,50'],[4294992294,'R$ 42949922,94'],[9007199254740990,'R$ 90071992547409,90'],[9007199254740991,'R$ 90071992547409,91']])assert.equal(moneyOrMissing(cents),label);
+});
+test('money formatting preserves the sign and exact cents of negative safe integers',()=>{
+ for(const [cents,label] of [[-0,'R$ 0,00'],[-1,'R$ -0,01'],[-12550,'R$ -125,50'],[-9007199254740990,'R$ -90071992547409,90']])assert.equal(moneyOrMissing(cents),label);
+ assert.equal(moneyOrMissing(null),'Não registrado');assert.equal(moneyOrMissing(undefined),'Não registrado');
+});
+test('large recorded reconciliation totals are displayed exactly without changing recorded facts or sending writes',async()=>{
+ const row={...financial,capturedCents:9007199254740990,refundedCents:0,paidOutCents:0,reconciliationStatus:'pending'};
+ const paths=[];const result=await loadReconciliation(async path=>{paths.push(path);return response([row]);});
+ assert.equal(result.status,'ready');assert.deepEqual(result.data,[row]);assert.equal(moneyOrMissing(result.data[0].capturedCents),'R$ 90071992547409,90');assert.deepEqual(paths,['/company/payment-events/reconciliation']);
+});
