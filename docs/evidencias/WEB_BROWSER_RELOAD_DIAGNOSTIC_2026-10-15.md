@@ -34,3 +34,10 @@ Head7e707f40c64b3618558bc689c45f86965cd3dcaf/CI38756284006/job116495471903 attem
 ### Sequencing correction under test
 
 `reloadDocument` first records actual performance.timeOrigin, sends the SAME Page.reload(ignoreCache:true), then requires both new origin and readyState complete before ANY dashboard predicate. Each of five iterations retains actual persisted job DOM, numeric dashboard, no partial error, same signin count, and distinct document assertion. Actual CI log above proves canceled reads, not a CORS policy defect. The candidate is a harness sequencing repair, not a change to product fetch behavior. Model tests are labeled models and do not replace real Chrome own/post gates. No blanket exception suppression or increased deadline, retries, API changes or security weakening.
+
+
+### 2026-10-15 —558 candidato barreira NÃO resolveu cancelamentos; diagnóstico adicional
+
+Head40ab0c8017c3e79b43b1bf95e6363cd1d5961b25/CI38757186986/job116498594996attempt1FAILURE15:08:40.7178294Z created-team-rendered ANTESqualquerreload;1312unit[135,753,410,3,11]PASSzeroFAILSKIPCANCEL/typecheck/build/migrationsprivacyPASS,HTTPbrowserFAIL. TeamPOST201real;12GETposterioresnet::ERR_ABORTED/canceledtrue. Candidata barreira/modelos passouunitmasnãoexplicaestaoutrasfalhas. Não declarar causa resolvida/fix deproduto; não merge/reruncego. Novoheadinstrumenta Fetch.requestPaused+ACK/erroCDP(protocolcode/message apenas,semheaders/tokens),timestamp/loaderId/type,mainframe navigation; semdesativarinterceptação/CORS/sandbox oualterarapp. CI novocandidatoPENDENTE. Sóárea10técnicainternaaceita12pendentes.
+
+The document-ready barrier is test-integrity work, not a demonstrated repair of canceled requests. Failure before reload disproves a reload-only explanation. Keep all gates; trace interception acknowledgement/error and navigation/loader identities. No product change is authorized by this observation alone.
