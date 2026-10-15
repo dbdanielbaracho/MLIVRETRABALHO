@@ -1,0 +1,1732 @@
+{
+  "nature": "Observed pg_constraint catalog, all public-schema child foreign keys; metadata is not behavioral acceptance",
+  "schemaInputsBase": "d1ad006f4412d13c7e1b19c4769e9656f3d2526f",
+  "observedHead": "2c8edecdedabacfc7abf45b8a8306db0e21d307a",
+  "run": 38688317631,
+  "job": 116268189944,
+  "observation": "Test-only candidate has migration blobs identical to base; private conversation probes fail afterward. No production data or database queried.",
+  "catalog": {
+    "schema": "public",
+    "foreignKeys": [
+      {
+        "child": "assignment_cancellations",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "assignment_cancellations_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "assignment_cancellations",
+        "parent": "identities",
+        "columns": [
+          "initiator_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "assignment_cancellations_initiator_identity_id_fkey",
+        "definition": "FOREIGN KEY (initiator_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "assignment_cancellations",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "assignment_cancellations_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "auth_signin_limits",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "auth_signin_limits_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_jobs",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_jobs_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_member_invitations",
+        "parent": "identities",
+        "columns": [
+          "accepted_by_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_member_invitations_accepted_by_identity_id_fkey",
+        "definition": "FOREIGN KEY (accepted_by_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_member_invitations",
+        "parent": "identities",
+        "columns": [
+          "invited_by_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_member_invitations_invited_by_identity_id_fkey",
+        "definition": "FOREIGN KEY (invited_by_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_member_invitations",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_member_invitations_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_work_ratings",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "company_work_ratings_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "company_work_ratings",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_work_ratings_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_work_ratings",
+        "parent": "identities",
+        "columns": [
+          "rater_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_work_ratings_rater_identity_id_fkey",
+        "definition": "FOREIGN KEY (rater_identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "company_work_ratings",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "company_work_ratings_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "conversation_messages",
+        "parent": "conversations",
+        "columns": [
+          "conversation_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "conversation_messages_conversation_id_fkey",
+        "definition": "FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "conversation_messages",
+        "parent": "identities",
+        "columns": [
+          "sender_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "conversation_messages_sender_identity_id_fkey",
+        "definition": "FOREIGN KEY (sender_identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "conversation_messages",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "conversation_messages_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "conversations",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "conversations_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "conversations",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "conversations_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "direct_hire_conversions",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "direct_hire_conversions_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "direct_hire_conversions",
+        "parent": "identities",
+        "columns": [
+          "proposed_by_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "direct_hire_conversions_proposed_by_identity_id_fkey",
+        "definition": "FOREIGN KEY (proposed_by_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "direct_hire_conversions",
+        "parent": "work_assignments",
+        "columns": [
+          "source_assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "direct_hire_conversions_source_assignment_id_fkey",
+        "definition": "FOREIGN KEY (source_assignment_id) REFERENCES work_assignments(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "direct_hire_conversions",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "direct_hire_conversions_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "earnings_ledger",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "earnings_ledger_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "earnings_ledger",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id",
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "earnings_ledger_assignment_tenant_fk",
+        "definition": "FOREIGN KEY (assignment_id, tenant_id) REFERENCES work_assignments(id, tenant_id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id",
+          "tenant_id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "earnings_ledger",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "earnings_ledger_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "earnings_ledger",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "earnings_ledger_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "job_interests",
+        "parent": "company_jobs",
+        "columns": [
+          "job_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "job_interests_job_id_fkey",
+        "definition": "FOREIGN KEY (job_id) REFERENCES company_jobs(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "job_interests",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "job_interests_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "job_interests",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "job_interests_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_company_reputation",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_company_reputation_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_integrity_cases",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "marketplace_integrity_cases_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "marketplace_integrity_cases",
+        "parent": "identities",
+        "columns": [
+          "created_by_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_integrity_cases_created_by_identity_id_fkey",
+        "definition": "FOREIGN KEY (created_by_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_integrity_cases",
+        "parent": "identities",
+        "columns": [
+          "reviewed_by_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_integrity_cases_reviewed_by_identity_id_fkey",
+        "definition": "FOREIGN KEY (reviewed_by_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_integrity_cases",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_integrity_cases_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_interests",
+        "parent": "marketplace_jobs",
+        "columns": [
+          "job_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_interests_job_id_fkey",
+        "definition": "FOREIGN KEY (job_id) REFERENCES marketplace_jobs(job_id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "job_id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_interests",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_interests_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "marketplace_jobs",
+        "parent": "company_jobs",
+        "columns": [
+          "job_id"
+        ],
+        "childRls": false,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "marketplace_jobs_job_id_fkey",
+        "definition": "FOREIGN KEY (job_id) REFERENCES company_jobs(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "marketplace_jobs",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "marketplace_jobs_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "notifications",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "notifications_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "notifications",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "notifications_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "payment_events",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "payment_events_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "payment_events",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id",
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "payment_events_assignment_tenant_fk",
+        "definition": "FOREIGN KEY (assignment_id, tenant_id) REFERENCES work_assignments(id, tenant_id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id",
+          "tenant_id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "payment_events",
+        "parent": "professional_profiles",
+        "columns": [
+          "recipient_professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "payment_events_recipient_professional_id_fkey",
+        "definition": "FOREIGN KEY (recipient_professional_id) REFERENCES professional_profiles(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "payment_events",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "payment_events_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "privacy_legal_hold_reviews",
+        "parent": "privacy_legal_holds",
+        "columns": [
+          "legal_hold_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "privacy_legal_hold_reviews_legal_hold_id_fkey",
+        "definition": "FOREIGN KEY (legal_hold_id) REFERENCES privacy_legal_holds(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "privacy_legal_holds",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "privacy_legal_holds_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "privacy_requests",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "privacy_requests_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "professional_availability",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "professional_availability_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "professional_availability",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "professional_availability_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "professional_availability_network",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "professional_availability_network_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "professional_capabilities",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "professional_capabilities_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "professional_capabilities",
+        "parent": "taxonomy_roles",
+        "columns": [
+          "role_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "professional_capabilities_role_id_fkey",
+        "definition": "FOREIGN KEY (role_id) REFERENCES taxonomy_roles(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "professional_profiles",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "professional_profiles_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "replacement_requests",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "replacement_requests_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "replacement_requests",
+        "parent": "professional_profiles",
+        "columns": [
+          "replacement_professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "replacement_requests_replacement_professional_id_fkey",
+        "definition": "FOREIGN KEY (replacement_professional_id) REFERENCES professional_profiles(id) ON DELETE SET NULL",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "replacement_requests",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "replacement_requests_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_case_appeal_events",
+        "parent": "identities",
+        "columns": [
+          "actor_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_case_appeal_events_actor_identity_id_fkey",
+        "definition": "FOREIGN KEY (actor_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_case_appeal_events",
+        "parent": "safety_case_appeals",
+        "columns": [
+          "appeal_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "safety_case_appeal_events_appeal_id_fkey",
+        "definition": "FOREIGN KEY (appeal_id) REFERENCES safety_case_appeals(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "safety_case_appeal_events",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_case_appeal_events_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_case_appeals",
+        "parent": "identities",
+        "columns": [
+          "appellant_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_case_appeals_appellant_identity_id_fkey",
+        "definition": "FOREIGN KEY (appellant_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_case_appeals",
+        "parent": "safety_cases",
+        "columns": [
+          "safety_case_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "safety_case_appeals_safety_case_id_fkey",
+        "definition": "FOREIGN KEY (safety_case_id) REFERENCES safety_cases(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "safety_case_appeals",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_case_appeals_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_case_events",
+        "parent": "identities",
+        "columns": [
+          "actor_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_case_events_actor_identity_id_fkey",
+        "definition": "FOREIGN KEY (actor_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_case_events",
+        "parent": "safety_cases",
+        "columns": [
+          "safety_case_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "safety_case_events_safety_case_id_fkey",
+        "definition": "FOREIGN KEY (safety_case_id) REFERENCES safety_cases(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "safety_case_events",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_case_events_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_cases",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "safety_cases_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE SET NULL",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "safety_cases",
+        "parent": "identities",
+        "columns": [
+          "reporter_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_cases_reporter_identity_id_fkey",
+        "definition": "FOREIGN KEY (reporter_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "safety_cases",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "safety_cases_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "sessions",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "sessions_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "support_cases",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "support_cases_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE SET NULL",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "support_cases",
+        "parent": "identities",
+        "columns": [
+          "reporter_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "support_cases_reporter_identity_id_fkey",
+        "definition": "FOREIGN KEY (reporter_identity_id) REFERENCES identities(id) ON DELETE RESTRICT",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "support_cases",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "support_cases_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "talent_pool_members",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "talent_pool_members_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "talent_pool_members",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "talent_pool_members_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "tenant_memberships",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "tenant_memberships_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "tenant_memberships",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "tenant_memberships_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "terms_acceptances",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": false,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "terms_acceptances_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": false,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "trust_events",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "trust_events_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "trust_events",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "trust_events_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "trust_events",
+        "parent": "identities",
+        "columns": [
+          "reported_by_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "trust_events_reported_by_identity_id_fkey",
+        "definition": "FOREIGN KEY (reported_by_identity_id) REFERENCES identities(id) ON DELETE SET NULL",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "trust_events",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "trust_events_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "verification_cases",
+        "parent": "identities",
+        "columns": [
+          "identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "verification_cases_identity_id_fkey",
+        "definition": "FOREIGN KEY (identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "verification_cases",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "verification_cases_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "work_assignments",
+        "parent": "company_jobs",
+        "columns": [
+          "job_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "work_assignments_job_id_fkey",
+        "definition": "FOREIGN KEY (job_id) REFERENCES company_jobs(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "work_assignments",
+        "parent": "company_jobs",
+        "columns": [
+          "job_id",
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "work_assignments_job_tenant_fk",
+        "definition": "FOREIGN KEY (job_id, tenant_id) REFERENCES company_jobs(id, tenant_id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id",
+          "tenant_id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "work_assignments",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "work_assignments_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "work_assignments",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "work_assignments_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "work_ratings",
+        "parent": "work_assignments",
+        "columns": [
+          "assignment_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "work_ratings_assignment_id_fkey",
+        "definition": "FOREIGN KEY (assignment_id) REFERENCES work_assignments(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "work_ratings",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "work_ratings_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "work_ratings",
+        "parent": "identities",
+        "columns": [
+          "rater_identity_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "work_ratings_rater_identity_id_fkey",
+        "definition": "FOREIGN KEY (rater_identity_id) REFERENCES identities(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "work_ratings",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "work_ratings_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "workforce_team_members",
+        "parent": "professional_profiles",
+        "columns": [
+          "professional_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "workforce_team_members_professional_id_fkey",
+        "definition": "FOREIGN KEY (professional_id) REFERENCES professional_profiles(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "workforce_team_members",
+        "parent": "workforce_teams",
+        "columns": [
+          "team_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "workforce_team_members_team_id_fkey",
+        "definition": "FOREIGN KEY (team_id) REFERENCES workforce_teams(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "workforce_team_members",
+        "parent": "workforce_teams",
+        "columns": [
+          "team_id",
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": true,
+        "validated": true,
+        "constraint": "workforce_team_members_team_tenant_fk",
+        "definition": "FOREIGN KEY (team_id, tenant_id) REFERENCES workforce_teams(id, tenant_id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id",
+          "tenant_id"
+        ],
+        "parentForceRls": true
+      },
+      {
+        "child": "workforce_team_members",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "workforce_team_members_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      },
+      {
+        "child": "workforce_teams",
+        "parent": "tenants",
+        "columns": [
+          "tenant_id"
+        ],
+        "childRls": true,
+        "parentRls": false,
+        "validated": true,
+        "constraint": "workforce_teams_tenant_id_fkey",
+        "definition": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+        "parentSchema": "public",
+        "childForceRls": true,
+        "parentColumns": [
+          "id"
+        ],
+        "parentForceRls": false
+      }
+    ],
+    "foreignKeyCount": 95
+  }
+}
