@@ -18,6 +18,12 @@ test('weekly total and daily graph include payable/paid only, in local week thro
 test('ledger states do not pretend every entry is completed or paid',()=>{
  assert.equal(earningStatus('pending'),'Em processamento');assert.equal(earningStatus('payable'),'A receber');assert.equal(earningStatus('paid'),'Pago');assert.equal(earningStatus('reversed'),'Estornado');assert.equal(earningStatus('unknown'),'Status não identificado');
 });
+for(const status of ['__proto__','constructor','toString'])test(`unknown ledger state ${status} produces a string fallback after a successful read`,async()=>{
+ const data=[row('actual-entry',status,9)];
+ const result=await loadEarnings(async()=>({ok:true,json:async()=>data}));
+ assert.deepEqual(result,{status:'ready',data});
+ assert.equal(earningStatus(result.data[0].status),'Status não identificado');
+});
 test('multiple company earnings retain tenant/item identity and real data',async()=>{
  const rows=[row('same-id','payable',5),{...row('same-id','paid',9),tenantId:'other-tenant'}];
  assert.deepEqual(await loadEarnings(async()=>({ok:true,json:async()=>rows})),{status:'ready',data:rows});
@@ -28,3 +34,4 @@ test('earnings from a previous identity are withheld instead of displaying its l
  assert.equal(result.status,'stale');assert.equal('data' in result,false);assert.equal(calls,1);
  const empty=await runForSession(async()=>({Authorization:'Bearer a'}),()=>loadEarnings(async()=>({ok:true,json:async()=>[]})),()=>true);assert.equal(empty.status,'ready');assert.deepEqual(empty.data,{status:'ready',data:[]});
 });
+
