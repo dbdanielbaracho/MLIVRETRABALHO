@@ -36,3 +36,30 @@ test('real browser reload helper propagates command failure without retry',async
  const f=fixture('command-error');await assert.rejects(f.reload(),/reload-command-failed/);
  assert.deepEqual(f.metrics(),{sleeps:0,reloads:1});
 });
+
+const observerSource=source.slice(source.indexOf('function observeNativeFetch('),source.indexOf('\nasync function click('));
+function nativeFixture(nativeFetch:(...args:any[])=>Promise<any>,binding?:(value:string)=>void){
+ const events:any[]=[];
+ const context=vm.createContext({fetch:nativeFetch,URL,location:{href:'http://127.0.0.1:3001/'},Date,mlivreFixtureFetchTrace:binding||((value:string)=>events.push(JSON.parse(value)))});
+ vm.runInContext(observerSource+'\nobserveNativeFetch("http://127.0.0.1:3002","mlivreFixtureFetchTrace")',context);
+ return{fetch:vm.runInContext('fetch',context),events};
+}
+test('native fetch observer preserves exact promise arguments receiver and unread body',async()=>{
+ const secret='NEVER_LOG_THIS',url='http://127.0.0.1:3002/v1/company/jobs?secret='+secret,options={headers:{authorization:secret},body:secret},receiver={fixture:true};let calls=0;
+ const response={status:200,type:'cors',json(){throw Error('Observer must not read body');}},promise=Promise.resolve(response);
+ const f=nativeFixture(function(this:unknown,input:unknown,init:unknown){calls++;assert.equal(this,receiver);assert.equal(input,url);assert.equal(init,options);return promise;});
+ assert.equal(f.fetch.call(receiver,url,options),promise);assert.equal(await promise,response);assert.equal(calls,1);
+ assert.equal(f.events[0].path,'/v1/company/jobs');assert.equal(f.events[0].status,200);assert.ok(!JSON.stringify(f.events).includes(secret));
+});
+test('native fetch observer preserves original rejection and redacts unclassified messages',async()=>{
+ const error=TypeError('Bearer NEVER_LOG_THIS invalid header'),promise=Promise.reject(error),f=nativeFixture(()=>promise);
+ assert.equal(f.fetch('http://127.0.0.1:3002/v1/company/jobs'),promise);await assert.rejects(promise,(x:unknown)=>x===error);
+ assert.equal(f.events[0].name,'TypeError');assert.equal(f.events[0].message,'[unclassified native fetch error]');assert.ok(!JSON.stringify(f.events).includes('NEVER_LOG_THIS'));
+});
+test('native fetch observer binding failure cannot alter transport result',async()=>{
+ const promise=Promise.resolve({status:201,type:'cors'}),f=nativeFixture(()=>promise,()=>{throw Error('Observer unavailable');});
+ assert.equal(f.fetch('http://127.0.0.1:3002/v1/company/teams'),promise);assert.equal((await promise).status,201);await Promise.resolve();
+});
+test('native fetch observer does not record unrelated origins',async()=>{
+ const promise=Promise.resolve({status:200,type:'basic'}),f=nativeFixture(()=>promise);assert.equal(f.fetch('http://127.0.0.1:3001/'),promise);await promise;assert.deepEqual(f.events,[]);
+});

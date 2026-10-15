@@ -37,6 +37,16 @@ async function reloadDocument(){
  await until('performance.timeOrigin!=='+JSON.stringify(previousTimeOrigin)+'&&document.readyState==="complete"','new complete reload document');
  return{previousTimeOrigin,currentTimeOrigin:await evaluate('performance.timeOrigin')};
 }
+function observeNativeFetch(apiOrigin,bindingName){
+ const nativeFetch=globalThis.fetch;
+ const emit=data=>{try{globalThis[bindingName](JSON.stringify(data));}catch{}};
+ globalThis.fetch=function(...args){
+  const promise=Reflect.apply(nativeFetch,this,args);
+  let path;try{const url=new URL(typeof args[0]==='string'?args[0]:args[0].url,location.href);if(url.origin===apiOrigin)path=url.pathname;}catch{}
+  if(path)promise.then(response=>emit({event:'native-fetch-response',path,status:response.status,type:response.type,at:Date.now()}),error=>emit({event:'native-fetch-rejection',path,name:error?.name,message:['Failed to fetch','Load failed','The user aborted a request.','The operation was aborted.','signal is aborted without reason'].includes(error?.message)?error.message:'[unclassified native fetch error]',at:Date.now()}));
+  return promise;
+ };
+}
 async function click(expression){
  await until('(()=>{const e='+expression+';return !!e&&!e.disabled})()','enabled click target');
  const p=await evaluate('(()=>{const e='+expression+';if(!e||e.disabled)throw Error("Missing enabled target");e.scrollIntoView({block:"center"});const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()');
@@ -80,6 +90,12 @@ async function capture(label){
  ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',()=>reject(Error('Debugger connection failed')),{once:true});});
  ws.addEventListener('message',event=>{
   const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);if(m.error){const error=Error('CDP command failed');error.code=m.error.code;error.protocolMessage=m.error.message;p.reject(error);}else p.resolve(m.result);}return;}
+  if(m.method==='Runtime.bindingCalled'&&m.params.name==='mlivreFixtureFetchTrace')networkEvents.push(JSON.parse(m.params.payload));
+  if(m.method==='Log.entryAdded'&&m.params.entry.source==='network')networkEvents.push({event:'browser-network-log',at:m.params.entry.timestamp,level:m.params.entry.level,text:m.params.entry.text.replace(/https?:\/\/[^\s'"<>]+/g,text=>{try{const u=new URL(text);return u.origin+u.pathname;}catch{return'[url omitted]';}}).replace(/Bearer\s+[^\s'"<>]+/gi,'Bearer [redacted]'),networkRequestId:m.params.entry.networkRequestId});
+  if(m.method==='Network.responseReceivedExtraInfo'){
+   const corsHeaders=Object.fromEntries(Object.entries(m.params.headers).filter(([key])=>/^access-control-/i.test(key)));
+   if(Object.keys(corsHeaders).length)networkEvents.push({event:'response-extra',at:Date.now(),id:m.params.requestId,status:m.params.statusCode,corsHeaders});
+  }
   if(m.method==='Page.frameNavigated'){const f=m.params.frame;if(!f.parentId){const u=new URL(f.url);networkEvents.push({event:'main-document',at:Date.now(),loaderId:f.loaderId,origin:u.origin,path:u.pathname});}}
   if(m.method==='Fetch.requestPaused'){
    const u=new URL(m.params.request.url),allowed=['data:','about:','blob:'].includes(u.protocol)||[api.origin,web.origin].includes(u.origin);
@@ -94,7 +110,9 @@ async function capture(label){
   if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
- await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
+ await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');await cdp('Log.enable');
+ await cdp('Runtime.addBinding',{name:'mlivreFixtureFetchTrace'});
+ await cdp('Page.addScriptToEvaluateOnNewDocument',{source:'('+observeNativeFetch.toString()+')('+JSON.stringify(api.origin)+',"mlivreFixtureFetchTrace")'});
  await cdp('Fetch.enable',{patterns:[{urlPattern:'*',requestStage:'Request'}]});
  await cdp('Emulation.setDeviceMetricsOverride',{width:1365,height:900,deviceScaleFactor:1,mobile:false});
  await cdp('Emulation.setTimezoneOverride',{timezoneId:'UTC'});
@@ -161,4 +179,5 @@ async function capture(label){
 }).finally(async()=>{
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
+
 
