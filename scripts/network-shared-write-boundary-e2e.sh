@@ -112,7 +112,24 @@ then
   exit 1
 fi
 grep -qi 'work_assignments_job_tenant_fk' /tmp/assignment-job-tenant.err
-echo 'PASS: assignment job FK enforces the same tenant while valid own-tenant assignment remains allowed'
+
+if psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL >/tmp/assignment-job-update.out 2>/tmp/assignment-job-update.err
+BEGIN;
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+INSERT INTO work_assignments(tenant_id,job_id,professional_id,status)
+VALUES('$T1','$J1','$PROFILE','confirmed');
+UPDATE work_assignments SET job_id='$J2'
+ WHERE tenant_id='$T1' AND job_id='$J1' AND professional_id='$PROFILE';
+ROLLBACK;
+SQL
+then
+  echo 'FAIL: tenant T1 assignment switched its reference to a job owned by T2' >&2
+  exit 1
+fi
+grep -qi 'work_assignments_job_tenant_fk' /tmp/assignment-job-update.err
+echo 'PASS: assignment job FK rejects cross-tenant INSERT and UPDATE while own-tenant assignment remains allowed'
+
 
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
