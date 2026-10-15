@@ -356,6 +356,62 @@ CONFIRM_COMPANY_TOKEN="$COMPANY_TOKEN" CONFIRM_PRO_TOKEN="$PRO_TOKEN" CONFIRM_OT
 CONVERSATION_COMPANY_TOKEN="$COMPANY_TOKEN" CONVERSATION_PRO_TOKEN="$PRO_TOKEN" CONVERSATION_TENANT="$TENANT_ID" CONVERSATION_PROFESSIONAL_ID="$PROFESSIONAL_ID" node scripts/conversation-creation-concurrency-e2e.cjs
 VERIFICATION_PRO_TOKEN="$PRO_TOKEN" VERIFICATION_COMPANY_TOKEN="$COMPANY_TOKEN" VERIFICATION_TENANT="$TENANT_ID" node scripts/verification-request-concurrency-e2e.cjs
 
+# Chat body limit is the existing PostgreSQL character CHECK, not a UTF-16 code-unit policy.
+# All original journey assertions above remain intact; these disposable fixtures run before signout.
+node -e 'const u=new URL(process.env.DATABASE_URL||"");if(!["postgres:","postgresql:"].includes(u.protocol)||!["127.0.0.1","localhost"].includes(u.hostname)||!u.port)throw Error("Local disposable PostgreSQL required for chat character fixtures")'
+CHAT_CHAR_FAILURES=0
+CHAT_A_BEFORE="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
+CHAT_B_BEFORE="$(request GET "/v1/conversations/$ASSIGNMENT2_ID/messages" "$PRO_TOKEN" "$TENANT2_ID")"
+CHAT_PRO_ALERTS_BEFORE="$(request GET /v1/notifications/mine "$PRO_TOKEN")"
+CHAT_COMPANY_ALERTS_BEFORE="$(request GET /v1/notifications/mine "$COMPANY_TOKEN" "$TENANT_ID")"
+CHAT_B_ALERTS_BEFORE="$(request GET /v1/notifications/mine "$COMPANY2_TOKEN" "$TENANT2_ID")"
+node - "$GPS_INPUT_DIR" <<'NODE'
+const fs=require('node:fs'),dir=process.argv[2];
+for(const [label,char] of [['ascii','a'],['unicode','😀']]){
+ fs.writeFileSync(dir+'/chat-over-'+label+'.json',JSON.stringify({body:char.repeat(4001)}));
+ fs.writeFileSync(dir+'/chat-max-'+label+'.json',JSON.stringify({body:' \n'+char.repeat(4000)+'\t '}));
+}
+NODE
+for encoding in ascii unicode; do
+ for actor in pro company; do
+  CHAT_CHAR_TOKEN="$PRO_TOKEN"; [[ "$actor" == company ]] && CHAT_CHAR_TOKEN="$COMPANY_TOKEN"
+  code="$(curl -sS -o "$GPS_INPUT_DIR/chat-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/conversations/$ASSIGNMENT_ID/messages" -H "authorization: Bearer $CHAT_CHAR_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data-binary "@$GPS_INPUT_DIR/chat-over-$encoding.json")"
+  echo "OBSERVED chat body characters=4001 encoding=$encoding actor=$actor HTTP=$code"
+  if [[ "$code" != 400 ]]; then CHAT_CHAR_FAILURES=$((CHAT_CHAR_FAILURES+1)); fi
+  request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID" | json_equal "$CHAT_A_BEFORE"
+  request GET "/v1/conversations/$ASSIGNMENT2_ID/messages" "$PRO_TOKEN" "$TENANT2_ID" | json_equal "$CHAT_B_BEFORE"
+  request GET /v1/notifications/mine "$PRO_TOKEN" | json_equal "$CHAT_PRO_ALERTS_BEFORE"
+  request GET /v1/notifications/mine "$COMPANY_TOKEN" "$TENANT_ID" | json_equal "$CHAT_COMPANY_ALERTS_BEFORE"
+  request GET /v1/notifications/mine "$COMPANY2_TOKEN" "$TENANT2_ID" | json_equal "$CHAT_B_ALERTS_BEFORE"
+ done
+done
+# Authentication/membership remain authoritative, even for oversized content.
+test "$(curl -sS -o "$GPS_INPUT_DIR/chat-auth-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/conversations/$ASSIGNMENT_ID/messages" -H 'authorization: Bearer invalid-fixture' -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data-binary "@$GPS_INPUT_DIR/chat-over-ascii.json")" = 401
+test "$(curl -sS -o "$GPS_INPUT_DIR/chat-auth-response.json" -w '%{http_code}' -X POST "$BASE_URL/v1/conversations/$ASSIGNMENT_ID/messages" -H "authorization: Bearer $COMPANY2_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data-binary "@$GPS_INPUT_DIR/chat-over-unicode.json")" = 401
+# Valid 4000 Unicode code points must not be rejected merely because JS.length is8000.
+for encoding in ascii unicode; do
+ CHAT_CHAR_TOKEN="$COMPANY_TOKEN"; [[ "$encoding" == unicode ]] && CHAT_CHAR_TOKEN="$PRO_TOKEN"
+ CHAT_CHAR_ACK="$(curl -sS --fail-with-body -X POST "$BASE_URL/v1/conversations/$ASSIGNMENT_ID/messages" -H "authorization: Bearer $CHAT_CHAR_TOKEN" -H "x-tenant-id: $TENANT_ID" -H 'content-type: application/json' --data-binary "@$GPS_INPUT_DIR/chat-max-$encoding.json")"
+ CHAT_CHAR_ID="$(printf '%s' "$CHAT_CHAR_ACK" | json_field id)"
+ node - "$CHAT_CHAR_ACK" "$encoding" <<'NODE'
+const row=JSON.parse(process.argv[2]),char=process.argv[3]==='ascii'?'a':'😀';
+if(!row.id||row.body!==char.repeat(4000)||Array.from(row.body).length!==4000||!Number.isFinite(Date.parse(row.createdAt)))throw Error('Chat lost real trimmed Unicode ACK');
+NODE
+ [[ "$CHAT_CHAR_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || exit 1
+ expected_octets=4000; [[ "$encoding" == unicode ]] && expected_octets=16000
+ test "$(psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -Atc "SELECT length(cm.body)||':'||octet_length(cm.body) FROM conversation_messages cm JOIN conversations cv ON cv.id=cm.conversation_id WHERE cm.id='$CHAT_CHAR_ID' AND cm.tenant_id='$TENANT_ID' AND cv.tenant_id='$TENANT_ID' AND cv.assignment_id='$ASSIGNMENT_ID'")" = "4000:$expected_octets"
+ echo "OBSERVED chat persisted characters=4000 encoding=$encoding octets=$expected_octets"
+done
+CHAT_A_AFTER="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
+node - "$CHAT_A_BEFORE" "$CHAT_A_AFTER" <<'NODE'
+const assert=require('node:assert/strict'),before=JSON.parse(process.argv[2]),after=JSON.parse(process.argv[3]);
+assert.equal(after.length,before.length+2);assert.deepEqual(after.filter(x=>before.some(b=>b.id===x.id)),before);
+NODE
+request GET "/v1/conversations/$ASSIGNMENT2_ID/messages" "$PRO_TOKEN" "$TENANT2_ID" | json_equal "$CHAT_B_BEFORE"
+request GET /v1/notifications/mine "$COMPANY2_TOKEN" "$TENANT2_ID" | json_equal "$CHAT_B_ALERTS_BEFORE"
+if [[ "$CHAT_CHAR_FAILURES" != 0 ]]; then echo "FAIL: chat_character_limit $CHAT_CHAR_FAILURES oversized requests were not HTTP400" >&2; exit 1; fi
+echo 'PASS: chat accepts4000 database Unicode characters, rejects4001 with400, and preserves authority messages notifications and tenant isolation'
+
 request POST /v1/auth/signout "$PRO_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY_TOKEN" '' '{}' >/dev/null
 request POST /v1/auth/signout "$COMPANY2_TOKEN" '' '{}' >/dev/null

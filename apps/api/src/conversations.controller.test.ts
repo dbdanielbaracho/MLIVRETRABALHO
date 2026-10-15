@@ -56,3 +56,20 @@ test('concurrent first messages use one conversation row for the assignment',asy
  assert.equal(messages[0]!.conversationId,messages[1]!.conversationId);
  assert.deepEqual([first.body,second.body].sort(),['Primeira','Segunda']);
 });
+
+test('conversation rejects more than4000 database Unicode characters before tenant SQL',async()=>{
+ for(const body of ['a'.repeat(4001),'😀'.repeat(4001),'e\u0301'.repeat(2001)])await invalid({body});
+});
+test('conversation retains trimmed4000 Unicode codepoints trusted parameters and database ACK',async()=>{
+ for(const text of ['a'.repeat(4000),'😀'.repeat(4000),'e\u0301'.repeat(2000)]){
+  const h=setup();assert.deepEqual(await h.controller.send(ID,{body:' \n'+text+'\t ',tenantId:'spoof',senderIdentityId:'spoof'},'Bearer fixture','trusted-tenant'),h.row);
+  assert.deepEqual(h.contexts,['trusted-tenant']);
+  assert.deepEqual(h.queries.find(q=>q.sql.startsWith('INSERT INTO conversation_messages'))!.params,['trusted-tenant','fixture-conversation','trusted',text]);
+  const alerts=h.queries.filter(q=>q.sql.startsWith('INSERT INTO notifications'));assert.equal(alerts.length,1);assert.equal(alerts[0]!.params[1],'fixture-recipient');
+ }
+});
+test('conversation oversized input preserves authentication and membership precedence',async()=>{
+ const h=setup(false);await assert.rejects(h.controller.send(ID,{body:'a'.repeat(4001)},undefined,'trusted-tenant'),e=>e instanceof UnauthorizedException);assert.equal(h.contexts.length,0);
+ const error=new UnauthorizedException(),auth={identityFromAuthorization:async()=>({id:'trusted'}),requireMembership:async()=>{throw error}},db={tenant:async()=>{throw Error('must not access tenant SQL')}},c=new ConversationsController(db as unknown as DatabaseService,auth as unknown as AuthService);
+ await assert.rejects(c.send(ID,{body:'😀'.repeat(4001)},'Bearer fixture','foreign-tenant'),e=>e===error);
+});
