@@ -10,4 +10,13 @@ const validPlanner=(x:unknown):x is PlannerItem=>record(x)&&typeof x.id==='strin
 async function read<T>(request:Request,path:string,valid:(x:unknown)=>x is T):Promise<ReadResult<T>>{try{const r=await request(path);if(!r.ok)return {status:'error',forbidden:r.status===403};const d:unknown=await r.json();return Array.isArray(d)&&d.every(valid)?{status:'ready',data:d}:{status:'error'};}catch{return {status:'error'};}}
 export const loadReconciliation=(request:Request)=>read(request,'/company/payment-events/reconciliation',validReconciliation);
 export const loadPlanner=(request:Request)=>read(request,'/company/planner',validPlanner);
-export const moneyOrMissing=(cents?:number|null)=>cents==null?'Não registrado':'R$ '+(cents/100).toFixed(2).replace('.',',');
+export const moneyOrMissing=(cents?:number|null)=>{
+ if(cents==null)return 'Não registrado';
+ if(Number.isSafeInteger(cents)){
+  // Separate exact integer cents as decimal digits; division can round a cent
+  // near MAX_SAFE_INTEGER before toFixed is called.
+  const digits=Math.abs(cents).toString().padStart(3,'0');
+  return 'R$ '+(cents<0?'-':'')+digits.slice(0,-2)+','+digits.slice(-2);
+ }
+ return 'R$ '+(cents/100).toFixed(2).replace('.',',');
+};
