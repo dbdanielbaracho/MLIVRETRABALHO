@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
+import {spawnSync} from 'node:child_process';
 
 const source=readFileSync(new URL('../../../scripts/web-browser-journey-e2e.cjs',import.meta.url),'utf8');
 const start=source.indexOf('async function until('),end=source.indexOf('\nasync function click(',start);
@@ -79,3 +80,36 @@ test('current read-wave barrier excludes preflight ACKs and waits for all new GE
  const f=waveFixture([{path:'/a',method:'OPTIONS',status:204},{path:'/b',method:'OPTIONS',status:204}],true);
  await f.wait(0,['/a','/b']);assert.equal(f.sleeps(),2);
 });
+
+const configSource=source.slice(source.indexOf('function diagnosticConfiguration('),source.indexOf('\nconst diagnostic='));
+test('diagnostic matrix independently controls only the two passive observers',()=>{
+ const configure=vm.runInNewContext(configSource+'\ndiagnosticConfiguration',{assert}) as (value?:string)=>unknown;
+ for(const [mode,native,log] of [['baseline',false,false],['log-only',false,true],['native-only',true,false],['instrumented',true,true]]){
+  assert.equal(JSON.stringify(configure(mode as string)),JSON.stringify({mode,native,log}));
+ }
+ assert.equal(JSON.stringify(configure()),JSON.stringify({mode:'instrumented',native:true,log:true}));
+});
+test('diagnostic configuration rejects unknown or inherited case names rather than skipping gates',()=>{
+ const configure=vm.runInNewContext(configSource+'\ndiagnosticConfiguration',{assert}) as (value:string)=>unknown;
+ for(const mode of ['', '__proto__','constructor','toString','skip'])assert.throws(()=>configure(mode),/Unknown browser diagnostic case/);
+});
+const wrapper=readFileSync(new URL('../../../scripts/web-browser-journey-e2e.sh',import.meta.url),'utf8');
+const matrixSource=wrapper.slice(wrapper.indexOf('BROWSER_MATRIX_STATUS=0'));
+function matrixFixture(failed:string){
+ // Execute the real shell aggregation; only the child executable is an offline fixture.
+ const stub='node(){ if [[ "$1" == scripts/web-browser-journey-e2e.cjs ]]; then echo "FIXTURE_CASE $BROWSER_DIAGNOSTIC_MODE"; if [[ "$BROWSER_DIAGNOSTIC_MODE" == "$FIXTURE_FAILED_CASE" ]]; then return 17; fi; fi; return 0; };\n';
+ return spawnSync('bash',['-euc',stub+matrixSource],{encoding:'utf8',env:{...process.env,BROWSER_LOG_DIR:'/unused-fixture',FIXTURE_FAILED_CASE:failed}});
+}
+test('real matrix shell completes all four distinct controls and returns success only when all pass',()=>{
+ const result=matrixFixture('none');assert.equal(result.status,0,result.stderr);
+ assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,4);
+ assert.equal((result.stdout.match(/DIAGNOSTIC_CASE_RESULT \S+ PASS/g)||[]).length,4);
+});
+test('real matrix shell retains one case failure even when subsequent independent cases pass',()=>{
+ const result=matrixFixture('log-only');assert.equal(result.status,1,result.stderr);
+ assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,4);
+ assert.match(result.stdout,/log-only FAIL exit=17/);
+ assert.match(result.stdout,/instrumented PASS/);
+ assert.match(result.stdout,/MATRIX_RESULT status=1/);
+});
+

@@ -6,6 +6,12 @@ const vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
 const {tmpdir}=require('node:os');
 const {join}=require('node:path');
 const {randomUUID,createHash}=require('node:crypto');
+function diagnosticConfiguration(value='instrumented'){
+ const cases={baseline:{native:false,log:false},'log-only':{native:false,log:true},'native-only':{native:true,log:false},instrumented:{native:true,log:true}};
+ assert.ok(Object.prototype.hasOwnProperty.call(cases,value),'Unknown browser diagnostic case');
+ return{mode:value,...cases[value]};
+}
+const diagnostic=diagnosticConfiguration(process.env.BROWSER_DIAGNOSTIC_MODE);
 const api=new URL(process.env.BROWSER_API_URL||'http://127.0.0.1:3002');
 const web=new URL(process.env.BROWSER_WEB_URL||'http://127.0.0.1:3001');
 for(const u of [api,web])assert.ok(u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)&&u.port&&u.pathname==='/'&&!u.username&&!u.password,'Local disposable origins required');
@@ -79,9 +85,10 @@ async function dashboard(email){
 async function capture(label){
  await evaluate('window.scrollTo(0,0)');const r=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
  const bytes=Buffer.from(r.data,'base64'),sha256=createHash('sha256').update(bytes).digest('hex');
- captures.push({label,sha256,bytes:bytes.length});console.log('WEB_BROWSER_CAPTURE '+JSON.stringify({label,sha256,bytes:bytes.length,pngBase64:r.data}));
+ captures.push({label,sha256,bytes:bytes.length});console.log('WEB_BROWSER_CAPTURE '+JSON.stringify({diagnostic:diagnostic.mode,label,sha256,bytes:bytes.length,pngBase64:r.data}));
 }
 (async()=>{
+ console.log('WEB_BROWSER_DIAGNOSTIC_CASE_START '+JSON.stringify(diagnostic));
  const accounts=[];
  for(const label of ['A','B']){
   const email='web-browser-'+label.toLowerCase()+'-'+stamp+'@example.test';
@@ -121,11 +128,14 @@ async function capture(label){
   if(m.method==='Network.loadingFailed'&&requestMethods.has(m.params.requestId))networkEvents.push({event:'failed',id:m.params.requestId,method:requestMethods.get(m.params.requestId),errorText:m.params.errorText,blockedReason:m.params.blockedReason,corsErrorStatus:m.params.corsErrorStatus,canceled:m.params.canceled});
   if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
- const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
+ const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({diagnostic:diagnostic.mode,product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
- await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');await cdp('Log.enable');
- await cdp('Runtime.addBinding',{name:'mlivreFixtureFetchTrace'});
- await cdp('Page.addScriptToEvaluateOnNewDocument',{source:'('+observeNativeFetch.toString()+')('+JSON.stringify(api.origin)+',"mlivreFixtureFetchTrace")'});
+ await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
+ if(diagnostic.log)await cdp('Log.enable');
+ if(diagnostic.native){
+  await cdp('Runtime.addBinding',{name:'mlivreFixtureFetchTrace'});
+  await cdp('Page.addScriptToEvaluateOnNewDocument',{source:'('+observeNativeFetch.toString()+')('+JSON.stringify(api.origin)+',"mlivreFixtureFetchTrace")'});
+ }
  await cdp('Fetch.enable',{patterns:[{urlPattern:'*',requestStage:'Request'}]});
  await cdp('Emulation.setDeviceMetricsOverride',{width:1365,height:900,deviceScaleFactor:1,mobile:false});
  await cdp('Emulation.setTimezoneOverride',{timezoneId:'UTC'});
@@ -187,14 +197,14 @@ async function capture(label){
  assert.equal(revoked.status,401,'Explicit signout must revoke the actual browser bearer');await revoked.arrayBuffer();
  await apiCall('/v1/me',{token:accounts[0].token});
  if(networkViolation)throw Error(networkViolation);
- console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated','five-explicit-dashboard-refresh-waves'],apiResponses:responses}));
+ console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({diagnostic:diagnostic.mode,scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated','five-explicit-dashboard-refresh-waves'],apiResponses:responses}));
 })().catch(async e=>{
- console.error('WEB_BROWSER_JOURNEY_FAIL '+e.message);
+ console.error('WEB_BROWSER_JOURNEY_FAIL '+JSON.stringify({diagnostic:diagnostic.mode,error:e.message}));
  if(ws&&sessionId){
   try{
    const state=await evaluate('({h1:document.querySelector("h1")?.textContent,alert:document.querySelector("[role=alert]")?.textContent,metricValues:Array.from(document.querySelectorAll(".metrics strong")).map(x=>x.textContent),bodyText:document.body.innerText.slice(0,1800)})');
-   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({state,apiResponses:responses,networkViolation}));
-   console.log('WEB_BROWSER_NETWORK_DIAGNOSTIC '+JSON.stringify(networkEvents));
+   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({diagnostic:diagnostic.mode,state,apiResponses:responses,networkViolation}));
+   console.log('WEB_BROWSER_NETWORK_DIAGNOSTIC '+JSON.stringify({diagnostic:diagnostic.mode,events:networkEvents}));
    await capture('failure');
   }catch{console.error('WEB_BROWSER_FAILURE_STATE unavailable');}
  }
@@ -202,5 +212,6 @@ async function capture(label){
 }).finally(async()=>{
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
+
 
 
