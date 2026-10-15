@@ -63,3 +63,19 @@ test('native fetch observer binding failure cannot alter transport result',async
 test('native fetch observer does not record unrelated origins',async()=>{
  const promise=Promise.resolve({status:200,type:'basic'}),f=nativeFixture(()=>promise);assert.equal(f.fetch('http://127.0.0.1:3001/'),promise);await promise;assert.deepEqual(f.events,[]);
 });
+
+const waveSource=source.slice(source.indexOf('async function waitForReadWave('),source.indexOf('\nfunction observeNativeFetch('));
+function waveFixture(rows:any[],append:boolean){
+ let clock=0,sleeps=0;
+ const context=vm.createContext({responses:rows,networkViolation:undefined,Date:{now:()=>clock},sleep:async()=>{clock+=100;sleeps++;if(append&&sleeps===2)rows.push({path:'/a',method:'GET',status:200},{path:'/b',method:'GET',status:200});}});
+ const wait=vm.runInContext(waveSource+'\nwaitForReadWave',context) as (from:number,paths:string[])=>Promise<void>;
+ return{wait,sleeps:()=>sleeps};
+}
+test('current read-wave barrier never accepts matching GETs from before the action',async()=>{
+ const f=waveFixture([{path:'/a',method:'GET',status:200},{path:'/b',method:'GET',status:200}],false);
+ await assert.rejects(f.wait(2,['/a','/b']),/current dashboard GET200 wave/);
+});
+test('current read-wave barrier excludes preflight ACKs and waits for all new GET200 paths',async()=>{
+ const f=waveFixture([{path:'/a',method:'OPTIONS',status:204},{path:'/b',method:'OPTIONS',status:204}],true);
+ await f.wait(0,['/a','/b']);assert.equal(f.sleeps(),2);
+});

@@ -37,6 +37,18 @@ async function reloadDocument(){
  await until('performance.timeOrigin!=='+JSON.stringify(previousTimeOrigin)+'&&document.readyState==="complete"','new complete reload document');
  return{previousTimeOrigin,currentTimeOrigin:await evaluate('performance.timeOrigin')};
 }
+async function waitForReadWave(fromIndex,expectedPaths){
+ const end=Date.now()+20000;
+ while(Date.now()<end){
+  if(networkViolation)throw Error(networkViolation);
+  const current=responses.slice(fromIndex).filter(x=>x.method==='GET'&&expectedPaths.includes(x.path));
+  if(current.some(x=>x.status!==200))throw Error('Dashboard refresh read returned non-200');
+  const completed=new Set(current.map(x=>x.path));
+  if(expectedPaths.every(path=>completed.has(path)))return;
+  await sleep(100);
+ }
+ throw Error('Browser condition timeout: current dashboard GET200 wave');
+}
 function observeNativeFetch(apiOrigin,bindingName){
  const nativeFetch=globalThis.fetch;
  const emit=data=>{try{globalThis[bindingName](JSON.stringify(data));}catch{}};
@@ -109,6 +121,7 @@ async function capture(label){
   if(m.method==='Network.loadingFailed'&&requestMethods.has(m.params.requestId))networkEvents.push({event:'failed',id:m.params.requestId,method:requestMethods.get(m.params.requestId),errorText:m.params.errorText,blockedReason:m.params.blockedReason,corsErrorStatus:m.params.corsErrorStatus,canceled:m.params.canceled});
   if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
+ const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');await cdp('Log.enable');
  await cdp('Runtime.addBinding',{name:'mlivreFixtureFetchTrace'});
@@ -140,6 +153,16 @@ async function capture(label){
  assert.ok(job?.id&&team?.id,'Real persisted job/team required');assert.equal(job.payCents,12345);assert.equal(job.startsAt,new Date(start+'Z').toISOString());assert.equal(job.endsAt,new Date(end+'Z').toISOString());
  await dashboard(accounts[0].email);await capture('company-a-created');
  const signinCount=responses.filter(x=>x.path==='/v1/auth/signin').length;
+ const readPaths=['/v1/company/dashboard','/v1/company/analytics','/v1/company/planner','/v1/company/jobs','/v1/company/dashboard/assignments','/v1/company/dashboard/completed','/v1/company/teams','/v1/company/replacements','/v1/company/talent-pools','/v1/company/payment-events/reconciliation','/v1/company/safety-cases','/v1/company/safety-appeals'];
+ for(let refresh=1;refresh<=5;refresh++){
+  const from=responses.length,posts=responses.filter(x=>x.method==='POST').length;
+  console.log('WEB_BROWSER_REFRESH_START '+JSON.stringify({refresh}));
+  await click('Array.from(document.querySelectorAll("button")).find(x=>x.textContent==="Atualizar dados")');
+  await waitForReadWave(from,readPaths);await dashboard(accounts[0].email);
+  assert.ok(await evaluate('document.body.innerText.includes('+JSON.stringify(jobTitle)+')'),'Refresh lost persisted own job');
+  assert.equal(responses.filter(x=>x.method==='POST').length,posts,'Explicit refresh must not emit mutation or signin retry');
+  console.log('WEB_BROWSER_REFRESH_PASS '+JSON.stringify({refresh,actualGet200Paths:readPaths.length}));
+ }
  for(let reload=1;reload<=5;reload++){
   console.log('WEB_BROWSER_RELOAD_START '+JSON.stringify({reload}));
   const{previousTimeOrigin,currentTimeOrigin}=await reloadDocument();
@@ -164,7 +187,7 @@ async function capture(label){
  assert.equal(revoked.status,401,'Explicit signout must revoke the actual browser bearer');await revoked.arrayBuffer();
  await apiCall('/v1/me',{token:accounts[0].token});
  if(networkViolation)throw Error(networkViolation);
- console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated'],apiResponses:responses}));
+ console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated','five-explicit-dashboard-refresh-waves'],apiResponses:responses}));
 })().catch(async e=>{
  console.error('WEB_BROWSER_JOURNEY_FAIL '+e.message);
  if(ws&&sessionId){
