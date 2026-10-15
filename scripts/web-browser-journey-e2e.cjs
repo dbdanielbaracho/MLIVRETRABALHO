@@ -53,6 +53,7 @@ async function capture(label){
   const email='web-browser-'+label.toLowerCase()+'-'+stamp+'@example.test';
   const signup=await apiCall('/v1/auth/signup',{method:'POST',body:{email,password,accountType:'company',workspaceName:'Browser company '+label+' '+stamp}});
   const auth=await apiCall('/v1/auth/signin',{method:'POST',body:{email,password}});
+  console.log('WEB_BROWSER_FIXTURE_AUTH '+JSON.stringify({label,tenantId:signup.tenantId,memberships:auth.memberships}));
   accounts.push({email,tenant:signup.tenantId,token:auth.accessToken,identity:auth.identity.id});
  }
  const binary=process.env.CHROME_BIN||['google-chrome','google-chrome-stable','chromium','chromium-browser'].find(p=>spawnSync('which',[p],{stdio:'ignore'}).status===0);
@@ -113,6 +114,16 @@ async function capture(label){
  assert.ok(responses.some(x=>x.path==='/v1/auth/signout'&&x.status>=200&&x.status<300),'Actual remote signout response required');
  if(networkViolation)throw Error(networkViolation);
  console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','second-identity-isolated'],apiResponses:responses}));
-})().catch(e=>{console.error('WEB_BROWSER_JOURNEY_FAIL '+e.message);process.exitCode=1;}).finally(async()=>{
+})().catch(async e=>{
+ console.error('WEB_BROWSER_JOURNEY_FAIL '+e.message);
+ if(ws&&sessionId){
+  try{
+   const state=await evaluate('({h1:document.querySelector("h1")?.textContent,alert:document.querySelector("[role=alert]")?.textContent,metricValues:Array.from(document.querySelectorAll(".metrics strong")).map(x=>x.textContent),bodyText:document.body.innerText.slice(0,1800)})');
+   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({state,apiResponses:responses,networkViolation}));
+   await capture('failure');
+  }catch{console.error('WEB_BROWSER_FAILURE_STATE unavailable');}
+ }
+ process.exitCode=1;
+}).finally(async()=>{
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
