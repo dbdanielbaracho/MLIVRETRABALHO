@@ -3835,3 +3835,8 @@ Head7e707f40c64b3618558bc689c45f86965cd3dcaf/CI38756284006/job116495471903 attem
 ### 2026-10-15 —558 candidato barreira NÃO resolveu cancelamentos; diagnóstico adicional
 
 Head40ab0c8017c3e79b43b1bf95e6363cd1d5961b25/CI38757186986/job116498594996attempt1FAILURE15:08:40.7178294Z created-team-rendered ANTESqualquerreload;1312unit[135,753,410,3,11]PASSzeroFAILSKIPCANCEL/typecheck/build/migrationsprivacyPASS,HTTPbrowserFAIL. TeamPOST201real;12GETposterioresnet::ERR_ABORTED/canceledtrue. Candidata barreira/modelos passouunitmasnãoexplicaestaoutrasfalhas. Não declarar causa resolvida/fix deproduto; não merge/reruncego. Novoheadinstrumenta Fetch.requestPaused+ACK/erroCDP(protocolcode/message apenas,semheaders/tokens),timestamp/loaderId/type,mainframe navigation; semdesativarinterceptação/CORS/sandbox oualterarapp. CI novocandidatoPENDENTE. Sóárea10técnicainternaaceita12pendentes.
+
+
+### 2026-10-15 —558 rastreio não sustenta navegação ou recusa CDP como causa
+
+Heada524edbf0a8d519eaca176ffceaf43adc97253a5/CI38758034590/job116501584200attempt1FAILURE15:14:43.5450645Z created-job-rendered ANTESreload;1312unitPASS. Tracerealm:ZEROintercept-error,ZEROsessionmismatch,todascontinueACKobservadas,UMAmain-documentnavegaçãoinicialapenas;12GETabortadosmesmoloader. Isso não prova causasugeridaanteriorderecarregamento/CORS/CDPerror. NovoheadpreservaFAILeimprimeSOMENTEmétodo/path/status/timing/reqId doAPIfixture dedicadoemcasofalha,semheaders/body/tokens/senhas/query/credenciais. NãoalteraAPI/CORS/app,skip/retrysegurança. Wrappermantémexit1sefalhou,trapcleanupigual. CI novoheadPENDENTE,nãoPASS;nãomergerdraft/repita556merge/reruncego. Barreiraéintegridadedoteste,cancelamentoscontinuamSEMcauseconfirmada;12áreasnãoaceitas.

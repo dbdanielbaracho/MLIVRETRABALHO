@@ -21,4 +21,16 @@ for browser_fixture_step in $(seq 1 60); do
 done
 curl --fail --silent http://127.0.0.1:3002/v1/health/ready >/dev/null
 curl --fail --silent http://127.0.0.1:3001 >/dev/null
-BROWSER_API_URL=http://127.0.0.1:3002 BROWSER_WEB_URL=http://127.0.0.1:3001 node scripts/web-browser-journey-e2e.cjs
+if BROWSER_API_URL=http://127.0.0.1:3002 BROWSER_WEB_URL=http://127.0.0.1:3001 node scripts/web-browser-journey-e2e.cjs; then exit 0; fi
+# Failure stays failure. Print only method/path/status/timing metadata from the fixture API.
+node - "$BROWSER_LOG_DIR/api.log" <<'NODE'
+const fs=require('node:fs');const events=[];
+for(const line of fs.readFileSync(process.argv[2],'utf8').split('\n')){
+ let row;try{row=JSON.parse(line);}catch{continue;}
+ if(!row.reqId)continue;
+ events.push({at:row.time,id:row.reqId,...(row.req?{method:row.req.method,path:new URL(row.req.url,'http://fixture.invalid').pathname}:{}),...(row.res?{status:row.res.statusCode}:{}),...(typeof row.responseTime==='number'?{responseTime:row.responseTime}:{})});
+}
+console.log('WEB_BROWSER_SERVER_DIAGNOSTIC '+JSON.stringify(events.slice(-300)));
+NODE
+exit 1
+
