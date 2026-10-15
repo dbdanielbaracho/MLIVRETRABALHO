@@ -113,6 +113,8 @@ async function capture(label){
  await cdp('Page.reload',{ignoreCache:true});await dashboard(accounts[0].email);
  assert.ok(await evaluate('document.body.innerText.includes('+JSON.stringify(jobTitle)+')'),'Reload lost persisted own data');
  assert.equal(responses.filter(x=>x.path==='/v1/auth/signin').length,signinCount,'Reload must reuse tab session, not invent signin retry');
+ const browserToken=await evaluate('JSON.parse(sessionStorage.getItem("mlivre:web:session")).accessToken');
+ assert.ok(typeof browserToken==='string'&&browserToken.length>0&&browserToken!==accounts[0].token,'Browser session must be distinct from fixture session');
  await click('Array.from(document.querySelectorAll("button")).find(x=>x.textContent==="Sair")');
  await until('!!document.querySelector("input[name=email]")','local signout');
  await until('!document.body.innerText.includes('+JSON.stringify(jobTitle)+')','old tenant removed');
@@ -122,8 +124,11 @@ async function capture(label){
  assert.deepEqual(await apiCall('/v1/company/teams',{token:accounts[1].token,tenant:accounts[1].tenant}),[]);
  await capture('company-b-isolated');
  assert.ok(responses.some(x=>x.path==='/v1/auth/signout'&&x.status>=200&&x.status<300),'Actual remote signout response required');
+ const revoked=await fetch(new URL('/v1/me',api),{headers:{authorization:'Bearer '+browserToken},signal:AbortSignal.timeout(15000)});
+ assert.equal(revoked.status,401,'Explicit signout must revoke the actual browser bearer');await revoked.arrayBuffer();
+ await apiCall('/v1/me',{token:accounts[0].token});
  if(networkViolation)throw Error(networkViolation);
- console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','second-identity-isolated'],apiResponses:responses}));
+ console.log('WEB_BROWSER_JOURNEY_PASS '+JSON.stringify({scope:'actual headless Chrome DOM+local API/Postgres, not Android/physical/VisualTruth acceptance',fixtureTenants:accounts.map(x=>x.tenant),fixtureIdentities:accounts.map(x=>x.identity),jobId:job.id,teamId:team.id,revokedBrowserTokenStatus:revoked.status,otherSameIdentitySessionValid:true,captures,checks:['login401-feedback','login-success-empty','create-team-persisted-rendered','create-job-exact-money-dates-persisted-rendered','reload-tab-session','local-and-remote-signout','revoked-browser-token401-other-session-valid','second-identity-isolated'],apiResponses:responses}));
 })().catch(async e=>{
  console.error('WEB_BROWSER_JOURNEY_FAIL '+e.message);
  if(ws&&sessionId){
