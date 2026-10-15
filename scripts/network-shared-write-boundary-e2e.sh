@@ -82,6 +82,38 @@ fi
 
 grep -qi 'permission denied' /tmp/network-availability-write.err
 
+
+# A tenant-owned assignment must reference a job in that same tenant, even
+# when a trusted runtime caller supplies a foreign UUID by mistake.
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+BEGIN;
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+DO \$\$ BEGIN
+ IF EXISTS(SELECT 1 FROM company_jobs WHERE id='$J2') THEN
+  RAISE EXCEPTION 'cross_tenant_job_visible';
+ END IF;
+END \$\$;
+INSERT INTO work_assignments(tenant_id,job_id,professional_id,status)
+VALUES('$T1','$J1','$PROFILE','confirmed');
+ROLLBACK;
+SQL
+
+if psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL >/tmp/assignment-job-tenant.out 2>/tmp/assignment-job-tenant.err
+BEGIN;
+SET LOCAL ROLE app_runtime;
+SELECT set_config('app.tenant_id','$T1',true);
+INSERT INTO work_assignments(tenant_id,job_id,professional_id,status)
+VALUES('$T1','$J2','$PROFILE','confirmed');
+ROLLBACK;
+SQL
+then
+  echo 'FAIL: tenant T1 assignment referenced a job owned by T2' >&2
+  exit 1
+fi
+grep -qi 'work_assignments_job_tenant_fk' /tmp/assignment-job-tenant.err
+echo 'PASS: assignment job FK enforces the same tenant while valid own-tenant assignment remains allowed'
+
 psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
 DELETE FROM professional_availability_network WHERE professional_id='$PROFILE';
 DELETE FROM marketplace_interests WHERE professional_id='$PROFILE';
