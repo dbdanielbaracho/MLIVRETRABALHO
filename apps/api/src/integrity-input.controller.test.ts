@@ -53,3 +53,26 @@ test('integrity list preserves scoped real records and original admin authority'
 test('integrity database failure rejects without fabricated case or review success',async()=>{
  const error=new Error('database unavailable');for(const mode of ['create','review']){const h=setup({error});await assert.rejects(mode==='create'?h.controller.create(base,'Bearer fixture','trusted-tenant'):h.controller.review(CASE,review,'Bearer fixture','trusted-tenant'),e=>e===error);}
 });
+
+test('integrity evidence rejects more than4000 database characters before tenant SQL',async()=>{
+ for(const evidence of ['x'.repeat(4001),'😀'.repeat(4001),'e\u0301'.repeat(2000)+'e']){
+  const h=setup();await assert.rejects(h.controller.create({...base,evidence},'Bearer fixture','trusted-tenant'),bad('integrity_case_invalid'));
+  assert.equal(h.calls.length,0);assert.equal(h.tenants.length,0);assert.deepEqual(h.authority,['auth','membership']);
+ }
+});
+test('integrity evidence preserves one through4000 Unicode characters and existing trim ACK and trusted params',async()=>{
+ for(const evidence of ['x','x'.repeat(4000),'😀'.repeat(4000),'e\u0301'.repeat(2000)])for(const role of ['owner','admin']){
+  const h=setup({role}),row=await h.controller.create({...base,evidence:'  '+evidence+'  '},'Bearer fixture','trusted-tenant');
+  assert.deepEqual(h.calls[0]?.params,['trusted-tenant',ASSIGN]);
+  assert.deepEqual(h.calls[1]?.params,['trusted-tenant',ASSIGN,'other',evidence,'trusted-admin']);
+  assert.deepEqual(row,{id:CASE,kind:'other',status:'open',createdAt:'2026-10-11T00:00:00Z'});
+ }
+});
+test('integrity oversized evidence preserves auth membership and owner admin precedence',async()=>{
+ const body={...base,evidence:'😀'.repeat(4001)};
+ for(const options of [{authorized:false},{membership:false},{role:'manager'},{role:'company'},{role:'professional'}]){
+  const h=setup(options);await assert.rejects(h.controller.create(body,'Bearer fixture','trusted-tenant'),(e:unknown)=>options.role?e instanceof ForbiddenException&&e.message==='admin_required':e instanceof UnauthorizedException);
+  assert.equal(h.calls.length,0);assert.equal(h.tenants.length,0);
+ }
+ const h=setup();await assert.rejects(h.controller.create(body,'Bearer fixture'),bad('tenant_required'));assert.equal(h.calls.length,0);assert.equal(h.tenants.length,0);
+});

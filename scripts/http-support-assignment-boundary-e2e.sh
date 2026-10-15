@@ -299,6 +299,45 @@ request GET "/v1/company/trust-events/$PROFILE_ID" "$TOKEN_A" "$TENANT_A" | node
 echo 'PASS: real assignment DELETE retains safety/support and audit history, immutable support intent replay ACK, and original trust cascade via HTTP/PostgreSQL'
 
 
+# Regression for the existing database character limit, in the local-only HTTP fixture.
+# Reuse the local-only support fixture's authenticated companies/professional and real assignment.
+INTEGRITY_BEFORE="$(request GET /v1/company/integrity/cases "$TOKEN_A" "$TENANT_A")"
+INTEGRITY_OTHER_BEFORE="$(request GET /v1/company/integrity/cases "$TOKEN_B" "$TENANT_B")"
+integrity_body(){ node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],kind:"other",evidence:(process.argv[2]==="unicode"?"😀":"x").repeat(Number(process.argv[3]))}))' -- "$ASSIGNMENT_A" "$1" "$2"; }
+INTEGRITY_ASCII="$(request POST /v1/company/integrity/cases "$TOKEN_A" "$TENANT_A" "$(integrity_body ascii 4000)" | json_field id)"
+INTEGRITY_UNICODE="$(request POST /v1/company/integrity/cases "$TOKEN_A" "$TENANT_A" "$(integrity_body unicode 4000)" | json_field id)"
+INTEGRITY_VALID="$(request GET /v1/company/integrity/cases "$TOKEN_A" "$TENANT_A")"
+node - "$INTEGRITY_BEFORE" "$INTEGRITY_VALID" "$INTEGRITY_ASCII" "$INTEGRITY_UNICODE" "$ASSIGNMENT_A" <<'JS'
+const a=require('node:assert/strict'),[before,rows]=process.argv.slice(2,4).map(JSON.parse),ids=process.argv.slice(4,6),assignmentId=process.argv[6];
+a.equal(rows.length,before.length+2);
+for(const [i,id] of ids.entries()){
+ const row=rows.find(x=>x.id===id);a.ok(row);a.equal(row.assignmentId,assignmentId);a.equal(row.status,'open');
+ a.equal(row.evidence,(i?'😀':'x').repeat(4000));a.equal(Array.from(row.evidence).length,4000);
+}
+for(const row of before)a.deepEqual(rows.find(x=>x.id===row.id),row);
+JS
+INTEGRITY_CHARACTER_CONTROL="$(psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -qAt <<'SQL'
+SELECT char_length(repeat(chr(128512),4000))||':'||octet_length(repeat(chr(128512),4000));
+SQL
+)"
+test "$INTEGRITY_CHARACTER_CONTROL" = '4000:16000'
+INTEGRITY_FAILURES=0
+for encoding in ascii unicode; do
+ body="$(integrity_body "$encoding" 4001)"
+ code="$(status_only POST /v1/company/integrity/cases "$TOKEN_A" "$TENANT_A" "$body")"
+ after="$(request GET /v1/company/integrity/cases "$TOKEN_A" "$TENANT_A")"
+ node - "$INTEGRITY_VALID" "$after" <<'JS'
+require('node:assert/strict').deepEqual(JSON.parse(process.argv[3]),JSON.parse(process.argv[2]));
+JS
+ test "$(request GET /v1/company/integrity/cases "$TOKEN_B" "$TENANT_B")" = "$INTEGRITY_OTHER_BEFORE"
+ echo "OBSERVED integrity evidence characters=4001 encoding=$encoding HTTP=$code"
+ if [[ "$code" != 400 ]]; then INTEGRITY_FAILURES=$((INTEGRITY_FAILURES+1)); fi
+ expect_status integrity-auth-before-length 401 POST /v1/company/integrity/cases invalid-token "$TENANT_A" "$body"
+ expect_status integrity-role-before-length 403 POST /v1/company/integrity/cases "$TOKEN_P" "$TENANT_A" "$body"
+done
+test "$INTEGRITY_FAILURES" = 0 || { echo "FAIL: integrity evidence oversized HTTP contract: $INTEGRITY_FAILURES responses were not400" >&2; exit 1; }
+echo 'PASS: integrity evidence accepts4000 Unicode characters and rejects4001 with400, without writes or altered authority/tenant scope'
+
 for token in "$TOKEN_A" "$TOKEN_B" "$TOKEN_P"; do request POST /v1/auth/signout "$token" >/dev/null; done
 expect_status contexts-revoked 401 GET /v1/me/support-contexts "$TOKEN_P" '' ''
 echo 'PASS: support assignment binding rejects cross-tenant and malformed requests without insert; legitimate reporter/admin flows preserved'
