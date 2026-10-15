@@ -36,3 +36,26 @@ test('sign-in response retains only company memberships when professional member
  const result=validateSigninCompanySession({...valid,memberships:[{tenantId:'personal',role:'professional'},{tenantId:'company-a',role:'owner'}]});
  assert.deepEqual(result?.memberships.map(m=>m.tenantId),['company-a']);
 });
+
+test('sign-in accepts actual API tenant_id wire memberships and returns canonical tab session',()=>{
+ const result=validateSigninCompanySession({...valid,memberships:[{tenant_id:'company-a',role:'owner'}]});
+ assert.deepEqual(result,{accessToken:valid.accessToken,identity:valid.identity,memberships:[{tenantId:'company-a',role:'owner'}]});
+});
+test('sign-in wire adaptation preserves company filtering and rejects duplicate authority across aliases',()=>{
+ const result=validateSigninCompanySession({...valid,memberships:[{tenant_id:'personal',role:'professional'},{tenant_id:'company-a',role:'owner'},{tenantId:'company-b',role:'manager'}]});
+ assert.deepEqual(result?.memberships.map(x=>x.tenantId),['company-a','company-b']);
+ assert.equal(validateSigninCompanySession({...valid,memberships:[{tenant_id:'company-a',role:'owner'},{tenantId:'company-a',role:'manager'}]}),null);
+});
+test('sign-in rejects conflicting or malformed wire aliases rather than selecting a tenant authority',()=>{
+ for(const memberships of [[{tenantId:'company-a',tenant_id:'company-b',role:'owner'}],[{tenantId:'company-a',tenant_id:42,role:'owner'}],[{tenant_id:' ',role:'owner'}],[{tenant_id:null,role:'owner'}]]){
+  assert.equal(validateSigninCompanySession({...valid,memberships}),null);
+ }
+ const result=validateSigninCompanySession({...valid,memberships:[{tenantId:'company-a',tenant_id:'company-a',role:'owner'}]});
+ assert.equal(result?.memberships[0]?.tenantId,'company-a');
+});
+test('wire sign-in adaptation does not broaden canonical stored-session restoration',()=>{
+ assert.equal(readStoredCompanySession(JSON.stringify({...valid,memberships:[{tenant_id:'company-a',role:'owner'}]})),null);
+ const canonical=validateSigninCompanySession({...valid,memberships:[{tenant_id:'company-a',role:'owner'}]});
+ assert.ok(canonical);
+ assert.deepEqual(readStoredCompanySession(JSON.stringify(canonical)),canonical);
+});

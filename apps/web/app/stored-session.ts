@@ -39,7 +39,11 @@ export function validateSigninCompanySession(value:unknown):StoredSession|null{
     if(!item||typeof item!=='object'||Array.isArray(item))return null;
     const candidate=item as Record<string,unknown>;
     if(typeof candidate.role!=='string')return null;
-    if(isCompanyRole(candidate.role))enterprise.push(item);
+    if(isCompanyRole(candidate.role)){
+      const canonical=candidate.tenantId;const wire=candidate.tenant_id;
+      if(canonical!==undefined&&wire!==undefined&&canonical!==wire)return null;
+      enterprise.push({...candidate,tenantId:canonical!==undefined?canonical:wire});
+    }
   }
   if(!enterprise.length)return null;
   return readStoredCompanySession(JSON.stringify({...s,memberships:enterprise}));
