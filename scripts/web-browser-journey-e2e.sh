@@ -5,11 +5,22 @@ node -e 'const u=new URL(process.env.DATABASE_URL||"");if(!["postgres:","postgre
 BROWSER_LOG_DIR="$(mktemp -d)"
 BROWSER_API_PID=""
 BROWSER_WEB_PID=""
+BROWSER_FIXTURE_CREATED=""
 cleanup_browser_journey(){
  [[ -z "$BROWSER_WEB_PID" ]] || kill "$BROWSER_WEB_PID" 2>/dev/null || true
  [[ -z "$BROWSER_API_PID" ]] || kill "$BROWSER_API_PID" 2>/dev/null || true
+ if [[ "$BROWSER_FIXTURE_CREATED" == yes ]]; then
+  node -e 'require("node:fs").unlinkSync("apps/web/public/__mlivre_transport_fixture.html")'
+ fi
 }
 trap cleanup_browser_journey EXIT
+# Real HTTP loopback context, not a CDP-fulfilled synthetic document. Never overwrite a repository file.
+node <<'CREATE_TRANSPORT_FIXTURE'
+const fs=require('node:fs');
+fs.mkdirSync('apps/web/public',{recursive:true});
+fs.writeFileSync('apps/web/public/__mlivre_transport_fixture.html','<!doctype html><meta charset="utf-8"><title>Local transport fixture</title><p id="transport-fixture">Explicit local transport fixture; no app scripts</p>',{flag:'wx'});
+CREATE_TRANSPORT_FIXTURE
+BROWSER_FIXTURE_CREATED=yes
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:3002 pnpm --filter @mlivretrabalho/web build > "$BROWSER_LOG_DIR/web-build.log" 2>&1 || { echo 'Browser fixture Web build failed' >&2; exit 1; }
 PORT=3002 HOST=127.0.0.1 CORS_ORIGINS=http://127.0.0.1:3001 pnpm --filter @mlivretrabalho/api start > "$BROWSER_LOG_DIR/api.log" 2>&1 &
 BROWSER_API_PID=$!
@@ -48,6 +59,7 @@ NODE
 done
 echo "WEB_BROWSER_DIAGNOSTIC_MATRIX_RESULT status=$BROWSER_MATRIX_STATUS"
 exit "$BROWSER_MATRIX_STATUS"
+
 
 
 

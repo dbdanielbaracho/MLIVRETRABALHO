@@ -21,8 +21,10 @@ const web=new URL(process.env.BROWSER_WEB_URL||'http://127.0.0.1:3001');
 for(const u of [api,web])assert.ok(u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)&&u.port&&u.pathname==='/'&&!u.username&&!u.password,'Local disposable origins required');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const readPaths=['/v1/company/dashboard','/v1/company/analytics','/v1/company/planner','/v1/company/jobs','/v1/company/dashboard/assignments','/v1/company/dashboard/completed','/v1/company/teams','/v1/company/replacements','/v1/company/talent-pools','/v1/company/payment-events/reconciliation','/v1/company/safety-cases','/v1/company/safety-appeals'];
-function isTransportDocument(url,method,type){
- return scenario==='minimal'&&url.origin===web.origin&&url.pathname==='/__mlivre_transport_fixture'&&!url.search&&!url.username&&!url.password&&method==='GET'&&type==='Document';
+function requireLoopbackDocument(rows){
+ const row=rows.find(x=>x.path==='/__mlivre_transport_fixture.html');
+ assert.ok(row&&row.status===200&&['127.0.0.1','::1','[::1]','::ffff:127.0.0.1'].includes(row.remoteIPAddress)&&!row.fromDiskCache&&!row.fromServiceWorker,'Real loopback HTTP fixture document required; synthetic/cache/service-worker document is not a control');
+ return row;
 }
 async function browserTransportProbe(apiOrigin,accessToken,tenantId,paths,teamName){
  const headers={Authorization:'Bearer '+accessToken,'x-tenant-id':tenantId};
@@ -52,7 +54,7 @@ const validateActualSignin=actualWireValidator();
 const password='BrowserFixture123!';
 const stamp=Date.now()+'-'+randomUUID().slice(0,8);
 let chrome,ws,sessionId,commandId=0,networkViolation;
-const pending=new Map(),responses=[],captures=[],networkEvents=[],requestMethods=new Map();
+const pending=new Map(),responses=[],captures=[],networkEvents=[],requestMethods=new Map(),documentResponses=[];
 async function apiCall(path,{token,tenant,method='GET',body}={}){
  const r=await fetch(new URL(path,api),{method,headers:{...(token?{authorization:'Bearer '+token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body?{'content-type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
  assert.ok(r.ok,'Local fixture API failed: '+method+' '+path+' HTTP'+r.status);return r.json();
@@ -139,25 +141,26 @@ async function capture(label){
   const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);if(m.error){const error=Error('CDP command failed');error.code=m.error.code;error.protocolMessage=m.error.message;p.reject(error);}else p.resolve(m.result);}return;}
   if(m.method==='Runtime.bindingCalled'&&m.params.name==='mlivreFixtureFetchTrace')networkEvents.push(JSON.parse(m.params.payload));
   if(m.method==='Log.entryAdded'&&m.params.entry.source==='network')networkEvents.push({event:'browser-network-log',at:m.params.entry.timestamp,level:m.params.entry.level,text:m.params.entry.text.replace(/https?:\/\/[^\s'"<>]+/g,text=>{try{const u=new URL(text);return u.origin+u.pathname;}catch{return'[url omitted]';}}).replace(/Bearer\s+[^\s'"<>]+/gi,'Bearer [redacted]'),networkRequestId:m.params.entry.networkRequestId});
+  if(m.method==='Network.requestWillBeSentExtraInfo'&&m.params.clientSecurityState){
+   const s=m.params.clientSecurityState;
+   networkEvents.push({event:'client-security-state',at:Date.now(),id:m.params.requestId,initiatorIPAddressSpace:s.initiatorIPAddressSpace,initiatorIsSecureContext:s.initiatorIsSecureContext,localNetworkAccessRequestPolicy:s.localNetworkAccessRequestPolicy});
+  }
   if(m.method==='Network.responseReceivedExtraInfo'){
    const corsHeaders=Object.fromEntries(Object.entries(m.params.headers).filter(([key])=>/^access-control-/i.test(key)));
-   if(Object.keys(corsHeaders).length)networkEvents.push({event:'response-extra',at:Date.now(),id:m.params.requestId,status:m.params.statusCode,corsHeaders});
+   if(Object.keys(corsHeaders).length||m.params.resourceIPAddressSpace)networkEvents.push({event:'response-extra',at:Date.now(),id:m.params.requestId,status:m.params.statusCode,corsHeaders,resourceIPAddressSpace:m.params.resourceIPAddressSpace});
   }
   if(m.method==='Page.frameNavigated'){const f=m.params.frame;if(!f.parentId){const u=new URL(f.url);networkEvents.push({event:'main-document',at:Date.now(),loaderId:f.loaderId,origin:u.origin,path:u.pathname});}}
   if(m.method==='Fetch.requestPaused'){
    const u=new URL(m.params.request.url),allowed=['data:','about:','blob:'].includes(u.protocol)||[api.origin,web.origin].includes(u.origin);
    if(!allowed)networkViolation='Non-local application request blocked: '+u.origin;
    const trace={event:'intercept',at:Date.now(),id:m.params.requestId,networkId:m.params.networkId,path:u.pathname,origin:u.origin,method:m.params.request.method,allowed,sessionMatches:m.sessionId===sessionId};networkEvents.push(trace);
-   if(allowed&&isTransportDocument(u,m.params.request.method,m.params.resourceType)){
-    cdp('Fetch.fulfillRequest',{requestId:m.params.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/html; charset=utf-8'},{name:'Cache-Control',value:'no-store'}],body:Buffer.from('<!doctype html><meta charset="utf-8"><title>Local transport fixture</title><p id="transport-fixture">Explicit local transport fixture; no app scripts</p>').toString('base64')}).catch(()=>{networkViolation='Local transport fixture document failed';});return;
-   }
    cdp(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:m.params.requestId,...(!allowed?{errorReason:'BlockedByClient'}:{})}).then(()=>networkEvents.push({...trace,event:'intercept-ack',at:Date.now()})).catch(error=>networkEvents.push({...trace,event:'intercept-error',at:Date.now(),code:error.code,message:error.protocolMessage||error.message}));
   }
   if(m.method==='Network.requestWillBeSent'){
    const u=new URL(m.params.request.url);if(u.origin===api.origin){requestMethods.set(m.params.requestId,m.params.request.method);networkEvents.push({event:'request',at:Date.now(),id:m.params.requestId,loaderId:m.params.loaderId,type:m.params.type,path:u.pathname,method:m.params.request.method,headerNames:Object.keys(m.params.request.headers).map(x=>x.toLowerCase()).sort()});}
   }
   if(m.method==='Network.loadingFailed'&&requestMethods.has(m.params.requestId))networkEvents.push({event:'failed',id:m.params.requestId,method:requestMethods.get(m.params.requestId),errorText:m.params.errorText,blockedReason:m.params.blockedReason,corsErrorStatus:m.params.corsErrorStatus,canceled:m.params.canceled});
-  if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
+  if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===web.origin&&m.params.type==='Document')documentResponses.push({path:u.pathname,status:m.params.response.status,remoteIPAddress:m.params.response.remoteIPAddress,fromDiskCache:!!m.params.response.fromDiskCache,fromServiceWorker:!!m.params.response.fromServiceWorker});if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
  const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({scenario,diagnostic:diagnostic.mode,product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
@@ -171,9 +174,13 @@ async function capture(label){
  await cdp('Emulation.setDeviceMetricsOverride',{width:1365,height:900,deviceScaleFactor:1,mobile:false});
  await cdp('Emulation.setTimezoneOverride',{timezoneId:'UTC'});
  if(scenario==='minimal'){
-  await cdp('Page.navigate',{url:new URL('/__mlivre_transport_fixture',web).href});
+  await cdp('Page.navigate',{url:new URL('/__mlivre_transport_fixture.html',web).href});
   await until('!!document.getElementById("transport-fixture")&&document.readyState==="complete"','minimal local fixture document');
   assert.equal(await evaluate('location.origin'),web.origin,'Minimal probe must retain the same real CORS origin');
+  assert.equal(await evaluate('document.scripts.length'),0,'Minimal HTTP fixture must not run React/Next/application scripts');
+  assert.equal(await evaluate('isSecureContext'),true,'No insecure-context or permission override is allowed');
+  const documentResponse=requireLoopbackDocument(documentResponses);
+  console.log('WEB_BROWSER_MINIMAL_CONTEXT '+JSON.stringify({scenario,diagnostic:diagnostic.mode,documentResponse,secureContext:true,appScripts:0}));
   const report=await evaluate('('+browserTransportProbe.toString()+')('+[api.origin,accounts[0].token,accounts[0].tenant,readPaths,'Transport team '+stamp].map(x=>JSON.stringify(x)).join(',')+')');
   console.log('WEB_BROWSER_MINIMAL_TRANSPORT_OBSERVED '+JSON.stringify({scenario,diagnostic:diagnostic.mode,...report}));
   assert.equal(report.failedStage,null,'Minimal native browser transport failed; no React/Next scripts run in this fixture document');
@@ -254,6 +261,7 @@ async function capture(label){
 }).finally(async()=>{
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
+
 
 
 

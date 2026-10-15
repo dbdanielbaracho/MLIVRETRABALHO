@@ -123,12 +123,20 @@ test('transport scenario cannot silently select an unknown or inherited mode',()
  assert.equal(choose(),'journey');assert.equal(choose('minimal'),'minimal');
  for(const value of ['skip','__proto__','constructor',''])assert.throws(()=>choose(value),/Unknown browser transport scenario/);
 });
-const documentSource=source.slice(source.indexOf('function isTransportDocument('),source.indexOf('\nasync function browserTransportProbe('));
-test('minimal document fixture is restricted to its own explicit GET document URL and scenario',()=>{
- const configure=(scenario:string)=>vm.runInNewContext(documentSource+'\nisTransportDocument',{scenario,web:new URL('http://127.0.0.1:3001')}) as (u:URL,m:string,t:string)=>boolean;
- const isDocument=configure('minimal'),url=new URL('http://127.0.0.1:3001/__mlivre_transport_fixture');
- assert.equal(isDocument(url,'GET','Document'),true);assert.equal(configure('journey')(url,'GET','Document'),false);
- for(const [u,m,t] of [[url.href,'POST','Document'],[url.href,'GET','Fetch'],['http://127.0.0.1:3001/','GET','Document'],[url.href+'?extra=1','GET','Document'],['https://example.invalid/__mlivre_transport_fixture','GET','Document']])assert.equal(isDocument(new URL(u),m,t),false);
+const documentSource=source.slice(source.indexOf('function requireLoopbackDocument('),source.indexOf('\nasync function browserTransportProbe('));
+test('minimal control requires a real HTTP200 loopback document, not synthetic cache or service worker',()=>{
+ const requireDocument=vm.runInNewContext(documentSource+'\nrequireLoopbackDocument',{assert}) as (rows:unknown[])=>unknown;
+ const good={path:'/__mlivre_transport_fixture.html',status:200,remoteIPAddress:'127.0.0.1',fromDiskCache:false,fromServiceWorker:false};
+ assert.equal(JSON.stringify(requireDocument([good])),JSON.stringify(good));
+ for(const row of [{...good,path:'/'},{...good,status:404},{...good,remoteIPAddress:''},{...good,remoteIPAddress:'203.0.113.1'},{...good,fromDiskCache:true},{...good,fromServiceWorker:true}])assert.throws(()=>requireDocument([row]),/Real loopback HTTP fixture document required/);
+});
+test('real HTTP fixture creator is exclusive, scoped to one test file and contains no application scripts',()=>{
+ const marker="node <<'CREATE_TRANSPORT_FIXTURE'\n",start=wrapper.indexOf(marker)+marker.length,end=wrapper.indexOf('\nCREATE_TRANSPORT_FIXTURE',start);
+ assert.ok(wrapper.indexOf(marker)>=0&&end>start,'Actual fixture writer source required');
+ const actual=wrapper.slice(start,end),calls:{path?:string;html?:string;flag?:string}={};
+ vm.runInNewContext(actual,{require:()=>({mkdirSync:()=>undefined,writeFileSync:(path:string,html:string,options:{flag:string})=>Object.assign(calls,{path,html,flag:options.flag})})});
+ assert.equal(calls.path,'apps/web/public/__mlivre_transport_fixture.html');assert.equal(calls.flag,'wx');assert.match(calls.html||'',/id="transport-fixture"/);assert.ok(!/<script/i.test(calls.html||''));
+ assert.throws(()=>vm.runInNewContext(actual,{require:()=>({mkdirSync:()=>undefined,writeFileSync:()=>{throw Error('EEXIST')}})}),/EEXIST/);
 });
 const probeSource=source.slice(source.indexOf('async function browserTransportProbe('),source.indexOf('\nfunction actualWireValidator('));
 function transportFixture(rejectPost:boolean){
@@ -161,5 +169,6 @@ test('actual server diagnostic formatter isolates case byte windows and omits cr
  assert.equal(report.scenario,'minimal');assert.equal(report.events.length,1);assert.equal(report.events[0].id,'current');assert.equal(report.events[0].path,'/current');
  assert.ok(!lines[0].includes('private'));assert.ok(!lines[0].includes('headers'));
 });
+
 
 
