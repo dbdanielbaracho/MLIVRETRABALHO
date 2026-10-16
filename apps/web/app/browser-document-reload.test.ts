@@ -6,7 +6,30 @@ import {join} from 'node:path';
 import vm from 'node:vm';
 import {spawnSync} from 'node:child_process';
 
-const source=readFileSync(new URL('../../../scripts/web-browser-journey-e2e.cjs',import.meta.url),'utf8');
+const source=readFileSync(new URL('../../../scripts/web-browser-transport-probe.cjs',import.meta.url),'utf8');
+const continuationSource=source.slice(source.indexOf('function continuationConfiguration('),source.indexOf('\nconst continuation='));
+function dispatcher(policy:string,send:(method:string,params:unknown)=>Promise<unknown>){
+ return vm.runInNewContext(continuationSource+'\ncreateContinuationDispatcher',{assert,Promise})(policy,send) as (method:string,params:unknown)=>Promise<unknown>;
+}
+test('actual serial continuation dispatcher waits for each ACK without serializing browser fetch calls',async()=>{
+ const calls:string[]=[],release:Array<()=>void>=[];
+ const send=dispatcher('serial',method=>{calls.push(method);return new Promise(resolve=>release.push(()=>resolve({})));});
+ const first=send('first',{}),second=send('second',{});await Promise.resolve();assert.deepEqual(calls,['first']);
+ release.shift()!();await first;await Promise.resolve();assert.deepEqual(calls,['first','second']);release.shift()!();await second;
+});
+test('actual concurrent continuation dispatcher dispatches both guarded pauses before an ACK',async()=>{
+ const calls:string[]=[],release:Array<()=>void>=[];
+ const send=dispatcher('concurrent',method=>{calls.push(method);return new Promise(resolve=>release.push(()=>resolve({})));});
+ const first=send('first',{}),second=send('second',{});assert.deepEqual(calls,['first','second']);release.forEach(done=>done());await Promise.all([first,second]);
+});
+test('serial continuation failure propagates exactly once while already guarded pauses still drain',async()=>{
+ const error=Error('fixture failure'),calls:string[]=[];
+ const send=dispatcher('serial',async(method)=>{calls.push(method);if(method==='bad')throw error;return{};});
+ const failed=send('bad',{}),later=send('later',{});await assert.rejects(failed,(x:unknown)=>x===error);await later;assert.deepEqual(calls,['bad','later']);
+});
+test('continuation policy cannot silently fall back from unknown or inherited names',()=>{
+ for(const policy of ['','__proto__','constructor','skip'])assert.throws(()=>dispatcher(policy,async()=>({})),/Unknown continuation policy/);
+});
 const start=source.indexOf('async function until('),end=source.indexOf('\nasync function click(',start);
 assert.ok(start>=0&&end>start,'Actual browser helper source required');
 
@@ -99,21 +122,26 @@ const wrapper=readFileSync(new URL('../../../scripts/web-browser-journey-e2e.sh'
 const matrixSource=wrapper.slice(wrapper.indexOf('BROWSER_MATRIX_STATUS=0'));
 function matrixFixture(failed:string){
  // Execute the real shell aggregation; only the child executable is an offline fixture.
- const stub='wc(){ echo 0; }; node(){ if [[ "$1" == scripts/web-browser-journey-e2e.cjs ]]; then echo "FIXTURE_CASE $BROWSER_SCENARIO/$BROWSER_DIAGNOSTIC_MODE"; if [[ "$BROWSER_SCENARIO" == journey && "$BROWSER_DIAGNOSTIC_MODE" == "$FIXTURE_FAILED_CASE" ]]; then return 17; fi; fi; return 0; };\n';
+ const stub='wc(){ echo 0; }; node(){ if [[ "$1" == scripts/web-browser-journey-e2e.cjs ]]; then echo FIXTURE_CURRENT_MAIN; [[ "$FIXTURE_FAILED_CASE" != current-main ]] || return 19; fi; if [[ "$1" == scripts/web-browser-transport-probe.cjs ]]; then echo "FIXTURE_CASE $BROWSER_SCENARIO/$BROWSER_DIAGNOSTIC_MODE/$BROWSER_CONTINUATION_POLICY"; if [[ "$BROWSER_SCENARIO" == journey && "$BROWSER_DIAGNOSTIC_MODE" == "$FIXTURE_FAILED_CASE" ]]; then return 17; fi; fi; return 0; };\n';
  const folder=mkdtempSync(join(tmpdir(),'mlivre-matrix-unit-')),file=join(folder,'api.log');writeFileSync(file,'');
  try{return spawnSync('bash',['-euc',stub+matrixSource],{encoding:'utf8',env:{...process.env,BROWSER_LOG_DIR:folder,FIXTURE_FAILED_CASE:failed}});}
  finally{unlinkSync(file);rmdirSync(folder);}
 }
-test('real matrix shell completes minimal and journey controls and returns success only when all eight pass',()=>{
+test('real matrix shell completes minimal and journey controls and returns success only when all twelve controls plus current main pass',()=>{
  const result=matrixFixture('none');assert.equal(result.status,0,result.stderr);
- assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,8);
- assert.equal((result.stdout.match(/DIAGNOSTIC_CASE_RESULT \S+ PASS/g)||[]).length,8);
+ assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,12);
+ assert.equal((result.stdout.match(/DIAGNOSTIC_CASE_RESULT \S+ PASS/g)||[]).length,12);
+ assert.equal((result.stdout.match(/FIXTURE_CURRENT_MAIN/g)||[]).length,1);
+});
+test('current main availability journey is required even when every transport control passes',()=>{
+ const result=matrixFixture('current-main');assert.equal(result.status,1,result.stderr);assert.match(result.stdout,/CURRENT_MAIN_CASE_RESULT FAIL/);
+ assert.equal((result.stdout.match(/DIAGNOSTIC_CASE_RESULT \S+ PASS/g)||[]).length,12);
 });
 test('real matrix shell retains one case failure even when subsequent independent cases pass',()=>{
  const result=matrixFixture('log-only');assert.equal(result.status,1,result.stderr);
- assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,8);
- assert.match(result.stdout,/journey\/log-only FAIL exit=17/);
- assert.match(result.stdout,/instrumented PASS/);
+ assert.equal((result.stdout.match(/FIXTURE_CASE /g)||[]).length,12);
+ assert.match(result.stdout,/journey\/log-only\/concurrent FAIL exit=17/);
+ assert.match(result.stdout,/instrumented\/concurrent PASS/);
  assert.match(result.stdout,/MATRIX_RESULT status=1/);
 });
 
@@ -169,6 +197,7 @@ test('actual server diagnostic formatter isolates case byte windows and omits cr
  assert.equal(report.scenario,'minimal');assert.equal(report.events.length,1);assert.equal(report.events[0].id,'current');assert.equal(report.events[0].path,'/current');
  assert.ok(!lines[0].includes('private'));assert.ok(!lines[0].includes('headers'));
 });
+
 
 
 

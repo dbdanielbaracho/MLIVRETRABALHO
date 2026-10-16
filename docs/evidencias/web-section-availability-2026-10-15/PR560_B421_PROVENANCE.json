@@ -1,0 +1,36 @@
+{
+  "sourcePR": 560,
+  "sourceHead": "b421f2f21fc9c6a96a58172436aeeb843abd93fb",
+  "sourceCheckout": "459b74148b2bcb198462ff4ee513083b8d484f78",
+  "checkoutKind": "synthetic",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "b421f2f21fc9c6a96a58172436aeeb843abd93fb"
+  ],
+  "sourceTree": "ffc56ceb0a8f678c56ea66c31eb91c7c78840bee",
+  "run": 38798714617,
+  "job": 116641822641,
+  "attempt": 1,
+  "overallResult": "FAILURE",
+  "capturedDate": "2026-10-15",
+  "pageBlob": "470e1080f948020a3e60265cfc51376ccc39144a",
+  "scope": "Actual local Chrome/API/PostgreSQL fixtures, not production/Android/physical; NOT screenshots of the new candidate",
+  "captures": [
+    {
+      "label": "company-a-created",
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR560_B421_company_a_created.png",
+      "sha256": "7e312d732b13f48d90a7d375f23bb6eda168839099b3a8c30238d4e972109acc",
+      "bytes": 133272,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "failure",
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR560_B421_failure.png",
+      "sha256": "4cd6886c31132ec1568c3a2ef4a39fbebd10057a475eb19c8dc7ff0bfb0bbc0f",
+      "bytes": 139867,
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}

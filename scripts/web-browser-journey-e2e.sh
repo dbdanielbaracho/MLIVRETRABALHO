@@ -36,13 +36,15 @@ BROWSER_MATRIX_STATUS=0
 # Four distinct control cases, not retries. A failed case can never be replaced by a later PASS.
 for browser_scenario in minimal journey; do
  for browser_diagnostic_case in baseline log-only native-only instrumented; do
+ for browser_continuation in concurrent serial; do
+ [[ "$browser_scenario" != journey || "$browser_continuation" != serial ]] || continue
  browser_api_offset="$(wc -c < "$BROWSER_LOG_DIR/api.log")"
- if BROWSER_SCENARIO="$browser_scenario" BROWSER_DIAGNOSTIC_MODE="$browser_diagnostic_case" BROWSER_API_URL=http://127.0.0.1:3002 BROWSER_WEB_URL=http://127.0.0.1:3001 node scripts/web-browser-journey-e2e.cjs; then
-  echo "WEB_BROWSER_DIAGNOSTIC_CASE_RESULT $browser_scenario/$browser_diagnostic_case PASS"
+ if BROWSER_CONTINUATION_POLICY="$browser_continuation" BROWSER_SCENARIO="$browser_scenario" BROWSER_DIAGNOSTIC_MODE="$browser_diagnostic_case" BROWSER_API_URL=http://127.0.0.1:3002 BROWSER_WEB_URL=http://127.0.0.1:3001 node scripts/web-browser-transport-probe.cjs; then
+  echo "WEB_BROWSER_DIAGNOSTIC_CASE_RESULT $browser_scenario/$browser_diagnostic_case/$browser_continuation PASS"
  else
   browser_case_status=$?
   BROWSER_MATRIX_STATUS=1
-  echo "WEB_BROWSER_DIAGNOSTIC_CASE_RESULT $browser_scenario/$browser_diagnostic_case FAIL exit=$browser_case_status"
+  echo "WEB_BROWSER_DIAGNOSTIC_CASE_RESULT $browser_scenario/$browser_diagnostic_case/$browser_continuation FAIL exit=$browser_case_status"
   # Failure stays failure. Print only method/path/status/timing metadata from the fixture API.
   node - "$BROWSER_LOG_DIR/api.log" "$browser_diagnostic_case" "$browser_scenario" "$browser_api_offset" <<'NODE'
 const fs=require('node:fs');const events=[];
@@ -57,8 +59,17 @@ NODE
  fi
  done
 done
+done
+# Preserve the current main journey, including the one-read503 and human-recovery gates.
+if BROWSER_API_URL=http://127.0.0.1:3002 BROWSER_WEB_URL=http://127.0.0.1:3001 node scripts/web-browser-journey-e2e.cjs; then
+ echo "WEB_BROWSER_CURRENT_MAIN_CASE_RESULT PASS"
+else
+ BROWSER_MATRIX_STATUS=1
+ echo "WEB_BROWSER_CURRENT_MAIN_CASE_RESULT FAIL"
+fi
 echo "WEB_BROWSER_DIAGNOSTIC_MATRIX_RESULT status=$BROWSER_MATRIX_STATUS"
 exit "$BROWSER_MATRIX_STATUS"
+
 
 
 

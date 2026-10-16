@@ -1,0 +1,57 @@
+{
+  "sourcePR": 561,
+  "sourceHead": "389a7d21534cf42fa20f7b17d9fe618c75f7e973",
+  "sourceCheckout": "20dc2aa779ca00e9bd6940051ed6b3fcbc9d7350",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "389a7d21534cf42fa20f7b17d9fe618c75f7e973"
+  ],
+  "sourceTree": "c4dbd7c7e1825f1eeb8f9456116870f00071e446",
+  "run": 38832096131,
+  "job": 116752936911,
+  "attempt": 1,
+  "overallResult": "SUCCESS",
+  "scope": "Predecessor389 actual local Chrome/API/PostgreSQL; not f5/new-head/Android/physical/production",
+  "captures": [
+    {
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_389_login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-created",
+      "sha256": "4dd2d4b2bbf115697451992fe8934ed484f5b0389ab74f85eacc8bf98f2d4c60",
+      "bytes": 131758,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_389_company_a_created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-unavailable",
+      "sha256": "a79645b6a23f57503b9a2db2c73079734e028ca07d4f3a8796c95e7c5bb83192",
+      "bytes": 140573,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_389_company_a_team_read_unavailable.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-recovered",
+      "sha256": "dfe802258c6d41750081b0a8c3582525322ceb1bdeb3e8c1249ec2f6a3382823",
+      "bytes": 132056,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_389_company_a_team_read_recovered.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-b-isolated",
+      "sha256": "864f0c781e9a824dbda682b9373f32de7885020adc41463c17d69c111768b38a",
+      "bytes": 131793,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_389_company_b_isolated.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}
