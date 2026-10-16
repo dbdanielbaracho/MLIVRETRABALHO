@@ -7,6 +7,8 @@ on:
       - 'apps/mobile/**'
       - 'scripts/build-android-pilot.sh'
       - 'scripts/android-standalone-smoke.sh'
+      - 'scripts/android-entry-journey.cjs'
+      - 'scripts/tests/android-entry-journey.test.mjs'
       - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
       - 'package.json'
@@ -19,6 +21,8 @@ on:
       - 'apps/mobile/**'
       - 'scripts/build-android-pilot.sh'
       - 'scripts/android-standalone-smoke.sh'
+      - 'scripts/android-entry-journey.cjs'
+      - 'scripts/tests/android-entry-journey.test.mjs'
       - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
       - 'package.json'
@@ -51,7 +55,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Test standalone smoke gate and failure diagnostics
-        run: node --test scripts/tests/android-standalone-smoke.test.mjs
+        run: |
+          node --test scripts/tests/android-standalone-smoke.test.mjs
+          node --test scripts/tests/android-entry-journey.test.mjs
       - name: Build standalone APK
         env:
           EXPO_PUBLIC_API_URL: https://mlivretrabalho.predibeacon.com/v1
@@ -72,6 +78,8 @@ jobs:
           echo "KVM_READY device=/dev/kvm"
 
       - name: Device smoke test — install and launch without Metro
+        env:
+          MLIVRE_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -80,7 +88,9 @@ jobs:
           disable-animations: false
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
-          script: bash scripts/android-standalone-smoke.sh
+          script: |
+            bash scripts/android-standalone-smoke.sh
+            node scripts/android-entry-journey.cjs
 
       - name: Collect early smoke failure diagnostics
         if: failure()
@@ -94,6 +104,15 @@ jobs:
             /tmp/mlivretrabalho-logcat.txt
             /tmp/mlivretrabalho-smoke-diagnostics/
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload native entry journey evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MLivreTrabalho-android-entry-journey
+          path: artifacts/android-entry-journey/
+          if-no-files-found: ignore
           retention-days: 14
 
       - name: Upload validated standalone APK
