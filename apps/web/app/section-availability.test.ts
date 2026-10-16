@@ -102,4 +102,7 @@ test('only an explicit new read recovers unavailable sections and old completion
  const h=harness(),n=h.network();const cleanup=h.render(n).effects[1]();n.settle([6]);await flush();assert.equal(h.render(n).counts[0],'—');
  clean(cleanup);h.refresh();const fresh=h.network();h.render(fresh).effects[1]();assert.equal(h.render(fresh).counts[0],'—');
  fresh.settle([],false,'recovered-team');await flush();assert.deepEqual(h.render(fresh).counts,[1,1,1,1,1,1]);assert.equal(h.value('error'),'');assert.equal(h.timers.size,0);
+ const old=h.network();h.refresh();const oldCleanup=h.render(old).effects[1]();clean(oldCleanup);
+ h.refresh();const newest=h.network();h.render(newest).effects[1]();newest.settle([],false,'newest-team');await flush();
+ old.settle([6],true);await flush();assert.deepEqual(h.render(newest).counts,[1,1,1,1,1,1]);assert.equal(h.value('error'),'');
 });
