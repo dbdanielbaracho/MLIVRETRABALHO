@@ -19,7 +19,8 @@ const password='BrowserFixture123!';
 const stamp=Date.now()+'-'+randomUUID().slice(0,8);
 let chrome,ws,sessionId,commandId=0,networkViolation;
 const pending=new Map(),responses=[],captures=[];
-const requestMethods=new Map();let teamReadFault=null;
+const requestMethods=new Map(),apiPostRequests=[];let teamReadFault=null;
+const requestMetadata=new Map(),readFailures=[];
 async function apiCall(path,{token,tenant,method='GET',body}={}){
  const r=await fetch(new URL(path,api),{method,headers:{...(token?{authorization:'Bearer '+token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body?{'content-type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
  assert.ok(r.ok,'Local fixture API failed: '+method+' '+path+' HTTP'+r.status);return r.json();
@@ -84,7 +85,11 @@ async function capture(label){
    }
    cdp(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:m.params.requestId,...(!allowed?{errorReason:'BlockedByClient'}:{})}).catch(()=>{});
   }
-  if(m.method==='Network.requestWillBeSent')requestMethods.set(m.params.requestId,m.params.request.method);
+  if(m.method==='Network.requestWillBeSent'){
+   requestMethods.set(m.params.requestId,m.params.request.method);
+   const u=new URL(m.params.request.url);if(u.origin===api.origin){requestMetadata.set(m.params.requestId,{path:u.pathname,method:m.params.request.method});if(m.params.request.method==='POST')apiPostRequests.push({path:u.pathname});}
+  }
+  if(m.method==='Network.loadingFailed'&&requestMetadata.has(m.params.requestId))readFailures.push({...requestMetadata.get(m.params.requestId),error:/^net::ERR_[A-Z_]+$/.test(m.params.errorText)?m.params.errorText:'unclassified',canceled:m.params.canceled===true,corsError:/^[A-Za-z]+$/.test(m.params.corsErrorStatus?.corsError||'')?m.params.corsErrorStatus.corsError:null});
   if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===api.origin)responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});}
  });
  const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
@@ -120,13 +125,14 @@ async function capture(label){
  // All other sections must complete against the real disposable API/Postgres.
  const refreshButton='Array.from(document.querySelectorAll("button")).find(x=>x.textContent==="Atualizar dados")';
  const teamCount=card('Equipes')+'.querySelector("b").textContent';
- const noDataWrites=()=>responses.filter(x=>x.method==='POST').length;
+ const noDataWrites=()=>apiPostRequests.length;
  const beforeFault=responses.length,postsBeforeFault=noDataWrites();teamReadFault={requestId:null};
  await click(refreshButton);
  await until(teamCount+'==="—"&&Array.from(document.querySelectorAll(".tableCard")).filter(x=>["Vagas","Assignments ativos","Substituições","Concluídos recentes","Planner"].includes(x.querySelector("h2")?.textContent)).every(x=>x.innerText.includes("Carregando dados…"))','pending reads are not zero or empty');
  const faultWait=Date.now()+10000;while(!teamReadFault.requestId&&Date.now()<faultWait)await sleep(20);
  assert.ok(teamReadFault.requestId,'Exactly one local teams GET must reach the fault fixture');
  await cdp('Fetch.fulfillRequest',{requestId:teamReadFault.requestId,responseCode:503,responseHeaders:[{name:'content-type',value:'application/json'},{name:'access-control-allow-origin',value:web.origin},{name:'cache-control',value:'no-store'}],body:Buffer.from('{"fixture":"teams-read-unavailable"}').toString('base64')});teamReadFault=null;
+ console.log('WEB_SECTION_FAULT_CDP_ACCEPTED '+JSON.stringify({method:'GET',path:'/v1/company/teams',injectedStatus:503,meaning:'CDP accepted fixture response, not proof browser consumed HTTP503'}));
  await until(teamCount+'==="—"&&document.querySelector("[role=alert]")?.textContent.startsWith("1 seção")&&!document.body.innerText.includes("Atualizando dados…")&&Array.from(document.querySelectorAll("td")).some(x=>x.textContent==='+JSON.stringify(jobTitle)+')','one unavailable read preserves other real sections');
  const faultResponses=responses.slice(beforeFault),otherReadPaths=new Set(faultResponses.filter(x=>x.method==='GET'&&x.status===200&&x.path!=='/v1/company/teams').map(x=>x.path));
  assert.equal(otherReadPaths.size,11,'Eleven distinct real API reads must succeed');assert.equal(faultResponses.filter(x=>x.method==='GET'&&x.path==='/v1/company/teams'&&x.status===503).length,1);assert.equal(noDataWrites(),postsBeforeFault,'Read failure must not cause a mutation retry');
@@ -164,7 +170,7 @@ async function capture(label){
  if(ws&&sessionId){
   try{
    const state=await evaluate('({h1:document.querySelector("h1")?.textContent,alert:document.querySelector("[role=alert]")?.textContent,metricValues:Array.from(document.querySelectorAll(".metrics strong")).map(x=>x.textContent),bodyText:document.body.innerText.slice(0,1800)})');
-   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({state,apiResponses:responses,networkViolation}));
+   console.log('WEB_BROWSER_FAILURE_STATE '+JSON.stringify({state,apiResponses:responses,networkViolation,readFailures}));
    await capture('failure');
   }catch{console.error('WEB_BROWSER_FAILURE_STATE unavailable');}
  }
