@@ -1,0 +1,33 @@
+{
+  "sourcePR": 561,
+  "sourceHead": "0ffd05f362591006c20ac935500dd9e7a43dde79",
+  "sourceCheckout": "9b36a6dedf34860b6732f08cf7d19bce7f0f46ad",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "0ffd05f362591006c20ac935500dd9e7a43dde79"
+  ],
+  "sourceTree": "8a5eb8baa0dc7555b52a7991db38608c8a582e91",
+  "run": 38831459958,
+  "job": 116750951990,
+  "attempt": 1,
+  "overallResult": "FAILURE",
+  "scope": "Actual Chrome/local API/PostgreSQL; all12 unavailable, recovery NOT proved; not next-head/Android/physical/production",
+  "captures": [
+    {
+      "label": "company-a-created",
+      "sha256": "d09b6b8c02270257dea1b089185cae7a4ef9ae750abe5001fabed086fc2718d3",
+      "bytes": 131195,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_0FFD_company_a_created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "failure",
+      "sha256": "04ba72a5ccf11f9f5a88a780781d645668474bb0978a69583f75bc808d3ffa6d",
+      "bytes": 136662,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_0FFD_failure.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}

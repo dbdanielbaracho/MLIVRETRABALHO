@@ -1,0 +1,57 @@
+{
+  "sourcePR": 561,
+  "sourceHead": "b23c2de96a8e51ea75159bbc8faf23668928ef75",
+  "sourceCheckout": "1eeca41e434d142b848f7ecada1eb04dcdf2c54b",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "b23c2de96a8e51ea75159bbc8faf23668928ef75"
+  ],
+  "sourceTree": "c0fb1ba376cb5a7d6089601f7ac4a2910b8149ca",
+  "run": 38837907503,
+  "job": 116771049592,
+  "attempt": 1,
+  "overallResult": "SUCCESS",
+  "scope": "OWN561 b23 actual Chrome/localAPI/PostgreSQL, NOT postmerge561 or PR560 frames",
+  "captures": [
+    {
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_B23_login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-created",
+      "sha256": "924a39dc5cf17dde47159f49c2cb125778e52a440b08146e8dccc31d38d1a1db",
+      "bytes": 132457,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_B23_company_a_created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-unavailable",
+      "sha256": "125891b2068893e2dbea372e9311f09042114f7b6b611ab2dece769f9621b2fd",
+      "bytes": 141348,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_B23_company_a_team_read_unavailable.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-recovered",
+      "sha256": "b894abc3752cf7fc4d2ea646ef80b9a6945c8ef44f07fdac15c00a273f9180fd",
+      "bytes": 132715,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_B23_company_a_team_read_recovered.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-b-isolated",
+      "sha256": "1720af5970be31a57df261824a71841b4130b8d5868dec9e2907df95579c6d30",
+      "bytes": 131838,
+      "path": "docs/evidencias/web-section-availability-2026-10-15/PR561_B23_company_b_isolated.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}
