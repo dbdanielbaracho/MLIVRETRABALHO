@@ -42,9 +42,11 @@ PROFESSIONAL_ID="$(printf '%s' "$PROFILE" | json_field id)"
 
 AVAILABILITY="$(request POST /v1/availability/mine "$PRO_TOKEN" '' "{\"startsAt\":\"$AVAIL_START\",\"endsAt\":\"$AVAIL_END\"}")"
 contains "$AVAILABILITY" 'startsAt'
+node -e 'process.stdout.write(JSON.stringify({payload:{startsAt:process.argv[1],endsAt:process.argv[2]},ack:JSON.parse(process.argv[3])}))' -- "$AVAIL_START" "$AVAIL_END" "$AVAILABILITY" | node scripts/mobile-chat-support-contract.cjs availability
 
 JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender A\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Centro\",\"startsAt\":\"$START_AT\",\"endsAt\":\"$END_AT\",\"payCents\":25000}")"
 JOB_ID="$(printf '%s' "$JOB" | json_field id)"
+node -e 'process.stdout.write(JSON.stringify({payload:{title:"Bartender A",location:"Centro",workCity:"São Paulo",startsAt:process.argv[1],endsAt:process.argv[2],payCents:25000},ack:JSON.parse(process.argv[3])}))' -- "$START_AT" "$END_AT" "$JOB" | node scripts/mobile-chat-support-contract.cjs publication
 JOB2="$(request POST /v1/company/jobs "$COMPANY2_TOKEN" "$TENANT2_ID" "{\"title\":\"Bartender B\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Paulista\",\"startsAt\":\"$START2_AT\",\"endsAt\":\"$END2_AT\",\"payCents\":30000}")"
 JOB2_ID="$(printf '%s' "$JOB2" | json_field id)"
 
@@ -249,6 +251,7 @@ COMPANY_MESSAGE="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$CO
 contains "$COMPANY_MESSAGE" 'confirme seu horário'
 PRO_MESSAGES="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
 contains "$PRO_MESSAGES" 'confirme seu horário'
+node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],ack:JSON.parse(process.argv[2]),messages:JSON.parse(process.argv[3])}))' -- "$ASSIGNMENT_ID" "$COMPANY_MESSAGE" "$PRO_MESSAGES" | node scripts/mobile-chat-support-contract.cjs chat
 PRO_NOTIFICATIONS="$(request GET /v1/notifications/mine "$PRO_TOKEN" "$TENANT_ID")"
 contains "$PRO_NOTIFICATIONS" 'new_message'
 PRO_REPLY="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID" '{"body":"Confirmado, estarei no horário."}')"
