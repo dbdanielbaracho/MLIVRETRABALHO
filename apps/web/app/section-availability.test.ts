@@ -16,6 +16,10 @@ const counterExpressions=labels.map(label=>{
  const start=source.indexOf(label+'<b>{');assert.ok(start>=0,label);
  return source.slice(start+label.length+4,source.indexOf('}</b>',start));
 });
+const rateExpressions=['Interesse → confirmação: ','Taxa de conclusão: '].map(label=>{
+ const start=source.indexOf(label+'<b>{');assert.ok(start>=0,label);
+ return source.slice(start+label.length+4,source.indexOf('}</b>',start));
+});
 const tables=['Vagas','Assignments ativos','Substituições','Concluídos recentes','Planner'];
 const emptyExpressions=tables.map(title=>{
  const marker='<section className="card tableCard"><h2>'+title+'</h2>{';
@@ -25,7 +29,7 @@ const emptyExpressions=tables.map(title=>{
  const message=body.startsWith('{')?body.slice(1,-1):JSON.stringify(body);
  return '(('+condition+')?('+message+'):"__rows__")';
 });
-const executable=stripTypeScriptTypes(prefix+'\nreturn {counts:['+counterExpressions.join(',')+'],empty:['+emptyExpressions.join(',')+']};\n}\nHome();',{mode:'strip'});
+const executable=stripTypeScriptTypes(prefix+'\nreturn {counts:['+counterExpressions.join(',')+'],rates:['+rateExpressions.join(',')+'],empty:['+emptyExpressions.join(',')+']};\n}\nHome();',{mode:'strip'});
 const flush=()=>new Promise<void>(resolve=>setImmediate(resolve));
 type Pending={path:string;options:any;resolve:(value:any)=>void};
 function harness(){
@@ -33,8 +37,8 @@ function harness(){
  function network(){
   const pending:Pending[]=[];
   return {pending,fetch:(url:string,options:any)=>new Promise(resolve=>pending.push({path:new URL(url).pathname,options,resolve})),
-   settle(failed:number[]=[],empty=false,label='fixture'){
-    pending.forEach((p,i)=>p.resolve(failed.includes(i)?{ok:false,status:503}:{ok:true,json:async()=>i===0?{openJobs:1,confirmedWorkers:0,activeWorkers:0,completedAssignments:0}:i===1?{jobsWithInterest:0,jobsWithConfirmation:0,completedAssignments:0,cancelledAssignments:0,interestToConfirmationRate:null,assignmentCompletionRate:null}:empty?[]:[{id:label,professionalId:'professional',status:'open',name:label,title:label}]}));
+   settle(failed:number[]=[],empty=false,label='fixture',rates:{interestToConfirmationRate:number|null;assignmentCompletionRate:number|null}={interestToConfirmationRate:null,assignmentCompletionRate:null}){
+    pending.forEach((p,i)=>p.resolve(failed.includes(i)?{ok:false,status:503}:{ok:true,json:async()=>i===0?{openJobs:1,confirmedWorkers:0,activeWorkers:0,completedAssignments:0}:i===1?{jobsWithInterest:0,jobsWithConfirmation:0,completedAssignments:0,cancelledAssignments:0,...rates}:empty?[]:[{id:label,professionalId:'professional',status:'open',name:label,title:label}]}));
    },pendingJson(){pending.forEach(p=>p.resolve({ok:true,json:()=>new Promise(()=>{})}));}};
  }
  function render(net:ReturnType<typeof network>,tenant='tenant-a',role='owner',identity='identity-a'){
@@ -49,7 +53,7 @@ function harness(){
    useMemo:(fn:()=>unknown)=>fn(),useLayoutEffect:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:net.fetch,
    setTimeout:(fn:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++nextTimer;timers.set(id,fn);return id;},clearTimeout:(id:number)=>timers.delete(id),
    process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,readSettledSection,failedSectionCount});
-  return {counts:Array.from(result.counts as Iterable<number|string>),empty:Array.from(result.empty as Iterable<string>),effects};
+  return {counts:Array.from(result.counts as Iterable<number|string>),rates:Array.from(result.rates as Iterable<string>),empty:Array.from(result.empty as Iterable<string>),effects};
  }
  const value=(name:string)=>values[names.indexOf(name)];
  return {network,render,value,timers,refresh(){const i=names.indexOf('revision');values[i]++;},expire(){const f=[...timers.values()];timers.clear();f.forEach(x=>x());}};
@@ -105,4 +109,14 @@ test('only an explicit new read recovers unavailable sections and old completion
  const old=h.network();h.refresh();const oldCleanup=h.render(old).effects[1]();clean(oldCleanup);
  h.refresh();const newest=h.network();h.render(newest).effects[1]();newest.settle([],false,'newest-team');await flush();
  old.settle([6],true);await flush();assert.deepEqual(h.render(newest).counts,[1,1,1,1,1,1]);assert.equal(h.value('error'),'');
+});
+test('unread analytics cannot assert no denominator or reuse prior percentages across a refresh',async()=>{
+ const h=harness(),first=h.network();assert.deepEqual(h.render(first).rates,['—','—']);
+ const cleanup=h.render(first).effects[1]();first.settle([],false,'known',{interestToConfirmationRate:37.5,assignmentCompletionRate:0});await flush();
+ assert.deepEqual(h.render(first).rates,['37.5%','0%']);clean(cleanup);h.refresh();const failed=h.network();
+ assert.deepEqual(h.render(failed).rates,['—','—']);h.render(failed).effects[1]();failed.settle([1]);await flush();assert.deepEqual(h.render(failed).rates,['—','—']);
+});
+test('only fulfilled analytics null rates establish no denominator and a measured zero stays zero percent',async()=>{
+ const h=harness(),n=h.network();const cleanup=h.render(n).effects[1]();n.settle();await flush();assert.deepEqual(h.render(n).rates,['Sem denominador','Sem denominador']);
+ clean(cleanup);h.refresh();const zero=h.network();h.render(zero).effects[1]();zero.settle([],false,'known',{interestToConfirmationRate:0,assignmentCompletionRate:0});await flush();assert.deepEqual(h.render(zero).rates,['0%','0%']);
 });
