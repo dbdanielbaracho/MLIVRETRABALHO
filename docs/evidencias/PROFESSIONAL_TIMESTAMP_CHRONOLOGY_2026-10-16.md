@@ -1,0 +1,14 @@
+# Ordem cronológica profissional — evidência por etapa
+
+
+---
+
+## Ciclo funcional — 2026-10-16 UTC — ordenação cronológica profissional (reprodução em preparação)
+
+Escopo exclusivo MLIVRETRABALHO; base main429dcba6287e95ca4e804d9452a2e7c0b21fedd8/treec0fb1ba376cb5a7d6089601f7ac4a2910b8149ca. Documento originalv1.104 e históricos integrais preservados por apêndice. PR561 jámerged;558879/560e47 drafts com CI FAILURE, não repetir ready/merge/rerun. Sóárea10 tem aceite técnico interno, outras12pendentes; gatesexternos215/219/220/224/228 separados.
+
+Auditoria de Perfil→passaporte→API e Agenda/Ganhos identificou que WorkAssignments.mine, WorkPassport.mine e Earnings.mine mesclam slices tenant e ordenam String(timestamp).localeCompare, enquanto DatabaseService usa pg.Pool padrão, sem parsercustom. Exemplo local de Date válido Wed2026-10-21/Thu2026-10-22 retorna ThuantesWed na ascendente e WedantesThu na descendente. Isso é hipótese de ordenação no transporte real até a reprodução HTTP/PG, não incidente de produção/UI/segurança provado. Nenhuma correção foi aplicada nesta preparação. O possível parsercalendário permissivo de Perfil não foi alterado neste ciclo.
+
+Nova fixture scripts/professional-chronology-e2e.cjs cria identidades/duasempresas/profissional+outsider por HTTP real, perfil/disponibilidade/interesse/confirmação/lifecycle completo por HTTP, com ledger interno simulado (não PSP/dinheiroreal). Só depois de vincular cadaUUID HTTP aoPG, ajusta completed_at/ledgercreated_at APENASdos registros próprios recémcriados a timestamps controlados Wed/Thu. DMLfixtureadministrativa em databaseCIEXATA mlivretrabalho_http/hostloopback/portaexplícita, rejeitaquery/hash/override eorigensAPIexternas; nãoDDL/RLSdisable/grantsrelaxados/históricodeletado/reparent/produção. Mede instanceofDate real em startsAt/completedAt/createdAt do pg e exige ordenação global ascassignments/descpassport+earnings; tenta todos3 e agregaFAIL. Controles tenantselecionado/outsider/401/contadores/valores intactos. ApósPASS, respostasHTTP também passam nos loaders mobileREAISloadAgenda/loadWorkPassport/loadEarnings viaNodeTSstrip+VM; isso NÃO é renderRN/Android/SecureStore/físico.
+
+O HTTPjourney existente recebe só comentário+node antes do browser; TODOSasserts anteriores e gates503/recovery/ACK/logout/isolamento permanecem. CI REDreal aindaPENDENTE; node--check localPASS não éCI/PG/provaHTTP. Originais5docs+matriz recebem este apêndice, sem resumos substitutivos. Antesdefix: exigirprimaryHTTPPGRED comtiposobservados; depoisregressões/código/evidência, exactHEADfullCI, revisão bytes/modes/tree/ancestrais e seGREENjustificado mergeúnicoexpectedSHA+pósREAL. APK N/A dependeidentidadeINTEGRALmobile/native/deps/lock/workflows/build/smoke+grafocanônico, não[]/ausênciaruns/APKemprestado. React19.1.4/RN0.81.6/RLS/design preservados. BloqueioWebparcial nãoautoriza bypassnemparalisaoutrasáreas.
