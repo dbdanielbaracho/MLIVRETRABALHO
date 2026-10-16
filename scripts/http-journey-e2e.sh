@@ -42,9 +42,11 @@ PROFESSIONAL_ID="$(printf '%s' "$PROFILE" | json_field id)"
 
 AVAILABILITY="$(request POST /v1/availability/mine "$PRO_TOKEN" '' "{\"startsAt\":\"$AVAIL_START\",\"endsAt\":\"$AVAIL_END\"}")"
 contains "$AVAILABILITY" 'startsAt'
+node -e 'process.stdout.write(JSON.stringify({payload:{startsAt:process.argv[1],endsAt:process.argv[2]},ack:JSON.parse(process.argv[3])}))' -- "$AVAIL_START" "$AVAIL_END" "$AVAILABILITY" | node scripts/mobile-chat-support-contract.cjs availability
 
 JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender A\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Centro\",\"startsAt\":\"$START_AT\",\"endsAt\":\"$END_AT\",\"payCents\":25000}")"
 JOB_ID="$(printf '%s' "$JOB" | json_field id)"
+node -e 'process.stdout.write(JSON.stringify({payload:{title:"Bartender A",location:"Centro",workCity:"São Paulo",startsAt:process.argv[1],endsAt:process.argv[2],payCents:25000},ack:JSON.parse(process.argv[3])}))' -- "$START_AT" "$END_AT" "$JOB" | node scripts/mobile-chat-support-contract.cjs publication
 JOB2="$(request POST /v1/company/jobs "$COMPANY2_TOKEN" "$TENANT2_ID" "{\"title\":\"Bartender B\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Paulista\",\"startsAt\":\"$START2_AT\",\"endsAt\":\"$END2_AT\",\"payCents\":30000}")"
 JOB2_ID="$(printf '%s' "$JOB2" | json_field id)"
 

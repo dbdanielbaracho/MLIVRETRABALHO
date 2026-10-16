@@ -42,6 +42,18 @@ async function main(){
   assert.deepEqual(await store.releaseConfirmed(input.identityId,input.requestKey),{status:'empty'});
   assert.equal(removals,1);assert.equal(raw,null);
   console.log('MOBILE_SUPPORT_REAL_JSON_PASS actual_API_JSON_consumed=true storage_fixture=in_memory native_UI=false new_HTTP_POSTs=0');
+ }else if(mode==='availability'){
+  const {submitAvailability}=await moduleFrom('apps/mobile/lib/availability-submit.ts');let calls=0;
+  assert.deepEqual(await submitAvailability(async(path,body)=>{
+   calls++;assert.equal(path,'/availability/mine');assert.deepEqual(body,input.payload);return response(input.ack);
+  },input.payload),{status:'saved',id:input.ack.id});assert.equal(calls,1);
+  console.log('MOBILE_WINDOW_AVAILABILITY_REAL_JSON_PASS actual_API_JSON_consumed=true native_UI=false new_HTTP_POSTs=0');
+ }else if(mode==='publication'){
+  const {publishJob}=await moduleFrom('apps/mobile/lib/company-job-publication.ts');let calls=0;
+  assert.deepEqual(await publishJob(async body=>{
+   calls++;assert.deepEqual(body,input.payload);return response(input.ack);
+  },input.payload),{status:'created',id:input.ack.id});assert.equal(calls,1);
+  console.log('MOBILE_WINDOW_PUBLICATION_REAL_JSON_PASS actual_API_JSON_consumed=true native_UI=false new_HTTP_POSTs=0');
  }else throw Error('unknown_contract_mode');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

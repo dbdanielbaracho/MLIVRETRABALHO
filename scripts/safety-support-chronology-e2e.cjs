@@ -106,6 +106,35 @@ async function main(){
   assert.deepEqual(loaded.cases.data.map(x=>x.id),[fixtures[1].case,fixtures[0].case]);
   assert.deepEqual(loaded.appeals.data.map(x=>x.id),[fixtures[1].appeal,fixtures[0].appeal]);
   console.log('SAFETY_CHRONOLOGY_PASS three real ordered reads, overdue-first preserved, actor/tenant isolation, immutable events and runtime grants unchanged, actual JSON through unchanged mobile safety loader; not Android/physical/provider evidence');
+
+  // Independent actual mobile client/API/storage cases after ALL original assertions.
+  // Response loss is a defined fixture; no browser gate, old assertion or deadline changes.
+  const beforeClient=await snapshot();
+  const bindClient=async(record,ack)=>{
+   const bound=(await db.query('SELECT id,created_at AS "createdAt",request_payload_hash AS "requestHash" FROM support_cases WHERE id=$1 AND tenant_id=$2 AND reporter_identity_id=$3 AND assignment_id=$4 AND request_key=$5 AND category=$6 AND priority=$7 AND description=$8 AND status=$9',[ack.id,record.tenantId,record.reporterIdentityId,record.payload.assignmentId,record.requestKey,record.payload.category,record.payload.priority,record.payload.description,ack.status])).rows;
+   assert.equal(bound.length,1);assert.ok(bound[0].createdAt instanceof Date);assert.match(bound[0].requestHash,/^[0-9a-f]{64}$/);
+   assert.equal(bound[0].createdAt.toISOString(),new Date(ack.createdAt).toISOString());
+   return {rows:1,dateObject:true};
+  };
+  const {verifySupportClient}=require('./mobile-support-client-http-e2e.cjs');
+  const verified=await verifySupportClient({identityId:pro.identity,tenantId:fixtures[0].tenant,assignmentId:fixtures[0].assignment,token:pro.token,description:'Own client support '+stamp,witnessLost:async({record,ack})=>{
+   assert.equal(record.phase,'pending');
+   return bindClient(record,ack);
+  }});
+  const afterClient=await snapshot(),records=verified.records;
+  assert.equal(new Set(records.map(r=>r.requestKey)).size,2);assert.equal(new Set(records.map(r=>r.acknowledgement.id)).size,2);
+  for(const table of tables){
+   if(table==='support_cases'){
+    assert.equal(afterClient[table].length,beforeClient[table].length+2);
+    for(const row of beforeClient[table])assert.deepEqual(afterClient[table].find(x=>x.id===row.id),row);
+    const added=afterClient[table].filter(x=>!beforeClient[table].some(y=>y.id===x.id));
+    assert.deepEqual(added.map(x=>x.id).sort(),records.map(r=>r.acknowledgement.id).sort());
+   }else assert.deepEqual(afterClient[table],beforeClient[table]);
+  }
+  for(const record of records)await bindClient(record,record.acknowledgement);
+  assert.deepEqual(await security(),beforeSecurity);
+  await call('/v1/support-cases/mine',{token:outsider.token,tenant:fixtures[0].tenant,status:401});
+  console.log('MOBILE_SUPPORT_CLIENT_HTTP_PG_PASS '+JSON.stringify({actualClient:true,actualHTTP:true,actualPGDates:true,normalCasePOSTs:1,lostResponseCasePOSTs:1,explicitPendingRetryPOSTs:1,preparationPOSTs:2,caseRowsAdded:2,committedRowWitnessBeforeRetry:true,restartRecovered:true,noImplicitPOST:true,explicitLocalRelease:true,oldFiveTableRowsUnchanged:true,policiesACLUnchanged:true,storageFixture:'in_memory',nativeUI:false,caseIds:records.map(r=>r.acknowledgement.id)}));
  }finally{await db.end();}
 }
 if(require.main===module)main().catch(error=>{console.error('SAFETY_CHRONOLOGY_FAIL '+error.message);process.exitCode=1;});
