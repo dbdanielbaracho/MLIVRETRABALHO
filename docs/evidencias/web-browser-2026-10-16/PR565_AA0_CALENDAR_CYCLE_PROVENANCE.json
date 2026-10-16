@@ -1,0 +1,67 @@
+{
+  "sourcePR": 565,
+  "sourceHead": "aa0d375da22f95e7274a1551f2a97b9aa9cd8ff1",
+  "checkout": "f90edc8564d4876a17b2d320b57a39b5271d9eb4",
+  "checkoutKind": "synthetic",
+  "orderedParents": [
+    "f98b5f618c5b78772c360b93d17e6028f0021008",
+    "aa0d375da22f95e7274a1551f2a97b9aa9cd8ff1"
+  ],
+  "tree": "49543d17a5abc38a47d020a32ddd7993619dff61",
+  "run": 38863990479,
+  "job": 116852488777,
+  "attempt": 1,
+  "result": "failure",
+  "scope": "desktop Web, NOT native Android or current parser candidate frames; 503/recovery passed then reload reads aborted",
+  "captures": [
+    {
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "path": "pr565-aa0-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-created",
+      "sha256": "4dab0942d0fc0eca42a7af70e0ecbf8aed8c6b1374dc2d20dc195fbfa591e7d7",
+      "bytes": 132035,
+      "path": "pr565-aa0-company-a-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-unavailable",
+      "sha256": "0299f9213f9752f79d2ec783005acdd39bdfc3f66dab4c2423aba498c1015fd2",
+      "bytes": 140761,
+      "path": "pr565-aa0-company-a-team-read-unavailable.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-recovered",
+      "sha256": "47b63ea5c5a1f9e7de0de3ed37223215ee3bd9e060603b1bfbdf951518ebe2e9",
+      "bytes": 132202,
+      "path": "pr565-aa0-company-a-team-read-recovered.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "failure",
+      "sha256": "f735fdab7e4dba0436b8207cda12f5837a972f4bf4b376616d80f301dcdc538c",
+      "bytes": 132794,
+      "path": "pr565-aa0-failure.png",
+      "width": 1365,
+      "height": 900
+    }
+  ],
+  "native": {
+    "run": 38863990420,
+    "job": 116852488606,
+    "result": "failure",
+    "stage": "offline-isolation",
+    "checks": [],
+    "captures": [],
+    "note": "No native UI journey reached; no individual APK hash emitted; no borrowed frames"
+  }
+}

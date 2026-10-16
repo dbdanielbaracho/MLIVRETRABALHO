@@ -7,7 +7,12 @@ export type AppealStatus='reviewing'|'upheld'|'modified'|'reversed';
 export type Request=(path:string,body?:{status:string;note?:string})=>Promise<{ok:boolean;status?:number;json():Promise<unknown>}>;
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const nonempty=(x:unknown):x is string=>typeof x==='string'&&!!x.trim();
-const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(new Date(x).getTime());
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
 const validCase=(x:unknown):x is SafetyCase=>record(x)&&nonempty(x.id)&&(x.assignmentId==null||nonempty(x.assignmentId))&&typeof x.category==='string'&&['unsafe_work','harassment','violence','discrimination','fraud','other'].includes(x.category)&&typeof x.description==='string'&&typeof x.status==='string'&&['open','reviewing','resolved','dismissed'].includes(x.status)&&date(x.createdAt)&&(x.resolvedAt==null||date(x.resolvedAt));
 const validAppeal=(x:unknown):x is SafetyAppeal=>record(x)&&nonempty(x.id)&&nonempty(x.safetyCaseId)&&nonempty(x.appellantIdentityId)&&typeof x.reason==='string'&&typeof x.status==='string'&&['submitted','reviewing','upheld','modified','reversed'].includes(x.status)&&date(x.createdAt);
 async function read<T>(request:Request,path:string,valid:(x:unknown)=>x is T):Promise<Result<T>>{try{const r=await request(path);if(!r.ok)return {status:'error',forbidden:r.status===403};const d:unknown=await r.json();return Array.isArray(d)&&d.every(valid)?{status:'ready',data:d}:{status:'error'};}catch{return {status:'error'};}}
@@ -18,3 +23,4 @@ const notes:Record<AppealStatus,string>={reviewing:'Revisão humana iniciada pel
 export async function changeCase(request:Request,id:string,status:CaseStatus):Promise<boolean>{return change(request,'/company/safety-cases/'+encodeURIComponent(id)+'/status',id,{status});}
 export async function changeAppeal(request:Request,id:string,status:AppealStatus):Promise<boolean>{return change(request,'/company/safety-appeals/'+encodeURIComponent(id)+'/status',id,{status,note:notes[status]});}
 async function change(request:Request,path:string,id:string,body:{status:string;note?:string}):Promise<boolean>{if(!id.trim())return false;try{const r=await request(path,body);if(!r.ok)return false;const d:unknown=await r.json();return record(d)&&d.id===id&&d.status===body.status;}catch{return false;}}
+
