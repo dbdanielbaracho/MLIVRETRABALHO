@@ -1,0 +1,130 @@
+{
+  "scope": "OWN PR558 head690 attempt2; overall FAILURE, individual native-only PASS does not override failures; no post-merge",
+  "head": "690154ae25b1872994db39f0703d47cda03d1f0f",
+  "tree": "9326c8b03ca4718227b5e96c7eb73fb55a783c27",
+  "checkout": "c84c53b7b913f2c3879ac1b9024f88a198161960",
+  "checkoutKind": "synthetic_merge_tree_equal",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "690154ae25b1872994db39f0703d47cda03d1f0f"
+  ],
+  "run": 38789034434,
+  "attempt": 2,
+  "job": 116609063762,
+  "result": "failure",
+  "cases": [
+    {
+      "mode": "baseline",
+      "result": "FAIL",
+      "phase": "created team rendered",
+      "canceledMethod": "POST",
+      "count": 1
+    },
+    {
+      "mode": "log-only",
+      "result": "FAIL",
+      "phase": "created team rendered",
+      "canceledMethod": "POST",
+      "count": 1
+    },
+    {
+      "mode": "native-only",
+      "result": "PASS",
+      "checks": 9,
+      "refreshes": 5,
+      "reloads": 5
+    },
+    {
+      "mode": "instrumented",
+      "result": "FAIL",
+      "phase": "loaded dashboard",
+      "canceledMethod": "GET",
+      "count": 12,
+      "nativeError": "TypeError: Failed to fetch"
+    }
+  ],
+  "source": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/38789034434/job/116609063762",
+  "captures": [
+    {
+      "diagnostic": "baseline",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-690-baseline-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "baseline",
+      "label": "failure",
+      "sha256": "dca996bbecf5dc44dbed2b2d94ff657fc8088b2c54e69ba47c29e21cdfef7224",
+      "bytes": 143987,
+      "file": "pr558-690-baseline-failure.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "log-only",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-690-log-only-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "log-only",
+      "label": "failure",
+      "sha256": "228268fd0e5e14fa5ebd177b53b89d85f07df21ed69f34da1f23ba56887a8bfc",
+      "bytes": 142833,
+      "file": "pr558-690-log-only-failure.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "native-only",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-690-native-only-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "native-only",
+      "label": "company-a-created",
+      "sha256": "636543933d064a6d6b43f130eef3f31733f41a4d23b0e5065f13d3e710f1dd03",
+      "bytes": 132712,
+      "file": "pr558-690-native-only-company-a-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "native-only",
+      "label": "company-b-isolated",
+      "sha256": "58c88a9906515ee0a0adb1612c5bdb899e5573fcf526616ff9b2387a08216816",
+      "bytes": 132819,
+      "file": "pr558-690-native-only-company-b-isolated.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "instrumented",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-690-instrumented-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "diagnostic": "instrumented",
+      "label": "failure",
+      "sha256": "1e2d485c94deb0ff4988d1e988ba2ada0382bc097c4f899843052ec6899c022a",
+      "bytes": 139087,
+      "file": "pr558-690-instrumented-failure.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}
