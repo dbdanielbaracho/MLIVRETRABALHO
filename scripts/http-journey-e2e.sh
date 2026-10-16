@@ -249,6 +249,7 @@ COMPANY_MESSAGE="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$CO
 contains "$COMPANY_MESSAGE" 'confirme seu horário'
 PRO_MESSAGES="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
 contains "$PRO_MESSAGES" 'confirme seu horário'
+node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],ack:JSON.parse(process.argv[2]),messages:JSON.parse(process.argv[3])}))' -- "$ASSIGNMENT_ID" "$COMPANY_MESSAGE" "$PRO_MESSAGES" | node scripts/mobile-chat-support-contract.cjs chat
 PRO_NOTIFICATIONS="$(request GET /v1/notifications/mine "$PRO_TOKEN" "$TENANT_ID")"
 contains "$PRO_NOTIFICATIONS" 'new_message'
 PRO_REPLY="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID" '{"body":"Confirmado, estarei no horário."}')"
