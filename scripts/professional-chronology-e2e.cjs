@@ -10,7 +10,11 @@ function localConfiguration(env){
  assert.ok(api.protocol==='http:'&&['localhost','127.0.0.1'].includes(api.hostname)&&api.port&&api.pathname==='/'&&!api.username&&!api.password&&!api.search&&!api.hash,'Explicit local API origin required');
  return{databaseUrl:db.href,origin:api.origin};
 }
-module.exports={localConfiguration};
+function requireLocalDatabasePeer(server,socketAddress){
+ assert.equal(server.name,'mlivretrabalho_http');
+ assert.ok(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(socketAddress),'Actual PostgreSQL client socket must terminate at loopback');
+}
+module.exports={localConfiguration,requireLocalDatabasePeer};
 async function main(){
  const config=localConfiguration(process.env);
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
@@ -21,7 +25,7 @@ async function main(){
   // Verify the actual client socket endpoint, not an assumed address on the server's interface.
   const socketAddress=db.connection.stream.remoteAddress;
   console.log('PROFESSIONAL_CHRONOLOGY_DB_CONTEXT '+JSON.stringify({database:server.name,serverAddress:server.address,clientSocketAddress:socketAddress}));
-  assert.equal(server.name,'mlivretrabalho_http');assert.ok(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(socketAddress),'Actual PostgreSQL client socket must terminate at loopback');
+  requireLocalDatabasePeer(server,socketAddress);
   const stamp=randomUUID(),password='ChronologyFixture123!';
   async function call(path,{method='GET',token,tenant,body,status=200}={}){
    const r=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(token?{authorization:'Bearer '+token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body!==undefined?{'content-type':'application/json'}:{})},body:body===undefined?undefined:JSON.stringify(body)});
