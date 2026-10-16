@@ -415,6 +415,9 @@ echo 'PASS: chat accepts4000 database Unicode characters, rejects4001 with400, a
 # Fresh professional multi-company chronology fixture; all prior assertions remain unchanged.
 node scripts/professional-chronology-e2e.cjs
 
+# Fresh safety/support chronology fixture; immutable events and all prior assertions remain unchanged.
+node scripts/safety-support-chronology-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
