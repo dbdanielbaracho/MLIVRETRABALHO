@@ -1829,3 +1829,8 @@ Finalreceipt is here; Gitdocs retain truthful preparation and first219 receipt. 
 ---
 
 
+
+
+## PR #561 — tipagem da regressão — 2026-10-16 UTC
+
+CI38826059900/job116733680298 no HEAD68da0123be6b9abe6ece93fcd84bc835d1ea2204 falhou em Typecheck (TS2345: Array.from inferiu unknown nos resultados VM); Run tests e gates posteriores SKIPPED, portanto NÃO é RED comportamental nem PASS. A fixture agora declara Iterable<number|string> nos contadores e Iterable<string> nas mensagens extraídas do código real. Nenhuma asserção ou código da aplicação foi alterado. Reexecução local dos sete testes na aplicação original: 0PASS/7FAIL por zero/valor antigo em vez de desconhecido; não é typecheck/Chrome. Próximo gate neste commit: typecheck e reprodução CI; sem ready/merge ou rerun cego. Histórico integral preservado. Somente área10 tem aceite técnico interno; doze permanecem pendentes.

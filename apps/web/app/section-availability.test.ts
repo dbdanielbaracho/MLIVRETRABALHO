@@ -49,7 +49,7 @@ function harness(){
    useMemo:(fn:()=>unknown)=>fn(),useLayoutEffect:(fn:()=>unknown)=>fn(),useEffect:(fn:()=>unknown)=>effects.push(fn),fetch:net.fetch,
    setTimeout:(fn:()=>void,ms:number)=>{assert.equal(ms,15000);const id=++nextTimer;timers.set(id,fn);return id;},clearTimeout:(id:number)=>timers.delete(id),
    process:{env:{}},sessionStorage:{getItem:()=>null,removeItem(){}},isAdminRole,isCompanyRole,localDateTimeToIso,reaisToCents,tenantHeaders,readSettledSection,failedSectionCount});
-  return {counts:Array.from(result.counts),empty:Array.from(result.empty),effects};
+  return {counts:Array.from(result.counts as Iterable<number|string>),empty:Array.from(result.empty as Iterable<string>),effects};
  }
  const value=(name:string)=>values[names.indexOf(name)];
  return {network,render,value,timers,refresh(){const i=names.indexOf('revision');values[i]++;},expire(){const f=[...timers.values()];timers.clear();f.forEach(x=>x());}};
