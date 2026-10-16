@@ -17,7 +17,11 @@ async function main(){
  const db=new Client({connectionString:config.databaseUrl});await db.connect();
  try{
   const server=(await db.query('SELECT current_database() name,inet_server_addr()::text address')).rows[0];
-  assert.equal(server.name,'mlivretrabalho_http');assert.ok(['127.0.0.1','::1'].includes(server.address));
+  // PostgreSQL's server-side address may be the CI container IP behind the loopback port mapping.
+  // Verify the actual client socket endpoint, not an assumed address on the server's interface.
+  const socketAddress=db.connection.stream.remoteAddress;
+  console.log('PROFESSIONAL_CHRONOLOGY_DB_CONTEXT '+JSON.stringify({database:server.name,serverAddress:server.address,clientSocketAddress:socketAddress}));
+  assert.equal(server.name,'mlivretrabalho_http');assert.ok(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(socketAddress),'Actual PostgreSQL client socket must terminate at loopback');
   const stamp=randomUUID(),password='ChronologyFixture123!';
   async function call(path,{method='GET',token,tenant,body,status=200}={}){
    const r=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(token?{authorization:'Bearer '+token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body!==undefined?{'content-type':'application/json'}:{})},body:body===undefined?undefined:JSON.stringify(body)});
