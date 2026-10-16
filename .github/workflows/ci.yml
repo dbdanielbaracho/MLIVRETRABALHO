@@ -74,6 +74,7 @@ jobs:
           pnpm test
           node --test scripts/tests/http-auth-rate-limit.test.mjs
           node --test scripts/tests/project-activity-watch.test.mjs
+          node --test scripts/tests/android-entry-journey.test.mjs
 
       - name: Verify production migration runner
         env:

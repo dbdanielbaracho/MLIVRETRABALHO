@@ -1,0 +1,67 @@
+{
+  "sourcePR": 564,
+  "sourceHead": "b42428eddd3e4aa96857c6ed8b317a0c9543c749",
+  "checkout": "d59368266570ec78447cb889ec160da3745fda37",
+  "tree": "6f1d97a074f8291862de403b5d65cdaf97fec512",
+  "parents": [
+    "a699fd0f26d12ba604cc5110e507adf231f120e1",
+    "b42428eddd3e4aa96857c6ed8b317a0c9543c749"
+  ],
+  "run": 38858389430,
+  "job": 116834879731,
+  "attempt": 1,
+  "result": "success",
+  "scope": "historical desktop browser fixture; NOT new native entry journey",
+  "images": [
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr564-own-login.png",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr564-own-company-a-created.png",
+      "label": "company-a-created",
+      "sha256": "0849b9db80b70e0e523923632629875ae359a8a17c54b543f5bd8379e587a2b7",
+      "bytes": 132515,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr564-own-company-a-team-read-unavailable.png",
+      "label": "company-a-team-read-unavailable",
+      "sha256": "aafcf1d05716b988ca536556ec35af3ad71526caec2a14114285b7a441491b7f",
+      "bytes": 141390,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr564-own-company-a-team-read-recovered.png",
+      "label": "company-a-team-read-recovered",
+      "sha256": "c6c0a6be0321d34641052fc2b9b73e4b74b570396196b6984f4a9aa457e01208",
+      "bytes": 132752,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr564-own-company-b-isolated.png",
+      "label": "company-b-isolated",
+      "sha256": "05b9d971d3844719302ac288281ac6d59836f54278f5b27fa7548046dcefe472",
+      "bytes": 132176,
+      "width": 1365,
+      "height": 900
+    }
+  ],
+  "post": {
+    "run": 38858944606,
+    "job": 116836602726,
+    "attempt": 1,
+    "result": "failure",
+    "checkout": "f98b5f618c5b78772c360b93d17e6028f0021008",
+    "browserVersionObserved": false,
+    "captures": [],
+    "cause": "startup timeout 15000ms; root cause unresolved; no borrowed own browser evidence"
+  }
+}
