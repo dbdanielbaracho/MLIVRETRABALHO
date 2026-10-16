@@ -15,7 +15,7 @@ test('entry journey refuses non-CI, another repository and missing checkout/sour
 });
 test('entry journey requires exactly one authorized emulator and refuses physical or ambiguous devices',()=>{
  assert.equal(emulatorSerial('List of devices attached\nemulator-5554\tdevice\n'),'emulator-5554');
- for(const data of ['List of devices attached\n','R9XT90DL22H\tdevice\n','emulator-5554\tunauthorized\n','emulator-5554\toffline\n','emulator-5554\tdevice\nemulator-5556\tdevice\n'])assert.throws(()=>emulatorSerial(data));
+ for(const data of ['List of devices attached\n','physical-device-fixture\tdevice\n','emulator-5554\tunauthorized\n','emulator-5554\toffline\n','emulator-5554\tdevice\nemulator-5556\tdevice\n'])assert.throws(()=>emulatorSerial(data));
 });
 test('offline requires disabled radios plus no IPv4/IPv6 default route or global address',()=>{
  assert.doesNotThrow(()=>assertOffline(offline));
