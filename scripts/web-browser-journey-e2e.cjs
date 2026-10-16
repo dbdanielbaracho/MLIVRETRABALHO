@@ -21,6 +21,31 @@ let chrome,ws,sessionId,commandId=0,networkViolation;
 const pending=new Map(),responses=[],captures=[];
 const requestMethods=new Map(),apiPostRequests=[];let teamReadFault=null;
 const requestMetadata=new Map(),readFailures=[];
+function waitForBrowserEndpoint(child,profile,onDiagnostic,options={}){
+ const clock=options.clock||{setTimeout,clearTimeout,now:Date.now};
+ const readPort=options.readPort||(()=>readFileSync(join(profile,'DevToolsActivePort'),'utf8'));
+ const started=clock.now();let stderr='',stdout='',spawnObserved=false,exitObserved=false,spawnErrorCode=null;
+ const validEndpoint=text=>{
+  const match=text.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:[^\s]+)/);if(!match)return null;
+  try{const u=new URL(match[1]);return u.protocol==='ws:'&&u.hostname==='127.0.0.1'&&Number(u.port)>0&&Number(u.port)<=65535&&!u.username&&!u.password&&!u.search&&!u.hash&&/^\/devtools\/browser\/[A-Za-z0-9-]+$/.test(u.pathname)?u.href:null;}catch{return null;}
+ };
+ const diagnostic=()=>{
+  let portFile={exists:false,valid:false};
+  try{const parts=String(readPort()).trim().split(/\r?\n/);portFile={exists:true,valid:parts.length===2&&/^\d+$/.test(parts[0])&&Number(parts[0])>0&&Number(parts[0])<=65535&&/^\/devtools\/browser\/[A-Za-z0-9-]+$/.test(parts[1])};}catch{}
+  return {phase:'startup',timeoutMs:15000,elapsedMs:Math.max(0,clock.now()-started),binary:String(child.spawnfile||'').split(/[\\/]/).pop(),pid:Number.isInteger(child.pid)?child.pid:null,spawnObserved,exitObserved,exitCode:child.exitCode??null,signalCode:['SIGTERM','SIGKILL','SIGABRT','SIGSEGV'].includes(child.signalCode)?child.signalCode:null,killed:child.killed===true,spawnErrorCode,stderrBytes:Buffer.byteLength(stderr),stdoutBytes:Buffer.byteLength(stdout),stderrEndpointSeen:!!validEndpoint(stderr),stdoutEndpointSeen:!!validEndpoint(stdout),portFile,stderrFlags:{sandbox:/No usable sandbox|Running as root.*no-sandbox/i.test(stderr),fatal:/FATAL/.test(stderr),error:/ERROR/.test(stderr),dbus:/dbus/i.test(stderr)}};
+ };
+ return new Promise((resolve,reject)=>{
+  const cleanup=()=>{clock.clearTimeout(timer);child.stderr.removeListener('data',onStderr);child.stdout?.removeListener('data',onStdout);child.removeListener('spawn',onSpawn);child.removeListener('error',onError);child.removeListener('exit',onExit);};
+  const fail=message=>{const details=diagnostic();cleanup();try{onDiagnostic(details);}finally{reject(Error(message));}};
+  const onStderr=b=>{stderr+=String(b);const endpoint=validEndpoint(stderr);if(endpoint){cleanup();resolve(endpoint);}};
+  const onStdout=b=>{stdout+=String(b);};
+  const onSpawn=()=>{spawnObserved=true;};
+  const onError=e=>{spawnErrorCode=['ENOENT','EACCES','ENOMEM','EAGAIN'].includes(e?.code)?e.code:'unclassified';fail('Browser process spawn failed');};
+  const onExit=()=>{exitObserved=true;fail('Browser exited before debugger ready');};
+  const timer=clock.setTimeout(()=>fail('Browser startup timeout'),15000);
+  child.stderr.on('data',onStderr);child.stdout?.on('data',onStdout);child.once('spawn',onSpawn);child.once('error',onError);child.once('exit',onExit);
+ });
+}
 async function apiCall(path,{token,tenant,method='GET',body}={}){
  const r=await fetch(new URL(path,api),{method,headers:{...(token?{authorization:'Bearer '+token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body?{'content-type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
  assert.ok(r.ok,'Local fixture API failed: '+method+' '+path+' HTTP'+r.status);return r.json();
@@ -71,8 +96,8 @@ async function capture(label){
  const binary=process.env.CHROME_BIN||['google-chrome','google-chrome-stable','chromium','chromium-browser'].find(p=>spawnSync('which',[p],{stdio:'ignore'}).status===0);
  assert.ok(binary,'Installed browser required; no skipped UI evidence');
  const profile=mkdtempSync(join(tmpdir(),'mlivre-web-browser-'));
- chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','ignore','pipe']});
- const endpoint=await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>{console.error('WEB_BROWSER_STARTUP_DIAGNOSTIC '+out.slice(-5000).replace(/DevTools listening on \S+/g,'DevTools endpoint omitted'));reject(Error('Browser startup timeout'));},15000);chrome.stderr.on('data',b=>{out+=b;const m=out.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:[^\s]+)/);if(m){clearTimeout(timer);resolve(m[1]);}});chrome.once('error',reject);chrome.once('exit',()=>{clearTimeout(timer);reject(Error('Browser exited before debugger ready'));});});
+ chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
+ const endpoint=await waitForBrowserEndpoint(chrome,profile,details=>console.error('WEB_BROWSER_STARTUP_DIAGNOSTIC '+JSON.stringify(details)));
  ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',()=>reject(Error('Debugger connection failed')),{once:true});});
  ws.addEventListener('message',event=>{
   const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error('CDP command failed')):p.resolve(m.result);}return;}
