@@ -94,7 +94,18 @@ async function main(){
    const pass=JSON.stringify(actual)===JSON.stringify(expected);if(!pass)failures++;console.log('SAFETY_CHRONOLOGY_OBSERVED '+JSON.stringify({endpoint,pass,actual,expected}));
   }
   assert.equal(failures,0,'Safety/support chronology failed on actual HTTP/Postgres');
-  console.log('SAFETY_CHRONOLOGY_PASS three real ordered reads, overdue-first preserved, actor/tenant isolation, immutable events and runtime grants unchanged; not Android/physical/provider evidence');
+  // Actual API JSON also enters the unchanged professional mobile safety loader.
+  // This exercises its data contract, not React Native render, taps or native storage.
+  const fs=require('node:fs'),vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
+  const source=stripTypeScriptTypes(fs.readFileSync('apps/mobile/lib/professional-safety.ts','utf8'),{mode:'transform'}).replace(/\bexport\s+/g,'');
+  const {loadSafety}=vm.runInNewContext(source+';({loadSafety})',{Date,Number,Array,Object,Set});
+  const assignments=await call('/v1/assignments/mine',{token:pro.token});
+  const payloads={'/assignments/mine':assignments,'/safety-cases/mine':cases,'/safety-appeals/mine':appeals};
+  const loaded=await loadSafety(async path=>{assert.ok(Object.hasOwn(payloads,path));return{ok:true,status:200,json:async()=>payloads[path]};});
+  for(const key of ['assignments','cases','appeals'])assert.equal(loaded[key].status,'ready');
+  assert.deepEqual(loaded.cases.data.map(x=>x.id),[fixtures[1].case,fixtures[0].case]);
+  assert.deepEqual(loaded.appeals.data.map(x=>x.id),[fixtures[1].appeal,fixtures[0].appeal]);
+  console.log('SAFETY_CHRONOLOGY_PASS three real ordered reads, overdue-first preserved, actor/tenant isolation, immutable events and runtime grants unchanged, actual JSON through unchanged mobile safety loader; not Android/physical/provider evidence');
  }finally{await db.end();}
 }
 if(require.main===module)main().catch(error=>{console.error('SAFETY_CHRONOLOGY_FAIL '+error.message);process.exitCode=1;});
