@@ -418,6 +418,10 @@ node scripts/professional-chronology-e2e.cjs
 # Fresh safety/support chronology fixture; immutable events and all prior assertions remain unchanged.
 node scripts/safety-support-chronology-e2e.cjs
 
+
+# Disposable invitation renewal INSERT rollback; existing gates remain mandatory.
+node scripts/invitation-atomicity-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
