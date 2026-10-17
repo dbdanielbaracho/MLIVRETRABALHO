@@ -16,9 +16,10 @@ jobs:
 
     services:
       postgres:
-        # Public ECR mirrors the Docker Official Image and avoids Docker Hub's
-        # anonymous pull-rate limit on hosted GitHub runners.
-        image: public.ecr.aws/docker/library/postgres:17
+        # Docker Official Image. Public ECR consistently returned
+        # toomanyrequests/Data limit exceeded before checkout (runs 39046543940,
+        # 39068354509). Change registry, not PostgreSQL major version or checks.
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
