@@ -9,7 +9,9 @@ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}
 function scopeFor(value){
  for(const key of ['stamp','tenantId','ownerId','oldId'])assert.match(value[key],uuid,'Own fixture UUID required');
  assert.equal(value.email,'invitation-atomicity-target-'+value.stamp+'@example.test');
- const prefix='inv_atomicity_'+value.stamp.replaceAll('-','');
+ assert.ok(value.phase===undefined||value.phase==='accept','Known owned failure phase required');
+ if(value.phase==='accept')assert.match(value.targetId,uuid,'HTTP acceptor UUID required');
+ const prefix=(value.phase==='accept'?'inv_accept_':'inv_atomicity_')+value.stamp.replaceAll('-','');
  return{...value,sequence:prefix+'_seq',fn:prefix+'_fn',trigger:prefix+'_trg'};
 }
 function requireBinding(scope,row){
@@ -30,7 +32,30 @@ async function cleanupHook(db,scope,owned){
  }
  if(errors.length)throw Error('Owned hook cleanup failed');
 }
-module.exports={scopeFor,requireBinding,cleanupHook};
+function requireAcceptanceBinding(scope,row,memberships){
+ assert.equal(scope.phase,'accept');scopeFor(scope);requireBinding(scope,row);
+ assert.equal(row.accepted_by_identity_id,null);
+ assert.deepEqual(memberships,[],'No prior owned target membership before INSERT case');
+}
+function acceptanceFunctionSQL(scope){
+ assert.equal(scope.phase,'accept');const expected=scopeFor(scope);
+ for(const key of ['sequence','fn','trigger'])assert.equal(scope[key],expected[key],'Owned accept identifier');
+ return `CREATE FUNCTION public.${scope.fn}() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $fixture$
+  DECLARE visible_members integer; visible_invitations integer;
+  BEGIN
+   IF NEW.id='${scope.oldId}'::uuid AND NEW.tenant_id='${scope.tenantId}'::uuid AND NEW.invited_by_identity_id='${scope.ownerId}'::uuid AND NEW.email='${scope.email}' AND OLD.accepted_at IS NULL AND NEW.accepted_at IS NOT NULL AND NEW.accepted_by_identity_id='${scope.targetId}'::uuid THEN
+    SELECT count(*) INTO visible_members FROM public.tenant_memberships
+     WHERE tenant_id=NEW.tenant_id AND identity_id='${scope.targetId}'::uuid AND subject_id='${scope.targetId}'::uuid AND role='manager';
+    SELECT count(*) INTO visible_invitations FROM public.company_member_invitations
+     WHERE id=NEW.id AND tenant_id=NEW.tenant_id AND accepted_at IS NOT NULL AND accepted_by_identity_id='${scope.targetId}'::uuid AND revoked_at IS NULL;
+    IF visible_members<>1 OR visible_invitations<>1 THEN RAISE EXCEPTION 'fixture_precondition_member_and_acceptance'; END IF;
+    PERFORM pg_catalog.nextval('public.${scope.sequence}'::regclass);
+    RAISE EXCEPTION 'fixture_invitation_accept_update_failure';
+   END IF;
+   RETURN NEW;
+  END $fixture$`;
+}
+module.exports={scopeFor,requireBinding,cleanupHook,requireAcceptanceBinding,acceptanceFunctionSQL};
 async function main(){
  const config=localConfiguration(process.env);
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
@@ -99,6 +124,7 @@ async function main(){
   assert.equal(actual.length,1);assert.equal(actual[0].id,old.invitationId);assert.equal(actual[0].revokedAt,null);assert.equal(actual[0].acceptedAt,null);
   console.log('INVITATION_INSERT_ROLLBACK_PASS '+JSON.stringify({realHTTP500:true,priorRevocationAndNewRowWitness:2,nonRollbackWitness:1,allTwoTenantInvitationsMembershipsUnchanged:true,policiesACLUnchanged:true}));
   await cleanupHook(db,scope,owned);
+  const renewalScope=scope;
   // Explicit positive recovery request, not an automatic business retry.
   const renewed=await invite(a);assert.notEqual(renewed.invitationId,old.invitationId);
   const after=await snapshot();assert.equal(after.invitations.length,before.invitations.length+1);assert.deepEqual(after.memberships,before.memberships);
@@ -108,6 +134,28 @@ async function main(){
   assert.equal(newAfter.token_hash,createHash('sha256').update(renewed.inviteCode).digest('hex'));
   assert.deepEqual(after.invitations.filter(x=>x.tenant_id===b.tenant),before.invitations.filter(x=>x.tenant_id===b.tenant));
   await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:old.inviteCode},status:400});
+  // A distinct late-write case: membership INSERT and accepted_at UPDATE must BOTH roll back.
+  scope=scopeFor({stamp,tenantId:a.tenant,ownerId:a.identity,oldId:renewed.invitationId,email:target.email,phase:'accept',targetId:target.identity});
+  const acceptBinding=(await db.query('SELECT * FROM company_member_invitations WHERE id=$1 AND tenant_id=$2',[scope.oldId,scope.tenantId])).rows[0];
+  const priorTarget=(await db.query('SELECT * FROM tenant_memberships WHERE tenant_id=$1 AND identity_id=$2',[a.tenant,target.identity])).rows;
+  requireAcceptanceBinding(scope,acceptBinding,priorTarget);
+  assert.equal(acceptBinding.token_hash,createHash('sha256').update(renewed.inviteCode).digest('hex'));
+  const beforeAccept=await snapshot();
+  await db.query('CREATE SEQUENCE public.'+scope.sequence);owned.sequence=true;
+  await db.query(acceptanceFunctionSQL(scope));owned.fn=true;
+  await db.query('REVOKE ALL ON FUNCTION public.'+scope.fn+'() FROM PUBLIC');
+  await db.query('CREATE TRIGGER '+scope.trigger+' AFTER UPDATE OF accepted_at ON public.company_member_invitations FOR EACH ROW EXECUTE FUNCTION public.'+scope.fn+'()');owned.trigger=true;
+  await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:renewed.inviteCode},status:500});
+  const acceptWitness=(await db.query('SELECT last_value,is_called FROM public.'+scope.sequence)).rows[0];
+  assert.equal(acceptWitness.is_called,true);assert.equal(String(acceptWitness.last_value),'1');
+  assert.deepEqual(await snapshot(),beforeAccept,'Late accepted_at failure must undo membership AND invitation acceptance across full two-tenant snapshots');
+  assert.deepEqual(await security(),beforeSecurity);
+  const activeAfterFailure=await call('/v1/company/members/invitations',{token:a.token,tenant:a.tenant});
+  const active=activeAfterFailure.find(x=>x.id===renewed.invitationId);
+  assert.ok(active);assert.equal(active.acceptedAt,null);assert.equal(active.revokedAt,null);
+  console.log('INVITATION_ACCEPT_UPDATE_ROLLBACK_PASS '+JSON.stringify({realHTTP500:true,membershipInsertAndAcceptedUpdateWitness:2,nonRollbackWitness:1,allTwoTenantRowsUnchanged:true,invitationStillActive:true,policiesACLUnchanged:true}));
+  await cleanupHook(db,scope,owned);
+  // One explicit accept after owned-hook removal, never an implicit client retry.
   const accepted=await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:renewed.inviteCode},status:201});
   assert.deepEqual(accepted,{accepted:true,tenantId:a.tenant,role:'manager'});
   const member=(await db.query('SELECT role FROM tenant_memberships WHERE tenant_id=$1 AND identity_id=$2',[a.tenant,target.identity])).rows;
@@ -117,9 +165,19 @@ async function main(){
   assert.deepEqual(final.invitations.filter(x=>x.tenant_id===b.tenant),before.invitations.filter(x=>x.tenant_id===b.tenant));
   assert.deepEqual(final.memberships.filter(x=>x.tenant_id===b.tenant),before.memberships.filter(x=>x.tenant_id===b.tenant));
   assert.deepEqual(await security(),beforeSecurity);
+  const acceptedRow=final.invitations.find(x=>x.id===renewed.invitationId);
+  assert.ok(acceptedRow.accepted_at instanceof Date);assert.equal(acceptedRow.accepted_by_identity_id,target.identity);
+  assert.deepEqual({...acceptedRow,accepted_at:acceptBinding.accepted_at,accepted_by_identity_id:acceptBinding.accepted_by_identity_id},acceptBinding);
+  for(const row of beforeAccept.invitations.filter(x=>x.id!==renewed.invitationId))assert.deepEqual(final.invitations.find(x=>x.id===row.id),row);
+  await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:renewed.inviteCode},status:400});
+  assert.deepEqual(await snapshot(),final,'Consumed-code rejection may not add a second membership');
   assert.equal((await db.query('SELECT to_regclass($1) object',['public.'+scope.sequence])).rows[0].object,null);
   assert.equal((await db.query('SELECT to_regprocedure($1) object',['public.'+scope.fn+'()'])).rows[0].object,null);
   assert.equal((await db.query('SELECT count(*)::int n FROM pg_trigger WHERE tgrelid=$1::regclass AND tgname=$2',['public.company_member_invitations',scope.trigger])).rows[0].n,0);
+  assert.equal((await db.query('SELECT to_regclass($1) object',['public.'+renewalScope.sequence])).rows[0].object,null);
+  assert.equal((await db.query('SELECT to_regprocedure($1) object',['public.'+renewalScope.fn+'()'])).rows[0].object,null);
+  assert.equal((await db.query('SELECT count(*)::int n FROM pg_trigger WHERE tgrelid=$1::regclass AND tgname=$2',['public.company_member_invitations',renewalScope.trigger])).rows[0].n,0);
+  console.log('INVITATION_ACCEPT_ATOMICITY_HTTP_PG_PASS '+JSON.stringify({lateUpdateRollback:true,explicitSameCodeRecovery201:true,exactlyOneManagerMembership:true,consumedCodeRejected400:true,foreignUnchanged:true,bothOwnedHooksRemoved:true,productionOrNativeUI:false}));
   console.log('INVITATION_ATOMICITY_HTTP_PG_PASS '+JSON.stringify({rollback:true,explicitRecoveryACK201:true,oneNewInvitation:true,oldCodeRejected400:true,newCodeAccepted201:true,actualManagerMembership:true,foreignUnchanged:true,ownedHookRemoved:true,productionOrNativeUI:false}));
  }finally{
   try{if(scope)await cleanupHook(db,scope,owned);}finally{await db.end();}
