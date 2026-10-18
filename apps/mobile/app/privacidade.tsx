@@ -13,7 +13,7 @@ const requestLabels:Record<string,string>={correction:'Solicitar correção',era
 
 export default function Privacidade(){
   const[requestState,setRequestState]=useState<PrivacyRequestResult>({status:'loading'}),[message,setMessage]=useState(''),[details,setDetails]=useState(''),[exportText,setExportText]=useState(''),[busy,setBusy]=useState(false),[uncertain,setUncertain]=useState(false);
-  const draftAuthorization=useRef<string|null>(null),sequence=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),pending=useRef(false),confirming=useRef(false),unknown=useRef(false),snapshot=useRef<Record<string,string>|null>(null);
+  const draftAuthorization=useRef<string|null>(null),sequence=useRef(0),epoch=useRef(0),controllers=useRef(new Set<AbortController>()),pending=useRef<object|null>(null),confirming=useRef(false),unknown=useRef(false),snapshot=useRef<Record<string,string>|null>(null);
   const requests=requestState.status==='ready'?requestState.data:[];
   const disabled=busy||uncertain||requestState.status!=='ready';
   function markUnknown(){unknown.current=true;setUncertain(true);setMessage('Não foi possível confirmar o resultado. Atualize os pedidos e confira o estado antes de tentar outra ação.');}
@@ -39,22 +39,33 @@ export default function Privacidade(){
   }
   useFocusEffect(useCallback(()=>{
     ++epoch.current;void load();
-    return ()=>{if(pending.current){unknown.current=true;setUncertain(true);}++epoch.current;++sequence.current;for(const controller of controllers.current)controller.abort();controllers.current.clear();snapshot.current=null;pending.current=false;confirming.current=false;setBusy(false);setExportText('');};
+    return ()=>{if(pending.current){unknown.current=true;setUncertain(true);}++epoch.current;++sequence.current;for(const controller of controllers.current)controller.abort();controllers.current.clear();snapshot.current=null;pending.current=null;confirming.current=false;setBusy(false);setExportText('');};
   },[]));
-  async function operate<T>(operation:(request:ActionRequest)=>Promise<T>,accept:(result:T,headers:Record<string,string>)=>Promise<void>,expected=snapshot.current){
+  async function operate<T>(operation:(request:ActionRequest)=>Promise<T>,accept:(result:T,headers:Record<string,string>,isCurrent:()=>boolean)=>Promise<void>,expected=snapshot.current){
     if(pending.current||unknown.current||!expected)return;
-    pending.current=true;setBusy(true);const generation=epoch.current,controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);let sent=false;
+    const owner={};pending.current=owner;setBusy(true);const generation=epoch.current,controller=new AbortController();controllers.current.add(controller);let sent=false,accepting=false;
+    const owns=()=>generation===epoch.current&&pending.current===owner;
+    const finish=()=>{clearTimeout(timer);controllers.current.delete(controller);if(owns()){pending.current=null;setBusy(false);}};
+    const timer=setTimeout(()=>{
+      controller.abort();
+      if(owns()){
+        ++sequence.current;snapshot.current=null;setRequestState({status:'error'});
+        if(accepting){unknown.current=true;setUncertain(true);setMessage(previous=>(previous?previous+' ':'')+'Não foi possível concluir a confirmação local. Atualize os pedidos ou tente sair da conta.');}
+        else if(sent)markUnknown();
+        else setMessage('Não foi possível iniciar a ação. Atualize os pedidos antes de tentar novamente.');
+      }
+      finish();
+    },15000);
     try{
-      const headers=await authHeaders();if(generation!==epoch.current)return;
+      const headers=await authHeaders();if(!owns()||controller.signal.aborted)return;
       if(!samePrivacySession(headers,expected)){changedContext();return;}
-      if(controller.signal.aborted){setMessage('Não foi possível iniciar a ação. Tente novamente.');return;}
-      const result=await operation((path,method,body)=>{if(controller.signal.aborted||generation!==epoch.current)throw new Error('inactive');sent=true;return fetch(apiUrl(path),{method,headers:body?{...headers,'content-type':'application/json'}:headers,...(body?{body:JSON.stringify(body)}:{}),signal:controller.signal});});
-      const current=await authHeaders();if(generation!==epoch.current)return;
+      const result=await operation((path,method,body)=>{if(controller.signal.aborted||!owns())throw new Error('inactive');sent=true;return fetch(apiUrl(path),{method,headers:body?{...headers,'content-type':'application/json'}:headers,...(body?{body:JSON.stringify(body)}:{}),signal:controller.signal});});
+      if(!owns()||controller.signal.aborted)return;
+      const current=await authHeaders();if(!owns()||controller.signal.aborted)return;
       if(!samePrivacySession(current,expected)){changedContext();if(sent)markUnknown();return;}
-      if(controller.signal.aborted){if(sent)markUnknown();return;}
-      await accept(result,headers);
-    }catch{if(generation===epoch.current){if(sent)markUnknown();else setMessage('Não foi possível iniciar a ação. Atualize os pedidos.');}}
-    finally{clearTimeout(timer);controllers.current.delete(controller);if(generation===epoch.current){pending.current=false;setBusy(false);}}
+      accepting=true;await accept(result,headers,()=>owns()&&!controller.signal.aborted);
+    }catch{if(owns()&&!controller.signal.aborted){if(sent)markUnknown();else setMessage('Não foi possível iniciar a ação. Atualize os pedidos.');}}
+    finally{finish();}
   }
   function failed(result:ActionFailure,fallback:string){if(result.status==='unknown'){markUnknown();return;}setMessage(result.message==='privacy_request_details_required'?'Inclua os detalhes necessários para este pedido.':result.message==='privacy_request_details_too_long'?'O texto do pedido precisa ter até 2.000 caracteres.':fallback);}
   async function createRequest(requestType:ManualPrivacyType){
@@ -77,8 +88,8 @@ export default function Privacidade(){
   }
   async function deactivate(expected:Record<string,string>){
     const generation=epoch.current;
-    await operate(deactivatePrivacyAccount,async(result,headers)=>{
-      if(result.status==='deactivated'){setExportText('');const cleared=await clearSessionForAuthorization(headers.Authorization);if(generation!==epoch.current)return;if(cleared==='cleared')router.replace('/');else if(cleared==='stale')changedContext();else setMessage('Conta desativada. Não foi possível limpar o acesso neste aparelho. Tente sair da conta.');}
+    await operate(deactivatePrivacyAccount,async(result,headers,isCurrent)=>{
+      if(result.status==='deactivated'){setExportText('');setMessage('Conta desativada. Confirmando a saída neste aparelho.');const cleared=await clearSessionForAuthorization(headers.Authorization);if(generation!==epoch.current||!isCurrent())return;if(cleared==='cleared')router.replace('/');else if(cleared==='stale')changedContext();else setMessage('Conta desativada. Não foi possível limpar o acesso neste aparelho. Tente sair da conta.');}
       else if(result.status==='unknown')markUnknown();
       else{setMessage(result.message==='account_deactivation_active_assignment'?'Não é possível desativar com trabalho ativo.':result.message==='account_deactivation_unsettled_earnings'?'Não é possível desativar enquanto houver ganhos pendentes.':result.message==='account_deactivation_sole_tenant_owner'?'Antes de desativar, defina outro proprietário para a empresa.':'Não foi possível desativar a conta.');await load(false,headers);}
     },expected);

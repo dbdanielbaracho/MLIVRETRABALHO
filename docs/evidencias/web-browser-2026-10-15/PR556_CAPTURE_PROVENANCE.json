@@ -1,0 +1,55 @@
+{
+  "scope": "Actual desktop Chrome localhost fixtures, not Android/physical/VisualTruth acceptance",
+  "own": {
+    "run": 38751951403,
+    "job": 116480374661,
+    "attempt": 1,
+    "metadataHead": "078ebbc8977c61055100184ff91a0261f36a0d3e",
+    "checkout": "71d37062b330ff2b6759a797ce8fdc3bcd9620f1",
+    "checkoutKind": "synthetic",
+    "tree": "90aec6eeb7e3e0cd8ee853e156c5fd5f9831d1b1",
+    "result": "SUCCESS",
+    "captures": [
+      {
+        "label": "login",
+        "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+        "bytes": 33686
+      },
+      {
+        "label": "company-a-created",
+        "sha256": "735337c5851aaddf1318e9c04a800a2520bf7e49e859d2d97da107d9ec408e9e",
+        "bytes": 131950
+      },
+      {
+        "label": "company-b-isolated",
+        "sha256": "2439e5dd5789534911753e12856d9362f17de5f6af59f14230155d103f8a46e5",
+        "bytes": 132623
+      }
+    ]
+  },
+  "post": {
+    "run": 38753142047,
+    "job": 116484484990,
+    "attempt": 1,
+    "metadataHead": "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "result": "FAILURE",
+    "reason": "loaded dashboard after reload: 12 sections unavailable",
+    "captures": [
+      {
+        "label": "login",
+        "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+        "bytes": 33686
+      },
+      {
+        "label": "company-a-created",
+        "sha256": "7f5a4dba216811b7846f0dd9b951e89d95971b9804f6f9b91cfc23580f641cdf",
+        "bytes": 132831
+      },
+      {
+        "label": "failure",
+        "sha256": "9d63444d04aefba645b00a129bd1817ef1dd5ab0a0a6b82f3864a5abdba0c5d3",
+        "bytes": 139363
+      }
+    ]
+  }
+}

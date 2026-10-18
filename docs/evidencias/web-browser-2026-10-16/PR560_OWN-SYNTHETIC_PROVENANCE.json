@@ -1,0 +1,38 @@
+{
+  "pr": 560,
+  "head": "e47ca8af5267e29716e934ce86b29df31fa7f783",
+  "checkout": "528ac670f865cbca05feeee360b9411458f82af2",
+  "tree": "d6b1bb1fdd6401cb4c44f29848015bf1998b61ed",
+  "run": 38838893368,
+  "attempt": 2,
+  "kind": "own-synthetic",
+  "job": 116774688695,
+  "result": "FAILURE",
+  "scope": "real CI localhost desktop fixtures; NOT new558 frames/Android/physical/production",
+  "frames": [
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr560-own-synthetic-login.png",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr560-own-synthetic-company-a-created.png",
+      "label": "company-a-created",
+      "sha256": "baecdbde601a36b6e98519286e16f2aa5a325eca540e0544ad5f1e9d70ccf9ee",
+      "bytes": 132155,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr560-own-synthetic-failure.png",
+      "label": "failure",
+      "sha256": "4ef1053f4288686a7074ca66608cb914bc33c2f6f03ebc26dcdee7bb90f10448",
+      "bytes": 133036,
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}
