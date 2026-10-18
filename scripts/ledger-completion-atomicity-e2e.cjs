@@ -43,7 +43,30 @@ async function cleanupHook(db,scope,owned){
  }
  if(errors.length)throw Error('Owned ledger hook cleanup failed');
 }
-module.exports={scopeFor,requireBinding,failureFunctionSQL,cleanupHook};
+// Consume only JSON already returned by the existing HTTP calls below. This loader
+// callback performs no transport, SQL or retry; the application source is unchanged.
+async function consumeEarningsJSON(data,expected){
+ if(expected!==null){
+  assert.ok(expected,'Explicit empty or bound positive expectation required');
+  for(const key of ['tenantId','assignmentId','ledgerId'])assert.match(expected[key],uuid,'Actual fixture ledger binding required');
+  assert.equal(expected.amountCents,23456);
+ }
+ const fs=require('node:fs'),vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
+ const source=fs.readFileSync(resolve(__dirname,'../apps/mobile/lib/earnings.ts'),'utf8');
+ const {loadEarnings}=vm.runInNewContext(stripTypeScriptTypes(source.replace(/^import type .*$/gm,''),{mode:'transform'}).replace(/\bexport\s+/g,'')+'\n({loadEarnings})',{Date,Number,Array,Object,Set});
+ let callbacks=0,jsonReads=0;
+ const result=await loadEarnings(async()=>{callbacks++;return{ok:true,json:async()=>{jsonReads++;return data;}};});
+ assert.equal(callbacks,1);assert.equal(jsonReads,1);
+ assert.equal(result.status,'ready','Real mobile loader must accept actual successful earnings JSON');
+ assert.equal(result.data,data,'Consumer must preserve the actual HTTP JSON without invented rows');
+ if(expected===null)assert.deepEqual(result.data,[],'Rollback must remain verified empty, not a synthetic zero');
+ else{
+  assert.equal(result.data.length,1);const row=result.data[0];
+  for(const [key,value]of [['id',expected.ledgerId],['tenantId',expected.tenantId],['assignmentId',expected.assignmentId],['amountCents',expected.amountCents],['status','payable']])assert.equal(row[key],value,'Real mobile ledger binding '+key);
+ }
+ return result;
+}
+module.exports={scopeFor,requireBinding,failureFunctionSQL,cleanupHook,consumeEarningsJSON};
 async function main(){
  const config=localConfiguration(process.env);
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
@@ -106,7 +129,9 @@ async function main(){
   assert.deepEqual(await security(),beforeSecurity);
   const mine=await call('/v1/assignments/mine',{token:pro.token,tenant:a.tenant});
   assert.equal(mine.length,1);assert.equal(mine[0].id,scope.assignmentId);assert.equal(mine[0].status,'checked_out');assert.equal(mine[0].completedAt,null);
-  assert.deepEqual(await call('/v1/earnings/mine',{token:pro.token,tenant:a.tenant}),[]);
+  const rollbackEarnings=await call('/v1/earnings/mine',{token:pro.token,tenant:a.tenant});
+  assert.deepEqual(rollbackEarnings,[]);
+  await consumeEarningsJSON(rollbackEarnings,null);
   console.log('LEDGER_COMPLETION_INSERT_ROLLBACK_PASS '+JSON.stringify({realHTTP500:true,completedAndLedgerWitness:2,nonRollbackWitness:1,fiveTablesTwoTenantsUnchanged:true,assignmentStillCheckedOut:true,noPayableEarning:true,policiesACLUnchanged:true}));
   await cleanupHook(db,scope,owned);
   // Exactly one separately explicit recovery, not a business/client automatic retry.
@@ -126,12 +151,14 @@ async function main(){
   for(const row of before.work_assignments.filter(x=>x.id!==scope.assignmentId))assert.deepEqual(final.work_assignments.find(x=>x.id===row.id),row);
   const earnings=await call('/v1/earnings/mine',{token:pro.token,tenant:a.tenant});
   assert.equal(earnings.length,1);assert.equal(earnings[0].assignmentId,scope.assignmentId);assert.equal(earnings[0].amountCents,23456);assert.equal(earnings[0].status,'payable');
+  await consumeEarningsJSON(earnings,{tenantId:scope.tenantId,assignmentId:scope.assignmentId,ledgerId:entry[0].id,amountCents:scope.amountCents});
   await call(completePath,{method:'POST',token:pro.token,tenant:a.tenant,status:400});
   assert.deepEqual(await snapshot(),final,'Already completed retry must not create a second ledger');
   assert.deepEqual(await security(),beforeSecurity);
   assert.equal((await db.query('SELECT to_regclass($1) object',['public.'+scope.sequence])).rows[0].object,null);
   assert.equal((await db.query('SELECT to_regprocedure($1) object',['public.'+scope.fn+'()'])).rows[0].object,null);
   assert.equal((await db.query('SELECT count(*)::int n FROM pg_trigger WHERE tgrelid=$1::regclass AND tgname=$2',['public.earnings_ledger',scope.trigger])).rows[0].n,0);
+  console.log('LEDGER_MOBILE_REAL_JSON_PASS '+JSON.stringify({actualHTTPJSON:true,rollbackReadyEmpty:true,recoveryReadyBoundPayable:true,tenantId:scope.tenantId,assignmentId:scope.assignmentId,ledgerId:entry[0].id,amountCents:23456,additionalHTTPRequests:0,androidUIOrProviderOrRealMoney:false}));
   console.log('LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS '+JSON.stringify({rollback:true,explicitRecovery201:true,oneExactPayableLedger:true,repeatComplete400:true,foreignLedgerUnchanged:true,authIsolation:true,ownedHookRemoved:true,providerOrRealMoneyOrNativeUI:false}));
  }finally{try{if(scope)await cleanupHook(db,scope,owned);}finally{await db.end();}}
 }
