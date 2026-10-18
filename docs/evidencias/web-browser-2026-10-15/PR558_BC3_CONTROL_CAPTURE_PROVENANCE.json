@@ -1,0 +1,383 @@
+{
+  "scope": "OWN bc3 CI overallFAILURE; two isolated journeyPASS do not override failed controls; LNA minimal failure is distinct from original ERR_ABORTED",
+  "head": "bc3d1654839781433d9f832dac370bd2fd502aca",
+  "tree": "7e946e889a38b060f18ec04893971fc40e4c621d",
+  "run": 38790924626,
+  "job": 116614947907,
+  "attempt": 1,
+  "checkout": "3760f08faba19db515665ff9f5e1d5dc3cfd4236",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "bc3d1654839781433d9f832dac370bd2fd502aca"
+  ],
+  "checkoutKind": "synthetic_merge_tree_equal",
+  "counts": [
+    150,
+    753,
+    410,
+    3,
+    11
+  ],
+  "result": "failure",
+  "cases": [
+    {
+      "scenario": "minimal",
+      "mode": "baseline",
+      "native": false,
+      "log": false,
+      "started": "2026-10-15T19:07:45.7944570Z",
+      "refreshes": 0,
+      "reloads": 0,
+      "failure": {
+        "scenario": "minimal",
+        "diagnostic": "baseline",
+        "error": "Browser startup timeout"
+      },
+      "result": "FAIL"
+    },
+    {
+      "scenario": "minimal",
+      "mode": "log-only",
+      "native": false,
+      "log": true,
+      "started": "2026-10-15T19:08:01.1097259Z",
+      "refreshes": 0,
+      "reloads": 0,
+      "failure": {
+        "scenario": "minimal",
+        "diagnostic": "log-only",
+        "error": "Browser startup timeout"
+      },
+      "result": "FAIL"
+    },
+    {
+      "scenario": "minimal",
+      "mode": "native-only",
+      "native": true,
+      "log": false,
+      "started": "2026-10-15T19:08:24.3096768Z",
+      "refreshes": 0,
+      "reloads": 0,
+      "version": {
+        "scenario": "minimal",
+        "diagnostic": "native-only",
+        "product": "Chrome/155.0.8059.39",
+        "protocolVersion": "1.3",
+        "jsVersion": "15.5.35.20",
+        "revision": "@3ff7ac5a9224be9156d7f8703a06e22890aafd34"
+      },
+      "failure": {
+        "scenario": "minimal",
+        "diagnostic": "native-only",
+        "error": "Minimal native browser transport failed; no React/Next scripts run in this fixture document\n\n'single' !== null\n"
+      },
+      "result": "FAIL",
+      "minimal": {
+        "scenario": "minimal",
+        "diagnostic": "native-only",
+        "failedStage": "single",
+        "rows": [
+          {
+            "stage": "single",
+            "path": "/v1/company/dashboard",
+            "status": null,
+            "errorName": "TypeError"
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "minimal",
+      "mode": "instrumented",
+      "native": true,
+      "log": true,
+      "started": "2026-10-15T19:08:28.2624635Z",
+      "refreshes": 0,
+      "reloads": 0,
+      "version": {
+        "scenario": "minimal",
+        "diagnostic": "instrumented",
+        "product": "Chrome/155.0.8059.39",
+        "protocolVersion": "1.3",
+        "jsVersion": "15.5.35.20",
+        "revision": "@3ff7ac5a9224be9156d7f8703a06e22890aafd34"
+      },
+      "failure": {
+        "scenario": "minimal",
+        "diagnostic": "instrumented",
+        "error": "Minimal native browser transport failed; no React/Next scripts run in this fixture document\n\n'single' !== null\n"
+      },
+      "result": "FAIL",
+      "minimal": {
+        "scenario": "minimal",
+        "diagnostic": "instrumented",
+        "failedStage": "single",
+        "rows": [
+          {
+            "stage": "single",
+            "path": "/v1/company/dashboard",
+            "status": null,
+            "errorName": "TypeError"
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "journey",
+      "mode": "baseline",
+      "native": false,
+      "log": false,
+      "started": "2026-10-15T19:08:29.1070632Z",
+      "refreshes": 5,
+      "reloads": 0,
+      "version": {
+        "scenario": "journey",
+        "diagnostic": "baseline",
+        "product": "Chrome/155.0.8059.39",
+        "protocolVersion": "1.3",
+        "jsVersion": "15.5.35.20",
+        "revision": "@3ff7ac5a9224be9156d7f8703a06e22890aafd34"
+      },
+      "failure": {
+        "scenario": "journey",
+        "diagnostic": "baseline",
+        "error": "Browser condition timeout: loaded dashboard"
+      },
+      "result": "FAIL"
+    },
+    {
+      "scenario": "journey",
+      "mode": "log-only",
+      "native": false,
+      "log": true,
+      "started": "2026-10-15T19:08:54.4873873Z",
+      "refreshes": 5,
+      "reloads": 5,
+      "version": {
+        "scenario": "journey",
+        "diagnostic": "log-only",
+        "product": "Chrome/155.0.8059.39",
+        "protocolVersion": "1.3",
+        "jsVersion": "15.5.35.20",
+        "revision": "@3ff7ac5a9224be9156d7f8703a06e22890aafd34"
+      },
+      "result": "PASS",
+      "journey": {
+        "checks": [
+          "login401-feedback",
+          "login-success-empty",
+          "create-team-persisted-rendered",
+          "create-job-exact-money-dates-persisted-rendered",
+          "reload-tab-session",
+          "local-and-remote-signout",
+          "revoked-browser-token401-other-session-valid",
+          "second-identity-isolated",
+          "five-explicit-dashboard-refresh-waves"
+        ],
+        "revokedBrowserTokenStatus": 401,
+        "otherSameIdentitySessionValid": true,
+        "teamId": "33db4343-815c-44c1-ad26-77e2d83574de",
+        "jobId": "eb4cef95-333d-4587-9706-62f5c863d262",
+        "fixtureTenants": [
+          "25b5d2bc-331d-4c34-84a4-be8ce7a3ecf9",
+          "0823591f-0545-4599-a449-d196f2a9d059"
+        ]
+      }
+    },
+    {
+      "scenario": "journey",
+      "mode": "native-only",
+      "native": true,
+      "log": false,
+      "started": "2026-10-15T19:08:57.2917295Z",
+      "refreshes": 5,
+      "reloads": 5,
+      "version": {
+        "scenario": "journey",
+        "diagnostic": "native-only",
+        "product": "Chrome/155.0.8059.39",
+        "protocolVersion": "1.3",
+        "jsVersion": "15.5.35.20",
+        "revision": "@3ff7ac5a9224be9156d7f8703a06e22890aafd34"
+      },
+      "result": "PASS",
+      "journey": {
+        "checks": [
+          "login401-feedback",
+          "login-success-empty",
+          "create-team-persisted-rendered",
+          "create-job-exact-money-dates-persisted-rendered",
+          "reload-tab-session",
+          "local-and-remote-signout",
+          "revoked-browser-token401-other-session-valid",
+          "second-identity-isolated",
+          "five-explicit-dashboard-refresh-waves"
+        ],
+        "revokedBrowserTokenStatus": 401,
+        "otherSameIdentitySessionValid": true,
+        "teamId": "49aed4cd-1291-4203-becf-b80def442954",
+        "jobId": "d8f08a96-fa3e-4380-9f04-727276604c93",
+        "fixtureTenants": [
+          "c71ebe50-9057-4e76-8e26-57568d6280ef",
+          "d2027a6f-16c2-4faa-a633-654b900dc979"
+        ]
+      }
+    },
+    {
+      "scenario": "journey",
+      "mode": "instrumented",
+      "native": true,
+      "log": true,
+      "started": "2026-10-15T19:09:00.2531346Z",
+      "refreshes": 0,
+      "reloads": 0,
+      "version": {
+        "scenario": "journey",
+        "diagnostic": "instrumented",
+        "product": "Chrome/155.0.8059.39",
+        "protocolVersion": "1.3",
+        "jsVersion": "15.5.35.20",
+        "revision": "@3ff7ac5a9224be9156d7f8703a06e22890aafd34"
+      },
+      "failure": {
+        "scenario": "journey",
+        "diagnostic": "instrumented",
+        "error": "Browser condition timeout: loaded dashboard"
+      },
+      "result": "FAIL"
+    }
+  ],
+  "source": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/38790924626/job/116614947907",
+  "captures": [
+    {
+      "scenario": "minimal",
+      "diagnostic": "native-only",
+      "label": "failure",
+      "sha256": "050b6043a08877784addeaf706f0304c956e63007ba673516b4119d3e8bcfdc2",
+      "bytes": 9116,
+      "file": "pr558-bc3-minimal-native-only-failure.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "minimal",
+      "diagnostic": "instrumented",
+      "label": "failure",
+      "sha256": "050b6043a08877784addeaf706f0304c956e63007ba673516b4119d3e8bcfdc2",
+      "bytes": 9116,
+      "file": "pr558-bc3-minimal-instrumented-failure.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "baseline",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-bc3-journey-baseline-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "baseline",
+      "label": "company-a-created",
+      "sha256": "c5fd970f709c57df38d975398f853b32499a7103d058e754d89e2264ebd10da2",
+      "bytes": 132203,
+      "file": "pr558-bc3-journey-baseline-company-a-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "baseline",
+      "label": "failure",
+      "sha256": "ceaf4e394b0b3aab680352a3f68421c7b6408b96022ce5e289f73e03e9816699",
+      "bytes": 138859,
+      "file": "pr558-bc3-journey-baseline-failure.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "log-only",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-bc3-journey-log-only-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "log-only",
+      "label": "company-a-created",
+      "sha256": "322725ab4e50f47442f7fcf39d7600150ea9fb3dcf0162baf52f0917dc770fbb",
+      "bytes": 132405,
+      "file": "pr558-bc3-journey-log-only-company-a-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "log-only",
+      "label": "company-b-isolated",
+      "sha256": "0ce02e94b8d91c2ae2e996c9a14d667ffb144ad756bcc4720f86380b1c6a8b3b",
+      "bytes": 132933,
+      "file": "pr558-bc3-journey-log-only-company-b-isolated.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "native-only",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-bc3-journey-native-only-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "native-only",
+      "label": "company-a-created",
+      "sha256": "e466ec4591e7ca098bc658c9eb4954c7379efcc63aacf75974b7e3a2cfd412ae",
+      "bytes": 132570,
+      "file": "pr558-bc3-journey-native-only-company-a-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "native-only",
+      "label": "company-b-isolated",
+      "sha256": "ad88cdbb2faf02b1e5aa55a22ede1f574c5fb22504ef90fc65d0aaad33534fb8",
+      "bytes": 132933,
+      "file": "pr558-bc3-journey-native-only-company-b-isolated.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "instrumented",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-bc3-journey-instrumented-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "scenario": "journey",
+      "diagnostic": "instrumented",
+      "label": "failure",
+      "sha256": "88e028ef9dcf8ced31d4f338082e287b5bcd369aa77958d96dae587a72775aa7",
+      "bytes": 138416,
+      "file": "pr558-bc3-journey-instrumented-failure.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}
