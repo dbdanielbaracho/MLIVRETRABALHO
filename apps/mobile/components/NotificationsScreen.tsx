@@ -10,7 +10,7 @@ import { loadNotifications,markNotificationRead,notificationContextHeaders,type 
 
 export function NotificationsScreen({company=false}:{company?:boolean}){
  const[items,setItems]=useState<Notification[]>([]),[status,setStatus]=useState<'loading'|'error'|'ready'>('loading'),[message,setMessage]=useState(''),[pending,setPending]=useState<string[]>([]);
- const requestId=useRef(0),epoch=useRef(0),sourceHeaders=useRef<Record<string,string>|null>(null),controllers=useRef(new Set<AbortController>()),pendingReads=useRef(new Set<string>());
+ const requestId=useRef(0),epoch=useRef(0),sourceHeaders=useRef<Record<string,string>|null>(null),controllers=useRef(new Set<AbortController>()),pendingReads=useRef(new Map<string,object>());
  function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  async function load(){
   const id=++requestId.current,version=epoch.current,op=operation(()=>{if(id===requestId.current&&version===epoch.current){sourceHeaders.current=null;setItems([]);setStatus('error');}});setStatus('loading');setItems([]);sourceHeaders.current=null;
@@ -29,15 +29,23 @@ export function NotificationsScreen({company=false}:{company?:boolean}){
  async function read(n:Notification){
   const key=n.tenantId+':'+n.id,original=sourceHeaders.current,version=epoch.current;
   if(n.readAt||pendingReads.current.has(key)||!original||status!=='ready'||!items.some(item=>item.id===n.id&&item.tenantId===n.tenantId)||(company&&original['x-tenant-id']!==n.tenantId))return;
-  pendingReads.current.add(key);setPending([...pendingReads.current]);setMessage('');
-  const op=operation();
+  const owner={};pendingReads.current.set(key,owner);setPending([...pendingReads.current.keys()]);setMessage('');
+  const owns=()=>version===epoch.current&&pendingReads.current.get(key)===owner;
+  const releasePending=()=>{if(owns()){pendingReads.current.delete(key);setPending([...pendingReads.current.keys()]);}};
+  const op=operation(()=>{
+   op.finish();
+   if(!owns())return;
+   releasePending();
+   if(sourceHeaders.current!==original)return;
+   sourceHeaders.current=null;setItems([]);setStatus('error');setMessage('Não foi possível confirmar a leitura. Atualize as notificações para conferir.');
+  });
   try{
-   const result=await runForSession(notificationContextHeaders(company?authenticatedTenantHeaders:authHeaders,company,company?n.tenantId:undefined),headers=>markNotificationRead((path,tenantId)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'x-tenant-id':tenantId},signal:op.controller.signal}),n),()=>version===epoch.current&&!op.controller.signal.aborted,original.Authorization);
-   if(version!==epoch.current)return;
+   const result=await runForSession(notificationContextHeaders(company?authenticatedTenantHeaders:authHeaders,company,company?n.tenantId:undefined),headers=>markNotificationRead((path,tenantId)=>fetch(apiUrl(path),{method:'POST',headers:{...headers,'x-tenant-id':tenantId},signal:op.controller.signal}),n),()=>owns()&&!op.controller.signal.aborted,original.Authorization);
+   if(!owns()||op.controller.signal.aborted||sourceHeaders.current!==original)return;
    if(result.status!=='ready'){sourceHeaders.current=null;setItems([]);setStatus('error');setMessage('A sessão, empresa ou conexão mudou. Atualize as notificações para conferir.');return;}
    if(result.data.status==='confirmed'){setMessage('Notificação marcada como lida.');await load();}
    else setMessage(result.data.status==='rejected'?'A atualização não foi aceita. Atualize as notificações.':'Não foi possível confirmar a leitura. Atualize as notificações para conferir.');
-  }finally{op.finish();if(version===epoch.current){pendingReads.current.delete(key);setPending([...pendingReads.current]);}}
+  }finally{op.finish();releasePending();}
  }
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
  <Text style={s.title}>Notificações</Text>
