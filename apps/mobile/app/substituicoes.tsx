@@ -8,6 +8,7 @@ import type {ReplacementData,Request,MatchResult} from '../lib/company-replaceme
 export default function Substituicoes(){
  const [data,setData]=useState(loadingReplacements),[reasons,setReasons]=useState<Record<string,string>>({}),[recommendations,setRecommendations]=useState<Record<string,MatchResult>>({}),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
  const draftContext=useRef<Record<string,string>|null>(null),generation=useRef(0),sequence=useRef(0),pending=useRef(false),controllers=useRef(new Set<AbortController>()),snapshot=useRef<{headers:Record<string,string>;data:ReplacementData}|null>(null);
+ const actionController=useRef<AbortController|null>(null);
  const assignments=data.assignments.status==='ready'?data.assignments.data:[],replacements=data.replacements.status==='ready'?data.replacements.data:[];
  const openByAssignment=new Map(replacements.filter(x=>x.status==='open').map(x=>[x.assignmentId,x]));
  function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
@@ -20,7 +21,7 @@ export default function Substituicoes(){
   }catch{if(version===generation.current&&seq===sequence.current)setData({assignments:{status:'error'},replacements:{status:'error'}});}
   finally{op.finish();}
  }
- useFocusEffect(useCallback(()=>{++generation.current;setMessage('');setReasons({});void load();return()=>{++generation.current;++sequence.current;for(const c of controllers.current)c.abort();controllers.current.clear();snapshot.current=null;pending.current=false;setBusy(false);setData(loadingReplacements());setRecommendations({});};},[]));
+ useFocusEffect(useCallback(()=>{++generation.current;setMessage('');setReasons({});void load();return()=>{++generation.current;++sequence.current;for(const c of controllers.current)c.abort();controllers.current.clear();snapshot.current=null;actionController.current=null;pending.current=false;setBusy(false);setData(loadingReplacements());setRecommendations({});};},[]));
  async function action(kind:'create'|'match'|'select',id:string,professionalId?:string){
   const displayed=snapshot.current;if(pending.current||!displayed||displayed.data.assignments.status!=='ready'||displayed.data.replacements.status!=='ready')return;
   const replacement=displayed.data.replacements.data.find(x=>x.id===id&&x.status==='open');
@@ -28,15 +29,18 @@ export default function Substituicoes(){
   if(!assignment||!replaceable(assignment.status))return;
   if(kind!=='create'&&!replacement)return;
   const recommendation=recommendations[id];if(kind==='select'&&(recommendation?.status!=='ready'||recommendation.data.recommendedProfessionalId!==professionalId))return;
-  pending.current=true;setBusy(true);const version=generation.current,op=operation();
-  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameReplacementContext(headers,displayed.headers)){setMessage('A empresa ou sessão mudou. Atualize as substituições.');return;}
+  pending.current=true;setBusy(true);const version=generation.current,op=operation(kind==='match'?()=>{if(!owns())return;snapshot.current=null;++sequence.current;setData({assignments:{status:'error'},replacements:{status:'error'}});setRecommendations({});setMessage('Falha de conexão. Atualize as substituições para conferir.');finish();}:undefined);
+  actionController.current=op.controller;
+  const owns=():boolean=>version===generation.current&&actionController.current===op.controller;
+  const finish=():void=>{op.finish();if(!owns())return;actionController.current=null;pending.current=false;setBusy(false);};
+  try{const headers=await authenticatedTenantHeaders();if(!owns()||op.controller.signal.aborted)return;if(!sameReplacementContext(headers,displayed.headers)){setMessage('A empresa ou sessão mudou. Atualize as substituições.');return;}
    const request=requestWith(headers,op.controller.signal);
-   if(kind==='match'){const result=await matchReplacement(request,id);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameReplacementContext(current,displayed.headers))throw Error('company_context_changed');if(version===generation.current){setRecommendations(current=>({...current,[id]:result}));setMessage(result.status==='ready'?'Substituto recomendado encontrado.':result.status==='empty'?'Nenhum substituto disponível no momento.':'Não foi possível buscar uma recomendação. Tente novamente.');}}
+   if(kind==='match'){const result=await matchReplacement(request,id);const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameReplacementContext(current,displayed.headers))throw Error('company_context_changed');if(owns()&&snapshot.current===displayed){setRecommendations(current=>({...current,[id]:result}));setMessage(result.status==='ready'?'Substituto recomendado encontrado.':result.status==='empty'?'Nenhum substituto disponível no momento.':'Não foi possível buscar uma recomendação. Tente novamente.');}}
    else {const ok=kind==='create'?await createRequest(request,id,reasons[id]?.trim()||undefined):await selectReplacement(request,replacement!,professionalId!);
     const current=await authenticatedTenantHeaders();if(op.controller.signal.aborted||!sameReplacementContext(current,displayed.headers))throw Error('company_context_changed');
-    if(version===generation.current){setMessage(ok?(kind==='create'?'Substituição solicitada.':'Substituto confirmado.'):'O resultado não foi confirmado. Atualize as substituições para conferir.');await load(false,displayed.headers);}}
-  }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize as substituições para conferir.');}
-  finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
+    if(owns()){setMessage(ok?(kind==='create'?'Substituição solicitada.':'Substituto confirmado.'):'O resultado não foi confirmado. Atualize as substituições para conferir.');await load(false,displayed.headers);}}
+  }catch{if(owns())setMessage('Falha de conexão. Atualize as substituições para conferir.');}
+  finally{finish();}
  }
  const requestReplacement=(id:string)=>action('create',id);
  const autoMatch=(id:string)=>action('match',id);
