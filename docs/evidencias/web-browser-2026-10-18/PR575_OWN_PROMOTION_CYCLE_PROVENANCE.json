@@ -1,0 +1,60 @@
+{
+  "sourceHead": "89f799914fdcadaa75f7569b78c8483953829295",
+  "sourceTree": "d9ca8e85f8f2410474c18c73d85e99adbec66b72",
+  "actualCheckout": "d3447a773881d73bf358476b2235882d789bcde8",
+  "checkoutKind": "synthetic ordered parents [3e098cd51cd2fd84f21e144a600a814a2cb1a150,89f799914fdcadaa75f7569b78c8483953829295], equal candidate tree; not literal HEAD",
+  "runId": 39090990507,
+  "jobId": 117567517336,
+  "attempt": 1,
+  "conclusion": "failure",
+  "source": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39090990507/job/117567517336",
+  "scope": "historical own575 desktop Web, not this571 candidate, native APK UI, physical or full acceptance",
+  "validation": "PNG signature/SHA256/bytes/1365x900/Pillow verify checked in source cycle; remote normalized base64 bytes checked in this functional cycle; not visually inspected",
+  "captures": [
+    {
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "capturedAt": "2026-10-18T02:44:59.5193467Z",
+      "path": "docs/evidencias/web-browser-2026-10-18/pr575-own-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-created",
+      "sha256": "a7c88473f99d90a48c864c5d39e9f802673e94d88154b238c3389a3bf7651baa",
+      "bytes": 132317,
+      "capturedAt": "2026-10-18T02:45:00.4315326Z",
+      "path": "docs/evidencias/web-browser-2026-10-18/pr575-own-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-unavailable",
+      "sha256": "ed2dd66ce4879321335cd0f187d7ee2327cd93d510e59722e12e806c3e381c32",
+      "bytes": 141157,
+      "capturedAt": "2026-10-18T02:45:00.6673713Z",
+      "path": "docs/evidencias/web-browser-2026-10-18/pr575-own-partial.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-team-read-recovered",
+      "sha256": "d94c2d05cfb9b4f801de393e3d8987ab56d6b2f26d1c05a47ccc15e5f3923bea",
+      "bytes": 132553,
+      "capturedAt": "2026-10-18T02:45:00.9238304Z",
+      "path": "docs/evidencias/web-browser-2026-10-18/pr575-own-recovered.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "failure",
+      "sha256": "1b58ef5ef0752f3211735665a1f35cddac1b304a5561b575cde94b580560f326",
+      "bytes": 133142,
+      "capturedAt": "2026-10-18T02:45:21.0906533Z",
+      "path": "docs/evidencias/web-browser-2026-10-18/pr575-own-failure.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}

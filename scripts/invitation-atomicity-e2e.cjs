@@ -9,15 +9,16 @@ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}
 function scopeFor(value){
  for(const key of ['stamp','tenantId','ownerId','oldId'])assert.match(value[key],uuid,'Own fixture UUID required');
  assert.equal(value.email,'invitation-atomicity-target-'+value.stamp+'@example.test');
- assert.ok(value.phase===undefined||value.phase==='accept','Known owned failure phase required');
- if(value.phase==='accept')assert.match(value.targetId,uuid,'HTTP acceptor UUID required');
- const prefix=(value.phase==='accept'?'inv_accept_':'inv_atomicity_')+value.stamp.replaceAll('-','');
+ assert.ok(value.phase===undefined||value.phase==='accept'||value.phase==='promote','Known owned failure phase required');
+ if(value.phase==='accept'||value.phase==='promote')assert.match(value.targetId,uuid,'HTTP acceptor UUID required');
+ if(value.phase==='promote')assert.equal(value.priorRole,'manager','Exact HTTP-established prior role required');
+ const prefix=(value.phase==='promote'?'inv_promote_':value.phase==='accept'?'inv_accept_':'inv_atomicity_')+value.stamp.replaceAll('-','');
  return{...value,sequence:prefix+'_seq',fn:prefix+'_fn',trigger:prefix+'_trg'};
 }
 function requireBinding(scope,row){
  scopeFor(scope);
  assert.ok(row,'Owned invitation row required');
- for(const [field,expected]of [['id',scope.oldId],['tenant_id',scope.tenantId],['invited_by_identity_id',scope.ownerId],['email',scope.email],['role','manager']])assert.equal(row[field],expected,'HTTP/Postgres binding '+field);
+ for(const [field,expected]of [['id',scope.oldId],['tenant_id',scope.tenantId],['invited_by_identity_id',scope.ownerId],['email',scope.email],['role',scope.phase==='promote'?'owner':'manager']])assert.equal(row[field],expected,'HTTP/Postgres binding '+field);
  assert.equal(row.accepted_at,null);assert.equal(row.revoked_at,null);assert.ok(row.expires_at instanceof Date);
 }
 async function cleanupHook(db,scope,owned){
@@ -55,7 +56,31 @@ function acceptanceFunctionSQL(scope){
    RETURN NEW;
   END $fixture$`;
 }
-module.exports={scopeFor,requireBinding,cleanupHook,requireAcceptanceBinding,acceptanceFunctionSQL};
+function requirePromotionBinding(scope,row,memberships){
+ assert.equal(scope.phase,'promote');scopeFor(scope);requireBinding(scope,row);
+ assert.equal(row.accepted_by_identity_id,null);assert.equal(memberships.length,1,'Exactly one existing HTTP-created manager membership required');
+ const member=memberships[0];
+ for(const [field,expected]of [['tenant_id',scope.tenantId],['identity_id',scope.targetId],['subject_id',scope.targetId],['role','manager']])assert.equal(member[field],expected,'Prior promotion membership binding '+field);
+}
+function promotionFunctionSQL(scope){
+ assert.equal(scope.phase,'promote');const expected=scopeFor(scope);
+ for(const key of ['sequence','fn','trigger'])assert.equal(scope[key],expected[key],'Owned promotion identifier');
+ return `CREATE FUNCTION public.${scope.fn}() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $fixture$
+  DECLARE visible_members integer; visible_invitations integer;
+  BEGIN
+   IF NEW.id='${scope.oldId}'::uuid AND NEW.tenant_id='${scope.tenantId}'::uuid AND NEW.invited_by_identity_id='${scope.ownerId}'::uuid AND NEW.email='${scope.email}' AND NEW.role='owner' AND OLD.accepted_at IS NULL AND NEW.accepted_at IS NOT NULL AND NEW.accepted_by_identity_id='${scope.targetId}'::uuid THEN
+    SELECT count(*) INTO visible_members FROM public.tenant_memberships
+     WHERE tenant_id=NEW.tenant_id AND identity_id='${scope.targetId}'::uuid AND subject_id='${scope.targetId}'::uuid AND role='owner';
+    SELECT count(*) INTO visible_invitations FROM public.company_member_invitations
+     WHERE id=NEW.id AND tenant_id=NEW.tenant_id AND role='owner' AND accepted_at IS NOT NULL AND accepted_by_identity_id='${scope.targetId}'::uuid AND revoked_at IS NULL;
+    IF visible_members<>1 OR visible_invitations<>1 THEN RAISE EXCEPTION 'fixture_precondition_owner_and_acceptance'; END IF;
+    PERFORM pg_catalog.nextval('public.${scope.sequence}'::regclass);
+    RAISE EXCEPTION 'fixture_invitation_owner_promotion_failure';
+   END IF;
+   RETURN NEW;
+  END $fixture$`;
+}
+module.exports={scopeFor,requireBinding,cleanupHook,requireAcceptanceBinding,acceptanceFunctionSQL,requirePromotionBinding,promotionFunctionSQL};
 async function main(){
  const config=localConfiguration(process.env);
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
@@ -179,6 +204,48 @@ async function main(){
   assert.equal((await db.query('SELECT count(*)::int n FROM pg_trigger WHERE tgrelid=$1::regclass AND tgname=$2',['public.company_member_invitations',renewalScope.trigger])).rows[0].n,0);
   console.log('INVITATION_ACCEPT_ATOMICITY_HTTP_PG_PASS '+JSON.stringify({lateUpdateRollback:true,explicitSameCodeRecovery201:true,exactlyOneManagerMembership:true,consumedCodeRejected400:true,foreignUnchanged:true,bothOwnedHooksRemoved:true,productionOrNativeUI:false}));
   console.log('INVITATION_ATOMICITY_HTTP_PG_PASS '+JSON.stringify({rollback:true,explicitRecoveryACK201:true,oneNewInvitation:true,oldCodeRejected400:true,newCodeAccepted201:true,actualManagerMembership:true,foreignUnchanged:true,ownedHookRemoved:true,productionOrNativeUI:false}));
+  // Independent UPDATE-membership path: existing manager was created by the HTTP accept above.
+  const ownerInvite=await call('/v1/company/members/invitations',{method:'POST',token:a.token,tenant:a.tenant,body:{email:target.email,role:'owner'},status:201});
+  assert.equal(ownerInvite.role,'owner');assert.notEqual(ownerInvite.invitationId,renewed.invitationId);
+  scope=scopeFor({stamp,tenantId:a.tenant,ownerId:a.identity,oldId:ownerInvite.invitationId,email:target.email,phase:'promote',targetId:target.identity,priorRole:'manager'});
+  const promotionBinding=(await db.query('SELECT * FROM company_member_invitations WHERE id=$1 AND tenant_id=$2',[scope.oldId,scope.tenantId])).rows[0];
+  const managerRows=(await db.query('SELECT * FROM tenant_memberships WHERE tenant_id=$1 AND identity_id=$2',[a.tenant,target.identity])).rows;
+  requirePromotionBinding(scope,promotionBinding,managerRows);
+  assert.equal(promotionBinding.token_hash,createHash('sha256').update(ownerInvite.inviteCode).digest('hex'));
+  const beforePromote=await snapshot();
+  await db.query('CREATE SEQUENCE public.'+scope.sequence);owned.sequence=true;
+  await db.query(promotionFunctionSQL(scope));owned.fn=true;
+  await db.query('REVOKE ALL ON FUNCTION public.'+scope.fn+'() FROM PUBLIC');
+  await db.query('CREATE TRIGGER '+scope.trigger+' AFTER UPDATE OF accepted_at ON public.company_member_invitations FOR EACH ROW EXECUTE FUNCTION public.'+scope.fn+'()');owned.trigger=true;
+  await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:ownerInvite.inviteCode},status:500});
+  const promotionWitness=(await db.query('SELECT last_value,is_called FROM public.'+scope.sequence)).rows[0];
+  assert.equal(promotionWitness.is_called,true);assert.equal(String(promotionWitness.last_value),'1');
+  assert.deepEqual(await snapshot(),beforePromote,'Late acceptance failure must undo owner promotion and acceptance across all two-tenant rows');
+  assert.deepEqual(await security(),beforeSecurity);
+  const managerAfterFailure=(await call('/v1/company/members',{token:a.token,tenant:a.tenant})).find(x=>x.identityId===target.identity);
+  assert.ok(managerAfterFailure);assert.equal(managerAfterFailure.role,'manager');
+  const ownerStillActive=(await call('/v1/company/members/invitations',{token:a.token,tenant:a.tenant})).find(x=>x.id===scope.oldId);
+  assert.ok(ownerStillActive);assert.equal(ownerStillActive.acceptedAt,null);assert.equal(ownerStillActive.revokedAt,null);
+  console.log('INVITATION_PROMOTION_UPDATE_ROLLBACK_PASS '+JSON.stringify({realHTTP500:true,ownerAndAcceptedUpdateWitness:2,nonRollbackWitness:1,allTwoTenantRowsUnchanged:true,managerRoleRestored:true,ownerInvitationStillActive:true,policiesACLUnchanged:true}));
+  await cleanupHook(db,scope,owned);
+  // One explicitly separate recovery with the SAME code, never automatic retry or role seeding.
+  const promoted=await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:ownerInvite.inviteCode},status:201});
+  assert.deepEqual(promoted,{accepted:true,tenantId:a.tenant,role:'owner'});
+  const afterPromote=await snapshot();assert.equal(afterPromote.memberships.length,beforePromote.memberships.length);
+  const promotedMember=afterPromote.memberships.find(x=>x.tenant_id===a.tenant&&x.identity_id===target.identity);
+  assert.ok(promotedMember);assert.equal(promotedMember.role,'owner');assert.deepEqual({...promotedMember,role:'manager'},managerRows[0]);
+  for(const row of beforePromote.memberships.filter(x=>!(x.tenant_id===a.tenant&&x.identity_id===target.identity)))assert.deepEqual(afterPromote.memberships.find(x=>x.id===row.id),row);
+  const promotedInvitation=afterPromote.invitations.find(x=>x.id===scope.oldId);
+  assert.ok(promotedInvitation.accepted_at instanceof Date);assert.equal(promotedInvitation.accepted_by_identity_id,target.identity);
+  assert.deepEqual({...promotedInvitation,accepted_at:promotionBinding.accepted_at,accepted_by_identity_id:promotionBinding.accepted_by_identity_id},promotionBinding);
+  for(const row of beforePromote.invitations.filter(x=>x.id!==scope.oldId))assert.deepEqual(afterPromote.invitations.find(x=>x.id===row.id),row);
+  assert.equal(afterPromote.invitations.length,beforePromote.invitations.length);
+  await call('/v1/company/members/invitations/accept',{method:'POST',token:target.token,body:{inviteCode:ownerInvite.inviteCode},status:400});
+  assert.deepEqual(await snapshot(),afterPromote);assert.deepEqual(await security(),beforeSecurity);
+  assert.equal((await db.query('SELECT to_regclass($1) object',['public.'+scope.sequence])).rows[0].object,null);
+  assert.equal((await db.query('SELECT to_regprocedure($1) object',['public.'+scope.fn+'()'])).rows[0].object,null);
+  assert.equal((await db.query('SELECT count(*)::int n FROM pg_trigger WHERE tgrelid=$1::regclass AND tgname=$2',['public.company_member_invitations',scope.trigger])).rows[0].n,0);
+  console.log('INVITATION_PROMOTION_ATOMICITY_HTTP_PG_PASS '+JSON.stringify({existingManagerPromotionRollback:true,explicitSameCodeRecovery201:true,oneMembershipRoleDelta:true,consumedCodeRejected400:true,foreignAndOldRowsUnchanged:true,ownedHookRemoved:true,adminPathOrNativeUIOrProduction:false}));
  }finally{
   try{if(scope)await cleanupHook(db,scope,owned);}finally{await db.end();}
  }

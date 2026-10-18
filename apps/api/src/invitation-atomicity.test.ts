@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-const {scopeFor,requireBinding,cleanupHook,requireAcceptanceBinding,acceptanceFunctionSQL}=require('../../../scripts/invitation-atomicity-e2e.cjs');
+const {scopeFor,requireBinding,cleanupHook,requireAcceptanceBinding,acceptanceFunctionSQL,requirePromotionBinding,promotionFunctionSQL}=require('../../../scripts/invitation-atomicity-e2e.cjs');
 const stamp='00000000-0000-4000-8000-000000000001',tenantId='00000000-0000-4000-8000-000000000002',ownerId='00000000-0000-4000-8000-000000000003',oldId='00000000-0000-4000-8000-000000000004';
 const input={stamp,tenantId,ownerId,oldId,email:'invitation-atomicity-target-'+stamp+'@example.test'};
 const binding={id:oldId,tenant_id:tenantId,invited_by_identity_id:ownerId,email:input.email,role:'manager',accepted_at:null,revoked_at:null,expires_at:new Date('2026-10-24T12:00:00Z')};
@@ -65,3 +65,35 @@ test('accept cleanup preserves ownership guards and never targets the renewal na
  await assert.rejects(cleanupHook({query:async()=>{throw Error('must not query');}},{...scope,sequence:scopeFor(input).sequence},{sequence:true,fn:false,trigger:false}),/Owned cleanup identifier/);
 });
 
+
+const promotionInput={...input,phase:'promote',targetId,priorRole:'manager'};
+const promotionRow={...binding,role:'owner',accepted_by_identity_id:null};
+const existingManager={id:'00000000-0000-4000-8000-000000000006',tenant_id:tenantId,identity_id:targetId,subject_id:targetId,role:'manager'};
+test('owner promotion scope is separate and requires exact HTTP-created prior manager and target UUID',()=>{
+ const scope=scopeFor(promotionInput);for(const key of ['sequence','fn','trigger']){assert.match(scope[key],/^inv_promote_[a-f0-9]{32}_(seq|fn|trg)$/);assert.ok(scope[key].length<63);assert.notEqual(scope[key],scopeFor(acceptInput)[key]);}
+ for(const targetId of [undefined,'foreign',stamp+"';--"])assert.throws(()=>scopeFor({...promotionInput,targetId}));
+ for(const priorRole of [undefined,'owner','admin','professional'])assert.throws(()=>scopeFor({...promotionInput,priorRole}));
+});
+test('promotion binding refuses missing duplicate foreign changed or already-owner membership before hook',()=>{
+ const scope=scopeFor(promotionInput);assert.doesNotThrow(()=>requirePromotionBinding(scope,promotionRow,[existingManager]));
+ for(const rows of [[],[existingManager,existingManager]])assert.throws(()=>requirePromotionBinding(scope,promotionRow,rows));
+ for(const key of ['tenant_id','identity_id','subject_id','role'])assert.throws(()=>requirePromotionBinding(scope,promotionRow,[{...existingManager,[key]:'foreign'}]));
+ assert.throws(()=>requirePromotionBinding(scope,{...promotionRow,role:'manager'},[existingManager]));
+ assert.throws(()=>requirePromotionBinding(scope,{...promotionRow,accepted_by_identity_id:targetId},[existingManager]));
+ assert.throws(()=>requirePromotionBinding(scopeFor(acceptInput),promotionRow,[existingManager]));
+});
+test('promotion witness observes exact owner and accepted invitation before sequence and scoped error',()=>{
+ const scope=scopeFor(promotionInput),sql=promotionFunctionSQL(scope);
+ for(const text of ["NEW.id='"+oldId,"NEW.tenant_id='"+tenantId,"NEW.invited_by_identity_id='"+ownerId,"NEW.accepted_by_identity_id='"+targetId,"NEW.role='owner'",'OLD.accepted_at IS NULL','NEW.accepted_at IS NOT NULL','public.tenant_memberships','public.company_member_invitations',"role='owner'",'visible_members<>1 OR visible_invitations<>1','SECURITY DEFINER SET search_path=pg_catalog,public'])assert.ok(sql.includes(text));
+ assert.ok(sql.indexOf('visible_members<>1')<sql.indexOf('pg_catalog.nextval'));assert.ok(sql.indexOf('pg_catalog.nextval')<sql.indexOf("RAISE EXCEPTION 'fixture_invitation_owner_promotion_failure'"));
+ assert.doesNotMatch(sql,/GRANT|UPDATE tenant_memberships|BYPASSRLS|DISABLE ROW LEVEL|CASCADE|CREATE OR REPLACE/i);
+ for(const key of ['sequence','fn','trigger'])assert.throws(()=>promotionFunctionSQL({...scope,[key]:'foreign'}));
+});
+test('promotion cleanup cannot target earlier hook namespaces or unowned objects',async()=>{
+ const scope=scopeFor(promotionInput),calls:string[]=[],owned={sequence:true,fn:true,trigger:true},db={query:async(sql:string)=>{calls.push(sql);}};
+ await cleanupHook(db,scope,owned);assert.equal(calls.length,3);assert.ok(calls.every(sql=>sql.includes('inv_promote_')&&!sql.includes('inv_accept_')&&!sql.includes('inv_atomicity_')));
+ assert.deepEqual(owned,{sequence:false,fn:false,trigger:false});
+ await cleanupHook(db,scope,owned);assert.equal(calls.length,3);
+ for(const key of ['sequence','fn','trigger'])await assert.rejects(cleanupHook(db,{...scope,[key]:scopeFor(acceptInput)[key]},{sequence:true,fn:true,trigger:true}),/Owned cleanup identifier/);
+ assert.equal(calls.length,3);
+});
