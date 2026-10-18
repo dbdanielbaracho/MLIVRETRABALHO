@@ -1,3 +1,4 @@
+import {compareTimestamp} from './timestamp-order';
 import { BadRequestException, ForbiddenException, Body, Controller, Get, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
@@ -52,7 +53,7 @@ export class SafetyCasesController {
       all.push(...rows.map(row => ({ ...row, tenantId: currentTenant })));
     }
 
-    return all.sort((a, b) => String(b.createdAt ?? '').localeCompare(String(a.createdAt ?? '')));
+    return all.sort((a, b) => compareTimestamp(a.createdAt as Date|string|null|undefined,b.createdAt as Date|string|null|undefined,'desc'));
   }
 
   @Post()

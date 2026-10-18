@@ -1,0 +1,210 @@
+{
+  "sourcePr": 558,
+  "sourceHead": "8793af936a72f260af60894740145c720a5ba649",
+  "checkout": "21083f147c2a5a460c6ce783ae8b06263088b9ab",
+  "checkoutKind": "synthetic PR merge",
+  "orderedParents": [
+    "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+    "8793af936a72f260af60894740145c720a5ba649"
+  ],
+  "tree": "1c8cfe6b579629829f73ba71ef91553993a63ca3",
+  "run": 38842653055,
+  "job": 116786029336,
+  "attempt": 1,
+  "conclusion": "FAILURE",
+  "scope": "previous draft558 real localhost desktop matrix, NOT new563 frames, not Android/physical/production",
+  "frames": [
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-1-minimal-log-only-serial-failure.png",
+      "scenario": "minimal",
+      "diagnostic": "log-only",
+      "continuation": "serial",
+      "label": "failure",
+      "sha256": "050b6043a08877784addeaf706f0304c956e63007ba673516b4119d3e8bcfdc2",
+      "bytes": 9116,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-2-minimal-native-only-serial-failure.png",
+      "scenario": "minimal",
+      "diagnostic": "native-only",
+      "continuation": "serial",
+      "label": "failure",
+      "sha256": "050b6043a08877784addeaf706f0304c956e63007ba673516b4119d3e8bcfdc2",
+      "bytes": 9116,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-3-journey-baseline-concurrent-login.png",
+      "scenario": "journey",
+      "diagnostic": "baseline",
+      "continuation": "concurrent",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-4-journey-baseline-concurrent-company-a-created.png",
+      "scenario": "journey",
+      "diagnostic": "baseline",
+      "continuation": "concurrent",
+      "label": "company-a-created",
+      "sha256": "9969319311625c97e89d523d5c072d4b472e21a4e8c06960e7d9961cfe9db87f",
+      "bytes": 132475,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-5-journey-baseline-concurrent-failure.png",
+      "scenario": "journey",
+      "diagnostic": "baseline",
+      "continuation": "concurrent",
+      "label": "failure",
+      "sha256": "8c9bce280a5be2c4277a00a45dff1ce50a85519de7f635e3ed750adeeda8d3eb",
+      "bytes": 133284,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-6-journey-log-only-concurrent-login.png",
+      "scenario": "journey",
+      "diagnostic": "log-only",
+      "continuation": "concurrent",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-7-journey-log-only-concurrent-company-a-created.png",
+      "scenario": "journey",
+      "diagnostic": "log-only",
+      "continuation": "concurrent",
+      "label": "company-a-created",
+      "sha256": "c44bd70942bc588c73a6cf9892bbda05b02310bdc14141e60f09ea64488c8e86",
+      "bytes": 131811,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-8-journey-log-only-concurrent-failure.png",
+      "scenario": "journey",
+      "diagnostic": "log-only",
+      "continuation": "concurrent",
+      "label": "failure",
+      "sha256": "509f943e4e9acd51d5bcc0d2d6be2f9bee36e21d3a819a55b9581eb0ac09dff5",
+      "bytes": 132686,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-9-journey-native-only-concurrent-login.png",
+      "scenario": "journey",
+      "diagnostic": "native-only",
+      "continuation": "concurrent",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-10-journey-native-only-concurrent-company-a-created.png",
+      "scenario": "journey",
+      "diagnostic": "native-only",
+      "continuation": "concurrent",
+      "label": "company-a-created",
+      "sha256": "81efe69e08b194f84bb6ab693e26eb46aa4a6c67c7a6a06114ac7c9c7467ca04",
+      "bytes": 131999,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-11-journey-native-only-concurrent-failure.png",
+      "scenario": "journey",
+      "diagnostic": "native-only",
+      "continuation": "concurrent",
+      "label": "failure",
+      "sha256": "b061b5bd50ab67ebc0435099a3b76e49406d62d314071a3bc429464548ba628a",
+      "bytes": 132572,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-12-journey-instrumented-concurrent-login.png",
+      "scenario": "journey",
+      "diagnostic": "instrumented",
+      "continuation": "concurrent",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-13-journey-instrumented-concurrent-failure.png",
+      "scenario": "journey",
+      "diagnostic": "instrumented",
+      "continuation": "concurrent",
+      "label": "failure",
+      "sha256": "ad214ce8687336b5769b2459b636c2a3b18a178202a012d530ed50f7124bcb35",
+      "bytes": 132597,
+      "sourceDriver": "scripts/web-browser-transport-probe.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-14-current-main-main-original-login.png",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "sourceDriver": "scripts/web-browser-journey-e2e.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-15-current-main-main-original-company-a-created.png",
+      "label": "company-a-created",
+      "sha256": "4b71e819da2624d81a174f37b52e9f4c7d4b0c4ad4f1026d36ce26364584af2e",
+      "bytes": 131283,
+      "sourceDriver": "scripts/web-browser-journey-e2e.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-16-current-main-main-original-company-a-team-read-unavailable.png",
+      "label": "company-a-team-read-unavailable",
+      "sha256": "e136927cc452a3dd331c7e763da07293937257636f01bf4c63b56229a14ac130",
+      "bytes": 139917,
+      "sourceDriver": "scripts/web-browser-journey-e2e.cjs",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr558-879-17-current-main-main-original-failure.png",
+      "label": "failure",
+      "sha256": "3f072c398ac416b4f2ab336ba920d2a8e199c022cde597e55c68cd3d206025d7",
+      "bytes": 132025,
+      "sourceDriver": "scripts/web-browser-journey-e2e.cjs",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "sourcePR": 563,
+  "images": [
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-own-login.png",
+      "label": "login",
+      "phase": "own",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "4ea1971e4833a10da26373f850ca2a6aee6be56b",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38853511354,
+      "job": 116819752463,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-own-company-a-created.png",
+      "label": "company-a-created",
+      "phase": "own",
+      "sha256": "cc0d4616407df127ad1bae0ac874b3e295bca9b4e6fc485e8abb4efd90c05380",
+      "bytes": 131685,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "4ea1971e4833a10da26373f850ca2a6aee6be56b",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38853511354,
+      "job": 116819752463,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-own-company-a-team-read-unavailable.png",
+      "label": "company-a-team-read-unavailable",
+      "phase": "own",
+      "sha256": "499aee1013ac888c4bd228164481e0f614f5ff81fefac61e343b2c4dda268b0b",
+      "bytes": 140451,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "4ea1971e4833a10da26373f850ca2a6aee6be56b",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38853511354,
+      "job": 116819752463,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-own-company-a-team-read-recovered.png",
+      "label": "company-a-team-read-recovered",
+      "phase": "own",
+      "sha256": "01881c80f9497c1281e276e0e0beea15ff7ec6cd0ea3a3f4243704feffb22863",
+      "bytes": 131944,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "4ea1971e4833a10da26373f850ca2a6aee6be56b",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38853511354,
+      "job": 116819752463,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-own-company-b-isolated.png",
+      "label": "company-b-isolated",
+      "phase": "own",
+      "sha256": "ba47c5a4557d3e13258e913ae53fa4d458450aeaebaed89a359e6c4ff74daae3",
+      "bytes": 131733,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "4ea1971e4833a10da26373f850ca2a6aee6be56b",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38853511354,
+      "job": 116819752463,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-post-login.png",
+      "label": "login",
+      "phase": "post",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "a699fd0f26d12ba604cc5110e507adf231f120e1",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38854119764,
+      "job": 116821643560,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-post-company-a-created.png",
+      "label": "company-a-created",
+      "phase": "post",
+      "sha256": "f8f99a24af53c2a980bfcdca28964183c7450a2b98e624e356718d6a132ccee1",
+      "bytes": 132336,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "a699fd0f26d12ba604cc5110e507adf231f120e1",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38854119764,
+      "job": 116821643560,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-post-company-a-team-read-unavailable.png",
+      "label": "company-a-team-read-unavailable",
+      "phase": "post",
+      "sha256": "df99d8290870f48723bca963e2dcc59592a743d9f6986b2094efa079e43ef568",
+      "bytes": 141195,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "a699fd0f26d12ba604cc5110e507adf231f120e1",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38854119764,
+      "job": 116821643560,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-post-company-a-team-read-recovered.png",
+      "label": "company-a-team-read-recovered",
+      "phase": "post",
+      "sha256": "82694ba66477896f0d63c7b20293bf3efb05549fcffe338ff23462b30fb20037",
+      "bytes": 132598,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "a699fd0f26d12ba604cc5110e507adf231f120e1",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38854119764,
+      "job": 116821643560,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr563-post-company-b-isolated.png",
+      "label": "company-b-isolated",
+      "phase": "post",
+      "sha256": "863dd6bd5628071d1b5ff8db8542eb96d630479c8ae407969a4bf7e37b1b04e8",
+      "bytes": 132478,
+      "width": 1365,
+      "height": 900,
+      "sourceHead": "dad8c7d0b412cd833428e9657588043a3168be62",
+      "checkout": "a699fd0f26d12ba604cc5110e507adf231f120e1",
+      "tree": "c73498cf7932994d4847b3a3b28ef80a6b36f869",
+      "parents": [
+        "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+        "dad8c7d0b412cd833428e9657588043a3168be62"
+      ],
+      "run": 38854119764,
+      "job": 116821643560,
+      "attempt": 1,
+      "result": "success",
+      "scope": "headless Chrome fixtures; not Android/physical/VisualTruth acceptance"
+    }
+  ]
+}

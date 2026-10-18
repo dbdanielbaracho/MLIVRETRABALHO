@@ -6,6 +6,8 @@ const vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module');
 const {tmpdir}=require('node:os');
 const {join}=require('node:path');
 const {randomUUID,createHash}=require('node:crypto');
+const {createLifecycleTrace}=require('./web-browser-lifecycle-trace.cjs');
+const lifecycleTrace=createLifecycleTrace();
 function diagnosticConfiguration(value='instrumented'){
  const cases={baseline:{native:false,log:false},'log-only':{native:false,log:true},'native-only':{native:true,log:false},instrumented:{native:true,log:true}};
  assert.ok(Object.prototype.hasOwnProperty.call(cases,value),'Unknown browser diagnostic case');
@@ -178,6 +180,7 @@ async function capture(label){
  ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',()=>reject(Error('Debugger connection failed')),{once:true});});
  ws.addEventListener('message',event=>{
   const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);if(m.error){const error=Error('CDP command failed');error.code=m.error.code;error.protocolMessage=m.error.message;p.reject(error);}else p.resolve(m.result);}return;}
+  lifecycleTrace.observe(m,sessionId);
   if(m.method==='Runtime.bindingCalled'&&m.params.name==='mlivreFixtureFetchTrace')networkEvents.push(JSON.parse(m.params.payload));
   if(m.method==='Log.entryAdded'&&m.params.entry.source==='network')networkEvents.push({event:'browser-network-log',at:m.params.entry.timestamp,level:m.params.entry.level,text:m.params.entry.text.replace(/https?:\/\/[^\s'"<>]+/g,text=>{try{const u=new URL(text);return u.origin+u.pathname;}catch{return'[url omitted]';}}).replace(/Bearer\s+[^\s'"<>]+/gi,'Bearer [redacted]'),networkRequestId:m.params.entry.networkRequestId});
   if(m.method==='Network.requestWillBeSentExtraInfo'&&m.params.clientSecurityState){
@@ -205,6 +208,7 @@ async function capture(label){
  const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({scenario,diagnostic:diagnostic.mode,continuation,product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
+ await cdp('Page.setLifecycleEventsEnabled',{enabled:true});
  if(diagnostic.log)await cdp('Log.enable');
  if(diagnostic.native){
   await cdp('Runtime.addBinding',{name:'mlivreFixtureFetchTrace'});
@@ -299,6 +303,7 @@ async function capture(label){
  }
  process.exitCode=1;
 }).finally(async()=>{
+ console.log('WEB_BROWSER_LIFECYCLE_DIAGNOSTIC '+JSON.stringify({scenario,diagnostic:diagnostic.mode,continuation,...lifecycleTrace.snapshot()}));
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
 

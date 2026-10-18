@@ -1,3 +1,4 @@
+import {compareTimestamp} from './timestamp-order';
 import {
   BadRequestException,
   Body,
@@ -67,7 +68,7 @@ export class SafetyAppealsController {
       all.push(...rows.map(row => ({ ...row, tenantId: currentTenant })));
     }
 
-    return all.sort((a, b) => String(b.createdAt ?? '').localeCompare(String(a.createdAt ?? '')));
+    return all.sort((a, b) => compareTimestamp(a.createdAt as Date|string|null|undefined,b.createdAt as Date|string|null|undefined,'desc'));
   }
 
   @Post()

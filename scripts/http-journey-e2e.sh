@@ -412,6 +412,12 @@ request GET /v1/notifications/mine "$COMPANY2_TOKEN" "$TENANT2_ID" | json_equal 
 if [[ "$CHAT_CHAR_FAILURES" != 0 ]]; then echo "FAIL: chat_character_limit $CHAT_CHAR_FAILURES oversized requests were not HTTP400" >&2; exit 1; fi
 echo 'PASS: chat accepts4000 database Unicode characters, rejects4001 with400, and preserves authority messages notifications and tenant isolation'
 
+# Fresh professional multi-company chronology fixture; all prior assertions remain unchanged.
+node scripts/professional-chronology-e2e.cjs
+
+# Fresh safety/support chronology fixture; immutable events and all prior assertions remain unchanged.
+node scripts/safety-support-chronology-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
