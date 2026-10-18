@@ -418,6 +418,9 @@ node scripts/professional-chronology-e2e.cjs
 # Fresh safety/support chronology fixture; immutable events and all prior assertions remain unchanged.
 node scripts/safety-support-chronology-e2e.cjs
 
+# Local-only failed ledger INSERT must undo assignment completion; all existing gates remain.
+node scripts/ledger-completion-atomicity-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
