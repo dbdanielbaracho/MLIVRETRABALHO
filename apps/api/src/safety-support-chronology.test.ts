@@ -29,11 +29,12 @@ for(const [name,Controller]of mineControllers){
   const denied=mineFixture(Controller,[]);await assert.rejects(denied.controller.mine('Bearer fixture','foreign'),(e:unknown)=>e instanceof UnauthorizedException);assert.deepEqual(denied.tenants,[]);
  });
 }
-function exceptionFixture(rows:Array<Record<string,unknown>>,role='owner',failure?:{at:number;error:Error}){
+function exceptionFixture(rows:Array<Record<string,unknown>>,role='owner',failure?:{at:number;error:Error},authFailure?:{stage:'identity'|'membership';error:Error}){
  const calls:Array<{sql:string;params:unknown[]}>=[],tenants:string[]=[];
- const auth={identityFromAuthorization:async()=>({id:'owner'}),requireMembership:async(_id:string,t:string)=>{if(t!=='a')throw new UnauthorizedException();return{role};}};
+ const authEvents:unknown[][]=[];
+ const auth={identityFromAuthorization:async(authorization?:string)=>{authEvents.push(['identity',authorization]);if(authFailure?.stage==='identity')throw authFailure.error;return{id:'owner'};},requireMembership:async(_id:string,t:string)=>{authEvents.push(['membership',_id,t]);if(authFailure?.stage==='membership')throw authFailure.error;if(t!=='a')throw new UnauthorizedException();return{role};}};
  const db={tenant:async(t:string,work:(client:unknown)=>Promise<unknown>)=>{tenants.push(t);return work({query:async(sql:string,params:unknown[])=>{calls.push({sql,params});assert.deepEqual(params,['a']);if(failure?.at===calls.length-1)throw failure.error;return{rows:sql.includes('FROM support_cases')?rows:[]};}});}};
- return{controller:new SupportController(db as unknown as DatabaseService,auth as unknown as AuthService),calls,tenants};
+ return{controller:new SupportController(db as unknown as DatabaseService,auth as unknown as AuthService),calls,tenants,authEvents};
 }
 test('exceptions preserves overdue priority and orders equal-overdue Date rows oldest first',async()=>{
  const f=exceptionFixture([{id:'old',type:'support',priority:'normal',status:'open',createdAt:new Date(older)},{id:'new',type:'support',priority:'normal',status:'reviewing',createdAt:new Date(newer)}]);
@@ -96,4 +97,16 @@ for(const [name,Controller]of mineControllers)for(const stage of mineAuthFailure
   assert.deepEqual(f.authEvents,stage==='identity'?[['identity','Bearer fixture']]:[['identity','Bearer fixture'],['memberships','actor']]);
  }
  // Faults are explicit adapter fixtures, not real identity-provider or PostgreSQL/RLS evidence.
+});
+
+const exceptionAuthFailureStages=['identity','membership'] as const;
+for(const stage of exceptionAuthFailureStages)test('exceptions propagates '+stage+' dependency failure before any tenant SQL or acknowledgement',async()=>{
+ const error=new Error('explicit exceptions '+stage),f=exceptionFixture([{id:'unread',type:'support',priority:'normal',status:'open',createdAt:new Date(older)}],'owner',undefined,{stage,error});
+ let result:Awaited<ReturnType<SupportController['exceptions']>>|undefined;
+ await assert.rejects(async()=>{result=await f.controller.exceptions('Bearer fixture','a');},e=>e===error);
+ assert.equal(result,undefined,'authority failure must not become an empty or partial successful response');
+ assert.deepEqual(f.tenants,[],'no tenant transaction may start without established authority');
+ assert.deepEqual(f.calls,[],'no SQL or retry is allowed after the failed authority dependency');
+ assert.deepEqual(f.authEvents,stage==='identity'?[['identity','Bearer fixture']]:[['identity','Bearer fixture'],['membership','owner','a']]);
+ // Explicit auth faults; real identity-provider/Nest HTTP/PostgreSQL/RLS are separate integration evidence.
 });
