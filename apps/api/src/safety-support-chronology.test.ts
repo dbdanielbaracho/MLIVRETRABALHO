@@ -28,10 +28,10 @@ for(const [name,Controller]of mineControllers){
   const denied=mineFixture(Controller,[]);await assert.rejects(denied.controller.mine('Bearer fixture','foreign'),(e:unknown)=>e instanceof UnauthorizedException);assert.deepEqual(denied.tenants,[]);
  });
 }
-function exceptionFixture(rows:Array<Record<string,unknown>>,role='owner'){
+function exceptionFixture(rows:Array<Record<string,unknown>>,role='owner',failure?:{at:number;error:Error}){
  const calls:Array<{sql:string;params:unknown[]}>=[],tenants:string[]=[];
  const auth={identityFromAuthorization:async()=>({id:'owner'}),requireMembership:async(_id:string,t:string)=>{if(t!=='a')throw new UnauthorizedException();return{role};}};
- const db={tenant:async(t:string,work:(client:unknown)=>Promise<unknown>)=>{tenants.push(t);return work({query:async(sql:string,params:unknown[])=>{calls.push({sql,params});assert.deepEqual(params,['a']);return{rows:sql.includes('FROM support_cases')?rows:[]};}});}};
+ const db={tenant:async(t:string,work:(client:unknown)=>Promise<unknown>)=>{tenants.push(t);return work({query:async(sql:string,params:unknown[])=>{calls.push({sql,params});assert.deepEqual(params,['a']);if(failure?.at===calls.length-1)throw failure.error;return{rows:sql.includes('FROM support_cases')?rows:[]};}});}};
  return{controller:new SupportController(db as unknown as DatabaseService,auth as unknown as AuthService),calls,tenants};
 }
 test('exceptions preserves overdue priority and orders equal-overdue Date rows oldest first',async()=>{
@@ -50,4 +50,20 @@ test('exceptions preserves owner/admin authority and professional or cross-tenan
 test('exceptions retains stable equal instants and unchanged ISO values across offsets',async()=>{
  const f=exceptionFixture([{id:'first',type:'support',priority:'normal',status:'open',createdAt:older},{id:'second',type:'support',priority:'normal',status:'open',createdAt:'2026-10-14T09:00:00-03:00'}]);
  const result=await f.controller.exceptions('Bearer fixture','a');assert.deepEqual(result.map(x=>x.id),['first','second']);assert.equal(result[1]!.createdAt,'2026-10-14T09:00:00-03:00');
+});
+
+const exceptionFailureTables=['support_cases','safety_cases','marketplace_integrity_cases'] as const;
+for(const [failureAt,table]of exceptionFailureTables.entries())test('exceptions propagates '+table+' failure without partial acknowledgement later SQL or retry',async()=>{
+ for(const role of ['owner','admin']){
+  const error=new Error('explicit '+table),f=exceptionFixture([{id:'already-read',type:'support',priority:'normal',status:'open',createdAt:new Date(older)}],role,{at:failureAt,error});
+  let result:Awaited<ReturnType<SupportController['exceptions']>>|undefined;
+  await assert.rejects(async()=>{result=await f.controller.exceptions('Bearer fixture','a');},e=>e===error);
+  assert.equal(result,undefined,'no partial list may be acknowledged');
+  assert.deepEqual(f.tenants,['a']);
+  assert.equal(f.calls.length,failureAt+1,'no query may follow or retry the failed read');
+  assert.ok(f.calls.at(-1)!.sql.includes('FROM '+table));
+  assert.ok(f.calls.every(call=>JSON.stringify(call.params)==='["a"]'));
+  assert.equal(f.calls.some(call=>/^(INSERT|UPDATE|DELETE)/.test(call.sql)),false);
+ }
+ // Explicit in-memory query faults, not HTTP/PostgreSQL/RLS enforcement evidence.
 });
