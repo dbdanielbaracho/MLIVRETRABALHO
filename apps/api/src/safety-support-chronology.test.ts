@@ -8,11 +8,11 @@ import type {AuthService} from './auth.service';
 import type {DatabaseService} from './database.service';
 const older='2026-10-14T12:00:00.000Z',newer='2026-10-15T12:00:00.000Z';
 const mineControllers=[['safety cases',SafetyCasesController],['safety appeals',SafetyAppealsController]] as const;
-function mineFixture(Controller:typeof mineControllers[number][1],dates:Array<Date|string|null>){
+function mineFixture(Controller:typeof mineControllers[number][1],dates:Array<Date|string|null>,failure?:{tenant:string;error:Error}){
  const tenants:string[]=[],calls:Array<{sql:string;params:unknown[]}>=[];
  const rows=dates.map((createdAt,index)=>({id:'row-'+index,createdAt,status:'reviewing',reason:'Original reason',description:'Original description'}));
  const auth={identityFromAuthorization:async()=>({id:'actor'}),memberships:async()=>[{tenant_id:'a',role:'professional'},{tenant_id:'b',role:'professional'},{tenant_id:'a',role:'professional'}],requireMembership:async(_id:string,t:string)=>{if(!['a','b'].includes(t))throw new UnauthorizedException();}};
- const db={tenant:async(t:string,work:(client:unknown)=>Promise<unknown>)=>{tenants.push(t);return work({query:async(sql:string,params:unknown[])=>{calls.push({sql,params});assert.deepEqual(params,['actor',t]);assert.match(sql,/ORDER BY .*created_at DESC/);return{rows:t==='a'?rows.slice(0,1):rows.slice(1)};}});}};
+ const db={tenant:async(t:string,work:(client:unknown)=>Promise<unknown>)=>{tenants.push(t);return work({query:async(sql:string,params:unknown[])=>{calls.push({sql,params});assert.deepEqual(params,['actor',t]);assert.match(sql,/ORDER BY .*created_at DESC/);if(failure?.tenant===t)throw failure.error;return{rows:t==='a'?rows.slice(0,1):rows.slice(1)};}});}};
  return{controller:new Controller(db as unknown as DatabaseService,auth as unknown as AuthService),tenants,calls,rows};
 }
 for(const [name,Controller]of mineControllers){
@@ -66,4 +66,17 @@ for(const [failureAt,table]of exceptionFailureTables.entries())test('exceptions 
   assert.equal(f.calls.some(call=>/^(INSERT|UPDATE|DELETE)/.test(call.sql)),false);
  }
  // Explicit in-memory query faults, not HTTP/PostgreSQL/RLS enforcement evidence.
+});
+
+const mineFailureTenants=['a','b'] as const;
+for(const [name,Controller]of mineControllers)for(const tenant of mineFailureTenants)test(name+' rejects '+tenant+' query failure without partial cross-tenant acknowledgement or retry',async()=>{
+ const error=new Error('explicit '+name+' '+tenant),f=mineFixture(Controller,[new Date(older),new Date(newer)],{tenant,error});
+ let result:Awaited<ReturnType<typeof Controller.prototype.mine>>|undefined;
+ await assert.rejects(async()=>{result=await f.controller.mine('Bearer fixture');},e=>e===error);
+ assert.equal(result,undefined,'earlier tenant rows must not become a partial success');
+ assert.deepEqual(f.tenants,tenant==='a'?['a']:['a','b']);
+ assert.equal(f.calls.length,tenant==='a'?1:2,'the failed query must not retry or continue');
+ assert.deepEqual(f.calls.at(-1)!.params,['actor',tenant]);
+ assert.equal(f.calls.some(call=>/^(INSERT|UPDATE|DELETE)/.test(call.sql)),false);
+ // Explicit query faults and rows in memory; PostgreSQL RLS enforcement requires separate integration proof.
 });
