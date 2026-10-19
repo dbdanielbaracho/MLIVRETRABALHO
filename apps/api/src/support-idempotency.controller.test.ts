@@ -56,3 +56,44 @@ test('real database errors remain errors and an unlinked keyed request still nee
  const f=fixture([[],[ack]]);assert.deepEqual(await f.controller.create({category:'other',description:'unlinked'},'Bearer fixture','tenant-a',key),ack);
  assert.equal(f.calls.length,2);assert.equal(f.calls.some(c=>c.sql.includes('work_assignments')),false);
 });
+
+const supportFailureStages=[
+ {name:'assignment lookup',before:[[]],prefix:'SELECT id FROM work_assignments',values:['tenant-a',assignment]},
+ {name:'keyed INSERT',before:[[],[{id:assignment}]],prefix:'INSERT INTO support_cases',values:['tenant-a','authenticated-reporter',assignment,'schedule','fixture','normal',key,digest]},
+ {name:'unique-key loser replay',before:[[],[{id:assignment}],[]],prefix:'SELECT id,category',values:['tenant-a','authenticated-reporter',key]},
+] as const;
+for(const stage of supportFailureStages)test('keyed support propagates '+stage.name+' error without acknowledgement retry or later SQL',async()=>{
+ const error=new Error('explicit '+stage.name),f=fixture([...stage.before.map(rows=>[...rows]),error]);
+ let result:Awaited<ReturnType<SupportController['create']>>|undefined;
+ await assert.rejects(async()=>{result=await f.controller.create({...body,tenantId:'forged',reporterIdentityId:'forged'},'Bearer fixture','tenant-a',key.toUpperCase());},e=>e===error);
+ assert.equal(result,undefined);
+ assert.deepEqual(f.tenants,['tenant-a']);
+ assert.equal(f.calls.length,stage.before.length+1,'the failed operation must be the last query');
+ assert.ok(f.calls.at(-1)!.sql.startsWith(stage.prefix));
+ assert.deepEqual(f.calls.at(-1)!.values,stage.values);
+ assert.equal(f.calls.filter(c=>c.sql.startsWith('INSERT')).length,stage.before.length>=2?1:0);
+ assert.equal(f.calls.some(c=>/^(UPDATE|DELETE)/.test(c.sql)),false);
+ assert.ok(f.calls.every(c=>!c.values.includes('forged')));
+ // Attempted-query evidence only: PostgreSQL rollback requires separate integration proof.
+});
+test('explicit retry after an uncertain keyed INSERT reads the supplied current case without a second INSERT',async()=>{
+ const error=new Error('uncertain INSERT'),f=fixture([[],[{id:assignment}],error,[existing]]);
+ await assert.rejects(f.controller.create(body,'Bearer fixture','tenant-a',key),e=>e===error);
+ assert.equal(f.calls.length,3,'no retry occurs before the next explicit controller call');
+ assert.deepEqual(await f.controller.create(body,'Bearer fixture','tenant-a',key),{...ack,status:'reviewing'});
+ assert.equal(f.calls.length,4);assert.deepEqual(f.tenants,['tenant-a','tenant-a']);
+ assert.deepEqual(f.calls.at(-1)!.values,['tenant-a','authenticated-reporter',key]);
+ assert.equal(f.calls.filter(c=>c.sql.startsWith('INSERT')).length,1);
+ assert.equal(f.calls.some(c=>/^(UPDATE|DELETE)/.test(c.sql)),false);
+ // Existing row is an explicit fixture, not proof that the first transaction committed.
+});
+test('explicit retry after uncertain INSERT cannot overwrite an existing different payload digest',async()=>{
+ const error=new Error('uncertain INSERT'),f=fixture([[],[{id:assignment}],error,[{...existing,requestHash:'different'}]]);
+ await assert.rejects(f.controller.create(body,'Bearer fixture','tenant-a',key),e=>e===error);
+ assert.equal(f.calls.length,3);
+ await assert.rejects(f.controller.create(body,'Bearer fixture','tenant-a',key),/support_request_key_conflict/);
+ assert.equal(f.calls.length,4);assert.deepEqual(f.tenants,['tenant-a','tenant-a']);
+ assert.deepEqual(f.calls.at(-1)!.values,['tenant-a','authenticated-reporter',key]);
+ assert.equal(f.calls.filter(c=>c.sql.startsWith('INSERT')).length,1);
+ assert.equal(f.calls.some(c=>/^(UPDATE|DELETE)/.test(c.sql)),false);
+});
