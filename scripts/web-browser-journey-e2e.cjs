@@ -96,7 +96,7 @@ async function capture(label){
  const binary=process.env.CHROME_BIN||['google-chrome','google-chrome-stable','chromium','chromium-browser'].find(p=>spawnSync('which',[p],{stdio:'ignore'}).status===0);
  assert.ok(binary,'Installed browser required; no skipped UI evidence');
  const profile=mkdtempSync(join(tmpdir(),'mlivre-web-browser-'));
- chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
+ chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--disable-dev-shm-usage','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
  const endpoint=await waitForBrowserEndpoint(chrome,profile,details=>console.error('WEB_BROWSER_STARTUP_DIAGNOSTIC '+JSON.stringify(details)));
  ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',()=>reject(Error('Debugger connection failed')),{once:true});});
  ws.addEventListener('message',event=>{
