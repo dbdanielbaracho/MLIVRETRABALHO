@@ -12,13 +12,14 @@ function createLifecycleTrace({now=Date.now,maxEvents=4096,maxRequests=1024,maxC
   if(!expectedSession||message?.sessionId!==expectedSession)return;
   const p=message.params||{},method=message.method;
   if(method==='Network.requestWillBeSent'){
-   const requestId=id(p.requestId),binding={frameId:id(p.frameId),loaderId:id(p.loaderId)};
+   const initiator=p.initiator||{},initiatorType=['parser','script','preload','SignedExchange','preflight','FedCM','other'].includes(initiator.type)?initiator.type:null;
+   const requestId=id(p.requestId),binding={frameId:id(p.frameId),loaderId:id(p.loaderId),initiatorType,initiatorRequestId:initiatorType==='preflight'&&initiator.requestId!==''?id(initiator.requestId):null};
    put(requests,requestId,binding,maxRequests,()=>evictedRequests++);
    push({event:method,requestId,...binding,cdpMonotonicSeconds:number(p.timestamp),cdpWallSeconds:number(p.wallTime),redirect:p.redirectResponse!==undefined});return;
   }
   if(method==='Network.loadingFailed'||method==='Network.loadingFinished'){
    const requestId=id(p.requestId),binding=requests.get(requestId);
-   push({event:method,requestId,requestBindingObserved:!!binding,frameId:binding?.frameId??null,loaderId:binding?.loaderId??null,cdpMonotonicSeconds:number(p.timestamp),...(method==='Network.loadingFailed'?{canceled:typeof p.canceled==='boolean'?p.canceled:null,netError:p.errorText==='net::ERR_ABORTED'?'net::ERR_ABORTED':'[other or missing]',hasBlockedReason:p.blockedReason!==undefined,hasCorsError:p.corsErrorStatus!==undefined}:{})});
+   push({event:method,requestId,requestBindingObserved:!!binding,frameId:binding?.frameId??null,loaderId:binding?.loaderId??null,initiatorType:binding?.initiatorType??null,initiatorRequestId:binding?.initiatorRequestId??null,cdpMonotonicSeconds:number(p.timestamp),...(method==='Network.loadingFailed'?{canceled:typeof p.canceled==='boolean'?p.canceled:null,netError:p.errorText==='net::ERR_ABORTED'?'net::ERR_ABORTED':'[other or missing]',hasBlockedReason:p.blockedReason!==undefined,hasCorsError:p.corsErrorStatus!==undefined}:{})});
    requests.delete(requestId);return;
   }
   if(method==='Page.frameNavigated'){

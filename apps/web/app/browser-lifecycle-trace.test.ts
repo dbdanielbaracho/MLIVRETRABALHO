@@ -55,3 +55,88 @@ test('probe integration is passive and old guarded continuation, deadlines and s
  assert.match(source,/dispatchContinuation\(allowed\?'Fetch\.continueRequest':'Fetch\.failRequest'/);assert.match(source,/process\.exitCode=1/);assert.match(source,/Browser condition timeout/);
  const shell=fs.readFileSync(new URL('../../../scripts/web-browser-journey-e2e.sh',import.meta.url),'utf8');assert.match(shell,/BROWSER_MATRIX_STATUS=1/);assert.match(shell,/exit "\$BROWSER_MATRIX_STATUS"/);
 });
+
+// Initiator fixtures are explicit CDP-shaped metadata, not real preflight/RCA proof.
+test('passive preflight link retains the explicit triggering request ID without borrowing its frame or loader',()=>{
+ const t=createLifecycleTrace();
+ t.observe(msg('Network.requestWillBeSent',{requestId:'get.1',frameId:'frame-get',loaderId:'loader-get',initiator:{type:'script'}}),'session-A');
+ t.observe(msg('Network.requestWillBeSent',{requestId:'preflight.1',frameId:'frame-options',loaderId:'',initiator:{type:'preflight',requestId:'get.1'}}),'session-A');
+ const row=t.snapshot().events[1];assert.equal(row.initiatorType,'preflight');assert.equal(row.initiatorRequestId,'get.1');
+ assert.equal(row.requestId,'preflight.1');assert.equal(row.frameId,'frame-options');assert.equal(row.loaderId,'');
+});
+test('concurrent preflights retain distinct explicit trigger IDs and failed binding is not reassigned to another request',()=>{
+ const t=createLifecycleTrace();
+ for(const n of [1,2])t.observe(msg('Network.requestWillBeSent',{requestId:'preflight.'+n,frameId:'frame-'+n,loaderId:'loader-'+n,initiator:{type:'preflight',requestId:'get.'+n}}),'session-A');
+ for(const n of [2,1])t.observe(msg('Network.loadingFailed',{requestId:'preflight.'+n,errorText:'net::ERR_ABORTED',canceled:true}),'session-A');
+ const s=t.snapshot();assert.deepEqual(s.events.slice(2).map((e:any)=>[e.initiatorType,e.initiatorRequestId,e.frameId]),[['preflight','get.2','frame-2'],['preflight','get.1','frame-1']]);assert.equal(s.pendingRequests,0);
+});
+test('successful preflight settlement retains metadata but cannot fabricate a completed GET or server ACK',()=>{
+ const t=createLifecycleTrace();
+ t.observe(msg('Network.requestWillBeSent',{requestId:'options',initiator:{type:'preflight',requestId:'get'}}),'session-A');
+ t.observe(msg('Network.loadingFinished',{requestId:'options',timestamp:2}),'session-A');
+ const s=t.snapshot(),row=s.events[1];assert.equal(row.initiatorType,'preflight');assert.equal(row.initiatorRequestId,'get');
+ assert.equal(row.event,'Network.loadingFinished');assert.equal(row.requestId,'options');assert.equal(s.events.length,2);assert.equal(s.pendingRequests,0);assert.equal('status' in row,false);
+});
+test('explicit preflight link remains a reference even when the triggering request was not observed',()=>{
+ const t=createLifecycleTrace();
+ t.observe(msg('Network.requestWillBeSent',{requestId:'options',initiator:{type:'preflight',requestId:'unobserved.get'}}),'session-A');
+ const row=t.snapshot().events[0];assert.equal(row.initiatorRequestId,'unobserved.get');assert.equal(row.frameId,null);assert.equal(row.loaderId,null);assert.equal(t.snapshot().pendingRequests,1);assert.match(t.snapshot().scope,/no absence or root-cause/);
+});
+test('initiator type is allowlisted and only an explicit preflight may retain a trigger reference',()=>{
+ const t=createLifecycleTrace(),types=['parser','script','preload','SignedExchange','preflight','FedCM','other'];
+ for(const [i,type] of types.entries())t.observe(msg('Network.requestWillBeSent',{requestId:String(i),initiator:{type,requestId:'get'}}),'session-A');
+ assert.deepEqual(t.snapshot().events.map((r:any)=>[r.initiatorType,r.initiatorRequestId]),types.map(type=>[type,type==='preflight'?'get':null]));
+ for(const type of ['constructor','__proto__','SECRET?token','PREFLIGHT',null,3,{}]){
+  t.observe(msg('Network.requestWillBeSent',{requestId:'bad',initiator:{type,requestId:'get'}}),'session-A');const r=t.snapshot().events.at(-1);assert.equal(r.initiatorType,null);assert.equal(r.initiatorRequestId,null);
+ }
+});
+test('preflight trigger IDs reject empty overlong non-string URL/query/header-shaped values without logging them',()=>{
+ const t=createLifecycleTrace();
+ for(const requestId of ['', 'x'.repeat(129),3,{},null,'https://SECRET.invalid','id?token=SECRET','Bearer SECRET','id\nSECRET']){
+  t.observe(msg('Network.requestWillBeSent',{requestId:'options',initiator:{type:'preflight',requestId}}),'session-A');
+  assert.equal(t.snapshot().events.at(-1).initiatorRequestId,null);
+ }
+ t.observe(msg('Network.requestWillBeSent',{requestId:'valid',initiator:{type:'preflight',requestId:'x'.repeat(128)}}),'session-A');
+ assert.equal(t.snapshot().events.at(-1).initiatorRequestId.length,128);assert.ok(!JSON.stringify(t.snapshot()).includes('SECRET'));
+});
+test('other sessions and missing initiators cannot supply a trigger binding to the expected session',()=>{
+ const t=createLifecycleTrace();
+ t.observe(msg('Network.requestWillBeSent',{requestId:'same',initiator:{type:'preflight',requestId:'foreign'}},'session-B'),'session-A');
+ t.observe(msg('Network.requestWillBeSent',{requestId:'same'}),'session-A');
+ t.observe(msg('Network.loadingFailed',{requestId:'same'}),'session-A');
+ const s=t.snapshot();assert.equal(s.events.length,2);for(const r of s.events){assert.equal(r.initiatorType,null);assert.equal(r.initiatorRequestId,null);}assert.ok(!JSON.stringify(s).includes('foreign'));
+});
+test('collector never reads initiator URL/stack or transport data and does not mutate frozen input metadata',()=>{
+ const t=createLifecycleTrace(),initiator:any={type:'preflight',requestId:'get'};
+ for(const key of ['url','stack','lineNumber','columnNumber'])Object.defineProperty(initiator,key,{get(){throw Error('Forbidden data access');},enumerable:true});
+ Object.freeze(initiator);const params=Object.freeze({requestId:'options',initiator});
+ assert.doesNotThrow(()=>t.observe(msg('Network.requestWillBeSent',params),'session-A'));
+ const row=t.snapshot().events[0];assert.equal(row.initiatorRequestId,'get');assert.equal(row.initiatorType,'preflight');assert.equal('url' in row,false);assert.equal('stack' in row,false);assert.equal('initiator' in row,false);
+});
+test('request-ID reuse overwrites an old initiator binding instead of attaching it to a redirected request',()=>{
+ const t=createLifecycleTrace();
+ t.observe(msg('Network.requestWillBeSent',{requestId:'reused',frameId:'old',initiator:{type:'preflight',requestId:'old.get'}}),'session-A');
+ t.observe(msg('Network.requestWillBeSent',{requestId:'reused',frameId:'new',initiator:{type:'script'},redirectResponse:{url:'SECRET'}}),'session-A');
+ t.observe(msg('Network.loadingFinished',{requestId:'reused'}),'session-A');
+ const row=t.snapshot().events[2];assert.equal(row.frameId,'new');assert.equal(row.initiatorType,'script');assert.equal(row.initiatorRequestId,null);assert.equal(t.snapshot().events[1].redirect,true);
+});
+test('trigger settlement before preflight failure does not delete the preflight-owned reference',()=>{
+ const t=createLifecycleTrace();
+ t.observe(msg('Network.requestWillBeSent',{requestId:'get',initiator:{type:'script'}}),'session-A');
+ t.observe(msg('Network.requestWillBeSent',{requestId:'options',initiator:{type:'preflight',requestId:'get'}}),'session-A');
+ t.observe(msg('Network.loadingFinished',{requestId:'get'}),'session-A');t.observe(msg('Network.loadingFailed',{requestId:'options'}),'session-A');
+ assert.equal(t.snapshot().events[3].initiatorRequestId,'get');assert.equal(t.snapshot().pendingRequests,0);
+});
+test('initiator snapshots are detached and cannot rewrite pending request metadata',()=>{
+ const t=createLifecycleTrace();t.observe(msg('Network.requestWillBeSent',{requestId:'options',initiator:{type:'preflight',requestId:'get'}}),'session-A');
+ const copy=t.snapshot();copy.events[0].initiatorRequestId='forged';copy.events[0].initiatorType='other';
+ t.observe(msg('Network.loadingFinished',{requestId:'options'}),'session-A');
+ const row=t.snapshot().events[1];assert.equal(row.initiatorType,'preflight');assert.equal(row.initiatorRequestId,'get');
+});
+test('bounded request eviction reports unknown initiator rather than borrowing a surviving preflight reference',()=>{
+ const t=createLifecycleTrace({maxEvents:2,maxRequests:1,maxContexts:1});
+ for(const n of [1,2])t.observe(msg('Network.requestWillBeSent',{requestId:'options.'+n,initiator:{type:'preflight',requestId:'get.'+n}}),'session-A');
+ t.observe(msg('Network.loadingFailed',{requestId:'options.1'}),'session-A');
+ let s=t.snapshot(),row=s.events.at(-1);assert.equal(s.evictedRequests,1);assert.equal(s.droppedEvents,1);assert.equal(row.requestBindingObserved,false);assert.equal(row.initiatorType,null);assert.equal(row.initiatorRequestId,null);
+ t.observe(msg('Network.loadingFinished',{requestId:'options.2'}),'session-A');s=t.snapshot();assert.equal(s.events.at(-1).initiatorRequestId,'get.2');assert.equal(s.pendingRequests,0);assert.equal(s.events.length,2);assert.equal(s.droppedEvents,2);
+});
