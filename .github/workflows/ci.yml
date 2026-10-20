@@ -99,10 +99,6 @@ jobs:
           DATABASE_URL="$RETENTION_TEST_URL" EXPECTED_OPERATOR="ci:privacy-retention" bash scripts/privacy-retention-audit-e2e.sh
           DATABASE_URL="$RETENTION_TEST_URL" bash scripts/privacy-legal-holds-e2e.sh
 
-      # Pin the publisher build; keep all existing browser/security gates mandatory.
-      - name: Verify pinned Chrome for full browser gates
-        run: node scripts/install-ci-chrome.cjs
-
       - name: HTTP journey, readiness and Production Truth contract
         env:
           PGPASSWORD: postgres
