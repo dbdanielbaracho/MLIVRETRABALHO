@@ -29,3 +29,16 @@ test('recommendations remain available when candidates fail',async()=>{
  assert.deepEqual(readSettledSection(results,1,[]),[{professionalId:'p-1',score:80}]);
  assert.equal(failedSectionCount(results),1);
 });
+
+test('twelve independent operation reads preserve successful sections and count exactly failed reads',async()=>{
+ const reads=Array.from({length:12},(_,index)=>index===3||index===8?Promise.reject(new Error('fixture read unavailable '+index)):Promise.resolve([{section:index}]));
+ const settled=await Promise.allSettled(reads);
+ assert.equal(settled.length,12);
+ assert.equal(failedSectionCount(settled),2);
+ for(let index=0;index<12;index++){
+  const expected=index===3||index===8?[]:[{section:index}];
+  assert.deepEqual(readSettledSection(settled,index,[]),expected);
+ }
+ assert.deepEqual(readSettledSection(settled,0,[]),[{section:0}],'one failed section must not erase successful dashboard data');
+ assert.deepEqual(readSettledSection(settled,11,[]),[{section:11}],'a later successful section must stay visible');
+});
