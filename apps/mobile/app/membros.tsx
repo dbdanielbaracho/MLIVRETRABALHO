@@ -7,7 +7,7 @@ import {loadingManagement,loadManagement,sameManagementContext,generateInvitatio
 import type {Request} from '../lib/company-members';
 export default function Membros(){
  const [data,setData]=useState(loadingManagement),[email,setEmail]=useState(''),[role,setRole]=useState('manager'),[inviteCode,setInviteCode]=useState(''),[generatedCode,setGeneratedCode]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[inviteUncertain,setInviteUncertain]=useState(false);
- const draftContext=useRef<Record<string,string>|null>(null),generation=useRef(0),sequence=useRef(0),pending=useRef(false),context=useRef<Record<string,string>|null>(null),controllers=useRef(new Set<AbortController>()),revokeController=useRef<AbortController|null>(null);
+ const draftContext=useRef<Record<string,string>|null>(null),generation=useRef(0),sequence=useRef(0),pending=useRef(false),context=useRef<Record<string,string>|null>(null),controllers=useRef(new Set<AbortController>()),revokeController=useRef<AbortController|null>(null),createController=useRef<AbortController|null>(null),acceptController=useRef<AbortController|null>(null);
  const members=data.members.status==='ready'?data.members.data:[],invitations=data.invitations.status==='ready'?data.invitations.data:[],canManage=data.members.status==='ready'&&data.invitations.status==='ready';
  function operation(onDeadline?:()=>void){const controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>{controller.abort();onDeadline?.();},15000);return {controller,finish:()=>{clearTimeout(timer);controllers.current.delete(controller);}};}
  function requestWith(headers:Record<string,string>,signal:AbortSignal,onTransport?:()=>void):Request{return async(path,body,method)=>{if(signal.aborted)throw Error('inactive');onTransport?.();return fetch(apiUrl(path),{method:method??(body?'POST':'GET'),headers:{...headers,...(body?{'content-type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal});};}
@@ -23,27 +23,35 @@ export default function Membros(){
  useFocusEffect(useCallback(()=>{++generation.current;setGeneratedCode('');void load();return ()=>{++generation.current;++sequence.current;for(const c of controllers.current)c.abort();controllers.current.clear();pending.current=false;setBusy(false);setGeneratedCode('');context.current=null;setData(loadingManagement());};},[]));
  async function createInvite(){
   const displayed=context.current;if(pending.current||inviteUncertain||!displayed||!canManage)return;
-  pending.current=true;setBusy(true);const version=generation.current,op=operation();setGeneratedCode('');
-  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!sameManagementContext(headers,displayed)){if(version===generation.current)setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}
-   const result=await generateInvitation(requestWith(headers,op.controller.signal,()=>setInviteUncertain(true)),displayed['x-tenant-id'],email.trim().toLowerCase(),role);if(version!==generation.current)return;
-   const after=await authenticatedTenantHeaders();if(version!==generation.current)return;if(op.controller.signal.aborted){setMessage('O resultado do convite não foi confirmado. Atualize para conferir antes de gerar novamente.');return;}if(!sameManagementContext(after,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou. Atualize para conferir os convites.');return;}
-   if(result.status==='created'){const current=await authenticatedTenantHeaders();if(version!==generation.current)return;if(op.controller.signal.aborted||!sameManagementContext(current,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou ou o prazo terminou. Atualize para conferir os convites.');return;}setInviteUncertain(false);setGeneratedCode(result.inviteCode);setMessage('Convite criado para '+result.email+'.');await load(false,displayed);}
+  pending.current=true;setBusy(true);const version=generation.current;let confirmed=false;
+  const owns=()=>version===generation.current&&createController.current===op.controller;
+  const finish=()=>{op.finish();if(owns()){createController.current=null;pending.current=false;setBusy(false);}};
+  const op=operation(()=>{if(!owns())return;finish();++sequence.current;context.current=null;setData({members:{status:'error'},invitations:{status:'error'}});setMessage(confirmed?'Convite criado. A atualização não foi concluída no prazo; atualize membros e convites.':'O resultado do convite não foi confirmado no prazo. Atualize para conferir antes de gerar novamente.');});createController.current=op.controller;setGeneratedCode('');
+  const isCurrent=()=>owns()&&!op.controller.signal.aborted;
+  try{const headers=await authenticatedTenantHeaders();if(!isCurrent())return;if(!sameManagementContext(headers,displayed)){setMessage('A empresa ou sessão mudou. Atualize membros e convites.');return;}
+   const result=await generateInvitation(requestWith(headers,op.controller.signal,()=>setInviteUncertain(true)),displayed['x-tenant-id'],email.trim().toLowerCase(),role);if(!isCurrent())return;
+   const after=await authenticatedTenantHeaders();if(!isCurrent())return;if(!sameManagementContext(after,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou. Atualize para conferir os convites.');return;}
+   if(result.status==='created'){const current=await authenticatedTenantHeaders();if(!isCurrent())return;if(!sameManagementContext(current,displayed)){setGeneratedCode('');setMessage('A empresa ou sessão mudou ou o prazo terminou. Atualize para conferir os convites.');return;}confirmed=true;setInviteUncertain(false);setGeneratedCode(result.inviteCode);setMessage('Convite criado para '+result.email+'.');await load(false,displayed);}
    else if(result.status==='rejected'){setInviteUncertain(false);setMessage('Não foi possível gerar o convite.');}
    else{setInviteUncertain(true);setMessage('O resultado do convite não foi confirmado. Atualize a lista antes de gerar novamente.');}
-  }catch{if(version===generation.current)setMessage('Falha de conexão. Atualize membros e convites.');}
-  finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
+  }catch{if(isCurrent())setMessage('Falha de conexão. Atualize membros e convites.');}
+  finally{finish();}
  }
  async function acceptInvite(){
-  if(pending.current||!inviteCode.trim())return;pending.current=true;setBusy(true);const version=generation.current,op=operation(),code=inviteCode.trim();
-  try{const headers=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(!headers.Authorization){setMessage('Entre na sua conta para aceitar o convite.');return;}const result=await acceptInvitation(requestWith(headers,op.controller.signal),code);if(version!==generation.current)return;
-   const after=await authenticatedTenantHeaders();if(version!==generation.current)return;if(op.controller.signal.aborted||after.Authorization!==headers.Authorization||after['x-tenant-id']!==headers['x-tenant-id']){setMessage('O aceite não foi confirmado na sessão ou empresa atual. Confira sua participação antes de agir.');return;}
+  if(pending.current||!inviteCode.trim())return;pending.current=true;setBusy(true);const version=generation.current,code=inviteCode.trim();let confirmed=false;
+  const owns=()=>version===generation.current&&acceptController.current===op.controller;
+  const finish=()=>{op.finish();if(owns()){acceptController.current=null;pending.current=false;setBusy(false);}};
+  const op=operation(()=>{if(!owns())return;finish();++sequence.current;context.current=null;setData({members:{status:'error'},invitations:{status:'error'}});setMessage(confirmed?'O aceite foi confirmado, mas a seleção da empresa não foi concluída no prazo. O código foi mantido; confira sua participação antes de tentar novamente.':'O aceite não foi confirmado no prazo. O código foi mantido; confira sua participação antes de tentar novamente.');});acceptController.current=op.controller;
+  const isCurrent=()=>owns()&&!op.controller.signal.aborted;
+  try{const headers=await authenticatedTenantHeaders();if(!isCurrent())return;if(!headers.Authorization){setMessage('Entre na sua conta para aceitar o convite.');return;}const result=await acceptInvitation(requestWith(headers,op.controller.signal),code);if(!isCurrent())return;
+   const after=await authenticatedTenantHeaders();if(!isCurrent())return;if(after.Authorization!==headers.Authorization||after['x-tenant-id']!==headers['x-tenant-id']){setMessage('O aceite não foi confirmado na sessão ou empresa atual. Confira sua participação antes de agir.');return;}
    if(result.status!=='accepted'){setMessage(result.message==='invitation_email_mismatch'?'Este convite pertence a outro e-mail.':result.message==='invitation_existing_membership_role_change_forbidden'?'Você já participa desta empresa com outro papel. Alterações de papel precisam seguir o fluxo de gestão da empresa.':'Não foi possível confirmar o aceite. Confira o código e sua participação na empresa antes de tentar novamente.');return;}
-   const saved=await saveTenantForContext(result.tenantId,headers,()=>version===generation.current&&!op.controller.signal.aborted);if(version!==generation.current)return;
+   confirmed=true;const saved=await saveTenantForContext(result.tenantId,headers,isCurrent);if(!isCurrent())return;
    if(saved!=='saved'){setMessage(saved==='stale'?'A sessão ou empresa mudou. Confira sua participação antes de selecionar a empresa.':'O aceite foi confirmado, mas não foi possível salvar a empresa neste aparelho. O código foi mantido; confira sua participação antes de tentar novamente.');return;}
-   const current=await authenticatedTenantHeaders();if(version!==generation.current||op.controller.signal.aborted)return;if(current.Authorization!==headers.Authorization||current['x-tenant-id']!==result.tenantId){setMessage('A sessão ou empresa mudou. Confira sua participação na empresa.');return;}
+   const current=await authenticatedTenantHeaders();if(!isCurrent())return;if(current.Authorization!==headers.Authorization||current['x-tenant-id']!==result.tenantId){setMessage('A sessão ou empresa mudou. Confira sua participação na empresa.');return;}
    setInviteCode('');setMessage('Convite aceito como '+result.role+'.');router.replace('/empresa-inicio');
-  }catch{if(version===generation.current)setMessage('Falha de conexão. O código foi mantido; confira o resultado antes de tentar novamente.');}
-  finally{op.finish();if(version===generation.current){pending.current=false;setBusy(false);}}
+  }catch{if(isCurrent())setMessage('Falha de conexão. O código foi mantido; confira o resultado antes de tentar novamente.');}
+  finally{finish();}
  }
  async function revoke(id:string){
   const displayed=context.current;if(pending.current||!displayed||!canManage||!invitations.some(i=>i.id===id&&!i.acceptedAt&&!i.revokedAt))return;
