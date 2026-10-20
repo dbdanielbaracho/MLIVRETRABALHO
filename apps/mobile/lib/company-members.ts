@@ -5,7 +5,12 @@ export type Management={members:Result<Member>;invitations:Result<Invitation>};
 export type Request=(path:string,body?:Record<string,string>,method?:'POST')=>Promise<{ok:boolean;status?:number;json():Promise<unknown>}>;
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const nonempty=(x:unknown):x is string=>typeof x==='string'&&!!x.trim();
-const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(new Date(x).getTime());
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
 const optionalDate=(x:unknown)=>x==null||date(x);
 const member=(x:unknown):x is Member=>record(x)&&nonempty(x.identityId)&&typeof x.email==='string'&&typeof x.role==='string'&&date(x.createdAt)&&optionalDate(x.deactivatedAt);
 const invitation=(x:unknown):x is Invitation=>record(x)&&nonempty(x.id)&&typeof x.email==='string'&&typeof x.role==='string'&&date(x.expiresAt)&&optionalDate(x.acceptedAt)&&optionalDate(x.revokedAt);

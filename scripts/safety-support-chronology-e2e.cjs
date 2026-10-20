@@ -106,6 +106,79 @@ async function main(){
   assert.deepEqual(loaded.cases.data.map(x=>x.id),[fixtures[1].case,fixtures[0].case]);
   assert.deepEqual(loaded.appeals.data.map(x=>x.id),[fixtures[1].appeal,fixtures[0].appeal]);
   console.log('SAFETY_CHRONOLOGY_PASS three real ordered reads, overdue-first preserved, actor/tenant isolation, immutable events and runtime grants unchanged, actual JSON through unchanged mobile safety loader; not Android/physical/provider evidence');
+
+  // Independent actual mobile client/API/storage cases after ALL original assertions.
+  // Response loss is a defined fixture; no browser gate, old assertion or deadline changes.
+  const beforeClient=await snapshot();
+  const bindClient=async(record,ack)=>{
+   const bound=(await db.query('SELECT id,created_at AS "createdAt",request_payload_hash AS "requestHash" FROM support_cases WHERE id=$1 AND tenant_id=$2 AND reporter_identity_id=$3 AND assignment_id=$4 AND request_key=$5 AND category=$6 AND priority=$7 AND description=$8 AND status=$9',[ack.id,record.tenantId,record.reporterIdentityId,record.payload.assignmentId,record.requestKey,record.payload.category,record.payload.priority,record.payload.description,ack.status])).rows;
+   assert.equal(bound.length,1);assert.ok(bound[0].createdAt instanceof Date);assert.match(bound[0].requestHash,/^[0-9a-f]{64}$/);
+   assert.equal(bound[0].createdAt.toISOString(),new Date(ack.createdAt).toISOString());
+   return {rows:1,dateObject:true};
+  };
+  const {verifySupportClient}=require('./mobile-support-client-http-e2e.cjs');
+  const verified=await verifySupportClient({identityId:pro.identity,tenantId:fixtures[0].tenant,assignmentId:fixtures[0].assignment,token:pro.token,description:'Own client support '+stamp,witnessLost:async({record,ack})=>{
+   assert.equal(record.phase,'pending');
+   return bindClient(record,ack);
+  }});
+  const afterClient=await snapshot(),records=verified.records;
+  assert.equal(new Set(records.map(r=>r.requestKey)).size,2);assert.equal(new Set(records.map(r=>r.acknowledgement.id)).size,2);
+  for(const table of tables){
+   if(table==='support_cases'){
+    assert.equal(afterClient[table].length,beforeClient[table].length+2);
+    for(const row of beforeClient[table])assert.deepEqual(afterClient[table].find(x=>x.id===row.id),row);
+    const added=afterClient[table].filter(x=>!beforeClient[table].some(y=>y.id===x.id));
+    assert.deepEqual(added.map(x=>x.id).sort(),records.map(r=>r.acknowledgement.id).sort());
+   }else assert.deepEqual(afterClient[table],beforeClient[table]);
+  }
+  for(const record of records)await bindClient(record,record.acknowledgement);
+  assert.deepEqual(await security(),beforeSecurity);
+  await call('/v1/support-cases/mine',{token:outsider.token,tenant:fixtures[0].tenant,status:401});
+  console.log('MOBILE_SUPPORT_CLIENT_HTTP_PG_PASS '+JSON.stringify({actualClient:true,actualHTTP:true,actualPGDates:true,normalCasePOSTs:1,lostResponseCasePOSTs:1,explicitPendingRetryPOSTs:1,preparationPOSTs:2,caseRowsAdded:2,committedRowWitnessBeforeRetry:true,restartRecovered:true,noImplicitPOST:true,explicitLocalRelease:true,oldFiveTableRowsUnchanged:true,policiesACLUnchanged:true,storageFixture:'in_memory',nativeUI:false,caseIds:records.map(r=>r.acknowledgement.id)}));
+
+  // Independent read/invitation client journey; all prior chronology and lost-ACK gates remain.
+  const beforeMemberRead=await snapshot();
+  const extraSnapshot=async()=>({
+   invitations:(await db.query('SELECT * FROM company_member_invitations WHERE tenant_id=ANY($1::uuid[]) ORDER BY id',[fixtures.map(f=>f.tenant)])).rows,
+   memberships:(await db.query('SELECT * FROM tenant_memberships WHERE tenant_id=ANY($1::uuid[]) ORDER BY tenant_id,identity_id',[fixtures.map(f=>f.tenant)])).rows,
+   assignments:(await db.query('SELECT * FROM work_assignments WHERE tenant_id=ANY($1::uuid[]) ORDER BY id',[fixtures.map(f=>f.tenant)])).rows
+  });
+  const extraSecurity=async()=>({
+   classes:(await db.query('SELECT relname,relrowsecurity,relforcerowsecurity,relacl::text FROM pg_class WHERE oid=ANY($1::regclass[]) ORDER BY relname',[['company_member_invitations','tenant_memberships','work_assignments']])).rows,
+   policies:(await db.query('SELECT * FROM pg_policies WHERE schemaname=\'public\' AND tablename=ANY($1::text[]) ORDER BY tablename,policyname',[['company_member_invitations','tenant_memberships','work_assignments']])).rows
+  });
+  const memberBefore=await extraSnapshot(),memberSecurityBefore=await extraSecurity(),{createHash}=require('node:crypto');
+  const {verifyMemberReads}=require('./mobile-member-read-http-e2e.cjs');
+  const memberResult=await verifyMemberReads({
+   tenantId:fixtures[0].tenant,ownerIdentity:companies[0].identity,otherOwnerIdentity:companies[1].identity,
+   ownerToken:companies[0].token,otherOwnerToken:companies[1].token,professionalToken:pro.token,outsiderToken:outsider.token,
+   assignmentId:fixtures[0].assignment,otherAssignmentId:fixtures[1].assignment,email:'member-read-'+stamp+'@example.test',
+   expectedAssignedSupportIds:beforeMemberRead.support_cases.filter(x=>x.tenant_id===fixtures[0].tenant&&x.reporter_identity_id===pro.identity&&x.assignment_id===fixtures[0].assignment).map(x=>x.id),
+   expectedGeneralSupportIds:[recent.id],
+   witnessInvitation:async({invitation,inviteCode,phase})=>{
+    const rows=(await db.query('SELECT * FROM company_member_invitations WHERE id=$1 AND tenant_id=$2 AND email=$3 AND role=$4 AND invited_by_identity_id=$5',[invitation.id,fixtures[0].tenant,invitation.email,'manager',companies[0].identity])).rows;
+    assert.equal(rows.length,1);const row=rows[0];
+    assert.ok(row.expires_at instanceof Date);assert.equal(row.expires_at.toISOString(),invitation.expiresAt);
+    assert.equal(row.token_hash,createHash('sha256').update(inviteCode).digest('hex'));assert.equal(row.accepted_at,null);
+    if(phase==='created')assert.equal(row.revoked_at,null);else{assert.ok(row.revoked_at instanceof Date);assert.equal(row.revoked_at.toISOString(),invitation.revokedAt);}
+   }
+  });
+  assert.deepEqual(await snapshot(),beforeMemberRead);assert.deepEqual(await security(),beforeSecurity);assert.deepEqual(await extraSecurity(),memberSecurityBefore);
+  const memberAfter=await extraSnapshot();
+  assert.deepEqual(memberAfter.memberships,memberBefore.memberships);assert.deepEqual(memberAfter.assignments,memberBefore.assignments);
+  assert.equal(memberAfter.invitations.length,memberBefore.invitations.length+1);
+  for(const row of memberBefore.invitations)assert.deepEqual(memberAfter.invitations.find(x=>x.id===row.id),row);
+  assert.deepEqual(memberAfter.invitations.filter(x=>!memberBefore.invitations.some(y=>y.id===x.id)).map(x=>x.id),[memberResult.invitationId]);
+  for(const support of [...memberResult.assigned,...memberResult.general]){
+   const row=beforeMemberRead.support_cases.find(x=>x.id===support.id);
+   assert.ok(row&&row.created_at instanceof Date);assert.equal(row.tenant_id,fixtures[0].tenant);assert.equal(row.reporter_identity_id,pro.identity);
+   assert.equal(row.created_at.toISOString(),support.createdAt);
+   for(const key of ['category','priority','status','description'])assert.equal(row[key],support[key]);
+  }
+  const jobTimes=(await db.query('SELECT j.starts_at AS starts,j.ends_at AS ends FROM work_assignments wa JOIN company_jobs j ON j.id=wa.job_id AND j.tenant_id=wa.tenant_id WHERE wa.tenant_id=$1 AND wa.id=$2',[fixtures[0].tenant,fixtures[0].assignment])).rows;
+  assert.equal(jobTimes.length,1);assert.ok(jobTimes[0].starts instanceof Date&&jobTimes[0].ends instanceof Date);
+  assert.equal(jobTimes[0].starts.toISOString(),memberResult.assignment.startsAt);assert.equal(jobTimes[0].ends.toISOString(),memberResult.assignment.endsAt);
+  console.log('MOBILE_MEMBER_SUPPORT_READ_HTTP_PG_PASS '+JSON.stringify({actualClient:true,actualHTTP:true,actualPGDates:true,inviteCreatedAndRevoked:true,caseReads:memberResult.assigned.length+memberResult.general.length,ownerOnly403:2,crossTenant401:4,getRequests:16,postRequests:2,membershipsUnchanged:true,oldFiveTablesUnchanged:true,assignmentsUnchanged:true,policiesACLUnchanged:true,nativeUI:false,invitationId:memberResult.invitationId}));
  }finally{await db.end();}
 }
 if(require.main===module)main().catch(error=>{console.error('SAFETY_CHRONOLOGY_FAIL '+error.message);process.exitCode=1;});
