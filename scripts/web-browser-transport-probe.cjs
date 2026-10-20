@@ -8,6 +8,7 @@ const {join}=require('node:path');
 const {randomUUID,createHash}=require('node:crypto');
 const {createLifecycleTrace}=require('./web-browser-lifecycle-trace.cjs');
 const lifecycleTrace=createLifecycleTrace();
+const {createNetLogTrace}=require('./web-browser-netlog-trace.cjs');
 function diagnosticConfiguration(value='instrumented'){
  const cases={baseline:{native:false,log:false},'log-only':{native:false,log:true},'native-only':{native:true,log:false},instrumented:{native:true,log:true}};
  assert.ok(Object.prototype.hasOwnProperty.call(cases,value),'Unknown browser diagnostic case');
@@ -35,6 +36,7 @@ const api=new URL(process.env.BROWSER_API_URL||'http://127.0.0.1:3002');
 const web=new URL(process.env.BROWSER_WEB_URL||'http://127.0.0.1:3001');
 for(const u of [api,web])assert.ok(u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)&&u.port&&u.pathname==='/'&&!u.username&&!u.password,'Local disposable origins required');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const netLogTrace=createNetLogTrace({apiOrigin:api.origin});
 const readPaths=['/v1/company/dashboard','/v1/company/analytics','/v1/company/planner','/v1/company/jobs','/v1/company/dashboard/assignments','/v1/company/dashboard/completed','/v1/company/teams','/v1/company/replacements','/v1/company/talent-pools','/v1/company/payment-events/reconciliation','/v1/company/safety-cases','/v1/company/safety-appeals'];
 function requireLoopbackDocument(rows){
  const row=rows.find(x=>x.path==='/__mlivre_transport_fixture.html');
@@ -181,6 +183,7 @@ async function capture(label){
  ws.addEventListener('message',event=>{
   const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);if(m.error){const error=Error('CDP command failed');error.code=m.error.code;error.protocolMessage=m.error.message;p.reject(error);}else p.resolve(m.result);}return;}
   lifecycleTrace.observe(m,sessionId);
+  netLogTrace.observe(m);
   if(m.method==='Runtime.bindingCalled'&&m.params.name==='mlivreFixtureFetchTrace')networkEvents.push(JSON.parse(m.params.payload));
   if(m.method==='Log.entryAdded'&&m.params.entry.source==='network')networkEvents.push({event:'browser-network-log',at:m.params.entry.timestamp,level:m.params.entry.level,text:m.params.entry.text.replace(/https?:\/\/[^\s'"<>]+/g,text=>{try{const u=new URL(text);return u.origin+u.pathname;}catch{return'[url omitted]';}}).replace(/Bearer\s+[^\s'"<>]+/gi,'Bearer [redacted]'),networkRequestId:m.params.entry.networkRequestId});
   if(m.method==='Network.requestWillBeSentExtraInfo'&&m.params.clientSecurityState){
@@ -206,6 +209,7 @@ async function capture(label){
   if(m.method==='Network.responseReceived'){const u=new URL(m.params.response.url);if(u.origin===web.origin&&m.params.type==='Document')documentResponses.push({path:u.pathname,status:m.params.response.status,remoteIPAddress:m.params.response.remoteIPAddress,fromDiskCache:!!m.params.response.fromDiskCache,fromServiceWorker:!!m.params.response.fromServiceWorker});if(u.origin===api.origin){const h=m.params.response.headers;responses.push({path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId)});networkEvents.push({event:'response',id:m.params.requestId,path:u.pathname,status:m.params.response.status,method:requestMethods.get(m.params.requestId),corsHeaders:Object.fromEntries(Object.entries(h).filter(([key])=>/^access-control-/i.test(key)))});}}
  });
  const version=await cdp('Browser.getVersion',{},false);console.log('WEB_BROWSER_VERSION '+JSON.stringify({scenario,diagnostic:diagnostic.mode,continuation,product:version.product,protocolVersion:version.protocolVersion,jsVersion:version.jsVersion,revision:version.revision}));
+ await netLogTrace.start(cdp);
  const target=await cdp('Target.createTarget',{url:'about:blank'},false);sessionId=(await cdp('Target.attachToTarget',{targetId:target.targetId,flatten:true},false)).sessionId;
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
  await cdp('Page.setLifecycleEventsEnabled',{enabled:true});
@@ -303,6 +307,8 @@ async function capture(label){
  }
  process.exitCode=1;
 }).finally(async()=>{
+ try{await netLogTrace.stop(cdp);}catch{console.error('WEB_BROWSER_NETLOG_CAPTURE_FAILED');process.exitCode=1;}
+ console.log('WEB_BROWSER_NETLOG_DIAGNOSTIC '+JSON.stringify({scenario,diagnostic:diagnostic.mode,continuation,...netLogTrace.snapshot()}));
  console.log('WEB_BROWSER_LIFECYCLE_DIAGNOSTIC '+JSON.stringify({scenario,diagnostic:diagnostic.mode,continuation,...lifecycleTrace.snapshot()}));
  for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('Browser closing'));}pending.clear();if(ws)ws.close();if(chrome){chrome.kill('SIGTERM');}
 });
