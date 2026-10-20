@@ -20,7 +20,7 @@ const stamp=Date.now()+'-'+randomUUID().slice(0,8);
 let chrome,ws,sessionId,commandId=0,networkViolation;
 const pending=new Map(),responses=[],captures=[];
 const requestMethods=new Map(),apiPostRequests=[];let teamReadFault=null;
-const requestMetadata=new Map(),readFailures=[];
+const requestMetadata=new Map(),readFailures=[];let continuationFailureReported=false;
 function waitForBrowserEndpoint(child,profile,onDiagnostic,options={}){
  const clock=options.clock||{setTimeout,clearTimeout,now:Date.now};
  const readPort=options.readPort||(()=>readFileSync(join(profile,'DevToolsActivePort'),'utf8'));
@@ -96,11 +96,11 @@ async function capture(label){
  const binary=process.env.CHROME_BIN||['google-chrome','google-chrome-stable','chromium','chromium-browser'].find(p=>spawnSync('which',[p],{stdio:'ignore'}).status===0);
  assert.ok(binary,'Installed browser required; no skipped UI evidence');
  const profile=mkdtempSync(join(tmpdir(),'mlivre-web-browser-'));
- chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
+ chrome=spawn(binary,['--headless=new','--disable-background-networking','--disable-component-update','--disable-dev-shm-usage','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
  const endpoint=await waitForBrowserEndpoint(chrome,profile,details=>console.error('WEB_BROWSER_STARTUP_DIAGNOSTIC '+JSON.stringify(details)));
  ws=new WebSocket(endpoint);await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',()=>reject(Error('Debugger connection failed')),{once:true});});
  ws.addEventListener('message',event=>{
-  const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error('CDP command failed')):p.resolve(m.result);}return;}
+  const m=JSON.parse(String(event.data));if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);if(m.error){const error=Error('CDP command failed');error.code=Number.isSafeInteger(m.error.code)?m.error.code:null;p.reject(error);}else p.resolve(m.result);}return;}
   if(m.method==='Fetch.requestPaused'){
    const u=new URL(m.params.request.url),allowed=['data:','about:','blob:'].includes(u.protocol)||[api.origin,web.origin].includes(u.origin);
    if(!allowed)networkViolation='Non-local application request blocked: '+u.origin;
@@ -108,7 +108,10 @@ async function capture(label){
     if(teamReadFault.requestId)networkViolation='Unexpected duplicate teams read during single fault fixture';
     teamReadFault.requestId=m.params.requestId;return;
    }
-   cdp(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:m.params.requestId,...(!allowed?{errorReason:'BlockedByClient'}:{})}).catch(()=>{});
+   cdp(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:m.params.requestId,...(!allowed?{errorReason:'BlockedByClient'}:{})}).catch(error=>{
+    networkViolation||='CDP guarded request continuation failed';
+    if(!continuationFailureReported){continuationFailureReported=true;console.error('WEB_BROWSER_CDP_CONTINUATION_FAILURE',JSON.stringify({command:allowed?'Fetch.continueRequest':'Fetch.failRequest',method:['GET','POST','PUT','PATCH','DELETE','HEAD','OPTIONS'].includes(m.params.request.method)?m.params.request.method:'[other]',code:Number.isSafeInteger(error?.code)?error.code:null}));}
+   });
   }
   if(m.method==='Network.requestWillBeSent'){
    requestMethods.set(m.params.requestId,m.params.request.method);

@@ -8,14 +8,15 @@ export type MatchResult={status:'ready';data:Recommendation}|{status:'empty'|'er
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const uuid=(x:unknown):x is string=>typeof x==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x);
 const text=(x:unknown)=>x==null||typeof x==='string';
-const date=(value:unknown):value is string=>{
- if(typeof value!=='string')return false;
- const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+const date=(x:unknown)=>{
+ if(x==null)return true;
+ if(typeof x!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(x);
+ if(!match)return false;
  const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
- return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(x).getTime());
 };
-const optionalDate=(x:unknown)=>x==null||date(x);
-const validAssignment=(x:unknown):x is Assignment=>record(x)&&uuid(x.id)&&typeof x.status==='string'&&['confirmed','checked_in','in_progress','checked_out'].includes(x.status)&&typeof x.title==='string'&&typeof x.professionalName==='string'&&typeof x.replacementOpen==='boolean'&&text(x.location)&&optionalDate(x.startsAt)&&optionalDate(x.endsAt);
+const validAssignment=(x:unknown):x is Assignment=>record(x)&&uuid(x.id)&&typeof x.status==='string'&&['confirmed','checked_in','in_progress','checked_out'].includes(x.status)&&typeof x.title==='string'&&typeof x.professionalName==='string'&&typeof x.replacementOpen==='boolean'&&text(x.location)&&date(x.startsAt)&&date(x.endsAt);
 const validReplacement=(x:unknown):x is Replacement=>record(x)&&uuid(x.id)&&uuid(x.assignmentId)&&typeof x.status==='string'&&['open','matched','resolved','cancelled'].includes(x.status)&&text(x.reason);
 async function read<T>(request:Request,path:string,valid:(x:unknown)=>x is T):Promise<Result<T>>{try{const r=await request(path,'GET');if(!r.ok)return {status:'error',forbidden:r.status===403};const d:unknown=await r.json();return Array.isArray(d)&&d.every(valid)?{status:'ready',data:d}:{status:'error'};}catch{return {status:'error'};}}
 export const loadingReplacements=():ReplacementData=>({assignments:{status:'loading'},replacements:{status:'loading'}});
