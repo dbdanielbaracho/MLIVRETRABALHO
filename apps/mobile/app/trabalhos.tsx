@@ -11,6 +11,7 @@ export default function Trabalhos(){
  const [result,setResult]=useState<JobsState>({status:'loading'}),[retry,setRetry]=useState(0),[message,setMessage]=useState(''),[query,setQuery]=useState(''),[category,setCategory]=useState('Todos');
  const pendingInterests=useRef(new Set<string>()),[pendingIds,setPendingIds]=useState<string[]>([]);
  const generation=useRef(0),controllers=useRef(new Set<AbortController>()),displayedAuthorization=useRef<string|null>(null);
+ const interestControllers=useRef(new Map<string,AbortController>());
  const categories=['Todos','Eventos','Atendimento','Limpeza'];
  const jobs=result.status==='ready'?result.data:[],loading=result.status==='loading',loadError=result.status==='error';
  const visibleJobs=jobs.filter(j=>{const matchText=`${j.title} ${j.location??''} ${j.workCity??''}`.toLocaleLowerCase('pt-BR').includes(query.trim().toLocaleLowerCase('pt-BR'));const matchCategory=category==='Todos'||j.title.toLocaleLowerCase('pt-BR').includes(category.toLocaleLowerCase('pt-BR'));return matchText&&matchCategory;});
@@ -18,21 +19,24 @@ export default function Trabalhos(){
   const version=++generation.current,controller=new AbortController();controllers.current.add(controller);
   const timer=setTimeout(()=>{controller.abort();if(version===generation.current){displayedAuthorization.current=null;setResult({status:'error'});}},15000);displayedAuthorization.current=null;setResult({status:'loading'});setMessage('');
   void runForSession(authHeaders,headers=>loadJobs(path=>fetch(apiUrl(path),{headers,signal:controller.signal})),()=>version===generation.current&&!controller.signal.aborted).then(next=>{if(version!==generation.current||controller.signal.aborted)return;if(next.status==='ready'){setResult(next.data);displayedAuthorization.current=next.data.status==='ready'?next.authorization:null;}else setResult({status:'error'});}).finally(()=>{clearTimeout(timer);controllers.current.delete(controller);});
-  return ()=>{++generation.current;clearTimeout(timer);for(const c of controllers.current)c.abort();controllers.current.clear();displayedAuthorization.current=null;pendingInterests.current.clear();setPendingIds([]);};
+  return ()=>{++generation.current;clearTimeout(timer);for(const c of controllers.current)c.abort();controllers.current.clear();interestControllers.current.clear();displayedAuthorization.current=null;pendingInterests.current.clear();setPendingIds([]);};
  },[retry]));
  async function interest(id:string){
   const authorization=displayedAuthorization.current;
   if(!authorization||result.status!=='ready'||!result.data.some(job=>job.id===id)||pendingInterests.current.has(id))return;
   pendingInterests.current.add(id);setPendingIds([...pendingInterests.current]);
-  const version=generation.current,controller=new AbortController();controllers.current.add(controller);const timer=setTimeout(()=>controller.abort(),15000);
+  const version=generation.current,controller=new AbortController();controllers.current.add(controller);interestControllers.current.set(id,controller);
+  const owns=()=>version===generation.current&&interestControllers.current.get(id)===controller;
+  const current=()=>owns()&&!controller.signal.aborted&&displayedAuthorization.current===authorization;
+  const finish=()=>{clearTimeout(timer);controllers.current.delete(controller);if(!owns())return;interestControllers.current.delete(id);pendingInterests.current.delete(id);setPendingIds([...pendingInterests.current]);};
+  const timer=setTimeout(()=>{const active=current();controller.abort();if(active){displayedAuthorization.current=null;setResult({status:'error'});setMessage('Não foi possível confirmar o resultado na sessão atual. Atualize trabalhos antes de tentar novamente.');}finish();},15000);
   try{
-   const state=await runForSession(authHeaders,headers=>sendInterest((path,method)=>fetch(apiUrl(path),{method,headers,signal:controller.signal}),id),()=>version===generation.current&&!controller.signal.aborted,authorization);
-   if(version!==generation.current)return;
+   const state=await runForSession(authHeaders,headers=>sendInterest((path,method)=>fetch(apiUrl(path),{method,headers,signal:controller.signal}),id),current,authorization);
+   if(!current())return;
    if(state.status!=='ready'){displayedAuthorization.current=null;setResult({status:'error'});setMessage('Não foi possível confirmar o resultado na sessão atual. Atualize trabalhos antes de tentar novamente.');return;}
    setMessage(state.data==='confirmed'?'Você já está confirmado neste trabalho. Confira sua agenda.':state.data==='interested'?'Interesse enviado':'Não foi possível confirmar o envio do interesse. Confira seus trabalhos antes de tentar novamente.');
   }finally{
-   clearTimeout(timer);controllers.current.delete(controller);
-   if(version===generation.current){pendingInterests.current.delete(id);setPendingIds([...pendingInterests.current]);}
+   finish();
   }
  }
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}><Text style={s.title}>Trabalhos</Text><View style={s.search}><TextInput style={s.searchText} value={query} onChangeText={setQuery} placeholder="Buscar trabalhos ou locais" accessibilityLabel="Buscar trabalhos ou locais"/><Pressable accessibilityLabel="Limpar filtros" onPress={()=>{setQuery('');setCategory('Todos');}}><Text style={s.filter}>☷</Text></Pressable></View><View style={s.chips}>{categories.map(item=><Pressable key={item} onPress={()=>setCategory(item)} accessibilityRole="button" accessibilityState={{selected:category===item}}><Text style={[s.chip,category===item&&s.chipActive]}>{item}</Text></Pressable>)}</View>{loading?<Text style={s.message}>Carregando trabalhos...</Text>:null}{loadError?<Pressable accessibilityRole="button" onPress={()=>setRetry(x=>x+1)}><Text style={s.message}>Não foi possível carregar trabalhos. Toque para tentar novamente.</Text></Pressable>:null}{!loading&&!loadError&&jobs.length===0?<View style={s.emptyCard}><Text style={s.emptyTitle}>Nenhum trabalho disponível agora</Text><Text style={s.meta}>Novas oportunidades aparecerão aqui quando publicadas.</Text></View>:null}{jobs.length>0&&visibleJobs.length===0?<Text style={s.message}>Nenhum trabalho corresponde aos filtros.</Text>:null}{visibleJobs.map(j=><View key={j.id} style={s.card}><View style={s.imagePlaceholder}><Text style={s.imageLabel}>▣</Text></View><View style={s.cardBody}><Text style={s.role}>{j.title}</Text><Text style={s.company}>{j.companyRatingCount&&j.companyAverageRating!=null?`Empresa · ${j.companyAverageRating.toFixed(1).replace('.',',')} ★`:'Empresa'}</Text><View style={s.details}><Text style={s.meta}>{j.location??j.workCity??'Local a confirmar'}</Text><Text style={s.pay}>{j.payCents!=null?'R$ '+(j.payCents/100).toFixed(2).replace('.',','):'Valor a confirmar'}</Text></View><Pressable style={s.button} accessibilityRole="button" disabled={pendingIds.includes(j.id)} accessibilityState={{disabled:pendingIds.includes(j.id),busy:pendingIds.includes(j.id)}} onPress={()=>void interest(j.id)}><Text style={s.action}>{pendingIds.includes(j.id)?'ENVIANDO...':'QUERO TRABALHAR'}</Text></Pressable></View></View>)}{message?<Text style={s.message}>{message}</Text>:null}</ScrollView><ProfessionalNav/></SafeAreaView>}
