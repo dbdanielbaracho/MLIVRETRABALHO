@@ -5,10 +5,10 @@ const names=new Set(['CANCELLED','FAILED','REQUEST_ALIVE','URL_REQUEST_START_JOB
 const integer=x=>Number.isSafeInteger(x)?x:null;
 const number=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0?x:null;
 const traceId=x=>typeof x==='string'&&/^(?:0x)?[0-9a-fA-F]{1,32}$/.test(x)?x:integer(x);
-function createNetLogTrace({apiOrigin,maxEvents=8192,clock={setTimeout,clearTimeout}}={}){
+function createNetLogTrace({apiOrigin,maxEvents=128,clock={setTimeout,clearTimeout}}={}){
  const origin=new URL(apiOrigin);
  if(origin.protocol!=='http:'||!['127.0.0.1','localhost'].includes(origin.hostname)||!origin.port||origin.origin!==apiOrigin)throw Error('Disposable loopback API origin required');
- if(!Number.isSafeInteger(maxEvents)||maxEvents<1||maxEvents>65536)throw Error('Invalid NetLog event bound');
+ if(!Number.isSafeInteger(maxEvents)||maxEvents<1||maxEvents>128)throw Error('Invalid NetLog event bound');
  const events=[];let received=0,droppedEvents=0,started=false,completed=false,dataLossOccurred=null;
  let finish;const complete=new Promise(resolve=>{finish=resolve;});
  const config={transferMode:'ReportEvents',traceConfig:{recordMode:'recordContinuously',traceBufferSizeInKb:16384,includedCategories:['netlog'],excludedCategories:['*']}};

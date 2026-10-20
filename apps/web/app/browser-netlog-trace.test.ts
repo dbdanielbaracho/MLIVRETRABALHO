@@ -60,3 +60,13 @@ test('NetLog integration preserves the existing guarded dispatcher and sticky tw
  assert.match(shell,/for browser_continuation in concurrent serial/);
  assert.match(shell,/node scripts\/web-browser-journey-e2e.cjs/);
 });
+
+test('default and maximum NetLog export remain below 64 KiB for a large explicit trace fixture, reporting every discarded row',()=>{
+ for(const options of [{},{maxEvents:128}]){
+  const t=createNetLogTrace({apiOrigin,...options});
+  for(let n=0;n<8192;n++)t.observe(batch({cat:'netlog',name:'URL_REQUEST_DELEGATE_RESPONSE_STARTED',ph:'b',id2:{local:'0x'+'f'.repeat(32)},pid:2147483647,tid:2147483647,ts:9999999999999,args:{params:{net_error:-3,url:apiOrigin+'/v1/company/payment-events/reconciliation',method:'OPTIONS',source_dependency:{id:2147483647,type:2147483647}}}}));
+  const s=t.snapshot();assert.equal(s.received,8192);assert.equal(s.events.length,128);assert.equal(s.droppedEvents,8064);
+  assert.ok(Buffer.byteLength(JSON.stringify(s),'utf8')<=65536,'Diagnostic metadata export must fit the 64 KiB per-case budget');
+ }
+ assert.throws(()=>createNetLogTrace({apiOrigin,maxEvents:129}),/bound/);
+});
