@@ -19756,3 +19756,36 @@ O fixture é limitado ao banco descartável local `mlivretrabalho_http` e origem
 Este HEAD muda cliente mobile e o journey HTTP. Exige CI completo próprio e APK standalone próprio SUCCESS, revisão fresh de main/base/head/tree/diff, merge único e depois CI e APK literais pós-merge. Nenhum verde histórico do #560, #581, da base ou de outro PR será emprestado. Só após todos os gates e crosswalk completo a Área 9 poderá ser formalmente aceita por novo apêndice.
 
 Preservados React 19.1.4, React Native 0.81.6, lockfile, SQL de produto, RLS, ACL, LGPD, credenciais, CORS, Fetch guard, CDP, sandbox, LNA, prazos e assertivas. Sem produção, Railway/Neon, custos, PSP, contratos, dinheiro real, root, grants ou desativação de RLS. Provedor/push externo, aparelho físico, SecureStore nativo, renderização RN física e pentest independente permanecem fora deste candidato interno.
+
+
+---
+
+## ACEITE TÉCNICO INTERNO — Área 9: conversa e notificações — 21/10/2026
+
+**APROVADA tecnicamente em ambiente interno no SHA `a3368c840ab5202ebf9f2f3f6d69295769150622`.** O assistente emite a decisão sob a delegação expressa do usuário, reiterada nesta conversa: “todos os aceites é voce que tem que fazer”. Não há espera por aceite humano interno. O estado formal passa a ser: **áreas 2, 3, 9 e 10 aceitas; nove áreas pendentes**. As demais áreas conservam seus critérios e estado.
+
+Este apêndice encerra o candidato do PR [#581](https://github.com/dbdanielbaracho/MLIVRETRABALHO/pull/581), integrado em `a3368c840ab5202ebf9f2f3f6d69295769150622`, árvore `cb7ed386481870990a22c8fa4d17df76da2d15b0`. A decisão completa, o crosswalk e os recibos estão em [CONVERSATION_NOTIFICATION_INTERNAL_ACCEPTANCE_2026-10-21.md](../evidencias/CONVERSATION_NOTIFICATION_INTERNAL_ACCEPTANCE_2026-10-21.md) (caminho canônico: `docs/evidencias/CONVERSATION_NOTIFICATION_INTERNAL_ACCEPTANCE_2026-10-21.md`).
+
+### Requisito → implementação → prova concluída
+
+- Conversa autenticada: envio e leitura reais, vínculo à alocação e ao tenant, rejeição de entradas inválidas e limite Unicode, concorrência de primeira mensagem sem duplicar a conversa. Cada envio explícito é uma nova mensagem; não se declara deduplicação universal de POST nem exactly-once.
+- Notificações internas: criação transacional de alerta junto à confirmação, mensagem ou substituição; leitura pelas caixas autorizadas de owner/manager/profissional; agregação de duas empresas e marcação como lida com timestamp idempotente e decremento único de unread-count.
+- Não-entrega simulada: cinco falhas deliberadas de INSERT retornam HTTP 500 e revertem a operação inteira, inclusive quando o segundo destinatário falha após os dois alertas ficarem pendentes. Os snapshots do tenant alvo e de outra empresa permanecem iguais, os hooks são removidos e RLS, políticas e grants não mudam.
+- ACK/duplicidade: confirmação repetida preserva uma alocação, membership e alerta; concorrência de confirmação e substituição mantém os invariantes; duas mensagens concorrentes correspondem a dois envios e dois alertas, em uma conversa. Replay da marcação de leitura conserva o timestamp.
+- Auditoria de outbox/entrega: o contrato interno auditado usa INSERT de `notifications` na mesma transação PostgreSQL do negócio e posterior leitura autenticada da caixa; não usa um dispatcher/outbox de transporte externo. A auditoria registra essa arquitetura e sua fronteira: o ACK observado é de persistência/caixa interna, e não comprovante de push, e-mail ou entrega por provedor. Nenhum mecanismo externo recebe PASS por inferência.
+- Cliente mobile: dezoito regressões dos handlers reais e helpers validam ownership do controller, prazo original de quinze segundos, ACK/reload, timers antigos, blur/foco e recuperação manual. Essas fixtures não equivalem a renderização RN física.
+
+### Gates no candidato e no merge literal
+
+HEAD candidato `d7d2eefac47192c344ca6818bc3fab5484842fb6`; merge sintético `fd4c8956b2eecfbe55dda17191b1504ada8fc69d`, mesma árvore candidata.
+
+- [CI próprio 39602948825](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39602948825), job119231801108, attempt1: SUCCESS; 1.905 testes (217 Web, 1.168 mobile, 506 API, 3 CLI, 11 monitor), zero fail/skip/cancel; typecheck/build/export/migrações/privacidade/jornada HTTP/PostgreSQL, matriz browser12/12, canônico e Production Truth aprovados.
+- [APK próprio 39602948797](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39602948797), job119231801149, attempt1: SUCCESS, instalação e DEVICE_SMOKE_OK sem Metro; ZIP e APK baixados e hashes conferidos no recibo.
+- [CI pós-merge 39604852308](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39604852308), job119238306202, attempt1: SUCCESS com checkout literal `a3368c840ab5202ebf9f2f3f6d69295769150622`, mesmos 1.905 testes e gates completos. `NOTIFICATION_ATOMICITY_PASS` às13:08:04.0425210Z; read/replay/duas empresas às13:10:12.7163169Z..8271551Z; matriz0/canônicoPASS às13:10:11.2745506Z; Production TruthPASS às13:11:25.6511318Z.
+- [APK pós-merge 39604852162](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39604852162), job119238304831, attempt1: SUCCESS, checkout literal do merge, DEVICE_SMOKE_OK às13:17:27.6238101Z sem Metro. Artefato12349315177: ZIP28.913.714 bytes/SHA256 `10d9d6488699b48299b01a4f99775f94b46b4b5f9ec23a95c7e7f7b5d4fa721c`; APK66.162.736 bytes/SHA256 `43c62622c671ae8f5030c8332d661fe934d04705e065fcde03c8860bbdf25799`. Bytes baixados e hashes recalculados; SUMS e BUILD_INFO literal conferem, release/pacote piloto/metro_required=false, bundle embarcado presente.
+
+### Limites e próximo passo
+
+O aceite é técnico/funcional interno da Área9. Push/provedor externo, transporte assíncrono/outbox externo, produção, aparelho físico, SecureStore nativo, renderização RN física, Visual Truth, pentest independente, PSP, contratos e dinheiro real não foram aprovados. A matriz original e todos os apêndices anteriores permanecem integralmente preservados. React19.1.4/RN0.81.6, lockfile, tenant/RLS, privacidade, autenticação e controles de navegador permanecem vigentes. A formalização é documental e exige CI próprio e pós-merge; APK N/A para a formalização por identidade dos insumos Android.
+
+Próxima jornada interna prioritária: Área6, ledger/pagamentos simulados, reconciliando os PRs #573 e #584 com a main atual e exigindo seus gates próprios; manter split teórico, rollback, reembolso e saldo negativo separados de PSP real. O PR #560 pode ser encerrado como consolidado após confirmar os blobs transacionais idênticos aos integrados pelo #581; branch/história devem ser preservados.
