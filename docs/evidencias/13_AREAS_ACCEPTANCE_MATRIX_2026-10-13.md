@@ -17151,28 +17151,75 @@ O novo HEAD exige CI completo próprio e APK standalone próprio, pois há alter
 Preservados React 19.1.4, RN 0.81.6, lockfile, SQL, RLS, ACL, LGPD, credenciais, CORS, Fetch guard, CDP, sandbox, LNA, deadlines e assertivas. Sem produção, Railway/Neon, custos, PSP, contratos, dinheiro real, root, grants ou desativação de RLS. O futuro aceite, se todos os gates passarem, será técnico/funcional interno; aparelho físico, SecureStore nativo, renderização completa RN, Visual Truth e pentest independente permanecem externos quando aplicáveis.
 
 
+---
+
+## ACEITE TÉCNICO INTERNO — Área 3: profissional, interesse, agenda, presença e avaliação — 21/10/2026
+
+### Decisão formal
+
+**APROVADA tecnicamente em ambiente interno no SHA `80f3ac49f5f7177d6a8d193a27881b74ffff4763`.**
+
+O aceite foi delegado expressamente pelo usuário e é emitido após a cadeia completa requisito → implementação → jornada integrada → CI do candidato → APK próprio → merge → CI e APK literais da `main`. A área 3 deixa de constar entre as pendentes. Permanecem aceitas as áreas 2, 3 e 10; **10 áreas continuam pendentes**. Nenhuma outra área é aprovada por associação.
+
+### Requisitos e implementação comprovados
+
+- profissional autenticado lê catálogo de trabalho, manifesta interesse, mantém disponibilidade/agenda e percorre presença `check-in → start → check-out → complete`;
+- perfil, disponibilidade, trabalho, presença, passaporte/cronologia, ganhos derivados e avaliação são vinculados à identidade, ao owner e ao tenant corretos; outsider e tenant forjado não recebem os dados;
+- confirmações concorrentes atravessam barreira PostgreSQL e produzem exatamente uma alocação e uma notificação; essa evidência comprova a consistência consumida pela jornada profissional, sem aceitar por arrasto a área 5 de matching/substituição;
+- avaliações bidirecionais, atualização idempotente e reputação compartilhada da empresa foram verificadas por HTTP/PostgreSQL;
+- `apps/mobile/app/trabalhos.tsx` aposenta imediatamente somente o controller READ cujo prazo original de 15 segundos expirou, antes de qualquer atualização de UI. Não há retry automático, POST automático, relaxamento de deadline nem cancelamento inventado no servidor;
+- nove regressões canônicas em `apps/mobile/tests/jobs-read-controller-cleanup.test.mjs` cobrem leitura vazia/catálogo, estágios assíncronos, timers antigos versus nova leitura/interesse e vinte leituras manuais, sem alterar os controles de autenticação;
+- React 19.1.4, React Native 0.81.6, lockfile, tenant/RLS, ACL, privacidade, CORS, Fetch guard, CDP, sandbox, LNA e assertivas permaneceram intactos.
+
+### CI e APK do candidato
+
+PR [#595](https://github.com/dbdanielbaracho/MLIVRETRABALHO/pull/595), HEAD `ae4609fb9dc990195e7d1af62a02654d192f17c8`, árvore `e551100db837e222e29c8bea679d3de970a2072f`. O CI usou o merge sintético `aec125c1185f5074c2f36b84b37ea4b73a60e593`, pais [`42ecc26cd36dce60cbee4fa419f139a2d0325414`, `ae4609fb9dc990195e7d1af62a02654d192f17c8`] e a mesma árvore candidata.
+
+- [CI 39524136533](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39524136533), job 118974720066, attempt 1: **SUCCESS**. Foram 1.882/1.882 testes — 217 Web, 1.150 mobile, 501 API, 3 CLI e 11 monitor — além de typecheck, build, export Android, migrações, privacidade, HTTP/PostgreSQL, 12/12 controles do navegador, jornada canônica e Production Truth.
+- Marcadores primários: `PROFESSIONAL_CHRONOLOGY_PASS`; concorrência com duas confirmações, uma alocação e uma notificação; avaliações bidirecionais; `WEB_BROWSER_DIAGNOSTIC_MATRIX_RESULT status=0`; `WEB_BROWSER_CURRENT_MAIN_CASE_RESULT PASS`; `Production Truth Gate ... PASS`.
+- [Standalone APK 39524136442](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39524136442), job 118974719103: **SUCCESS**; instalação e `DEVICE_SMOKE_OK` sem Metro. Artefato 12312855653, válido até 04/11/2026:
+  - ZIP 28.913.671 bytes, SHA-256 `e38471fe8773312014d81abb647b81968f86065e7ccee13aca5e0ae6fc5cb5e0`;
+  - APK 66.162.612 bytes, SHA-256 `428d4b9cbdee8bbaefbccdc4353179070c45d51516b93be0fca1e2f115751e6a`;
+  - `BUILD_INFO`: commit sintético `aec125c1185f5074c2f36b84b37ea4b73a60e593`, release, pacote `com.predibeacon.mlivretrabalho.pilot`, `metro_required=false`.
+- ZIP e APK foram baixados; os hashes foram recalculados e o hash do APK coincide com `SHA256SUMS.txt`.
+
+### Pós-merge literal
+
+Merge [`80f3ac49f5f7177d6a8d193a27881b74ffff4763`](https://github.com/dbdanielbaracho/MLIVRETRABALHO/commit/80f3ac49f5f7177d6a8d193a27881b74ffff4763), pais [`42ecc26cd36dce60cbee4fa419f139a2d0325414`, `ae4609fb9dc990195e7d1af62a02654d192f17c8`] e árvore `e551100db837e222e29c8bea679d3de970a2072f`.
+
+- [CI 39525571515](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39525571515), job 118979276410: checkout literal `80f3ac49f5f7177d6a8d193a27881b74ffff4763`, **SUCCESS**; os mesmos 1.882 testes e todos os gates de jornada profissional, navegador e Production Truth passaram.
+- [Standalone APK 39525571483](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39525571483), job 118979276273: checkout literal `80f3ac49f5f7177d6a8d193a27881b74ffff4763`, **SUCCESS**; instalação e `DEVICE_SMOKE_OK` sem Metro. Artefato 12313937759, válido até 04/11/2026:
+  - ZIP 28.913.661 bytes, SHA-256 `254d4ce6a53b72e7ff5b1a438336cedfb89b689995f5cfaad9b9750f6be09fc6`;
+  - APK 66.162.616 bytes, SHA-256 `a17a4c4ae3561c0c3a849c5c774d0bef3ee0564f1a94e381593c889ec0b642f9`;
+  - `BUILD_INFO`: commit literal `80f3ac49f5f7177d6a8d193a27881b74ffff4763`, release, pacote piloto, `metro_required=false`.
+- ZIP e APK pós-merge foram baixados e verificados independentemente; o hash do APK coincide com `SHA256SUMS.txt`.
+
+### Limites explícitos
+
+O aceite é técnico/funcional **interno** da área 3. Não declara aparelho físico, renderização completa RN em dispositivo físico, persistência SecureStore nativa, produção, Railway/Neon, pentest independente, PSP, contrato ou dinheiro real. O uso de alocação/notificação/ganhos como consequência observada não aceita integralmente as áreas 5, 6 ou 9. A intermitência histórica do Chrome não é declarada resolvida globalmente; os gates obrigatórios passaram no candidato e novamente no merge literal, sem mascaramento.
+
 
 ---
 
-## Candidato integral — Área 9: conversa e notificações — 2026-10-21T03:48-03:00
+## Candidato integral — Área 9: conversa e notificações — 2026-10-21T12:47Z
 
-Escopo exclusivo `dbdanielbaracho/MLIVRETRABALHO`. Este apêndice consolida os PRs históricos #581 e #560 no próprio PR #581, sem abrir frente duplicada. **Não declara aceite antecipado**: as áreas formalmente aceitas continuam sendo 2 e 10; a Área 3 tem produto integrado e validado, mas sua formalização #601 permanece bloqueada pelo gate do navegador.
+Escopo exclusivo `dbdanielbaracho/MLIVRETRABALHO`. Este apêndice reconcilia os PRs históricos #581 e #560 no próprio PR #581, sem abrir frente duplicada e sem declarar aceite antecipado. O estado formal preservado neste ponto é: áreas 2, 3 e 10 aprovadas tecnicamente internamente; dez áreas pendentes.
 
-Base material: main `80f3ac49f5f7177d6a8d193a27881b74ffff4763`, árvore `e551100db837e222e29c8bea679d3de970a2072f`. O pacote preserva integralmente o runtime atual e acrescenta apenas a correção de ownership já auditada em `apps/mobile/app/conversa.tsx`, suas 18 regressões canônicas, o fixture HTTP/PostgreSQL de atomicidade de notificações já auditado no #560 e uma chamada explícita desse fixture no journey obrigatório.
+Base material: main `0604cd0871d8bcd59c00f1768c7803190eb86e30`, árvore `eb0b2efd01cbf428da0a0ee59809c29e875b5f6d`. O pacote mantém o runtime atual, inclusive a instalação oficial do Chrome Stable e todos os controles de navegador, e acrescenta somente a correção de ownership já auditada em `apps/mobile/app/conversa.tsx`, suas dezoito regressões canônicas, o fixture HTTP/PostgreSQL de atomicidade de notificações já auditado no #560 e uma chamada explícita desse fixture no journey obrigatório.
 
-### Requisito → implementação → prova planejada no mesmo SHA
+### Requisito → implementação → prova exigida no mesmo SHA
 
-- Conversa mobile: o controller/timer próprio é retirado no prazo de 15 segundos antes do callback visível; blur retira apenas a referência do envio antigo. Endpoint, corpo, tenant, autorização, ACK sent/rejected/unknown, retry manual e deadline não mudam.
+- Conversa mobile: o controller/timer próprio é retirado no prazo de quinze segundos antes do callback visível; blur retira somente a referência do envio antigo. Endpoint, corpo, tenant, autorização, estados de ACK, retry manual e deadline permanecem inalterados.
 - ACK e duplicidade: confirmação e replay idêntico exigem uma única assignment, membership e notificação; mensagem confirmada é lida pela outra parte e o replay não cria novas linhas.
-- Entrega e não-entrega simulada: falha deliberada no INSERT de notificação retorna HTTP 500 e deve reverter integralmente confirmação, conversa nova/existente, segundo destinatário e substituição. Não há retry automático nem alegação de provedor externo.
+- Entrega e não-entrega simulada: falha deliberada no INSERT de notificação retorna HTTP 500 e deve reverter integralmente confirmação, conversa nova ou existente, segundo destinatário e substituição. Não há retry automático nem alegação de provedor externo.
 - Dois destinatários: owner e manager obtido pelo contrato real de convite recebem uma notificação cada; se o segundo INSERT falhar, a primeira notificação, a mensagem e o UPSERT também devem desaparecer.
-- Isolamento: snapshots completos do tenant alvo e de outra empresa são comparados antes/depois; `app_runtime` permanece sem superuser/bypass RLS e políticas/grants não mudam.
-- Cliente: as 18 regressões executam handlers reais pré-JSX e helpers reais, cobrindo auth/fetch/JSON/final-auth pendentes, leitura e envio, ACK seguido de reload, vinte leituras explícitas, timers antigos, novo foco e blur.
+- Isolamento: snapshots completos do tenant alvo e de outra empresa são comparados antes e depois; `app_runtime` permanece sem superuser ou bypass RLS e políticas/grants não mudam.
+- Cliente: as dezoito regressões executam handlers reais pré-JSX e helpers reais, cobrindo auth/fetch/JSON/final-auth pendentes, leitura e envio, ACK seguido de reload, vinte leituras explícitas, timers antigos, novo foco e blur.
 
-O fixture é limitado a banco descartável local `mlivretrabalho_http` e origem HTTP loopback, valida esses limites antes de conectar, cria trigger/função/sequência temporárias com nomes aleatórios, não concede privilégios, não desativa RLS e remove os próprios objetos no final.
+O fixture é limitado ao banco descartável local `mlivretrabalho_http` e origem HTTP loopback, valida esses limites antes de conectar, cria trigger, função e sequência temporários com nomes aleatórios, não concede privilégios, não desativa RLS e remove seus próprios objetos no final.
 
 ### Gates obrigatórios
 
-Este HEAD muda cliente mobile e o journey HTTP. Exige CI completo próprio e APK standalone próprio **SUCCESS**, revisão fresh de main/base/head/tree/diff, merge único e depois CI/APK literais pós-merge. Nenhum verde histórico do #560, #581, da base, do #595 ou do #601 será emprestado. Só após todos os gates e crosswalk completo a Área 9 poderá ser formalmente aceita por novo apêndice; o presente texto é candidato verificável.
+Este HEAD muda cliente mobile e o journey HTTP. Exige CI completo próprio e APK standalone próprio SUCCESS, revisão fresh de main/base/head/tree/diff, merge único e depois CI e APK literais pós-merge. Nenhum verde histórico do #560, #581, da base ou de outro PR será emprestado. Só após todos os gates e crosswalk completo a Área 9 poderá ser formalmente aceita por novo apêndice.
 
-Preservados React 19.1.4, React Native 0.81.6, lockfile, SQL de produto, RLS, ACL, LGPD, credenciais, CORS, Fetch guard, CDP, sandbox, LNA, prazos e assertivas. Sem produção, Railway/Neon, custos, PSP, contratos, dinheiro real, root, grants ou desativação de RLS. Provedor/push externo, aparelho físico, SecureStore nativo, renderização RN física e pentest independente continuam fora deste aceite interno.
+Preservados React 19.1.4, React Native 0.81.6, lockfile, SQL de produto, RLS, ACL, LGPD, credenciais, CORS, Fetch guard, CDP, sandbox, LNA, prazos e assertivas. Sem produção, Railway/Neon, custos, PSP, contratos, dinheiro real, root, grants ou desativação de RLS. Provedor/push externo, aparelho físico, SecureStore nativo, renderização RN física e pentest independente permanecem fora deste candidato interno.
