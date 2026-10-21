@@ -8,6 +8,12 @@ const categories=new Set(['schedule','payment','work_conditions','cancellation',
 const priorities=new Set(['normal','high','urgent']);
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const id=(v:unknown):v is string=>typeof v==='string'&&uuid.test(v);
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
 export function supportPayload(value:unknown):SupportPayload|null{
  if(!object(value))return null;
  const description=typeof value.description==='string'?value.description.trim():'',priority=value.priority??'normal';
@@ -16,7 +22,7 @@ export function supportPayload(value:unknown):SupportPayload|null{
  return {assignmentId:typeof value.assignmentId==='string'?value.assignmentId.toLowerCase():null,category:value.category,description,priority};
 }
 export function supportAcknowledgement(value:unknown,payload:SupportPayload):SupportAcknowledgement|null{
- if(!object(value)||!id(value.id)||value.category!==payload.category||value.priority!==payload.priority||typeof value.status!=='string'||!value.status.trim()||typeof value.createdAt!=='string'||!Number.isFinite(new Date(value.createdAt).getTime()))return null;
+ if(!object(value)||!id(value.id)||value.category!==payload.category||value.priority!==payload.priority||typeof value.status!=='string'||!value.status.trim()||!date(value.createdAt))return null;
  return {id:value.id.toLowerCase(),category:payload.category,priority:payload.priority,status:value.status,createdAt:value.createdAt};
 }
 export function pendingSupportIntent(reporterIdentityId:unknown,tenantId:unknown,requestKey:unknown,value:unknown):SupportIntent|null{
