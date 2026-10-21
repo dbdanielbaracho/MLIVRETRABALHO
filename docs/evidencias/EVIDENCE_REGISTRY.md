@@ -19730,3 +19730,29 @@ Merge [`80f3ac49f5f7177d6a8d193a27881b74ffff4763`](https://github.com/dbdanielba
 ### Limites explícitos
 
 O aceite é técnico/funcional **interno** da área 3. Não declara aparelho físico, renderização completa RN em dispositivo físico, persistência SecureStore nativa, produção, Railway/Neon, pentest independente, PSP, contrato ou dinheiro real. O uso de alocação/notificação/ganhos como consequência observada não aceita integralmente as áreas 5, 6 ou 9. A intermitência histórica do Chrome não é declarada resolvida globalmente; os gates obrigatórios passaram no candidato e novamente no merge literal, sem mascaramento.
+
+
+---
+
+## Candidato integral — Área 9: conversa e notificações — 2026-10-21T12:47Z
+
+Escopo exclusivo `dbdanielbaracho/MLIVRETRABALHO`. Este apêndice reconcilia os PRs históricos #581 e #560 no próprio PR #581, sem abrir frente duplicada e sem declarar aceite antecipado. O estado formal preservado neste ponto é: áreas 2, 3 e 10 aprovadas tecnicamente internamente; dez áreas pendentes.
+
+Base material: main `0604cd0871d8bcd59c00f1768c7803190eb86e30`, árvore `eb0b2efd01cbf428da0a0ee59809c29e875b5f6d`. O pacote mantém o runtime atual, inclusive a instalação oficial do Chrome Stable e todos os controles de navegador, e acrescenta somente a correção de ownership já auditada em `apps/mobile/app/conversa.tsx`, suas dezoito regressões canônicas, o fixture HTTP/PostgreSQL de atomicidade de notificações já auditado no #560 e uma chamada explícita desse fixture no journey obrigatório.
+
+### Requisito → implementação → prova exigida no mesmo SHA
+
+- Conversa mobile: o controller/timer próprio é retirado no prazo de quinze segundos antes do callback visível; blur retira somente a referência do envio antigo. Endpoint, corpo, tenant, autorização, estados de ACK, retry manual e deadline permanecem inalterados.
+- ACK e duplicidade: confirmação e replay idêntico exigem uma única assignment, membership e notificação; mensagem confirmada é lida pela outra parte e o replay não cria novas linhas.
+- Entrega e não-entrega simulada: falha deliberada no INSERT de notificação retorna HTTP 500 e deve reverter integralmente confirmação, conversa nova ou existente, segundo destinatário e substituição. Não há retry automático nem alegação de provedor externo.
+- Dois destinatários: owner e manager obtido pelo contrato real de convite recebem uma notificação cada; se o segundo INSERT falhar, a primeira notificação, a mensagem e o UPSERT também devem desaparecer.
+- Isolamento: snapshots completos do tenant alvo e de outra empresa são comparados antes e depois; `app_runtime` permanece sem superuser ou bypass RLS e políticas/grants não mudam.
+- Cliente: as dezoito regressões executam handlers reais pré-JSX e helpers reais, cobrindo auth/fetch/JSON/final-auth pendentes, leitura e envio, ACK seguido de reload, vinte leituras explícitas, timers antigos, novo foco e blur.
+
+O fixture é limitado ao banco descartável local `mlivretrabalho_http` e origem HTTP loopback, valida esses limites antes de conectar, cria trigger, função e sequência temporários com nomes aleatórios, não concede privilégios, não desativa RLS e remove seus próprios objetos no final.
+
+### Gates obrigatórios
+
+Este HEAD muda cliente mobile e o journey HTTP. Exige CI completo próprio e APK standalone próprio SUCCESS, revisão fresh de main/base/head/tree/diff, merge único e depois CI e APK literais pós-merge. Nenhum verde histórico do #560, #581, da base ou de outro PR será emprestado. Só após todos os gates e crosswalk completo a Área 9 poderá ser formalmente aceita por novo apêndice.
+
+Preservados React 19.1.4, React Native 0.81.6, lockfile, SQL de produto, RLS, ACL, LGPD, credenciais, CORS, Fetch guard, CDP, sandbox, LNA, prazos e assertivas. Sem produção, Railway/Neon, custos, PSP, contratos, dinheiro real, root, grants ou desativação de RLS. Provedor/push externo, aparelho físico, SecureStore nativo, renderização RN física e pentest independente permanecem fora deste candidato interno.

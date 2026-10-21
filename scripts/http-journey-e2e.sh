@@ -415,6 +415,10 @@ request GET /v1/notifications/mine "$COMPANY2_TOKEN" "$TENANT2_ID" | json_equal 
 if [[ "$CHAT_CHAR_FAILURES" != 0 ]]; then echo "FAIL: chat_character_limit $CHAT_CHAR_FAILURES oversized requests were not HTTP400" >&2; exit 1; fi
 echo 'PASS: chat accepts4000 database Unicode characters, rejects4001 with400, and preserves authority messages notifications and tenant isolation'
 
+# Notification/conversation acceptance fixture: real HTTP + PostgreSQL, deliberate local CI-only notification faults,
+# rollback, ACK/replay, two-recipient inboxes and tenant isolation.
+node scripts/notification-atomicity-e2e.cjs
+
 # Fresh professional multi-company chronology fixture; all prior assertions remain unchanged.
 node scripts/professional-chronology-e2e.cjs
 
