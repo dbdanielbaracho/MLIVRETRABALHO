@@ -50,8 +50,8 @@ test('ledger mobile consumer preserves exact positive tenant assignment ledger a
  const data=[{...earning}];const result=await consumeEarningsJSON(data,expectation);assert.equal(result.status,'ready');assert.equal(result.data,data);assert.deepEqual(data,[earning]);
 });
 test('ledger mobile consumer refuses wrong tenant assignment ledger amount status and forged expectations',async()=>{
- for(const [key,value]of [['tenantId',input.jobId],['assignmentId',input.jobId],['id',input.jobId],['amountCents',34567],['status','paid']])await assert.rejects(consumeEarningsJSON([{...earning,[key]:value}],expectation));
- for(const key of ['tenantId','assignmentId','ledgerId'])await assert.rejects(consumeEarningsJSON([earning],{...expectation,[key]:'forged'}));
+ for(const [key,value]of ([['tenantId',input.jobId],['assignmentId',input.jobId],['id',input.jobId],['amountCents',34567],['status','paid']] as const))await assert.rejects(consumeEarningsJSON([{...earning,[key]:value}],expectation));
+ for(const key of (['tenantId','assignmentId','ledgerId'] as const))await assert.rejects(consumeEarningsJSON([earning],{...expectation,[key]:'forged'}));
  await assert.rejects(consumeEarningsJSON([earning],{...expectation,amountCents:34567}));
  await assert.rejects(consumeEarningsJSON([earning],undefined));
  await assert.rejects(consumeEarningsJSON([],expectation));await assert.rejects(consumeEarningsJSON([earning],null));
