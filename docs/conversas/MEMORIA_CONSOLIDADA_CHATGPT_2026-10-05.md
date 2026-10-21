@@ -21137,3 +21137,44 @@ Merge [`b035000fed28dd47bbd95413abe09c67b7e53256`](https://github.com/dbdanielba
 ### Limites explícitos
 
 O aceite é técnico/funcional **interno** da área 2. Não declara aparelho físico, renderização completa de formulários RN, persistência SecureStore nativa, produção, Railway/Neon, pentest independente, credenciais reais, PSP, contrato ou dinheiro real. Esses itens continuam externos quando aplicáveis. A aprovação não implica causa raiz definitiva para toda intermitência histórica do Chrome; ela prova que todos os gates obrigatórios passaram no candidato e novamente no merge literal, sem mascaramento.
+
+
+---
+
+## Pacote de fechamento da Área 3 — profissionais, agenda e presença — 2026-10-21T01:20Z
+
+Escopo exclusivo `dbdanielbaracho/MLIVRETRABALHO`. A prioridade vigente é reduzir áreas pendentes por jornadas completas, não por contagem de commits ou microtestes. Este apêndice prepara a última integração funcional conhecida da Área 3; **não antecipa o aceite**. Permanecem aceitas apenas as áreas 2 e 10, com 11 áreas pendentes até os gates próprios, merge e pós-merge deste pacote.
+
+Base revalidada: main `42ecc26cd36dce60cbee4fa419f139a2d0325414`, árvore `3cd7c0cab597d54441f650153323062cc0a5901a`. CI literal [39519471233](https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/39519471233), job 118959495499, attempt 1, **SUCCESS**: 217 Web + 1.141 mobile + 501 API + 3 CLI + 11 monitor, zero falhas/skips/cancelamentos; typecheck, build, export Android, migrações, privacidade, HTTP/PostgreSQL, matriz de navegador, jornada canônica e Production Truth passaram. Esse verde comprova a base, não será emprestado ao novo SHA.
+
+### Reconciliação dos drafts
+
+O PR existente [#595](https://github.com/dbdanielbaracho/MLIVRETRABALHO/pull/595), branch `fix/mobile-jobs-read-controller-cleanup-20261020`, é a única frente aberta que altera o catálogo profissional. O PR #581 trata conversa e não integra este pacote. O HEAD antigo `d4a9d4a40d27f8634b6845963fb763fd1ec43e34` será integrado normalmente com a main atual, sem force e sem nova PR duplicada. A árvore candidata usa a main como base material e preserva no primeiro pai a história integral do PR #595.
+
+A única correção de produto é em `apps/mobile/app/trabalhos.tsx`: no prazo já existente de 15 segundos da leitura, depois de abortar o controller próprio, removê-lo imediatamente do Set antes de atualizar o estado visível. Isso não muda endpoint, payload, autorização, tenant, retry, prazo, estado de erro nem a escrita de interesse. O teste canônico existente `apps/mobile/tests/jobs-read-controller-cleanup.test.mjs` cobre auth/fetch/JSON/final-auth pendentes, leitura vazia e catálogo, old timer/finally versus novo foco, vinte leituras manuais e isolamento entre READ e INTEREST. Nenhuma asserção foi relaxada.
+
+### Cadeia integral já presente na base
+
+O requisito da matriz para a Área 3 é: API e cliente de agenda, trabalho, presença e avaliação no mesmo owner/tenant, incluindo concorrência; aparelho físico é externo.
+
+- Perfil e disponibilidade: `professional-profile.controller.ts`, `availability.controller.ts`, validadores de entrada e clientes mobile reais `professional-profile.ts`, `availability-submit.ts`, `availability-window.ts`.
+- Catálogo e interesse: `jobs.controller.ts`, `apps/mobile/lib/jobs.ts` e `apps/mobile/app/trabalhos.tsx`; owner profissional autenticado, UUIDs inválidos, ausência factual, interesse e status confirmado.
+- Agenda e presença: `work-assignments.controller.ts`, `apps/mobile/lib/agenda.ts` e `apps/mobile/app/agenda.tsx`; check-in, início, check-out e conclusão, timestamps reais e GPS opcional validado.
+- Avaliação: `ratings.controller.ts`, avaliação profissional e da empresa, atualização idempotente, reputação compartilhada e passaporte de trabalho.
+- Concorrência e tenant: `company-confirmation-concurrency-e2e.cjs` cruza barreira PostgreSQL e exige dois ACKs idênticos, uma alocação e uma notificação; `professional-chronology-e2e.cjs` usa duas empresas, isolamento de outsider e ordenação factual de assignments/passport/earnings.
+- Cliente: a suíte mobile executa handlers reais de agenda, disponibilidade, interesse, calendário, owner de controller, ACK, prazo e recuperação explícita. Não é renderização RN nativa nem aparelho físico.
+
+No CI literal da base, o log primário registrou:
+- 00:10:21Z: UUIDs de trabalho malformados rejeitados sem criar interesses, assignments, notificações ou ganhos;
+- 00:10:26Z: falhas de UUID/tenant/ator nas transições preservaram assignments e ganhos;
+- 00:10:30Z: GPS inválido rejeitado, ciclo check-in→start→check-out→complete com timestamps reais e replay sem ganho duplicado;
+- 00:10:30Z: concorrência de confirmação com dois ACKs exatos, uma assignment, uma notificação e isolamento tenant;
+- 00:10:32Z: `PROFESSIONAL_CHRONOLOGY_PASS` em HTTP/PostgreSQL com Date real, ordenação e loaders mobile;
+- 00:12:56Z: avaliações bidirecionais, atualização idempotente e reputação da empresa;
+- 00:13:14Z: Production Truth PASS.
+
+### Gates e limites
+
+O novo HEAD exige CI completo próprio e APK standalone próprio, pois há alteração mobile. Só com ambos SUCCESS, revisão fresh de main/base/head/diff, ready e merge único será permitido integrar. Depois, CI e APK literais pós-merge também são obrigatórios antes da decisão formal. Nenhum PASS da base ou APK antigo será usado como PASS do novo SHA.
+
+Preservados React 19.1.4, RN 0.81.6, lockfile, SQL, RLS, ACL, LGPD, credenciais, CORS, Fetch guard, CDP, sandbox, LNA, deadlines e assertivas. Sem produção, Railway/Neon, custos, PSP, contratos, dinheiro real, root, grants ou desativação de RLS. O futuro aceite, se todos os gates passarem, será técnico/funcional interno; aparelho físico, SecureStore nativo, renderização completa RN, Visual Truth e pentest independente permanecem externos quando aplicáveis.
