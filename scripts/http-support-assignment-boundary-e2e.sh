@@ -140,6 +140,7 @@ request POST "/v1/company/support-cases/$KEYED_ID/status" "$TOKEN_A" "$TENANT_A"
 REPLAY="$(request POST /v1/support-cases "$TOKEN_P" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY")"
 test "$(printf '%s' "$REPLAY" | json_field id)" = "$KEYED_ID"
 test "$(printf '%s' "$REPLAY" | json_field status)" = reviewing
+node -e 'process.stdout.write(JSON.stringify({identityId:process.argv[1],tenantId:process.argv[2],requestKey:process.argv[3],payload:JSON.parse(process.argv[4]),ack:JSON.parse(process.argv[5])}))' -- "$ACTUAL_REPORTER" "$TENANT_A" "$INTENT_KEY" "$CASE_BODY" "$REPLAY" | node scripts/mobile-chat-support-contract.cjs support
 printf '%s' "$REPLAY" | node -e 'const x=JSON.parse(require("fs").readFileSync(0,"utf8"));if("requestHash"in x||"requestKey"in x||"request_payload_hash"in x)process.exit(1)'
 # Same UUID in another reporter or another tenant is an independent intent.
 OWNER_ID="$(request POST /v1/support-cases "$TOKEN_A" "$TENANT_A" "$CASE_BODY" "$INTENT_KEY" | json_field id)"
