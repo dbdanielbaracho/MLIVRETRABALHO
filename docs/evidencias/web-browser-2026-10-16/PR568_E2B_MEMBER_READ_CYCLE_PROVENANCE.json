@@ -1,0 +1,58 @@
+{
+  "sourcePR": 568,
+  "sourceHead": "e2b3b3999dc40c380e60e567d34d612193aa7610",
+  "sourceCheckout": "618d119f12c07c7a16a475ba1ecb6ac8fe31ce42",
+  "sourceTree": "e444dd019eabc29fa6198642b5b6d120d63a3b77",
+  "orderedParents": [
+    "3e098cd51cd2fd84f21e144a600a814a2cb1a150",
+    "e2b3b3999dc40c380e60e567d34d612193aa7610"
+  ],
+  "checkoutKind": "synthetic_tree_equal_not_literal_head",
+  "run": 38927529956,
+  "attempt": 1,
+  "job": 117062786588,
+  "result": "failure",
+  "platform": "web_desktop_not_android",
+  "captures": [
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr568-e2b-login.png",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr568-e2b-company-a-created.png",
+      "label": "company-a-created",
+      "sha256": "b2a1809d42ac13150d6db2029578494ca3f4466df85d34ab6e12fbe5a2abe14c",
+      "bytes": 133056,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr568-e2b-company-a-team-read-unavailable.png",
+      "label": "company-a-team-read-unavailable",
+      "sha256": "78f5b3465d386266a94de437d8e584592742b2f443bd13dfb059a38e01293290",
+      "bytes": 142042,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr568-e2b-company-a-team-read-recovered.png",
+      "label": "company-a-team-read-recovered",
+      "sha256": "be322e4f7610e6803fa0c47462d7fd386f8f85e14f5405084fb7a1f5f285bbda",
+      "bytes": 133314,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr568-e2b-failure.png",
+      "label": "failure",
+      "sha256": "89ab057dfd60cb28f86a33d2deb2e38d886e733c1515e0815712bf9302ee3f3d",
+      "bytes": 133827,
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}

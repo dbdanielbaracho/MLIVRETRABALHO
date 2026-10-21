@@ -14,6 +14,12 @@ function exactReconciliationCents(value: unknown): number {
   return cents;
 }
 
+function safeReconciliationDifference(left: number, right: number): number {
+  const cents = left - right;
+  if (!Number.isSafeInteger(cents)) throw new Error('reconciliation_total_out_of_range');
+  return cents;
+}
+
 @Controller('company/payment-events')
 export class PaymentEventsController {
   constructor(private readonly db:DatabaseService,private readonly auth:AuthService){}
@@ -53,12 +59,28 @@ export class PaymentEventsController {
      GROUP BY wa.id,j.title,p.display_name,el.amount_cents,el.status
      ORDER BY wa.confirmed_at DESC`,
       [tenant]
-    )).rows.map(row => ({
-      ...row,
-      capturedCents: exactReconciliationCents(row.capturedCents),
-      refundedCents: exactReconciliationCents(row.refundedCents),
-      paidOutCents: exactReconciliationCents(row.paidOutCents),
-    })));
+    )).rows.map(row => {
+      const capturedCents = exactReconciliationCents(row.capturedCents);
+      const refundedCents = exactReconciliationCents(row.refundedCents);
+      const paidOutCents = exactReconciliationCents(row.paidOutCents);
+      const professionalPayableCents = row.payableCents == null ? 0 : row.payableCents;
+      if (!Number.isSafeInteger(professionalPayableCents) || professionalPayableCents < 0) {
+        throw new Error('reconciliation_total_out_of_range');
+      }
+      const netCapturedCents = safeReconciliationDifference(capturedCents, refundedCents);
+      return {
+        ...row,
+        capturedCents,
+        refundedCents,
+        paidOutCents,
+        simulatedSplit: {
+          netCapturedCents,
+          professionalPayableCents,
+          platformRemainderCents: safeReconciliationDifference(netCapturedCents, professionalPayableCents),
+        },
+        cashBalanceCents: safeReconciliationDifference(netCapturedCents, paidOutCents),
+      };
+    }));
   }
 
   @Get()

@@ -1,0 +1,30 @@
+{
+  "pr": 561,
+  "head": "b23c2de96a8e51ea75159bbc8faf23668928ef75",
+  "checkout": "429dcba6287e95ca4e804d9452a2e7c0b21fedd8",
+  "tree": "c0fb1ba376cb5a7d6089601f7ac4a2910b8149ca",
+  "run": 38838523471,
+  "attempt": 2,
+  "kind": "post-merge",
+  "job": 116773347723,
+  "result": "FAILURE",
+  "scope": "real CI localhost desktop fixtures; NOT new558 frames/Android/physical/production",
+  "frames": [
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr561-post-merge-login.png",
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "path": "docs/evidencias/web-browser-2026-10-16/pr561-post-merge-failure.png",
+      "label": "failure",
+      "sha256": "a8c5bae662ce5348fd4019282e4eb356623c149b99921a789568b4ed9a8d47c3",
+      "bytes": 133034,
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "scope": "OWN PR558 head aab only; not current candidate nor post-merge",
+  "head": "aab5b8f2ab971cf8969b99b04eb005a64b774f91",
+  "tree": "de4efe3c121fa7ccd33b68bc35530e00a6a325d5",
+  "checkout": "6126ceee433bfa2cb6ec18f06e6d2bca25114836",
+  "checkoutKind": "synthetic_merge_tree_equal",
+  "orderedParents": [
+    "dd715c6573bcc6d6e5e3c749cc634e276db83ef0",
+    "aab5b8f2ab971cf8969b99b04eb005a64b774f91"
+  ],
+  "run": 38781696446,
+  "job": 116583255788,
+  "result": "success",
+  "source": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/actions/runs/38781696446/job/116583255788",
+  "captures": [
+    {
+      "label": "login",
+      "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+      "bytes": 33686,
+      "file": "pr558-aab-own-login.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-a-created",
+      "sha256": "e9e55e20b313945d1200c9f90fa043c9f0771f0ce3a2a0625ca9cd43f76144e1",
+      "bytes": 131542,
+      "file": "pr558-aab-own-company-a-created.png",
+      "width": 1365,
+      "height": 900
+    },
+    {
+      "label": "company-b-isolated",
+      "sha256": "64a3958eb4744f8079361b2d28e7164751b7fff9a36e40a00ba03be5ffd0821e",
+      "bytes": 132080,
+      "file": "pr558-aab-own-company-b-isolated.png",
+      "width": 1365,
+      "height": 900
+    }
+  ]
+}
