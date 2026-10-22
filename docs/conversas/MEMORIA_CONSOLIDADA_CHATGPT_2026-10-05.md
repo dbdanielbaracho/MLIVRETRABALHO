@@ -21475,3 +21475,14 @@ CI39869731126/job120140841377attempt1FAIL/HEADc2a6/checkoutd95d532685fac09fca2b6
 Ogateidentificouprofessional_profiles com INSERT DEFAULT23502 eUPDATEWHEREfalse0semerror, concessões0034excessivas para app_runtime. BaselineNÃOalterouperfilválidoestrangeiro; nãoinventarwriteobservado. Código autenticado poridentidade usa conexão base paraINSERT/UPDATE; runtime matching/planner sóSELECT. Correção0072 adiciona REVOKEIUDprofile mantendoSELECT, semgrants/alterroles/bypass. Novo probealvodireto exige42501; anteriores continuam. Omesmopacote prova8funçõesSECURITYDEFINER completas, fixedsearch_path/PUBLICdenied/6callable+2trigger-only, negativas/positivas em2tenants e ausênciacontexto, sempreSQLrealrevertido. CritérioADRde caminhosprivilegiados, nãomicrocontador.
 
 Fonte eprimárias integrais em `docs/evidencias/PROFILE_AND_PRIVILEGED_RUNTIME_BOUNDARY_2026-10-22.md`; as2notasanteriores permanecem históriaFULL. NovoHEAD funcional exigeCIcompleta própria+POSTliteral, nãoSAMESHArerun. APK N/A:184insumosprotegidos173mobileintactos.7áreasaceitas2/3/4/5/6/9/10;6pendentes1/7/8/11/12/13. SEMnovoaceite até cadeiafechada. Nãoalterarworkflow/browserCDPFetchCORSsandboxLNA15s/asserts/depslock. Semprodução/serviço/PSP/dinheiro/pentest/aparelhofísico/root/grants/bypass.
+
+
+---
+
+## Área7 — compatibilidade do cancelamento sem restaurar escrita em perfil — 22/10/2026
+
+CI39870499567/job120143431301a1FAIL/HEAD3071/checkout60d12b5040185067a5a863720efc151567429acb sintético/árvore72d6cfa9b7c8116776c60c346016e5b8f19520d0 exact.1936unit/typesbuildexport/migração2x/privacyPASS. Prova7realHTTPPGPASS23:17:48.2540803Z com27TENANT44tables/8SECDEF/148negativas74routes/3writes42501/ACLviolations[]/Poolreal. Browser12matrix+canonicalPASS/MATRIX0 às23:19:34.5449072Z. NÃO falhaChrome; ProductionTruth posterior não executado.
+
+Primária23:19:37.3352835Z: cancelamentoválidoHTTP500/42501professional_profiles. SELECTcomJOINperfis FORNOKEYUPDATE bloqueavaambastabelas e dependiaindevidamente deUPDATEglobalremovido0072. Corrigir apenas paraFORNOKEYUPDATEOFwa, mantendolockdaalocação/tenant/membership/estados/audit/requests; não restaurarUPDATEprofile. Prova integrada adiciona confirmação→cancelamento profissional eempresa201/persistênciaaudit/perfisinalterados/27tabelasdotenantvizinhoiguais. Barreirasconcorrentesoriginaisdehttp-replacementpermanecemobrigatórias, nãoalegarcorridanafixturesequencial. FontecontrollerFULL6caracteresreversíveis+prova+primárias em `docs/evidencias/LEAST_PRIVILEGE_CANCELLATION_LOCK_2026-10-22.md`.3notesanterioreshistóriapreservada.
+
+NovoHEADcomcorreçãorealcompatibilidade exigeCIcompleta própria+POSTliteral; nenhumrerunmesmoSHA/commitstatus/grants/root/bypass/browserchange. APK N/AbackendSQL/API/CJS/docs,184protected/173mobileintactos; nãoAPKdesteSHA.7aceitas2/3/4/5/6/9/10 e6pendentes1/7/8/11/12/13; SEMACEITE7 antecipado. Semprodução/serviçocustos/credenciaisexternas/PSP/dinheiro/pentest/aparelhofísico. #574/#565drafts mantidos.

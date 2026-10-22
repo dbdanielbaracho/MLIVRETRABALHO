@@ -228,6 +228,20 @@ async function main(){
    const terms=await call(pro,null,'/v1/terms/acceptances');check(terms.filter(x=>x.termsKey==='boundary-fixture'&&x.version===stamp).length===1,'terms_identity_scoped');
    const capabilities=await call(pro,null,'/v1/professional-capabilities');check(capabilities.some(x=>x.roleId==='hospitality.bartender'&&x.skills.length===1&&x.skills[0]==='bar_setup'),'capabilities_owner_unchanged');
   }
+  stage='least-privilege-professional-and-company-cancellation';
+  for(let i=0;i<2;i++){
+   const beforeForeign=await tenantSnapshot(),profilesBefore=(await db.query('SELECT to_jsonb(p) row FROM professional_profiles p WHERE id=ANY($1::uuid[]) ORDER BY id',[pros.map(x=>x.profile)])).rows;
+   await call(pros[i],null,'/v1/jobs/'+owners[i].job+'/interest','POST',undefined,201);
+   const assignment=await call(owners[i],owners[i].tenant,'/v1/company/jobs/'+owners[i].job+'/confirm','POST',{professionalId:pros[i].profile},201);
+   const cancelled=await call(i===0?pros[i]:owners[i],owners[i].tenant,'/v1/assignments/'+assignment.id+'/cancel','POST',{reason:'Explicit synthetic boundary cancellation'},201);
+   check(cancelled.status==='cancelled'&&cancelled.initiatorKind===(i===0?'professional':'company'),'real_cancellation_under_readonly_profile_permission');
+   check((await db.query('SELECT status FROM work_assignments WHERE id=$1 AND tenant_id=$2',[assignment.id,owners[i].tenant])).rows[0]?.status==='cancelled','actual_assignment_cancelled');
+   check((await db.query('SELECT count(*)::int count FROM assignment_cancellations WHERE assignment_id=$1 AND tenant_id=$2',[assignment.id,owners[i].tenant])).rows[0].count===1,'one_cancellation_audit_record');
+   assert.deepEqual((await db.query('SELECT to_jsonb(p) row FROM professional_profiles p WHERE id=ANY($1::uuid[]) ORDER BY id',[pros.map(x=>x.profile)])).rows,profilesBefore,'Cancellation never writes profiles');
+   const afterOwn=await tenantSnapshot();
+   for(const table of tenantTables)assert.deepEqual(afterOwn[table].filter(x=>x.row.tenant_id===owners[1-i].tenant),beforeForeign[table].filter(x=>x.row.tenant_id===owners[1-i].tenant),'Other tenant unchanged by cancellation');
+  }
+  console.log('TENANT_BOUNDARY_LEAST_PRIVILEGE_CANCELLATION_PASS '+JSON.stringify({realHTTPPostgres:true,professionalAndCompany:true,assignmentAuditPersisted:true,profilesByteUnchanged:true,otherTenantAll27TablesUnchanged:true,profileUpdatePermissionNotRestored:true}));
   for(const token of tokens)await call({token},null,'/v1/auth/signout','POST',{},201);tokens.clear();
   console.log('TENANT_BOUNDARY_ENDPOINTS_PASS '+JSON.stringify({registeredControllers:routeInventory.controllers.length,inventoriedRoutes:routeInventory.routes.length,tenantHeaderRoutes:denied/2,negativeHTTPRequests:denied,controllerSourceGitBlobs:routeInventory.sources,actualDatabaseServicePoolSize:1,commitAndRollbackReuse:true,identityAPIsRemainOperational:true,requests}));
   console.log('TENANT_BOUNDARY_RUNTIME_ACL_OBSERVED '+JSON.stringify({violations}));check(violations.length===0,'runtime_permissions_exceed_declared_scope');
