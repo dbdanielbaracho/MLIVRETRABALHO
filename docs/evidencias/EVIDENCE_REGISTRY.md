@@ -19872,3 +19872,18 @@ Reconciliação584: seus únicos dois arquivos funcionais são byte-idênticos a
 Este pacote formaliza uma jornada concluída com provas, sem alterar runtime/teste/dependência/lock/workflow. APK deste pacote documental é N/A por identidade integral de todos os insumos não documentais; não se atribui APK literal ao novo SHA documental. O PR de formalização ainda exige CI próprio completo, revisão fresh e CI literal pós-merge; resultados terminais ficam no recibo do PR, sem commit artificial de status. React19.1.4/RN0.81.6, RLS/tenant, LGPD, ACL e controles do navegador permanecem intactos.
 
 Próxima jornada: área4 empresas/equipes, confrontando papéis, membros, vagas e contexto completos com HTTPPG/cliente, ou área5 matching caso a revisão encontre dependência real. O aceite é responsabilidade do assistente, sem esperar usuário; evidência externa continua exigindo ação/prova externa real. Nenhuma promessa de execução ininterrupta.
+
+
+---
+
+## Jornada candidata da Área4 — empresas, papéis, publicação e equipes — 22/10/2026
+
+Base viva `322c049e09553f8d3b845f013ca3e3c0802c2bfc`, árvore `d9c8f74e19d469765f8caac7df4c1a12a0d79869`. #605/#607 já integrados; CI literal39827910512SUCCESS confirmou a formalização da Área6. **Áreas2,3,6,9,10 aceitas; oito pendentes. Nenhum novo aceite é antecipado por este candidato.**
+
+A auditoria selecionada encontrou positivos HTTP/cliente para owner, convites admin/manager e negação de gestão a não-owner, mas não a mesma jornada de publicação/equipe por todos os papéis permitidos. A entrega é um teste funcional completo, não correção especulativa: novo `scripts/company-acceptance-e2e.cjs`, invocado antes do navegador no HTTP journey sem alterar qualquer chamada/assertiva anterior.
+
+O teste exige API/PostgreSQL local descartável, duas empresas, signup/login reais, convites admin/manager pelo SDK+HTTP, papel legado company com UMA membership nova de fixture SQL em identidades/tenant recém-criados (não existe convite público company; não é prova de provisionamento público). Não altera políticas, grants, privilégios ou roles do banco. Depois todos os quatro papéis executam publicação pelo publishJob real, leitura, criar equipe, incluir/repetir sem duplicar/remover membro conhecido por assignment real, contagens e dashboard. Inclui estados vazios/erro, contexto velho, gestão owner-only403, foreign/outsider401, profissional400/403 e inputs400. Negativas devem manter snapshots integrais de oito tabelas/dois tenants e ACL/policies; outro tenant permanece intacto também após positivos. Papéis são conferidos via /me e persistência é testemunhada pelo banco.
+
+Local nesta preparação: node--checkPASS; execução CI=0 recusa antes de carregar PG/acessar rede. **Não há PASS local HTTPPG nem execução RN/nativa.** Provas reais e critério→código→CI→SHA ficarão em `docs/evidencias/COMPANY_ACCEPTANCE_JOURNEY_2026-10-22.md` e no recibo terminal do PR. CI completo próprio e literal pós-merge são obrigatórios; nenhum rerun do mesmo SHA para obter verde. APK N/A por identidade integral dos arquivos mobile/dependências/lock/workflows/build/smoke: somente scripts de teste e documentação mudam.
+
+Os seis originais são prefixo integral preservado. #574/#565 continuam drafts e não contêm esta jornada; nenhum código desses PRs foi importado. React mobile19.1.4/RN0.81.6/lockfile, tenant/RLS, ACL, LGPD e controles de navegador/CDP/Fetch/CORS/sandbox/LNA/deadlines/assertivas inalterados. Sem produção, PSP, dinheiro real, credencial/serviço/custo externo, root/grants/bypass, aparelho físico ou pentest. O aceite da Área4 continua responsabilidade do assistente e será formalizado somente se o pacote completo e suas provas satisfizerem a matriz.
