@@ -17411,3 +17411,49 @@ Cadeia completa e manifestos em `docs/evidencias/MATCHING_INTERNAL_ACCEPTANCE_20
 APK N/A para610teste/scripts e este delta documental:184insumosprotegidos/173mobile BYTE-IDÊNTICOS ao produto literal1b85403cafd9e17bceeb3ea47ce27fdf03c1496e, APK39708675307SUCCESS/artifact12396378712unexpired revalidado nesta entrega. Não há APK literal4b8 ou deste novo SHA. React mobile19.1.4/RN0.81.6/lockfile, LGPD/tenant/RLS/auth/ACL, browserCDPFetchCORSsandboxLNA15s/asserts intactos. Sem custo/serviço/credencial externa/root/grants/bypass.
 
 Próxima frente: critérios7/11 exigem inventário completo de tabelas/endpoints e contratos/autorização/negativas; os sete snapshots desta jornada não são esse inventário. Revalidar fontes atuais e escolher prova integrada necessária, sem contar microtestes como aceite. Projeto continua; nenhuma promessa de execução ininterrupta.
+
+
+---
+
+## Área7 — jornada integrada de isolamento e menor privilégio — 22/10/2026
+
+Entrega candidata sobre main e88f8d4ff9f11b92e82b4c9510c50c4607ca09a8: `scripts/tenant-boundary-acceptance-e2e.cjs` e hook obrigatório no HTTP gate. Inventário explícito44tabelas/27TENANT/43controllers106rotas; PostgreSQL real com duas grafias de tenant, negativas SELECT/INSERT/UPDATE/DELETE/rebind, contexto ausente/inválido, Pool real de uma conexão com DatabaseService compilado e74rotas tenant rejeitando owner estrangeiro/anônimo. Exceções globais/identidade/rede são classificadas e não recebem tenant artificial. Fonte/crosswalk/inventário integral em `docs/evidencias/TENANT_BOUNDARY_ACCEPTANCE_JOURNEY_2026-10-22.md`.
+
+Estado PENDENTE de execução CI e revisão dos resultados. Duas permissões globais/profissionais potencialmente excessivas serão reproduzidas por SQL real revertido antes de qualquer correção: INSERT em terms_acceptances e UPDATE de professional_capabilities para outra identidade. Não afirmar defeito ou exploração sem primária. O teste exige autorização42501, não aceita FK/unique como isolamento. Nada altera ACL/políticas na fixture. Os184insumos Android/173mobile devem permanecer idênticos; APK N/A para esse delta de scripts/docs, sem APK emprestado como se fosse deste SHA. Todos os gates existentes/browser12+canonical/ProductionTruth preservados, nenhuma alteração de workflow/flags/deadlines/segurança.
+
+Áreas2,3,4,5,6,9,10 seguem aceitas internamente;1,7,8,11,12,13 seguem pendentes. Não há novo aceite por contagem, inventário estático ou teste parcial. Próximo passo é CI real do SHA próprio; corrigir somente defeito comprovado e exigir CI completa+literal pós-merge antes de formalizar qualquer aceite. Sem rerun de produto no mesmoSHA para verde, statuscommit, produção/PSP/dinheiro/aparelho físico/pentest/serviço/credenciais externas/root/grants/bypass. #574/#565 mantidos drafts; #605/aceite6 já integrados e #584 redundante, sem repetir.
+
+
+---
+
+## Área7 — duas permissões excessivas reproduzidas e correção mínima candidata — 22/10/2026
+
+CI própria39868876663/job120137968240/attempt1FAIL noHEAD e97c4b4, checkout sintético fd51980a49c99d1a492eb264e2cf8a03cf8e20d9/árvorec05f4f0f287ebc48eab87c306c122f105883bc68/pais[e88f,e97c].1936unit/tipos/build/export/migração2x/privacyPASS, mas gateHTTP não completo; browser/ProductionTruth não executados. Zero rerun.
+
+Primária23:03:22.2724558Z e.2727365Z: app_runtime/tenantA fez INSERT de terms_acceptances de outra identidade e UPDATE deprofessional_capabilities de outro profissional, cadaumrowCount1, ambosSAVEPOINTROLLBACK. Não é defeito presumido, exploração de API ou produção. As27TENANT passaram negativas bidirecionais e snapshot/policies/ACL; demais asserts não implicam aceite global. Corrigir em migraçãoaditiva0072: REVOKEALLterms eREVOKEIUDcapabilities, mantendoSELECTPlanner e APIs poridentidade. Nenhumgrant/RLSbypass/ALTERROLE/repairdedados.
+
+A negativaHTTP baseline não identificou rota. Revisão de fonte exige fixtures válidas para toolcopilot e perfilpassport antes de verificar401; não mudar contrato nem inventar bug de autorização. Novodiagnóstico controlado método/UUIDredigido/status e snapshot antes/depois;74asserts401 e42501 originais continuam. Reciboprimário+fontesintegrais e184insumosprotegidos em `docs/evidencias/IDENTITY_RUNTIME_PERMISSION_FIX_2026-10-22.md`. CIcompleta do novoSHA e literal pós-merge ainda obrigatórias. APK N/A por173mobile/184insumos idênticos eSQL/scripts fora do grafoExpo→Gradle; nãoAPKemprestado.
+
+Área7 permanece PENDENTE, assim como1/8/11/12/13;2/3/4/5/6/9/10 aceitas. Semstatuscommit/rerunsameSHApara verde, relaxarsegurança/browser ou novosserviços/produção/PSP/dinheiro/pentest/aparelhofísico/root/grants/bypass. Histórico prefixointegral preservado.
+
+
+---
+
+## Área7 — perfil profissional e funções privilegiadas no mesmo pacote — 22/10/2026
+
+CI39869731126/job120140841377attempt1FAIL/HEADc2a6/checkoutd95d532685fac09fca2b655abbc67637b3d3cb88 sintético árvore7e3a41ed175349d4ef6e09357f7102f37011627d.1936unit/tiposbuildexport/migração2x/privacyPASS,27TENANT/pass148negativasHTTP74rotas eDatabaseServicepoolrealPASS. Writesantesindevidos termos/capacidades agora42501. NÃO browser/ProductionTruth executados, sematribuirfalhaChrome.
+
+Ogateidentificouprofessional_profiles com INSERT DEFAULT23502 eUPDATEWHEREfalse0semerror, concessões0034excessivas para app_runtime. BaselineNÃOalterouperfilválidoestrangeiro; nãoinventarwriteobservado. Código autenticado poridentidade usa conexão base paraINSERT/UPDATE; runtime matching/planner sóSELECT. Correção0072 adiciona REVOKEIUDprofile mantendoSELECT, semgrants/alterroles/bypass. Novo probealvodireto exige42501; anteriores continuam. Omesmopacote prova8funçõesSECURITYDEFINER completas, fixedsearch_path/PUBLICdenied/6callable+2trigger-only, negativas/positivas em2tenants e ausênciacontexto, sempreSQLrealrevertido. CritérioADRde caminhosprivilegiados, nãomicrocontador.
+
+Fonte eprimárias integrais em `docs/evidencias/PROFILE_AND_PRIVILEGED_RUNTIME_BOUNDARY_2026-10-22.md`; as2notasanteriores permanecem históriaFULL. NovoHEAD funcional exigeCIcompleta própria+POSTliteral, nãoSAMESHArerun. APK N/A:184insumosprotegidos173mobileintactos.7áreasaceitas2/3/4/5/6/9/10;6pendentes1/7/8/11/12/13. SEMnovoaceite até cadeiafechada. Nãoalterarworkflow/browserCDPFetchCORSsandboxLNA15s/asserts/depslock. Semprodução/serviço/PSP/dinheiro/pentest/aparelhofísico/root/grants/bypass.
+
+
+---
+
+## Área7 — compatibilidade do cancelamento sem restaurar escrita em perfil — 22/10/2026
+
+CI39870499567/job120143431301a1FAIL/HEAD3071/checkout60d12b5040185067a5a863720efc151567429acb sintético/árvore72d6cfa9b7c8116776c60c346016e5b8f19520d0 exact.1936unit/typesbuildexport/migração2x/privacyPASS. Prova7realHTTPPGPASS23:17:48.2540803Z com27TENANT44tables/8SECDEF/148negativas74routes/3writes42501/ACLviolations[]/Poolreal. Browser12matrix+canonicalPASS/MATRIX0 às23:19:34.5449072Z. NÃO falhaChrome; ProductionTruth posterior não executado.
+
+Primária23:19:37.3352835Z: cancelamentoválidoHTTP500/42501professional_profiles. SELECTcomJOINperfis FORNOKEYUPDATE bloqueavaambastabelas e dependiaindevidamente deUPDATEglobalremovido0072. Corrigir apenas paraFORNOKEYUPDATEOFwa, mantendolockdaalocação/tenant/membership/estados/audit/requests; não restaurarUPDATEprofile. Prova integrada adiciona confirmação→cancelamento profissional eempresa201/persistênciaaudit/perfisinalterados/27tabelasdotenantvizinhoiguais. Barreirasconcorrentesoriginaisdehttp-replacementpermanecemobrigatórias, nãoalegarcorridanafixturesequencial. FontecontrollerFULL6caracteresreversíveis+prova+primárias em `docs/evidencias/LEAST_PRIVILEGE_CANCELLATION_LOCK_2026-10-22.md`.3notesanterioreshistóriapreservada.
+
+NovoHEADcomcorreçãorealcompatibilidade exigeCIcompleta própria+POSTliteral; nenhumrerunmesmoSHA/commitstatus/grants/root/bypass/browserchange. APK N/AbackendSQL/API/CJS/docs,184protected/173mobileintactos; nãoAPKdesteSHA.7aceitas2/3/4/5/6/9/10 e6pendentes1/7/8/11/12/13; SEMACEITE7 antecipado. Semprodução/serviçocustos/credenciaisexternas/PSP/dinheiro/pentest/aparelhofísico. #574/#565drafts mantidos.

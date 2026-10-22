@@ -47,7 +47,7 @@ test('cancellation keeps durable ON CONFLICT record and conditional update confl
 });
 test('cancellation locks the assignment before writes and terminally closes only its open replacement request',async()=>{
  const h=setup();await h.controller.cancel(ID,{reason:'Fixture'},'Bearer fixture','trusted-tenant');
- assert.match(h.queries[0]!.sql,/FOR NO KEY UPDATE$/);
+ assert.match(h.queries[0]!.sql,/FOR NO KEY UPDATE OF wa$/);
  const close=h.queries.find(q=>q.sql.startsWith('UPDATE replacement_requests'));assert.ok(close);
  assert.match(close.sql,/status='cancelled'/);assert.match(close.sql,/resolved_at=COALESCE\(resolved_at,now\(\)\)/);
  assert.match(close.sql,/assignment_id=\$2 AND status='open'/);assert.deepEqual(close.params,['trusted-tenant',ID]);
