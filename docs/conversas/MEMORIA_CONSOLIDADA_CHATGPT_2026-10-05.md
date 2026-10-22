@@ -21440,3 +21440,14 @@ Cadeia completa e manifestos em `docs/evidencias/MATCHING_INTERNAL_ACCEPTANCE_20
 APK N/A para610teste/scripts e este delta documental:184insumosprotegidos/173mobile BYTE-IDÊNTICOS ao produto literal1b85403cafd9e17bceeb3ea47ce27fdf03c1496e, APK39708675307SUCCESS/artifact12396378712unexpired revalidado nesta entrega. Não há APK literal4b8 ou deste novo SHA. React mobile19.1.4/RN0.81.6/lockfile, LGPD/tenant/RLS/auth/ACL, browserCDPFetchCORSsandboxLNA15s/asserts intactos. Sem custo/serviço/credencial externa/root/grants/bypass.
 
 Próxima frente: critérios7/11 exigem inventário completo de tabelas/endpoints e contratos/autorização/negativas; os sete snapshots desta jornada não são esse inventário. Revalidar fontes atuais e escolher prova integrada necessária, sem contar microtestes como aceite. Projeto continua; nenhuma promessa de execução ininterrupta.
+
+
+---
+
+## Área7 — jornada integrada de isolamento e menor privilégio — 22/10/2026
+
+Entrega candidata sobre main e88f8d4ff9f11b92e82b4c9510c50c4607ca09a8: `scripts/tenant-boundary-acceptance-e2e.cjs` e hook obrigatório no HTTP gate. Inventário explícito44tabelas/27TENANT/43controllers106rotas; PostgreSQL real com duas grafias de tenant, negativas SELECT/INSERT/UPDATE/DELETE/rebind, contexto ausente/inválido, Pool real de uma conexão com DatabaseService compilado e74rotas tenant rejeitando owner estrangeiro/anônimo. Exceções globais/identidade/rede são classificadas e não recebem tenant artificial. Fonte/crosswalk/inventário integral em `docs/evidencias/TENANT_BOUNDARY_ACCEPTANCE_JOURNEY_2026-10-22.md`.
+
+Estado PENDENTE de execução CI e revisão dos resultados. Duas permissões globais/profissionais potencialmente excessivas serão reproduzidas por SQL real revertido antes de qualquer correção: INSERT em terms_acceptances e UPDATE de professional_capabilities para outra identidade. Não afirmar defeito ou exploração sem primária. O teste exige autorização42501, não aceita FK/unique como isolamento. Nada altera ACL/políticas na fixture. Os184insumos Android/173mobile devem permanecer idênticos; APK N/A para esse delta de scripts/docs, sem APK emprestado como se fosse deste SHA. Todos os gates existentes/browser12+canonical/ProductionTruth preservados, nenhuma alteração de workflow/flags/deadlines/segurança.
+
+Áreas2,3,4,5,6,9,10 seguem aceitas internamente;1,7,8,11,12,13 seguem pendentes. Não há novo aceite por contagem, inventário estático ou teste parcial. Próximo passo é CI real do SHA próprio; corrigir somente defeito comprovado e exigir CI completa+literal pós-merge antes de formalizar qualquer aceite. Sem rerun de produto no mesmoSHA para verde, statuscommit, produção/PSP/dinheiro/aparelho físico/pentest/serviço/credenciais externas/root/grants/bypass. #574/#565 mantidos drafts; #605/aceite6 já integrados e #584 redundante, sem repetir.
