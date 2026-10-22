@@ -437,6 +437,9 @@ node scripts/ledger-completion-atomicity-e2e.cjs
 # Full company roles/publication/teams/client journey uses fresh disposable local HTTP/PostgreSQL.
 node scripts/company-acceptance-e2e.cjs
 
+# Actual matching/allocation/replacement clients use fresh disposable local HTTP/PostgreSQL.
+node scripts/matching-acceptance-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
