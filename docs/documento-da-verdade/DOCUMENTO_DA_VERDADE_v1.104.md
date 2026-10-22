@@ -19597,3 +19597,16 @@ Entrega candidata sobre main e88f8d4ff9f11b92e82b4c9510c50c4607ca09a8: `scripts/
 Estado PENDENTE de execução CI e revisão dos resultados. Duas permissões globais/profissionais potencialmente excessivas serão reproduzidas por SQL real revertido antes de qualquer correção: INSERT em terms_acceptances e UPDATE de professional_capabilities para outra identidade. Não afirmar defeito ou exploração sem primária. O teste exige autorização42501, não aceita FK/unique como isolamento. Nada altera ACL/políticas na fixture. Os184insumos Android/173mobile devem permanecer idênticos; APK N/A para esse delta de scripts/docs, sem APK emprestado como se fosse deste SHA. Todos os gates existentes/browser12+canonical/ProductionTruth preservados, nenhuma alteração de workflow/flags/deadlines/segurança.
 
 Áreas2,3,4,5,6,9,10 seguem aceitas internamente;1,7,8,11,12,13 seguem pendentes. Não há novo aceite por contagem, inventário estático ou teste parcial. Próximo passo é CI real do SHA próprio; corrigir somente defeito comprovado e exigir CI completa+literal pós-merge antes de formalizar qualquer aceite. Sem rerun de produto no mesmoSHA para verde, statuscommit, produção/PSP/dinheiro/aparelho físico/pentest/serviço/credenciais externas/root/grants/bypass. #574/#565 mantidos drafts; #605/aceite6 já integrados e #584 redundante, sem repetir.
+
+
+---
+
+## Área7 — duas permissões excessivas reproduzidas e correção mínima candidata — 22/10/2026
+
+CI própria39868876663/job120137968240/attempt1FAIL noHEAD e97c4b4, checkout sintético fd51980a49c99d1a492eb264e2cf8a03cf8e20d9/árvorec05f4f0f287ebc48eab87c306c122f105883bc68/pais[e88f,e97c].1936unit/tipos/build/export/migração2x/privacyPASS, mas gateHTTP não completo; browser/ProductionTruth não executados. Zero rerun.
+
+Primária23:03:22.2724558Z e.2727365Z: app_runtime/tenantA fez INSERT de terms_acceptances de outra identidade e UPDATE deprofessional_capabilities de outro profissional, cadaumrowCount1, ambosSAVEPOINTROLLBACK. Não é defeito presumido, exploração de API ou produção. As27TENANT passaram negativas bidirecionais e snapshot/policies/ACL; demais asserts não implicam aceite global. Corrigir em migraçãoaditiva0072: REVOKEALLterms eREVOKEIUDcapabilities, mantendoSELECTPlanner e APIs poridentidade. Nenhumgrant/RLSbypass/ALTERROLE/repairdedados.
+
+A negativaHTTP baseline não identificou rota. Revisão de fonte exige fixtures válidas para toolcopilot e perfilpassport antes de verificar401; não mudar contrato nem inventar bug de autorização. Novodiagnóstico controlado método/UUIDredigido/status e snapshot antes/depois;74asserts401 e42501 originais continuam. Reciboprimário+fontesintegrais e184insumosprotegidos em `docs/evidencias/IDENTITY_RUNTIME_PERMISSION_FIX_2026-10-22.md`. CIcompleta do novoSHA e literal pós-merge ainda obrigatórias. APK N/A por173mobile/184insumos idênticos eSQL/scripts fora do grafoExpo→Gradle; nãoAPKemprestado.
+
+Área7 permanece PENDENTE, assim como1/8/11/12/13;2/3/4/5/6/9/10 aceitas. Semstatuscommit/rerunsameSHApara verde, relaxarsegurança/browser ou novosserviços/produção/PSP/dinheiro/pentest/aparelhofísico/root/grants/bypass. Histórico prefixointegral preservado.

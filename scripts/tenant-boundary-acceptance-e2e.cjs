@@ -51,7 +51,7 @@ async function main(){
   async function call(actor,tenant,path,method='GET',body,status=200){
    check(/^\/v1\/[a-zA-Z0-9/_.-]+$/.test(path),'local_route_only');requests++;
    const r=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?{authorization:'Bearer '+actor.token}:{}),...(tenant?{'x-tenant-id':tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
-   check(r.status===status,'http_'+method+'_'+path.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g,'UUID')+'_'+r.status+'_expected_'+status);return r.json();
+   if(r.status!==status){console.log('TENANT_BOUNDARY_HTTP_STATUS_MISMATCH '+JSON.stringify({method,path:path.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g,'UUID'),actual:r.status,expected:status}));throw Error('unexpected_http_status');}return r.json();
   }
   async function account(label,type){
    const email='tenant-boundary-'+label+'-'+stamp+'@example.test';
@@ -62,6 +62,9 @@ async function main(){
   stage='fresh-http-owners-and-professionals';
   const owners=[await account('company-a','company'),await account('company-b','company')],pros=[await account('professional-a','professional'),await account('professional-b','professional')];
   const iso=h=>new Date(Date.now()+h*3600000).toISOString();
+  // Passport resolves a professional profile before membership. Provide a real
+  // profile for the foreign company owner, so the probe reaches that boundary.
+  await call(owners[0],null,'/v1/professional-profile','PUT',{displayName:'Boundary foreign owner profile'});
   for(let i=0;i<2;i++){
    pros[i].profile=(await call(pros[i],null,'/v1/professional-profile','PUT',{displayName:'Boundary '+i,homeCity:'São Paulo',primaryRole:'Bartender'})).id;
    await call(pros[i],null,'/v1/terms/accept','POST',{termsKey:'boundary-fixture',version:stamp,identityId:pros[1-i].id},201);
@@ -183,11 +186,15 @@ async function main(){
   }finally{await service.onModuleDestroy();}
   stage='every-tenant-header-endpoint-denies-foreign-membership';
   const beforeHTTP=await db.query('SELECT count(*)::int count FROM tenant_memberships WHERE tenant_id=$1 AND identity_id=$2',[owners[1].tenant,owners[0].id]);check(beforeHTTP.rows[0].count===0,'foreign_owner_has_no_membership');
-  let denied=0;
+  const beforeHTTPRows=await tenantSnapshot();let denied=0;
   for(const route of routeInventory.routes.filter(x=>x.tenantHeader)){
    const path=route.path.replace(/:pool\b/g,'preferred').replace(/:[A-Za-z]+/g,randomUUID());
-   for(const actor of [owners[0],null]){await call(actor,owners[1].tenant,path,route.method,['POST','PUT','PATCH'].includes(route.method)?{}:undefined,401);denied++;}
+   // Copilot validates its tool before checking company membership. An allowed
+   // read-only tool is required to test authorization rather than input shape.
+   const body=route.path==='/v1/copilot/read'?{tool:'company_dashboard'}:['POST','PUT','PATCH'].includes(route.method)?{}:undefined;
+   for(const actor of [owners[0],null]){await call(actor,owners[1].tenant,path,route.method,body,401);denied++;}
   }
+  assert.deepEqual(await tenantSnapshot(),beforeHTTPRows,'All denied HTTP calls preserve both tenant graphs');
   // Owner-resolved APIs remain operational; client-supplied identity fields never redirect writes.
   for(const pro of pros){
    const terms=await call(pro,null,'/v1/terms/acceptances');check(terms.filter(x=>x.termsKey==='boundary-fixture'&&x.version===stamp).length===1,'terms_identity_scoped');
