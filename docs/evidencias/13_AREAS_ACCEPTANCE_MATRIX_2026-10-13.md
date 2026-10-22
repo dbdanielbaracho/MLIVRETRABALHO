@@ -17435,3 +17435,14 @@ Primária23:03:22.2724558Z e.2727365Z: app_runtime/tenantA fez INSERT de terms_a
 A negativaHTTP baseline não identificou rota. Revisão de fonte exige fixtures válidas para toolcopilot e perfilpassport antes de verificar401; não mudar contrato nem inventar bug de autorização. Novodiagnóstico controlado método/UUIDredigido/status e snapshot antes/depois;74asserts401 e42501 originais continuam. Reciboprimário+fontesintegrais e184insumosprotegidos em `docs/evidencias/IDENTITY_RUNTIME_PERMISSION_FIX_2026-10-22.md`. CIcompleta do novoSHA e literal pós-merge ainda obrigatórias. APK N/A por173mobile/184insumos idênticos eSQL/scripts fora do grafoExpo→Gradle; nãoAPKemprestado.
 
 Área7 permanece PENDENTE, assim como1/8/11/12/13;2/3/4/5/6/9/10 aceitas. Semstatuscommit/rerunsameSHApara verde, relaxarsegurança/browser ou novosserviços/produção/PSP/dinheiro/pentest/aparelhofísico/root/grants/bypass. Histórico prefixointegral preservado.
+
+
+---
+
+## Área7 — perfil profissional e funções privilegiadas no mesmo pacote — 22/10/2026
+
+CI39869731126/job120140841377attempt1FAIL/HEADc2a6/checkoutd95d532685fac09fca2b655abbc67637b3d3cb88 sintético árvore7e3a41ed175349d4ef6e09357f7102f37011627d.1936unit/tiposbuildexport/migração2x/privacyPASS,27TENANT/pass148negativasHTTP74rotas eDatabaseServicepoolrealPASS. Writesantesindevidos termos/capacidades agora42501. NÃO browser/ProductionTruth executados, sematribuirfalhaChrome.
+
+Ogateidentificouprofessional_profiles com INSERT DEFAULT23502 eUPDATEWHEREfalse0semerror, concessões0034excessivas para app_runtime. BaselineNÃOalterouperfilválidoestrangeiro; nãoinventarwriteobservado. Código autenticado poridentidade usa conexão base paraINSERT/UPDATE; runtime matching/planner sóSELECT. Correção0072 adiciona REVOKEIUDprofile mantendoSELECT, semgrants/alterroles/bypass. Novo probealvodireto exige42501; anteriores continuam. Omesmopacote prova8funçõesSECURITYDEFINER completas, fixedsearch_path/PUBLICdenied/6callable+2trigger-only, negativas/positivas em2tenants e ausênciacontexto, sempreSQLrealrevertido. CritérioADRde caminhosprivilegiados, nãomicrocontador.
+
+Fonte eprimárias integrais em `docs/evidencias/PROFILE_AND_PRIVILEGED_RUNTIME_BOUNDARY_2026-10-22.md`; as2notasanteriores permanecem históriaFULL. NovoHEAD funcional exigeCIcompleta própria+POSTliteral, nãoSAMESHArerun. APK N/A:184insumosprotegidos173mobileintactos.7áreasaceitas2/3/4/5/6/9/10;6pendentes1/7/8/11/12/13. SEMnovoaceite até cadeiafechada. Nãoalterarworkflow/browserCDPFetchCORSsandboxLNA15s/asserts/depslock. Semprodução/serviço/PSP/dinheiro/pentest/aparelhofísico/root/grants/bypass.

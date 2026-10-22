@@ -8,4 +8,8 @@ REVOKE ALL ON terms_acceptances FROM app_runtime;
 -- still need SELECT for matching; retain that read permission without widening it.
 REVOKE INSERT, UPDATE, DELETE ON professional_capabilities FROM app_runtime;
 
+-- Profile writes also resolve the authenticated identity on the platform path.
+-- Runtime matching/assignment queries retain SELECT without cross-owner writes.
+REVOKE INSERT, UPDATE, DELETE ON professional_profiles FROM app_runtime;
+
 COMMIT;

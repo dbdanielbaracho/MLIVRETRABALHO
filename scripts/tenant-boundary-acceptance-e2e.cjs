@@ -71,7 +71,7 @@ async function main(){
    await call(pros[i],null,'/v1/professional-capabilities/hospitality.bartender','PUT',{skills:['bar_setup'],certifications:[],provenLevel:'entry',professionalId:pros[1-i].profile});
    owners[i].job=(await call(owners[i],owners[i].tenant,'/v1/company/jobs','POST',{title:'Boundary committed '+i,requiredRole:'Bartender',workCity:'São Paulo',startsAt:iso(72),endsAt:iso(80),payCents:1234},201)).id;
   }
-  const catalog=async()=>({tables:(await db.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relowner::regrole::text owner,c.relacl::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') ORDER BY c.relname")).rows,policies:(await db.query("SELECT * FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows});
+  const catalog=async()=>({tables:(await db.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relowner::regrole::text owner,c.relacl::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') ORDER BY c.relname")).rows,policies:(await db.query("SELECT * FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows,privilegedFunctions:(await db.query("SELECT p.proname,p.proowner::regrole::text owner,p.proconfig,pg_get_functiondef(p.oid) definition,has_function_privilege('app_runtime',p.oid,'EXECUTE') runtime_execute,EXISTS(SELECT 1 FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE a.grantee=0 AND a.privilege_type='EXECUTE') public_execute FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prosecdef ORDER BY p.proname")).rows});
   stage='explicit-whole-schema-scope-and-role';const beforeSecurity=await catalog();
   assert.deepEqual(beforeSecurity.tables.map(x=>x.relname),[...tenantTables,...Object.keys(otherScopes)].sort(),'Unclassified table is a hard failure');
   const role=(await db.query("SELECT rolsuper,rolbypassrls,rolcreatedb,rolcreaterole FROM pg_roles WHERE rolname='app_runtime'")).rows[0];check(role&&Object.values(role).every(x=>x===false),'runtime_nonprivileged_role');
@@ -81,6 +81,10 @@ async function main(){
    check((await db.query("SELECT attnotnull FROM pg_attribute WHERE attrelid=$1::regclass AND attname='tenant_id' AND NOT attisdropped",[table])).rows[0]?.attnotnull,'not_null_tenant_'+table);
    check(beforeSecurity.policies.some(x=>x.tablename===table&&x.qual&&x.with_check),'read_and_write_policy_'+table);
   }
+  const callable=['active_marketplace_professional','active_marketplace_professional_identity','active_tenant_professional','active_tenant_professional_identity','confirm_marketplace_interest','list_company_members'];
+  const triggerOnly=['refresh_marketplace_company_reputation','sync_marketplace_job_projection'];
+  assert.deepEqual(beforeSecurity.privilegedFunctions.map(x=>x.proname),[...callable,...triggerOnly].sort(),'Every privileged project function must be explicitly audited');
+  for(const f of beforeSecurity.privilegedFunctions)check(!f.public_execute&&f.owner!=='app_runtime'&&f.runtime_execute===callable.includes(f.proname)&&f.proconfig?.some(x=>x.replace(/\s/g,'')==='search_path=public,pg_temp'),'least_privileged_definer_'+f.proname);
   // Seed one valid row per TENANT table per company. This is not an API-positive
   // witness for these business states. Every seed/probe below is rolled back.
   stage='rollback-only-valid-fixture-graph';await db.query('BEGIN');transaction=true;
@@ -95,6 +99,7 @@ async function main(){
    await insert('tenant_memberships',{id:randomUUID(),tenant_id:tenant,subject_id:identity,identity_id:identity,role:'professional'});
    await insert('company_jobs',{id:job,tenant_id:tenant,title:'Boundary rollback fixture',status:'open',required_role:'Bartender',work_city:'São Paulo',starts_at:iso(96),ends_at:iso(104),pay_cents:1000});
    await insert('work_assignments',{id:assignment,tenant_id:tenant,job_id:job,professional_id:professional,status:'confirmed'});
+   await db.query("INSERT INTO marketplace_interests(job_id,professional_id,status) VALUES($1,$2,'interested')",[job,professional]);
    await insert('job_interests',{id:randomUUID(),tenant_id:tenant,job_id:job,professional_id:professional,status:'interested'});
    await insert('earnings_ledger',{id:randomUUID(),tenant_id:tenant,assignment_id:assignment,professional_id:professional,amount_cents:1000,status:'payable'});
    await insert('work_ratings',{id:randomUUID(),tenant_id:tenant,assignment_id:assignment,rater_identity_id:owners[i].id,professional_id:professional,score:4});
@@ -143,7 +148,29 @@ async function main(){
     const move=await probe('UPDATE public.'+table+' SET tenant_id=$1 WHERE tenant_id=$2',[foreign,own]);check(move.code==='42501','tenant_rebind_rejected_'+table);
    }
   }
+  stage='explicit-privileged-function-boundaries';
+  for(let i=0;i<2;i++){
+   await db.query("SELECT set_config('app.tenant_id',$1,true)",[owners[i].tenant]);
+   const ownJob=seedRows.company_jobs[i].id,foreignJob=seedRows.company_jobs[1-i].id;
+   for(const [name,identityResult]of [['active_marketplace_professional',false],['active_marketplace_professional_identity',true]]){
+    check((await db.query('SELECT '+name+'($1,$2) value',[ownJob,pros[i].profile])).rows[0].value===(identityResult?pros[i].id:true),'own_marketplace_definer_'+name);
+    check((await db.query('SELECT '+name+'($1,$2) value',[foreignJob,pros[1-i].profile])).rows[0].value===(identityResult?null:false),'foreign_marketplace_definer_'+name);
+   }
+   for(const [name,identityResult]of [['active_tenant_professional',false],['active_tenant_professional_identity',true]]){
+    check((await db.query('SELECT '+name+'($1) value',[pros[i].profile])).rows[0].value===(identityResult?pros[i].id:true),'own_tenant_definer_'+name);
+    check((await db.query('SELECT '+name+'($1) value',[pros[1-i].profile])).rows[0].value===(identityResult?null:false),'foreign_tenant_definer_'+name);
+   }
+   const members=(await db.query('SELECT identity_id FROM list_company_members()')).rows;
+   check(members.length===2&&members.every(x=>[owners[i].id,pros[i].id].includes(x.identity_id)),'definer_identity_list_stays_in_tenant');
+   check((await probe('SELECT confirm_marketplace_interest($1,$2)',[ownJob,pros[i].profile])).code===null,'own_confirmation_definer');
+   check((await probe('SELECT confirm_marketplace_interest($1,$2)',[foreignJob,pros[1-i].profile])).code==='P0001','foreign_confirmation_definer_denied');
+  }
   await db.query("SELECT set_config('app.tenant_id','',true)");
+  for(const name of callable){
+   const values=name.startsWith('active_marketplace')||name==='confirm_marketplace_interest'?[seedRows.company_jobs[0].id,pros[0].profile]:name.startsWith('active_tenant')?[pros[0].profile]:[];
+   check((await probe('SELECT * FROM '+name+'('+values.map((_,i)=>'$'+(i+1)).join(',')+')',values)).code==='P0001','missing_context_definer_denied_'+name);
+  }
+  console.log('TENANT_BOUNDARY_PRIVILEGED_FUNCTIONS_PASS '+JSON.stringify({functions:beforeSecurity.privilegedFunctions.map(f=>({name:f.proname,publicExecute:f.public_execute,runtimeExecute:f.runtime_execute,fixedSearchPath:true,definitionSHA256:createHash('sha256').update(f.definition).digest('hex')})),ownAndForeignBothDirections:true,missingContextDenied:true,confirmationWritesRolledBack:true}));
   for(const table of tenantTables)check((await db.query('SELECT 1 FROM public.'+table)).rowCount===0,'missing_context_deny_'+table);
   await db.query("SELECT set_config('app.tenant_id','not-a-uuid',true)");
   for(const table of tenantTables)check((await probe('SELECT 1 FROM public.'+table)).code==='22P02','invalid_context_deny_'+table);
@@ -163,7 +190,8 @@ async function main(){
   // Concrete owner-forgery probes, not permission metadata alone; both are always rolled back.
   const forged=await probe('INSERT INTO terms_acceptances(identity_id,terms_key,version) VALUES($1,$2,$3)',[pros[1].id,'forged-by-tenant-a',stamp]);
   const tampered=await probe("UPDATE professional_capabilities SET skills=ARRAY['guest_service'] WHERE professional_id=$1 AND role_id='hospitality.bartender'",[pros[1].profile]);
-  for(const [table,method,p]of [['terms_acceptances','INSERT_FOREIGN_IDENTITY',forged],['professional_capabilities','UPDATE_FOREIGN_PROFESSIONAL',tampered]]){
+  const profileTampered=await probe('UPDATE professional_profiles SET display_name=$1 WHERE id=$2',['Synthetic unauthorized profile change',pros[1].profile]);
+  for(const [table,method,p]of [['terms_acceptances','INSERT_FOREIGN_IDENTITY',forged],['professional_capabilities','UPDATE_FOREIGN_PROFESSIONAL',tampered],['professional_profiles','UPDATE_FOREIGN_PROFILE',profileTampered]]){
    console.log('TENANT_BOUNDARY_OWNER_WRITE_OBSERVED '+JSON.stringify({table,method,sqlstate:p.code,rowCount:p.rowCount,rolledBack:true}));if(p.code!=='42501')violations.push({table,method,code:p.code,rowCount:p.rowCount});
   }
   await db.query('RESET ROLE');assert.deepEqual(await tenantSnapshot(),beforeRows,'All adversarial tenant operations preserve both graphs byte-for-byte in JSON');
