@@ -19789,3 +19789,65 @@ HEAD candidato `d7d2eefac47192c344ca6818bc3fab5484842fb6`; merge sintético `fd4
 O aceite é técnico/funcional interno da Área9. Push/provedor externo, transporte assíncrono/outbox externo, produção, aparelho físico, SecureStore nativo, renderização RN física, Visual Truth, pentest independente, PSP, contratos e dinheiro real não foram aprovados. A matriz original e todos os apêndices anteriores permanecem integralmente preservados. React19.1.4/RN0.81.6, lockfile, tenant/RLS, privacidade, autenticação e controles de navegador permanecem vigentes. A formalização é documental e exige CI próprio e pós-merge; APK N/A para a formalização por identidade dos insumos Android.
 
 Próxima jornada interna prioritária: Área6, ledger/pagamentos simulados, reconciliando os PRs #573 e #584 com a main atual e exigindo seus gates próprios; manter split teórico, rollback, reembolso e saldo negativo separados de PSP real. O PR #560 pode ser encerrado como consolidado após confirmar os blobs transacionais idênticos aos integrados pelo #581; branch/história devem ser preservados.
+
+
+---
+
+### Histórico exclusivo preservado da branch573 anterior à reconciliação
+
+## Candidato integral da Área 6 — ledger e pagamentos simulados — 2026-10-21
+
+Escopo exclusivo `dbdanielbaracho/MLIVRETRABALHO`. Este apêndice preserva integralmente todo o conteúdo anterior e registra uma candidatura funcional; **não antecipa aceite**. Permanecem formalmente aceitas apenas as áreas 2 e 10, com 11 áreas pendentes até CI próprio, integração e pós-gates reais.
+
+Base: `main` `80f3ac49f5f7177d6a8d193a27881b74ffff4763`. Frente reconciliada no PR #573 existente, sem PR duplicado. A árvore candidata preserva a história do #573 e incorpora a base atual; consolida também apenas os dois arquivos funcionais de Ganhos do #584, deixando o #584 aberto até decisão posterior.
+
+Cadeia requisito→produto→prova:
+- ledger simulado: conclusão real de assignment cria um único `earnings_ledger`; falha deliberada no INSERT devolve HTTP 500 e reverte status/timestamp/ledger em cinco tabelas e dois tenants; recuperação é uma ação humana explícita e replay de conclusão retorna 400 sem duplicar;
+- leitura cliente: o JSON HTTP vazio do rollback e o JSON payable da recuperação atravessam o `loadEarnings` real, sem fetch, SQL ou retry adicional;
+- split teórico: a reconciliação deriva exclusivamente dos fatos já persistidos `captured - refunded`, `professionalPayable` e o restante matemático da plataforma; não cria taxa, comissão, transferência ou regra comercial;
+- reembolso/saldo negativo: captura simulada de 30.000, reembolso simulado de 40.000 e payout simulado de 25.000 produzem `netCaptured=-10.000`, `platformRemainder=-35.000` e `cashBalance=-35.000`, com replay idempotente e isolamento do segundo tenant;
+- limites numéricos: diferenças derivadas devem permanecer inteiros JSON seguros; overflow falha fechado, sem arredondamento ou zero inventado;
+- Ganhos mobile: o prazo existente aposenta apenas controller/listener próprios e preserva retry manual, autenticação, tenant, endpoint, payload e estados.
+
+Arquivos funcionais do candidato:
+- `apps/api/src/payment-events.controller.ts`;
+- `apps/api/src/payment-reconciliation.controller.test.ts`;
+- `scripts/http-finance-reconciliation-e2e.sh`;
+- `scripts/ledger-completion-atomicity-e2e.cjs`;
+- `apps/api/src/ledger-completion-atomicity.test.ts`;
+- `scripts/http-journey-e2e.sh`;
+- `apps/mobile/app/ganhos.tsx`;
+- `apps/mobile/tests/earnings-controller-cleanup.test.mjs`.
+
+Controles preservados: React 19.1.4, RN 0.81.6, lockfile, autenticação, ACL, RLS/tenant, assinatura HMAC, idempotência, vínculo do destinatário, CORS, Fetch guard, CDP, sandbox, LNA, prazos e assertivas. Sem produção, Railway, Neon, PSP, KYC, dinheiro real, credenciais reais, serviços pagos, root, grants ou desativação de RLS. A posição é **simulada** e não autoriza liquidação.
+
+Gates: CI completo próprio e APK standalone próprio são obrigatórios porque há alteração mobile. Só com ambos SUCCESS, revisão fresh de main/base/head/diff e merge único poderá haver integração. Depois, CI e APK literais pós-merge também serão obrigatórios antes do aceite técnico interno da Área 6. Nenhum resultado de SHA anterior será emprestado.
+
+
+---
+
+## Jornada candidata da Área6 reconciliada com a main — 21/10/2026
+
+Base viva `7caa5f1404b0ac12e50e1953440e30177af93054`, árvore `08c5ed3855fedef8ab73ccff06b3dad3c1799646`. CI literal39636343998SUCCESS; área9 formalizada pelo #603, área3 pelo #601. Estado confirmado: **áreas2,3,9,10 aceitas; nove pendentes**. Esta integração do PR #573 existente não antecipa aceite da Área6.
+
+O pacote preserva o código e os testes já publicados em573, inclusive a correção TypeScript de chaves literais, e incorpora a main atual por merge normal, sem force. Os dois arquivos funcionais de Ganhos são byte-idênticos aos do #584; esse PR permanece aberto até a integração comprovada, sem apagar sua história. O shell HTTP parte da main atual e recebe somente as três linhas do hook de ledger antes do navegador; o hook de atomicidade de notificações do #581 continua intacto. O workflow oficial assinado de Chrome e todos os demais gates da main são preservados.
+
+### Critérios cobertos pelo candidato
+
+- Conclusão real de trabalho e ledger payable único, erro tardio HTTP500 com testemunha de INSERT e rollback integral em cinco tabelas de duas empresas, recuperação explícita201 e repetição400 sem duplicar.
+- JSON real já recebido após rollback/recuperação atravessa o loadEarnings real, sem requests adicionais ou linhas inventadas.
+- Split teórico derivado de captured-refunded, payable profissional e restante matemático; não define comissão comercial nem transferência. Captura30.000/payable25.000 produz restante5.000; refund40.000 e payout25.000 produzem netCaptured-10.000, restante-35.000 e saldo-35.000. As diferenças devem ser inteiros seguros ou falhar fechado.
+- Eventos assinados HMAC, replay idempotente, vínculo do destinatário, concorrência de callback e totais além de int32, mantendo isolamento/autorização.
+- Ganhos retira somente controller/listener expirados no prazo original de quinze segundos, preservando estado de erro, autenticação, leitura explícita e ownership em foco e contexto posteriores.
+
+### Reprodução e validação focal desta integração
+
+Node24.19.0: os21 casos de reconciliação/guardas do fixture contra controller atual da main tiveram16PASS/5FAIL (três critérios novos e duas expectativas JSON ampliadas); os18 casos de Ganhos contra tela atual tiveram2PASS/16FAIL. Com os mesmos casos e os blobs já publicados em573: **39PASS/0fail/skip/cancel em UTC e America/Sao_Paulo**, mais bash-n nos dois shells e node--check no fixture. Não são39 testes novos. A adaptação local da API remove apenas imports/decorators Nest e usa exceções explícitas de fixture; não constitui typecheck Nest/HTTPPG/RLS físico. Os testes mobile executam handlers reais pré-JSX/helpers com hooks/auth/JSON/clock explícitos, não renderização RN/SecureStore nativos.
+
+Os normativos correntes são preservados integralmente como prefixo, seguidos do trecho histórico exclusivo da branch573 e deste capítulo. Manifesto em `AREA6_SIMULATED_LEDGER_ACCEPTANCE_CANDIDATE_2026-10-21.md` permite reconstruir o texto anterior de573 por prefixo comum + tail original, sem substituir os aceites atuais por snapshots antigos.
+
+### Gates e próximo passo
+
+O novo HEAD exige CI completo e APK standalone próprios SUCCESS. Após revisão fresh de main/base/head/árvore/diff/modos e merge esperado único, também exige CI e APK literais pós-merge. Só então emitir autonomamente o aceite técnico/funcional interno da Área6 em apêndice formal; o usuário não precisa aprovar nem digitar CONTINUAR. Não se reutiliza verde de outro SHA. Se falhar o gate de produto/browser, registrar o primário e não repetir o mesmo SHA para obter verde.
+
+React19.1.4/RN0.81.6, lockfile, tenant/RLS, ACL, privacidade, autenticação, CORS, Fetch guard, CDP, sandbox, LNA, prazos e assertivas permanecem vigentes. Sem produção, serviços pagos, PSP, KYC, contratos, credenciais externas, transferência ou dinheiro real, root/grants/RLSdisable. Pendências externas continuam exigindo evidências externas reais. O progresso estrito desta preparação é candidatura da jornada completa; ainda quatro áreas aceitas, nove pendentes.

@@ -431,6 +431,9 @@ node scripts/authentication-acceptance-e2e.cjs
 # Disposable invitation renewal/acceptance/promotion rollback; existing gates remain mandatory.
 node scripts/invitation-atomicity-e2e.cjs
 
+# Ledger completion, rollback, simulated split and negative-balance journey use only disposable local HTTP/PostgreSQL.
+node scripts/ledger-completion-atomicity-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
