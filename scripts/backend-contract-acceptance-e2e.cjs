@@ -6,6 +6,7 @@ const {resolve}=require('node:path');
 const {createRequire}=require('node:module');
 const {randomUUID,createHash,createHmac}=require('node:crypto');
 const {localConfiguration,requireLocalDatabasePeer}=require('./professional-chronology-e2e.cjs');
+const {contract}=require('./openapi-contract.cjs');
 const uuid=x=>typeof x==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x);
 const sha=text=>createHash('sha1').update('blob '+Buffer.byteLength(text)+'\0').update(text).digest('hex');
 let stage='configuration',lastContract=null;
@@ -31,7 +32,7 @@ function inventory(){
 }
 module.exports={inventory};
 async function main(){
- const config=localConfiguration(process.env),catalog=inventory();
+ const config=localConfiguration(process.env),catalog=inventory(),openapi=contract(catalog);
  assert.equal(process.env.PAYMENT_WEBHOOK_SECRET,'ci-payment-webhook-secret','Only the established synthetic CI webhook fixture is eligible');
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
  const db=new Client({connectionString:config.databaseUrl,connectionTimeoutMillis:5000});await db.connect();
@@ -42,9 +43,11 @@ async function main(){
  };
  async function call(actor,method,path,body,status=method==='POST'?201:200,extra={}){
   const route=routeFor(method,path);requests++;lastContract={method,route:route.path,expected:status};
-  const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'}),...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const headers={...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'}),...extra};
+  openapi.request(route,path,headers,body);
+  const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers,...(body===undefined?{}:{body:JSON.stringify(body)})});
   let data;try{data=await response.json();}catch{throw Error('JSON_contract_'+route.method+'_'+route.path);}
-  lastContract.actual=response.status;
+  lastContract.actual=response.status;openapi.response(route,response.status,data);
   if(response.status!==status){console.log('BACKEND_CONTRACT_STATUS_MISMATCH '+JSON.stringify({stage,method,route:route.path,actual:response.status,expected:status}));throw Error('HTTP_contract');}
   if(status>=200&&status<300){positives.set(method+' '+route.path,(positives.get(method+' '+route.path)||0)+1);}
   return data;
@@ -52,7 +55,7 @@ async function main(){
  async function negative(actor,method,path,body,status=400){
   const route=routeFor(method,path);requests++;lastContract={method,route:route.path,expected:status};
   const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
-  const data=await response.json();lastContract.actual=response.status;const row={method,route:route.path,expected:status,actual:response.status};negatives.push(row);
+  const data=await response.json();lastContract.actual=response.status;openapi.response(route,response.status,data);const row={method,route:route.path,expected:status,actual:response.status};negatives.push(row);
   if(response.status!==status)violations.push(row);
   assert.ok(!JSON.stringify(data).includes('password_hash')&&!JSON.stringify(data).includes('token_hash'),'No stored credential in negative response');
  }
@@ -205,6 +208,7 @@ async function main(){
   assert.equal(positives.size,106);
   console.log('BACKEND_CONTRACT_COVERAGE_OBSERVED '+JSON.stringify({controllers:43,routes:106,positiveRoutes:positives.size,negativeCases:negatives.length,requests,violations,routeContracts:catalog.routes.map(r=>({method:r.method,path:r.path,positiveRequests:positives.get(r.method+' '+r.path)})),controllerGitBlobs:catalog.sources}));
   assert.equal(violations.length,0,'Real HTTP contract violations require correction');
+  openapi.finish(requests);
   console.log('BACKEND_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({registeredControllers:43,inventoriedRoutes:106,allRoutesPositive:true,actualHTTPPostgres:true,invalidInputAndAuth:true,allTenantHeaderRoutesDeniedForeignAndAnonymous:true,otherTenantAll27TablesUnchanged:true,policyCatalogUnchanged:true,confirmedCompletedLedgerAndReviews:true,humanReplacementAndCancellation:true,safetySupportAuditAndConversion:true,simulatedSignedWebhookOnly:true,providerKYCStillPending:true,requests,nativeUI:false,externalPentest:false,production:false}));
  }finally{await db.end();}
 }
