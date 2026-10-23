@@ -4386,7 +4386,7 @@
         "path": "scripts/android-qmp-isolation.cjs",
         "mode": "100644",
         "type": "blob",
-        "sha": "763ef547e803906fc3f507ab524c59759ea90c39"
+        "sha": "686ad849272ed56dd1bcd7ab6207625487cab134"
       },
       {
         "path": "scripts/tests/android-entry-isolation.test.mjs",
@@ -4424,7 +4424,19 @@
     "ownStandaloneAPKRequired": true,
     "literalPostCIRequired": true,
     "literalPostAPKRequired": true,
-    "evidence": "Pending ownCI/APK. Local Unix sockets EPERM: six transport cases blocked, no permission workaround. Four adapted/old diagnostics plus ten old models pass locally. No native/local proof or new area acceptance.",
-    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070"
+    "evidence": "PENDING new own full CI/APK after proven duplicate event/idle timer race fix; no test assertion/deadline relaxed, no native run yet.",
+    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "previousFunctionalCandidate": {
+      "head": "74f96f92739005dd80e2fb93b3995a3fca3fe852",
+      "ownCI": 39990595319,
+      "ownAPK": {
+        "id": 39990595274,
+        "job": 120541032023,
+        "conclusion": "failure",
+        "stage": "Test standalone smoke gate and failure diagnostics",
+        "build": "skipped",
+        "error": "qmp_timeout instead of required qmp_device_removal_not_confirmed"
+      }
+    }
   }
 }

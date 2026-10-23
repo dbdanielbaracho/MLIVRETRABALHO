@@ -52,7 +52,8 @@ function monitorClient(socketPath,timeout=3000){
   assert.ok(['qmp_capabilities','query-version','query-commands','qom-list','qom-get','device_del'].includes(execute),'qmp_command_not_allowed');if(failure)throw failure;
   const id=++seq;return new Promise((resolve,reject)=>{const timer=setTimeout(()=>fail(Error('qmp_reply_timeout')),timeout);replies.set(id,{resolve,reject,timer});socket.write(JSON.stringify({execute,...(args?{arguments:args}:{}),id})+'\n');});
  },event(predicate,ms){
-  socket.setTimeout(ms);
+  // The event promise owns this exact deadline; do not race an idle socket timer.
+  socket.setTimeout(0);
   const seen=events.find(predicate);if(seen)return Promise.resolve(seen);if(failure)return Promise.reject(failure);
   return new Promise((resolve,reject)=>{const row={predicate,resolve,reject};row.timer=setTimeout(()=>{waiters.splice(waiters.indexOf(row),1);reject(Error('qmp_device_removal_not_confirmed'));},ms);waiters.push(row);});
  },close(){socket.destroy();for(const p of replies.values())clearTimeout(p.timer);for(const p of waiters)clearTimeout(p.timer);}};
