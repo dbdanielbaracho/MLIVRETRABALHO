@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { randomUUID } from 'node:crypto';
+import { privateApplicationLogger, privateHttpLogger } from './privacy-logging';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
@@ -7,8 +9,8 @@ import { parseCorsOrigins } from './cors';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
-    { rawBody: true },
+    new FastifyAdapter({ logger: privateHttpLogger, requestIdHeader: false, genReqId: () => randomUUID() }),
+    { rawBody: true, logger: privateApplicationLogger },
   );
 
   app.enableShutdownHooks();
@@ -29,4 +31,4 @@ async function bootstrap(): Promise<void> {
   await app.listen(port, host);
 }
 
-void bootstrap();
+void bootstrap().catch(error=>{privateApplicationLogger.error(error,'Bootstrap');process.exitCode=1;});

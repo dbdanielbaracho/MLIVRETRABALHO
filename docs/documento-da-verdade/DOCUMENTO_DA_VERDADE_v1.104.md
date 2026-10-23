@@ -19653,3 +19653,41 @@ Recibo completo, classificação44tabelas, auditoria32contratos, manifesto106rot
 **Matriz vigente após esta formalização:8áreas concluídas internamente — 2,3,4,5,6,7,9,10;5pendentes — 1,8,11,12,13.** Não é percentual de código. Não há aceite de produção, pentest independente, PSP/KYC/KYB/contrato/dinheiro real, aparelho físico, Visual Truth, render RN completo ou SecureStore nativo por arrasto. Issues externas215/219/220/224/228 continuam separadas;574/565 permanecem drafts. Nenhum serviço externo, custo, credencial, root, grant ou implantação de produção foi utilizado.
 
 APK N/A para613 e para este delta exclusivamente documental:184insumosprotegidos/173mobile BYTE-IDÊNTICOS ao produto literal1b85403cafd9e17bceeb3ea47ce27fdf03c1496e, build39708675307SUCCESS/artifact12396378712unexpired, revalidado pela API. Build Expo→Gradle não importa o novo SQL/API/CJS; o workflow Standalone filtra alterações Android. Nenhum APK literald6b8 ou deste novo SHA é alegado. React mobile19.1.4/RN0.81.6/lockfile e todos os controles de segurança permanecem intactos. A próxima jornada deve reduzir uma das cinco pendências com provas completas, sem microcontadores, duplicação de PR ou execução contínua prometida entre rodadas.
+
+
+---
+
+## Área8 — jornada integrada de segurança interna — 22/10/2026
+
+Base main23b62c2423c105350e442ebab3b5030619711b35/tree39c72f3c088b47bb68b4e79a8af3df81dbe1a22b, pós-CI39875266018SUCCESSliteral;614/613 já integrados,605/607/584járesolvidos, não repetir. Oito áreas2/3/4/5/6/7/9/10 aceitas;1/8/11/12/13 pendentes. Nova jornada candidata integra autenticação concorrente com8senhaserradas/7×401+1×429/limiterPG8/resetmanual;hashscrypt/tokenSHA256observados;exportprivado de3identidades com mensagens/ratingreais e redigidos terceiros;falhaSQLprivacidade500/semACK/semregistroparcial/sequencewitness1tentativa/recuperaçãomanual201;canários sintéticos emquery/path/header/body/erroPG evarredura de logs APIreais com diagnósticosstatus/correlação obrigatórios. Não é microteste ou pentest externo.
+
+Há HIPÓTESE de PII em log: FastifyAdapter(logger:true) e loggerNest padrão na fonte atual não foram medidos por canários deURL/erro. O novo teste deve reproduzir ou refutar antes de qualquer correção; não afirmar bug observado ainda. Canários são descartáveis e sem dados reais. GuardCI+APIloopback+DBexatomlivretrabalho_http+socketPGreal antes de fixtures;trigger/sequenceapenasda identidadefresh,são removidos nofinally;nenhuma policy/ACLalterada. TodoHTTP/browser12+canônico/ProductionTruth original permaneceobrigatório. ApenasnovoCJS/hook3linhas e apêndices;runtimeAPI/mobile/lock/workflows inalterados neste primeiroHEAD. APK N/A por insumosmobile/Expo→Gradle íntegros, nãoAPKliteralnovo. CIcompleta e literalpós-merge aindaPENDENTES;nenhumaceite8antesdacadeiafechada.
+
+Critério↔prova↔fontes eFULLFINAL614 em docs/evidencias/INTERNAL_SECURITY_ACCEPTANCE_JOURNEY_2026-10-22.md. Auth/rateconcurrency/PII/log/retry/fault complementam as jornadasreais deauth,empresa,matching,notification,ledger,27RLS eprivacyretention/hold já obrigatórias;sourceaudit ecanário não são pentest. 574/565continuamdrafts;215/219/220/224/228externos separados. Semserviço/custo/credencialexterna/produção/PSP/dinheiro/aparelhofísico/root/grants/bypass. NãoSAMESHArerun, statuscommit, gate weakened ou promessa entre rodadas.
+
+
+---
+
+## Área8 — logs privados reproduzidos e correção integrada — 22/10/2026
+
+PrimeiroHEAD3ed3ff7fe44ce6b849e37a565e1bdd92ec20051e/tree22976b3dba40b13d10352a5173e9eacc59011187, CI39881170789/job120178629061attempt1FAIL. Checkout5aa6da2ae3d242839829ee699821e8bc21ddc129SINTÉTICO[23b62,3ed3]/mesmaárvore;1936unit/typebuildexport/migrações/privacyPASS. Authconcurrency/PIIexport/fault-recoveryreaisPASS01:00:19.9352543Z/20.0088144Z/.0213739Z. GateparouporERRODAFIXTUREhealth404: usada/v1/healthmascontratoé/v1/health/ready, corrigida. IssoNÃOébugHealthController nemprovaFULLCI. Apesar desseerro, logprimáriorealNestExceptionsHandler01:00:20.4020922Z expôs canárioSQLprivado eFastifyincoming01:00:20.4032602Z expôs canárioquery; são observaçõesdiretas, nãoasserçãoquefalhouporlogger. Casounmatched/bodyaindanãomedidonesseHEAD. NenhumSAMESHArerun.
+
+Auditados173arquivosruntimeGit[85API77mobile11Web]. Outroscanais:4CLIsrawexceptions eprivacy_retention_runs.error_code recebiam mensagembruta;storage mobile safeGet/Set/Delete passavam Errorao console.warn. ModeloLOCALNode24comfontesintegrais equeueREAL,adapterSecureStoreexplícito,observou6warningscomcanário→correção6warningsSEMcanárioequeue/login/tenant/logoutpreservados. NÃOaparelho/SecureStore nativo. Websemconsoleexposingnos11fontesauditados.
+
+NovoHEADfuncionalusa privacy-logging.ts:hookPinoANTESinterpolação, allowlistdemétodo/rotaREGISTRADA/status/tempo/tipodeerro/SQLcode;Nestloggersemrawmessage/stack;reqIdUUIDgeradonoservereheaderrequest-idignorado. ErrosCLIeerror_coderetentionsãocódigos/reasonsliteraisallowlisted,guardasexistentespermanecemlegíveis;stdoutfuncionaldosoperadoresnãoéredigidocomosefosselog (exportprivilegiadocontrolado).3warningsmobileagorafixossemkey/erro,mesmosreturns/queue/verifiedstorage. Nenhumcontroledeauth/SQL/RLS/ACL/retentionrules/códigosHTTP/CORS/prazo/browseralterado.
+
+NovajornadaampliafalhaPGparaaçãoCLIrealsobreprópriafixture/exit1/semACK/semrowmutada/códigoP0001sanitizado;2probes=1tentativaSQLcada,semretryautomático. Fixaendpointhealth eexigelogserror/status/correlação (não aceitar silênciocomoconserto);integraactualmobilequeue/adaptersourcecomo modelo explícito. SemreutilizarPASSdeSHAanterior. **APKAGORAAPLICÁVEL**pormobile/lib/session.ts;precisaOWNCI+OWNstandalone+review+mergeexpected+POSTCIAPKliterais. OldN/Aéapenasbaselinehistórica,183de184insumosprotegidosidênticosfora sessão;React19.1.4/RN0.81.6depslock/workflowsintactos. Área8PENDENTE;matriz8aceitas/5pendentes, semaceiteantecipado. Fonte/crosswalk/primárias/fullbodyhistórico em docs/evidencias/INTERNAL_SECURITY_LOG_PRIVACY_FIX_2026-10-22.md.
+
+
+---
+
+## Área8 — tipo de opções do logger alinhado ao adaptador — 22/10/2026
+
+HEAD eaa5f47e19508381c178fc7b1d6dbfccf387b90b CI39882323962/job120182338726attempt1FAIL SOMENTETypecheck:FastifyLoggerOptions não incluihooksPino e nãoequivaleaointersectionloggerdeFastifyServerOptions;TS2322/2353/7006. Build/unit/HTTP/browser posterioresSKIP; não1936PASSnesseHEAD,nãofalhaChrome. APK39882323906segueexecução (nãoaprovar/aindaempassarnãoemprestarparanovoSHA). CorreçãorealSomenteimport+anotação paraExclude<FastifyServerOptions<any>['logger'],boolean|undefined>,mesmotipodeopçõesdogenericserverusadopeloFastifyAdapter. Semcastemruntime,passthroughargs,relaxamento deallowlist/log/guards/deadline,semSAMESHArerun. Mesmamudançamobiletrêswarnings exigeAPKprópriononovoHEAD. Área8continuaPENDENTEownCIAPK/literalPOST;8aceitas/5pendentes. Fonte/errointegraisappendnanotaexistente,originaisFULLpreservados.
+
+
+---
+
+## Área8 — compatibilidade estrutural entre as versões Fastify do lock — 22/10/2026
+
+4dee17366d549d7b9c374a85378a5de7da760ef6/CI39882633172/job120183368922attempt1FAILsóTypecheckTS2322. Primária01:12:42.9330844Z..9358730Z identifica dois tipos nominais: Fastify direto5.12.5 eFastify5.11.3 dentrodoNestAdapter11.2.6; objeto anotado amplamenteherdavaserializers.reqincompatíveismesmoquenãousado. Lock1b854 eversõespermaneceminalterados. Corrigir inferindosomenteobjetoimplementado[level/hooks],parâmetroargsunknown[],alvorefletidoFunction e thisunknown,semcast/any/dedup/alterardeps/config. Reflect.apply jáenviasómetadataprivada; nãopassthroughdeinput. Istoécompatibilidade decompilação real, nãoRCAdeChrome/native. Build/unit/HTTP posterioresSKIPnesseHEAD;APK39882633087anteriornãoemprestadoparanovocandidato. Área8PENDENTEownCIAPKePOSTliteral;8aceitas5pendentes. Sócódigo+evidência,semSAMESHArerun/statuscommit.

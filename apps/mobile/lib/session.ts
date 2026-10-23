@@ -10,7 +10,7 @@ async function safeGet(key: string): Promise<string | null> {
   try {
     return await SecureStore.getItemAsync(key);
   } catch (error) {
-    console.warn(`SecureStore read failed for ${key}; continuing without persisted value.`, error);
+    console.warn('SecureStore read failed; continuing without persisted value.');
     return null;
   }
 }
@@ -19,7 +19,7 @@ async function safeSet(key: string, value: string): Promise<void> {
   try {
     await SecureStore.setItemAsync(key, value);
   } catch (error) {
-    console.warn(`SecureStore write failed for ${key}.`, error);
+    console.warn('SecureStore write failed.');
   }
 }
 
@@ -27,7 +27,7 @@ async function safeDelete(key: string): Promise<void> {
   try {
     await SecureStore.deleteItemAsync(key);
   } catch (error) {
-    console.warn(`SecureStore delete failed for ${key}.`, error);
+    console.warn('SecureStore delete failed.');
   }
 }
 
