@@ -1,3 +1,4 @@
+import { privateOperationFailure } from './privacy-logging';
 import { Pool } from 'pg';
 
 const UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -86,4 +87,4 @@ async function main(){
   }finally{await pool.end();}
 }
 
-void main().catch(error=>{console.error(error instanceof Error?error.message:error);process.exitCode=1;});
+void main().catch(error=>{privateOperationFailure('privacy_legal_holds',error);process.exitCode=1;});

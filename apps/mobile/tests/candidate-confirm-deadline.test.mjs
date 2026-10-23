@@ -1,0 +1,52 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {stripTypeScriptTypes} from 'node:module';
+import {loadCompanyJobs,loadCandidates,loadingCandidates,orderedCandidates,sameCompanyContext,confirmCandidate} from '../lib/company-candidates.ts';
+import {runForSession} from '../lib/session-context.ts';
+// Execute actual pre-JSX handlers, production parsers and confirmCandidate.
+// Hook/auth/transport/clock fixtures are explicit; no RN render, real write or physical evidence.
+const origin={Authorization:'Bearer fixture-a','x-tenant-id':'tenant-a'};
+const job={id:'job-a',title:'Fixture',status:'open'},person={professionalId:'person-a',displayName:'Fixture person',status:'interested'};
+const assignmentId='a1111111-2222-4333-8444-55555555555f';
+function panel(config={}){
+ const source=fs.readFileSync(new URL('../app/candidatos.tsx',import.meta.url),'utf8'),start=source.indexOf('export default function Candidatos()'),end=source.indexOf('\n  return (\n',start);assert.ok(start>=0&&end>start);
+ const code=stripTypeScriptTypes(source.slice(start,end).replace('export default ','')+'\nreturn {selectJob,confirm};\n}',{mode:'strip'});
+ const create=new Function('useState','useRef','useCallback','useFocusEffect','authenticatedTenantHeaders','runForSession','apiUrl','loadCompanyJobs','loadCandidates','loadingCandidates','orderedCandidates','sameCompanyContext','confirmCandidate','fetch','setTimeout','clearTimeout',code+'\nreturn Candidatos();');
+ const state=[],refs=[],calls=[],timers=new Map();let si=0,ri=0,focus,cleanup,h,nextTimer=0,headers={...origin},mode=null,reads=0;const held=[];
+ const auth=async()=>{const snapshot={...headers},n=++reads;if(mode==='tenant'&&n===1)queueMicrotask(()=>{headers={...headers,'x-tenant-id':'tenant-b'}});if(mode==='session'&&n===1)queueMicrotask(()=>{headers={...headers,Authorization:'Bearer fixture-b'}});if(n===({auth:1,'transport-auth':2,'final-auth':3,'child-final-auth':7}[mode])){mode=null;return new Promise(resolve=>{held.push({resolve,snapshot})})};return snapshot;};
+ const fetch=async(path,options)=>{calls.push({path,options});const data=options.method==='POST'?{id:config.ackId??assignmentId,jobId:job.id,professionalId:person.professionalId,tenantId:origin['x-tenant-id'],status:'confirmed',...(config.ackOverrides??{})}:path==='/company/jobs'?[job]:path.endsWith('/candidates')?[{...person,status:calls.some(c=>c.options.method==='POST')&&!config.keepInterested?'confirmed':'interested'}]:[];const response={ok:true,json:async()=>{if(options.method==='POST'&&mode==='json'){mode=null;return new Promise(resolve=>{held.push({resolve,snapshot:data})});}return data;}};if((options.method==='POST'&&mode==='fetch')||(options.method!=='POST'&&path.endsWith('/candidates')&&mode==='child-fetch')){mode=null;return new Promise(resolve=>{held.push({resolve,snapshot:response})});}return response;};
+ function render(){si=ri=0;h=create(initial=>{const n=si++;if(!(n in state))state[n]=typeof initial==='function'?initial():initial;return[state[n],v=>{state[n]=typeof v==='function'?v(state[n]):v}]},initial=>{const n=ri++;return refs[n]??(refs[n]={current:initial})},cb=>cb,cb=>{focus=cb},auth,runForSession,p=>p,loadCompanyJobs,loadCandidates,loadingCandidates,orderedCandidates,sameCompanyContext,confirmCandidate,fetch,cb=>{const n=++nextTimer;timers.set(n,cb);return n},n=>timers.delete(n));}
+ render();cleanup=focus();return {state,refs,calls,render,pump:()=>new Promise(setImmediate),select:()=>h.selectJob(job.id),confirm:()=>h.confirm(person.professionalId),arm:m=>{mode=m;reads=0},timer:()=>{const fn=[...timers.values()].at(-1);assert.ok(fn);return fn},blur:()=>cleanup(),release:(index=0)=>{assert.ok(held[index]);const [b]=held.splice(index,1);b.resolve(b.snapshot)},owner:value=>{headers={...value}},refocus:()=>{render();cleanup=focus()},installVerifiedSnapshot:()=>{refs[2].current={...origin};refs[1].current={version:refs[1].current.version+1,id:job.id};state[0]={status:'ready',data:[job]};state[2]=job.id;state[3]={candidates:{status:'ready',data:[person]},recommendations:{status:'ready',data:[]}};render()},get blocked(){return held.length>0},get posts(){return calls.filter(c=>c.options.method==='POST')}};
+}
+async function ready(options){const h=panel(options);await h.pump();h.render();await h.select();h.render();return h;}
+
+for(const phase of ['auth','transport-auth','fetch','json','final-auth'])test('candidate confirmation deadline releases pending UI immediately while '+phase+' never settles',async()=>{
+ const h=await ready();h.arm(phase);const work=h.confirm();await h.pump();assert.equal(h.blocked,true);assert.equal(h.state[5],person.professionalId);h.timer()();assert.equal(h.refs[2].current,null);assert.equal(h.refs[1].current.id,'');assert.equal(h.state[0].status,'error');const atDeadline={label:h.state[5],pending:h.refs[3].current,controllers:h.refs[4].current.size,posts:h.posts.length};h.release();await work;assert.equal(h.posts.length,['auth','transport-auth'].includes(phase)?0:1);assert.doesNotMatch(h.state[4],/^Profissional confirmado/);assert.equal(h.state[5],'');h.blur();assert.equal(atDeadline.label,'','deadline must release visible busy before dependency settles');assert.equal(atDeadline.pending,false);assert.equal(atDeadline.controllers,0);});
+test('unchanged candidate confirmation still posts once and refreshes actual helper data',async()=>{const h=await ready();await h.confirm();assert.equal(h.posts.length,1);assert.equal(h.state[4],'Profissional confirmado.');assert.equal(h.state[3].candidates.data[0].status,'confirmed');h.blur();});
+
+for(const phase of ['child-fetch','child-final-auth'])test('confirmed candidate ACK remains factual while child refresh '+phase+' cannot keep busy after its parent deadline',async()=>{
+ const h=await ready();h.arm(phase);const work=h.confirm(),expireParent=h.timer();await h.pump();assert.equal(h.blocked,true);assert.equal(h.posts.length,1);assert.equal(h.state[4],'Profissional confirmado.');expireParent();const atDeadline={busy:h.state[5],message:h.state[4],pending:h.refs[3].current};assert.equal(h.refs[4].current.size,0);assert.equal(h.refs[2].current,null);assert.equal(h.state[3].candidates.status,'error');h.release();await work;assert.equal(h.state[3].candidates.status,'error');h.blur();assert.equal(atDeadline.message,'Profissional confirmado.');assert.equal(atDeadline.busy,'');assert.equal(atDeadline.pending,false);assert.equal(h.posts.length,1);});
+
+for(const phase of ['auth','json','child-fetch'])for(const stale of ['timer','finally'])test('expired '+phase+' '+stale+' cannot release a NEW confirmation in the SAME focus generation',async()=>{
+ const h=await ready({keepInterested:true});h.arm(phase);const old=h.confirm(),expire=h.timer();await h.pump();const generation=h.refs[0].current;expire();assert.equal(h.state[5],'');h.installVerifiedSnapshot();h.arm('fetch');const next=h.confirm();await h.pump();assert.equal(h.refs[0].current,generation);assert.equal(h.state[5],person.professionalId);assert.equal(h.refs[3].current,true);const count=h.posts.length;
+ if(stale==='finally'){h.release(0);await old;}else expire();
+ assert.equal(h.state[5],person.professionalId);assert.equal(h.refs[3].current,true);assert.equal(h.refs[4].current.size,1);assert.equal(h.posts.length,count);h.release(stale==='timer'?1:0);await next;assert.equal(h.state[5],'');assert.equal(h.state[4],'Profissional confirmado.');
+ if(stale==='timer'){h.release(0);await old;assert.equal(h.state[4],'Profissional confirmado.');}h.blur();
+});
+for(const phase of ['auth','json','child-fetch'])test('blur/refocus and a fresh real jobs read reject the old '+phase+' timeout and completion',async()=>{
+ const h=await ready();h.arm(phase);const old=h.confirm(),expire=h.timer();await h.pump();h.blur();h.refocus();await h.pump();h.render();const fresh=h.state[0],context=h.refs[2].current;assert.equal(fresh.status,'ready');expire();h.release();await old;assert.equal(h.state[0],fresh);assert.equal(h.refs[2].current,context);assert.equal(h.state[5],'');assert.equal(h.refs[6].current,null);h.blur();
+});
+for(const [name,options] of [['UUID',{ackId:'not-a-uuid'}],['tenant',{ackOverrides:{tenantId:'other'}}],['professional',{ackOverrides:{professionalId:'other'}}]])test('timely incompatible '+name+' receipt preserves existing finite unknown and explicit refresh policy',async()=>{
+ const h=await ready({...options,keepInterested:true});await h.confirm();assert.equal(h.posts.length,1);assert.equal(h.state[4],'Não foi possível confirmar o resultado. Atualize os interessados antes de tentar novamente.');assert.equal(h.state[5],'');assert.equal(h.state[3].candidates.status,'ready');await h.pump();assert.equal(h.posts.length,1);h.blur();
+});
+test('deadline invalidates the source synchronously before any stale rendered handler can dispatch another POST',async()=>{
+ const h=await ready();h.arm('json');const old=h.confirm();await h.pump();h.timer()();const count=h.posts.length;await h.confirm();assert.equal(h.posts.length,count);h.render();await h.confirm();assert.equal(h.posts.length,count);h.release();await old;assert.equal(h.refs[2].current,null);h.blur();
+});
+
+for(const phase of ['auth','child-fetch'])test('retired '+phase+' parent cannot invalidate a NEW real selection read in the SAME focus generation',async()=>{
+ const h=await ready({keepInterested:true});h.arm(phase);const old=h.confirm(),expire=h.timer();await h.pump();expire();h.installVerifiedSnapshot();h.arm('child-fetch');const read=h.select();await h.pump();const context=h.refs[2].current,generation=h.refs[0].current;expire();assert.equal(h.refs[0].current,generation);assert.equal(h.refs[2].current,context);assert.equal(h.refs[4].current.size,1);assert.equal(h.state[3].candidates.status,'loading');h.release(0);await old;assert.equal(h.refs[2].current,context);h.release(0);await read;assert.equal(h.state[3].candidates.status,'ready');h.blur();
+});
+test('twenty explicitly expired unresolved confirmations retain no owned registry entries or busy state and issue no POST',async()=>{
+ const h=await ready(),work=[];for(let i=0;i<20;i++){h.installVerifiedSnapshot();h.arm('auth');work.push(h.confirm());await h.pump();h.timer()();assert.equal(h.refs[4].current.size,0);assert.equal(h.refs[3].current,false);assert.equal(h.refs[6].current,null);assert.equal(h.state[5],'');}assert.equal(h.posts.length,0);for(const pending of work){h.release(0);await pending;}assert.equal(h.posts.length,0);h.blur();
+});

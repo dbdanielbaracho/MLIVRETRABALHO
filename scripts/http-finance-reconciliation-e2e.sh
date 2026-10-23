@@ -35,9 +35,9 @@ CONFIRM="$(request POST "/v1/company/jobs/$JOB_ID/confirm" "$A_TOKEN" "$TENANT_A
 for STEP in check-in start check-out complete; do request POST "/v1/assignments/$ASSIGNMENT_ID/$STEP" "$PRO_TOKEN" "$TENANT_A" '{}' >/dev/null; done
 
 RECON_A="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
-node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const x=rows.find(v=>v.assignmentId===id);if(!x||x.payableCents!==25000||x.paidOutCents!==0||x.reconciliationStatus!=="pending"){process.exit(1)}' "$RECON_A" "$ASSIGNMENT_ID"
+node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const x=rows.find(v=>v.assignmentId===id);if(!x||x.payableCents!==25000||x.paidOutCents!==0||x.reconciliationStatus!=="pending"||x.simulatedSplit?.netCapturedCents!==0||x.simulatedSplit?.professionalPayableCents!==25000||x.simulatedSplit?.platformRemainderCents!==-25000||x.cashBalanceCents!==0){process.exit(1)}' "$RECON_A" "$ASSIGNMENT_ID"
 
-CAPTURE_BODY="{\"tenantId\":\"$TENANT_A\",\"assignmentId\":\"$ASSIGNMENT_ID\",\"eventType\":\"captured\",\"amountCents\":25000,\"providerReference\":\"capture-$STAMP\",\"idempotencyKey\":\"capture-$STAMP\"}"
+CAPTURE_BODY="{\"tenantId\":\"$TENANT_A\",\"assignmentId\":\"$ASSIGNMENT_ID\",\"eventType\":\"captured\",\"amountCents\":30000,\"providerReference\":\"capture-$STAMP\",\"idempotencyKey\":\"capture-$STAMP\"}"
 WRONG_PAYOUT="{\"tenantId\":\"$TENANT_A\",\"assignmentId\":\"$ASSIGNMENT_ID\",\"eventType\":\"payout_paid\",\"amountCents\":25000,\"recipientProfessionalId\":\"$PRO2_ID\",\"providerReference\":\"wrong-$STAMP\",\"idempotencyKey\":\"wrong-$STAMP\"}"
 PAYOUT_BODY="{\"tenantId\":\"$TENANT_A\",\"assignmentId\":\"$ASSIGNMENT_ID\",\"eventType\":\"payout_paid\",\"amountCents\":25000,\"recipientProfessionalId\":\"$PRO_ID\",\"providerReference\":\"payout-$STAMP\",\"idempotencyKey\":\"payout-$STAMP\"}"
 signed_webhook "$CAPTURE_BODY" >/dev/null
@@ -49,7 +49,16 @@ signed_webhook "$PAYOUT_BODY" >/dev/null
 EVENTS_A="$(request GET /v1/company/payment-events "$A_TOKEN" "$TENANT_A")"
 node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2],pro=process.argv[3];const own=rows.filter(v=>v.assignmentId===id);const payouts=own.filter(v=>v.eventType==="payout_paid");const p=payouts[0];if(own.length!==2||payouts.length!==1||!p||p.recipientProfessionalId!==pro){console.error("duplicate payout/idempotency assertion failed",own);process.exit(1)}' "$EVENTS_A" "$ASSIGNMENT_ID" "$PRO_ID"
 RECON_AFTER="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
-node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const x=rows.find(v=>v.assignmentId===id);if(!x||x.capturedCents!==25000||x.paidOutCents!==25000||x.reconciliationStatus!=="reconciled"){process.exit(1)}' "$RECON_AFTER" "$ASSIGNMENT_ID"
+node -e 'const rows=JSON.parse(process.argv[1]);const id=process.argv[2];const x=rows.find(v=>v.assignmentId===id);if(!x||x.capturedCents!==30000||x.refundedCents!==0||x.paidOutCents!==25000||x.reconciliationStatus!=="reconciled"||x.simulatedSplit?.netCapturedCents!==30000||x.simulatedSplit?.professionalPayableCents!==25000||x.simulatedSplit?.platformRemainderCents!==5000||x.cashBalanceCents!==5000){process.exit(1)}' "$RECON_AFTER" "$ASSIGNMENT_ID"
+REFUND_BODY="{\"tenantId\":\"$TENANT_A\",\"assignmentId\":\"$ASSIGNMENT_ID\",\"eventType\":\"refunded\",\"amountCents\":40000,\"providerReference\":\"refund-$STAMP\",\"idempotencyKey\":\"refund-$STAMP\"}"
+REFUND_ACK="$(signed_webhook "$REFUND_BODY")"
+test "$(signed_webhook "$REFUND_BODY")" = "$REFUND_ACK"
+NEGATIVE_EVENTS="$(request GET /v1/company/payment-events "$A_TOKEN" "$TENANT_A")"
+node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]),id=process.argv[2];const own=rows.filter(v=>v.assignmentId===id),refunds=own.filter(v=>v.eventType==="refunded");assert.equal(own.length,3);assert.equal(refunds.length,1);assert.equal(refunds[0].amountCents,40000);' "$NEGATIVE_EVENTS" "$ASSIGNMENT_ID"
+NEGATIVE_RECON="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
+node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]),x=rows.find(v=>v.assignmentId===process.argv[2]);assert.ok(x);assert.equal(x.capturedCents,30000);assert.equal(x.refundedCents,40000);assert.equal(x.paidOutCents,25000);assert.equal(x.reconciliationStatus,"reconciled");assert.deepEqual(x.simulatedSplit,{netCapturedCents:-10000,professionalPayableCents:25000,platformRemainderCents:-35000});assert.equal(x.cashBalanceCents,-35000);' "$NEGATIVE_RECON" "$ASSIGNMENT_ID"
+echo "PASS: theoretical split and negative simulated balance are exact, replay-safe and do not create a provider transfer"
+
 # Deterministic concurrent signed callbacks against only the isolated CI HTTP/Postgres fixture.
 node "$(dirname "$0")/payment-webhook-concurrency-e2e.cjs" "$TENANT_A" "$ASSIGNMENT_ID" "$STAMP"
 
@@ -70,7 +79,7 @@ for KIND in captured refunded payout_paid; do
   done
 done
 WIDE_RECON="$(request GET /v1/company/payment-events/reconciliation "$A_TOKEN" "$TENANT_A")"
-node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]),x=rows.find(v=>v.assignmentId===process.argv[2]);assert.ok(x);assert.equal(x.capturedCents,4294992294);assert.equal(x.refundedCents,4294967294);assert.equal(x.paidOutCents,4294992294);for(const k of ["capturedCents","refundedCents","paidOutCents"])assert.ok(Number.isSafeInteger(x[k]));assert.equal(x.payableCents,25000);assert.equal(x.reconciliationStatus,"overpaid");' "$WIDE_RECON" "$ASSIGNMENT_ID"
+node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]),x=rows.find(v=>v.assignmentId===process.argv[2]);assert.ok(x);assert.equal(x.capturedCents,4294997294);assert.equal(x.refundedCents,4295007294);assert.equal(x.paidOutCents,4294992294);for(const k of ["capturedCents","refundedCents","paidOutCents"])assert.ok(Number.isSafeInteger(x[k]));assert.equal(x.payableCents,25000);assert.equal(x.reconciliationStatus,"overpaid");assert.deepEqual(x.simulatedSplit,{netCapturedCents:-10000,professionalPayableCents:25000,platformRemainderCents:-35000});assert.equal(x.cashBalanceCents,-4295002294);' "$WIDE_RECON" "$ASSIGNMENT_ID"
 WIDE_OTHER="$(request GET /v1/company/payment-events/reconciliation "$B_TOKEN" "$TENANT_B")"
 node -e 'const assert=require("node:assert/strict"),rows=JSON.parse(process.argv[1]);assert.equal(rows.some(v=>v.assignmentId===process.argv[2]),false);' "$WIDE_OTHER" "$ASSIGNMENT_ID"
 echo "PASS: reconciliation totals beyond int32 are exact JSON numbers, replay-safe and tenant-isolated"

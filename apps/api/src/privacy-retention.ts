@@ -1,3 +1,4 @@
+import { privateOperationFailure, privateOperationCode } from './privacy-logging';
 import { Pool } from 'pg';
 
 const APPLY=process.argv.includes('--apply');
@@ -6,7 +7,7 @@ const PROFILE_DAYS=30;
 const CHAT_DAYS=730;
 const RETENTION_LOCK_KEY='privacy-retention';
 
-function errorCode(error:unknown){return (error instanceof Error?error.message:String(error)).slice(0,500);}
+function errorCode(error:unknown){return privateOperationCode(error);}
 
 async function main(){
   const maintenanceUrl=process.env.PRIVACY_MAINTENANCE_DATABASE_URL?.trim();
@@ -128,4 +129,4 @@ async function main(){
   }finally{await pool.end();}
 }
 
-if(require.main===module){void main().catch(error=>{console.error(error);process.exitCode=1;});}
+if(require.main===module){void main().catch(error=>{privateOperationFailure('privacy_retention',error);process.exitCode=1;});}

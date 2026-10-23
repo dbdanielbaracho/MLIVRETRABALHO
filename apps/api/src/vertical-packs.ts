@@ -4,4 +4,4 @@ cleaning_facilities:{roles:['cleaner'],operationalSkills:['sanitation','room_res
 events:{roles:['waiter','bartender','cleaner'],operationalSkills:['guest_service','setup','teardown'],checklist:['venue_setup','briefing','teardown'],defaultTeam:[{role:'waiter',count:4},{role:'bartender',count:2},{role:'cleaner',count:2}],active:true},
 logistics_warehouse:{roles:['warehouse_associate'],operationalSkills:['picking','packing','inventory_handling'],checklist:['safety_brief','scanner_ready','inventory_handoff'],defaultTeam:[{role:'warehouse_associate',count:3}],active:false},
 retail:{roles:['store_associate'],operationalSkills:['customer_service','stocking','checkout'],checklist:['till_ready','floor_check','stock_handoff'],defaultTeam:[{role:'store_associate',count:2}],active:false}
-} as const;export type VerticalPackId=keyof typeof VERTICAL_PACKS;export function verticalPack(id:string){return VERTICAL_PACKS[id as VerticalPackId]??null}
+} as const;export type VerticalPackId=keyof typeof VERTICAL_PACKS;export function verticalPack(id:string){return Object.prototype.hasOwnProperty.call(VERTICAL_PACKS,id)?VERTICAL_PACKS[id as VerticalPackId]:null}

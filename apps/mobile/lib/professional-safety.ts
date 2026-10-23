@@ -9,7 +9,12 @@ export const categories=['unsafe_work','harassment','violence','discrimination',
 const caseStatuses=['open','reviewing','resolved','dismissed'],appealStatuses=['submitted','reviewing','upheld','modified','reversed'];
 const record=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const id=(x:unknown)=>typeof x==='string'&&!!x.trim();
-const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(new Date(x).getTime());
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
 const validAssignment=(x:unknown):x is Assignment=>record(x)&&id(x.id)&&id(x.tenantId)&&typeof x.title==='string'&&typeof x.status==='string'&&(x.location==null||typeof x.location==='string')&&(x.startsAt==null||date(x.startsAt));
 const validCase=(x:unknown):x is SafetyCase=>record(x)&&id(x.id)&&id(x.tenantId)&&(x.assignmentId==null||id(x.assignmentId))&&typeof x.category==='string'&&categories.includes(x.category)&&typeof x.description==='string'&&typeof x.status==='string'&&caseStatuses.includes(x.status)&&date(x.createdAt)&&typeof x.reportedByMe==='boolean';
 const validAppeal=(x:unknown):x is SafetyAppeal=>record(x)&&id(x.id)&&id(x.tenantId)&&id(x.safetyCaseId)&&typeof x.reason==='string'&&typeof x.status==='string'&&appealStatuses.includes(x.status)&&date(x.createdAt);
@@ -21,3 +26,4 @@ export function canRequestReview(item:SafetyCase,appeals:Result<SafetyAppeal>):b
 export function sameSafetySession(a:Record<string,string>,b:Record<string,string>):boolean{return !!b.Authorization&&a.Authorization===b.Authorization;}
 export async function submitSafetyCase(request:Request,assignment:Assignment,category:string,description:string):Promise<Submission>{if(!assignment.id.trim()||!assignment.tenantId.trim())return {status:'rejected'};try{const r=await request('/safety-cases',assignment.tenantId,{assignmentId:assignment.id,category,description});if(!r.ok)return {status:r.status!=null&&r.status>=400&&r.status<500?'rejected':'unknown'};const d:unknown=await r.json();return record(d)&&id(d.id)&&d.category===category&&d.status==='open'&&date(d.createdAt)?{status:'created'}:{status:'unknown'};}catch{return {status:'unknown'};}}
 export async function submitSafetyAppeal(request:Request,item:SafetyCase,reason:string):Promise<Submission>{if(!item.id.trim()||!item.tenantId.trim())return {status:'rejected'};try{const r=await request('/safety-appeals',item.tenantId,{safetyCaseId:item.id,reason});if(!r.ok)return {status:r.status!=null&&r.status>=400&&r.status<500?'rejected':'unknown'};const d:unknown=await r.json();if(!record(d)||!id(d.id)||d.safetyCaseId!==item.id||typeof d.reason!=='string'||!date(d.createdAt)||typeof d.status!=='string'||!appealStatuses.includes(d.status))return {status:'unknown'};return d.created===true&&d.reason===reason.trim()&&d.status==='submitted'?{status:'created'}:d.created===false?{status:'existing'}:{status:'unknown'};}catch{return {status:'unknown'};}}
+

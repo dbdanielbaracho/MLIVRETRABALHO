@@ -85,6 +85,12 @@ async function main(){
   assert.equal(adb('shell','sha256sum',installed.slice(8)).trim().split(/\s/)[0],apkSHA,'installed_apk_mismatch');
   const screen=adb('shell','wm','size').match(/Physical size: (\d+)x(\d+)/);assert.ok(screen,'physical_size_required');size={width:Number(screen[1]),height:Number(screen[2])};
   stage='offline-isolation';adb('shell','am','force-stop',PACKAGE);adb('shell','cmd','connectivity','airplane-mode','enable');adb('shell','svc','wifi','disable');adb('shell','svc','data','disable');
+  // Use only the Ethernet command advertised by this exact emulator; no root or permission changes.
+  const ethernetHelp=adb('shell','cmd','ethernet','help');
+  console.log('ANDROID_ENTRY_ETHERNET_HELP '+JSON.stringify({text:ethernetHelp.slice(0,16000),sha256:digest(Buffer.from(ethernetHelp))}));
+  assert.ok(ethernetHelp.length<16000&&/^\s*set-ethernet-enabled\s+<enabled\|disabled>\s*$/m.test(ethernetHelp),'supported_ethernet_disable_required');
+  adb('shell','cmd','ethernet','set-ethernet-enabled','disabled');
+  console.log('ANDROID_ENTRY_ETHERNET_DISABLE_REQUESTED '+JSON.stringify({command:'cmd ethernet set-ethernet-enabled disabled',authority:'existing emulator shell',root:false,permissionChanges:false}));
   const end=Date.now()+15000;while(Date.now()<end){try{offline();break;}catch(error){if(!/airplane_not_enabled|wifi_not_disabled|mobile_data_not_disabled|default_route_present|global_address_present/.test(error.message))throw error;await pause();}}offline();
   console.log('ANDROID_ENTRY_PROVENANCE '+JSON.stringify({...config,workspace:undefined,serial,apkSHA256:apkSHA,tree:run('git',['-C',config.workspace,'show','-s','--format=%T','HEAD']).trim(),sdk:adb('shell','getprop','ro.build.version.sdk').trim(),offline:offline()}));
   stage='fresh-owned-app';assert.equal(adb('shell','pm','clear',PACKAGE).trim(),'Success','fresh_app_clear_failed');
