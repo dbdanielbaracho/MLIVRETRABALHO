@@ -21575,3 +21575,21 @@ Defeito funcional reproduzido: verticalPack aceitou constructor herdado deObject
 86fontesAPI lidas FULL eSHAconferido local, sintaxeCJS/inventário43/106 aprovados; Nest/PG/HTTP local nãoexecutados. Esperado1938unit[217Web1186mobile521API3CLI11monitor], **ainda não executado**. Gate:ownCIcompleto+reviewfresh+mergeexpectedSHAuma vez+POSTCIliteralcompleto. SemrerunmesmoSHAporverde. Área11 exige ainda reconciliação integral dos requisitos/APIs necessárias; preferências/ajuda semmembership/ML/providers semcontrato não serão inventados nem apagados.
 
 APK N/A integral:4pathsAPI/test/CJS/shell e7docs;184insumosAndroid/173mobile eworkflow/depslock idênticos ao produto literal fbaec/APK39885077269SUCCESS/artifact12471849419nãoexpirado/hashsizeAPIrevalidados. Não éAPK do novoSHA. React19.1.4/RN0.81.6/lock/schema/RLS/ACL/auth/LGPD/browser/CDP/Fetch/CORS/sandbox/LNA/15s/NetLog intactos.574/565 permanecemdrafts;215/219/220/224/228 separados. Fonte/crosswalk/manifestos/FULLFINAL617: docs/evidencias/BACKEND_CONTRACT_JOURNEY_2026-10-23.md.
+
+
+---
+
+## Área11 — contrato REST/OpenAPI verificável — 23/10/2026
+
+Base literal3ca16763cfde9da583e643707d052c5799332783, árvore0cd15918b6b313f311f83117a2e933300aac8545. PR618 já integrado; CI próprio39909415452 e pós-merge39910174803 SUCCESS/1938unit/106operações positivas/238negativas/383requisições/zero violações,12controlesbrowser+canônico eProductionTruth. Não reexecutar nem integrar618 outra vez.
+
+Lacuna objetiva do DVT originalv1.4§22.4: REST+OpenAPI exigido e documento ausente. Este pacote acrescenta docs/api/openapi.json3.1.0 (93paths/106operações/38bodies/76schemas), README e checker integrado à MESMA jornada HTTPPG. Antes dos requests positivos verifica parâmetros/headers/body; em TODOS os positivos/negativos verifica JSON real. Os probes inválidos não são tratados como requests válidos. CatálogoAppModule/controladores, security opacaBearer/HMAC,74parâmetros tenant e fonteGit dos42arquivos falham em divergência. Nenhuma rota pública ou dependência nova.
+
+Checagem local de estrutura/sintaxe e5mutações rejeitadas; NÃO é HTTPPG local, certificação OpenAPI completa ou evidência futuraCI. O checker suporta explicitamente apenas os keywords usados no documento e rejeita desconhecidos; não é validador geral JSONSchema. Schemas descrevem cores estáveis/aditivos, regras de negócio permanecem na API/jornada. Gate: CI próprio completo, revisão atualmain/head/diff, mergeexpectedSHAuma vez, POSTliteralcompleto. Contagemunit esperada1938 não aumenta por este pacote.
+
+Mantidas9áreas aceitas[2,3,4,5,6,7,8,9,10];4pendentes[1,11,12,13]. Área11 continua PENDENTE até reconciliação integral dos requisitos e evidências. Preferências e suporte geral semmembership permanecem não implementados/semcontrato completo; não inventar escopo/defaults. APK N/A integral:184insumosAndroid/173mobile/workflows/depslock/buildsmoke inalterados. Sem alegarAPK do novoSHA, SecureStore/RNforms/aparelho físico/pentest/produção/PSP/dinheiro real.574/565 drafts;215/219/220/224/228 separados. DVTv1.104/históriaFULL preservados; React19.1.4/RN0.81.6/RLS/LGPD/browser15s/guards intactos. Fonte/crosswalk/manifesto: docs/evidencias/REST_OPENAPI_CONTRACT_2026-10-23.md.
+
+
+### OpenAPI — correção pelo JSON real (23/10/2026)
+
+CI39913107348/a1 do619bf56 falhou antesdobrowser:1938unitPASS, reconciliaçãoHTTP200 traz payableCents=null semledger;schema inteiro era incorreto. Corrigido para nullable conforme controller3030f292 e adicionada testemunhaHTTPPG para ausência de earning (nullpreservado;apenasaritméticaSIMULADAusa0), mantendo2345doearningconcluído. SemAPI/product/securitychange,semrerunbf56. NovoHEAD exige ownCIcompleto+review+POST; área11continuaPENDENTE. Fonte/primária noREST_OPENAPI_CONTRACT_2026-10-23.md.
