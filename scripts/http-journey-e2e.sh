@@ -443,6 +443,9 @@ node scripts/matching-acceptance-e2e.cjs
 # Whole-schema tenant boundary, runtime least privilege and real connection reuse.
 node scripts/tenant-boundary-acceptance-e2e.cjs
 
+# Integrated internal security: real authentication concurrency, private export, owned failure and server-log canaries.
+SECURITY_ACCEPTANCE_API_LOG=/tmp/mlivre-api.log node scripts/security-acceptance-e2e.cjs
+
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh
 
