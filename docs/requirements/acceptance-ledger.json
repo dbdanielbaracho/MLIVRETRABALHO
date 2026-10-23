@@ -1236,7 +1236,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+          "sha": "f05e734241be320aade188f19c3a7fa54f483e55",
           "mode": "100644"
         },
         {
@@ -3321,12 +3321,12 @@
   "protectedInputs": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+      "sha": "f05e734241be320aade188f19c3a7fa54f483e55",
       "mode": "100644"
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "e0fc5f871dc3b498f71a38ff932c83b48716c35f",
+      "sha": "528002354bcd760dd5998144608d0b2c6aaa2772",
       "mode": "100644"
     },
     {
@@ -4367,6 +4367,66 @@
       {
         "pr": 574,
         "head": "4770c1d9d35db657125c7fad39203b58844b2d24",
+        "draft": true
+      }
+    ]
+  },
+  "governanceCandidate": {
+    "baseMain": "048a90733f51b14a78db631e3cbf4b87920b84da",
+    "scope": "Required CI + conditional canonical Android in one read-only CI workflow; administration branch protection remains unconfigured issue622. No native565 candidate imported.",
+    "sourceChanges": [
+      {
+        "path": "scripts/ci-android-policy.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "82d614b04f8df24a0f422e211fb40eb4e9e9d9a9"
+      },
+      {
+        "path": "scripts/tests/ci-android-policy.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c5b3652240903a275faff28fc93a175a19b2aaa"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f05e734241be320aade188f19c3a7fa54f483e55"
+      },
+      {
+        "path": ".github/workflows/standalone-pilot-apk.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "528002354bcd760dd5998144608d0b2c6aaa2772"
+      }
+    ],
+    "sourcePinReconciliation": [
+      {
+        "at": "protectedInputs",
+        "path": ".github/workflows/ci.yml",
+        "old": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+        "new": "f05e734241be320aade188f19c3a7fa54f483e55"
+      },
+      {
+        "at": "TEST-ANDROID-EXPORT-001/implementation",
+        "path": ".github/workflows/ci.yml",
+        "old": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+        "new": "f05e734241be320aade188f19c3a7fa54f483e55"
+      },
+      {
+        "at": "protectedInputs",
+        "path": ".github/workflows/standalone-pilot-apk.yml",
+        "old": "e0fc5f871dc3b498f71a38ff932c83b48716c35f",
+        "new": "528002354bcd760dd5998144608d0b2c6aaa2772"
+      }
+    ],
+    "ownFullCIAndApplicableAndroidRequired": true,
+    "literalPostCIAndApplicableAndroidRequired": true,
+    "evidence": "PENDING own workflow execution; local3policy tests pass including real Git diff, rename/deletion, immutable checkout and negative job controls. Original standalone jobs byte-exact.",
+    "actualOpenDraftsAtPreparation": [
+      {
+        "pr": 565,
+        "head": "69544d56673dd5ee6b8220d52b77bb4373e681ed",
         "draft": true
       }
     ]
