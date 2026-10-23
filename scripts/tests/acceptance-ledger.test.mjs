@@ -20,7 +20,8 @@ test('rejects Activity Watch, borrowed literal SHA, unsupported approval, and un
     d => { d.proofs[0].ownCI.name = 'Project Activity Watch'; },
     d => { d.proofs[0].postCI.checkout = d.proofs[0].head; },
     d => { const a = d.areas.find(a => a.id === 11); a.state = 'APPROVED_INTERNAL'; a.acceptance = { kind: 'historical_product', proofArea: 11 }; d.accepted.push(11); d.accepted.sort((a,b) => a-b); d.pending = d.pending.filter(n => n !== 11); },
-    d => { d.proofs[0].apk.post.artifacts[0].digest = 'sha256:' + '0'.repeat(64); }
+    d => { d.proofs[0].apk.post.artifacts[0].digest = 'sha256:' + '0'.repeat(64); },
+    d => { d.requirements.find(r => r.id === 'FIN-EVENT-001').implementation[0].sha = '0'.repeat(40); }
   ];
   for (const mutate of mutations) { const d = structuredClone(data); mutate(d); assert.throws(() => verifyLedger(d, options)); }
 });

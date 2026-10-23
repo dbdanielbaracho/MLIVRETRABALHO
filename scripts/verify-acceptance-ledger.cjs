@@ -95,6 +95,8 @@ function verifyLedger(d, { root = process.cwd(), read = p => fs.readFileSync(pat
     assert(['COVERED_INTERNAL', 'PARTIAL', 'PENDING', 'EXTERNAL'].includes(r.state));
     if (r.state !== 'COVERED_INTERNAL') assert(r.gap?.length > 30, `explicit gap ${r.id}`);
     if (r.proofArea) assert(d.proofs.some(p => p.area === r.proofArea), 'internal coverage needs whole-journey receipt');
+    if (r.legacyRow && r.state === 'COVERED_INTERNAL') assert(r.implementation?.length && r.tests?.length, 'covered legacy requirement needs concrete code and test sources');
+    for (const e of [...(r.implementation || []), ...(r.tests || [])]) if (e.path !== 'scripts/http-journey-e2e.sh') exactSource(e);
     for (const p of [...(r.evidence || []), ...(r.code || [])]) assert(known.has(p), `missing current contract source ${p}`);
   }
   same(d.protectedInputs.length, 185); assert(d.protectedInputs.filter(e => e.path.startsWith('apps/mobile/')).length === 173);

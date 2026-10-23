@@ -180,7 +180,9 @@
       "state": "PARTIAL",
       "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`package.json`, `pnpm-workspace.yaml`, `turbo.json`",
+      "historicalTestEvidenceColumn": "PR #1; merge `77fdcad`; histórico CI SUCCESS"
     },
     {
       "id": "INFRA-LOCK-001",
@@ -190,7 +192,9 @@
       "state": "PARTIAL",
       "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`pnpm-lock.yaml`, `.github/workflows/ci.yml` com `pnpm install --frozen-lockfile`",
+      "historicalTestEvidenceColumn": "PR #198; CI #528 SUCCESS; runners atuais bloqueados antes dos steps"
     },
     {
       "id": "API-001",
@@ -200,7 +204,9 @@
       "state": "PARTIAL",
       "gap": "106 operações reais e OpenAPI3.1 verificados, mas preferências e suporte geral sem membership não implementados/sem contrato; probe público de produção histórico não é corrente.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/api/`",
+      "historicalTestEvidenceColumn": "deployment `5b251a58-896d-44ef-87d9-7c0ad5ddc601` SUCCESS; Postgres SUCCESS; pending work zero; Issue #214 mantém probe HTTP atual aberto"
     },
     {
       "id": "SEC-001",
@@ -229,7 +235,9 @@
           "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "RLS + filtros explícitos tenant + `SET LOCAL ROLE app_runtime`",
+      "historicalTestEvidenceColumn": "RLS suite; PR #181/#182/#183/#184/#188/#189; migration `0027`; pentest externo Issue #220"
     },
     {
       "id": "SEC-002",
@@ -258,7 +266,9 @@
           "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`packages/db/infra/roles.sql`, `apps/api/src/database.service.ts`, `0027_runtime_rls_role.sql`",
+      "historicalTestEvidenceColumn": "`app_runtime` NOLOGIN/NOSUPERUSER/NOBYPASSRLS; PR #182; testes históricos verdes"
     },
     {
       "id": "CI-001",
@@ -268,7 +278,9 @@
       "state": "PARTIAL",
       "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`.github/workflows/ci.yml` + jornadas HTTP",
+      "historicalTestEvidenceColumn": "CI #516/#528 SUCCESS historicamente; runs atuais recebem `runner_id=0` e `steps=[]`; Issue #214"
     },
     {
       "id": "FIN-RISK",
@@ -297,7 +309,9 @@
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "payment events append-only, webhook HMAC raw-body, provider provenance, recipient-bound payouts",
+      "historicalTestEvidenceColumn": "PR #169/#170/#216/#218; Issue #215; PSP/comercial/legal/unit economics/sandbox real pendentes"
     },
     {
       "id": "TRUST-ARCH",
@@ -331,7 +345,9 @@
           "sha": "6c114658a104aac99766c39abbd78e0629b26426",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "reporting + verification provider-neutral + Safety audit + causal trust events",
+      "historicalTestEvidenceColumn": "PR #159/#171/#213/#217; Issue #219; provider/revisão jurídica/appeals/enforcement externo pendentes"
     },
     {
       "id": "MATCH-001",
@@ -344,18 +360,8 @@
       "proofArea": 5,
       "implementation": [
         {
-          "path": "apps/api/src/replacement.controller.ts",
-          "sha": "809c27f1551c103adc9e6950f79555eb42d3b7db",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/team-allocation.controller.ts",
-          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/candidatos.tsx",
-          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
           "mode": "100644"
         }
       ],
@@ -365,7 +371,9 @@
           "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "availability + reliability + role fit reais; proximidade por cidade opcional/baixa precisão",
+      "historicalTestEvidenceColumn": "PR #174/#175/#178/#187/#201/#212; ranking E2E adicionado"
     },
     {
       "id": "ONBOARD-001",
@@ -383,13 +391,8 @@
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/company-members.controller.ts",
-          "sha": "b63fedb082c0b8ed20b1b9f7daebe5045705ab4d",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/lib/session.ts",
-          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "path": "apps/mobile/app/criar-conta.tsx",
+          "sha": "fba0cb3416b9cb538867fd7d542d3b9c118ce169",
           "mode": "100644"
         }
       ],
@@ -404,7 +407,9 @@
           "sha": "3f7107855c1e60de59e3c3fbf53b2e780f889c07",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "empresa cria workspace/owner no signup; profissional independente descobre vagas",
+      "historicalTestEvidenceColumn": "PR #179/#180"
     },
     {
       "id": "NETWORK-001",
@@ -422,13 +427,8 @@
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/availability.controller.ts",
+          "sha": "fc225952e5063d65b344046d77dc1f8062026b3c",
           "mode": "100644"
         }
       ],
@@ -443,7 +443,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`marketplace_jobs`, `marketplace_interests`, `professional_availability_network`",
+      "historicalTestEvidenceColumn": "PR #180; migration `0026_network_shared_marketplace.sql`"
     },
     {
       "id": "MULTI-001",
@@ -456,18 +458,23 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
-          "mode": "100644"
-        },
-        {
           "path": "apps/api/src/work-assignments.controller.ts",
           "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/earnings.controller.ts",
+          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/work-passport.controller.ts",
+          "sha": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/notifications.controller.ts",
+          "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
           "mode": "100644"
         }
       ],
@@ -482,7 +489,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "assignments/earnings/passport/notificações agregados",
+      "historicalTestEvidenceColumn": "PR #181/#193; testes multiempresa históricos"
     },
     {
       "id": "MULTI-NOTIF-001",
@@ -495,18 +504,13 @@
       "proofArea": 9,
       "implementation": [
         {
-          "path": "apps/api/src/conversations.controller.ts",
-          "sha": "05f479c1ab3a2350c8bcd1fd32b1bdd574e62ec3",
-          "mode": "100644"
-        },
-        {
           "path": "apps/api/src/notifications.controller.ts",
           "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/conversa.tsx",
-          "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
+          "path": "apps/mobile/app/notificacoes.tsx",
+          "sha": "5b92e71991bfa02a0be73bfd3dd1debf31a446c1",
           "mode": "100644"
         }
       ],
@@ -521,7 +525,9 @@
           "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`notifications.controller.ts`, `notificacoes.tsx`, `http-notifications-multi-company-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #193; mark-read tenant-scoped"
     },
     {
       "id": "COMPANY-JOBS-001",
@@ -534,18 +540,13 @@
       "proofArea": 4,
       "implementation": [
         {
+          "path": "apps/mobile/app/candidatos.tsx",
+          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+          "mode": "100644"
+        },
+        {
           "path": "apps/api/src/company-jobs.controller.ts",
           "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/company-job-create.controller.ts",
-          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
           "mode": "100644"
         }
       ],
@@ -555,7 +556,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`GET /v1/company/jobs`, `apps/mobile/app/candidatos.tsx`",
+      "historicalTestEvidenceColumn": "PR #184; `COMPANY_JOB_SELECTION_v1.58.md`"
     },
     {
       "id": "COMPANY-SHIFT-001",
@@ -568,18 +571,13 @@
       "proofArea": 4,
       "implementation": [
         {
-          "path": "apps/api/src/company-jobs.controller.ts",
-          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "path": "apps/mobile/app/empresa.tsx",
+          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
           "mode": "100644"
         },
         {
           "path": "apps/api/src/company-job-create.controller.ts",
           "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
           "mode": "100644"
         }
       ],
@@ -589,7 +587,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`apps/mobile/app/empresa.tsx`, `company-job-create.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #185; validações de janela"
     },
     {
       "id": "COMPANY-NAV-001",
@@ -599,7 +599,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/app/empresa-inicio.tsx`",
+      "historicalTestEvidenceColumn": "PR #186; atalhos operacionais"
     },
     {
       "id": "COMPANY-RANK-001",
@@ -609,7 +611,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/app/candidatos.tsx`, recommendations endpoint",
+      "historicalTestEvidenceColumn": "PR #201/#212; score 0–100 + razões; confirmação explícita"
     },
     {
       "id": "COMPANY-ANALYTICS-001",
@@ -622,18 +626,13 @@
       "proofArea": 4,
       "implementation": [
         {
-          "path": "apps/api/src/company-jobs.controller.ts",
-          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "path": "apps/mobile/app/analytics.tsx",
+          "sha": "aff479659db2976acd7b3e0923e991b36273fce7",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/company-job-create.controller.ts",
-          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+          "path": "apps/api/src/company-analytics.controller.ts",
+          "sha": "9d4aea6ba5f51260dd7b9f298837be9cb806b4ba",
           "mode": "100644"
         }
       ],
@@ -643,7 +642,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`company-analytics.controller.ts`, `analytics.tsx`",
+      "historicalTestEvidenceColumn": "PR #211; taxas usam denominadores explícitos e `null` sem base"
     },
     {
       "id": "TALENT-POOL-001",
@@ -656,18 +657,13 @@
       "proofArea": 4,
       "implementation": [
         {
-          "path": "apps/api/src/company-jobs.controller.ts",
-          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "path": "apps/mobile/app/talentos.tsx",
+          "sha": "87872556f34ee09519f739c33a404322f1e677db",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/company-job-create.controller.ts",
-          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+          "path": "apps/api/src/talent-pools.controller.ts",
+          "sha": "3e4156f6d582028101c06c5c21e6a2a7c6bc5ab4",
           "mode": "100644"
         }
       ],
@@ -677,7 +673,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`talent-pools.controller.ts`, `talentos.tsx`",
+      "historicalTestEvidenceColumn": "PR #189/#194"
     },
     {
       "id": "REPLACEMENT-001",
@@ -690,18 +688,13 @@
       "proofArea": 5,
       "implementation": [
         {
+          "path": "apps/mobile/app/substituicoes.tsx",
+          "sha": "e2cf5a9af0d4cfc6755fd857cf6de91f30c45b80",
+          "mode": "100644"
+        },
+        {
           "path": "apps/api/src/replacement.controller.ts",
           "sha": "809c27f1551c103adc9e6950f79555eb42d3b7db",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/team-allocation.controller.ts",
-          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/candidatos.tsx",
-          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
           "mode": "100644"
         }
       ],
@@ -710,8 +703,15 @@
           "path": "scripts/matching-acceptance-e2e.cjs",
           "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-replacement-e2e.sh",
+          "sha": "f1025db62e0e534d874fa7252123f29e749f07a0",
+          "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`replacement.controller.ts`, `substituicoes.tsx`, `http-replacement-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #187–#190; sem inferência automática de culpa"
     },
     {
       "id": "ROADMAP-001",
@@ -721,7 +721,9 @@
       "state": "PARTIAL",
       "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`docs/roadmap/PLANO_MESTRE_EXECUCAO.md`",
+      "historicalTestEvidenceColumn": "rastreabilidade contínua"
     },
     {
       "id": "MOB-001",
@@ -731,7 +733,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/`",
+      "historicalTestEvidenceColumn": "CI #516/#528 exportou Android real; aparelho físico Issue #220"
     },
     {
       "id": "MOB-002",
@@ -741,7 +745,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/app/`",
+      "historicalTestEvidenceColumn": "PR #200; Issue #220"
     },
     {
       "id": "MOB-003",
@@ -754,18 +760,13 @@
       "proofArea": 3,
       "implementation": [
         {
+          "path": "apps/mobile/app/trabalhos.tsx",
+          "sha": "65c0de5b1b9a390eb403a1a01695038c30180928",
+          "mode": "100644"
+        },
+        {
           "path": "apps/api/src/jobs.controller.ts",
           "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
           "mode": "100644"
         }
       ],
@@ -780,7 +781,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`trabalhos.tsx`, `jobs.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #180"
     },
     {
       "id": "MOB-004",
@@ -793,13 +796,13 @@
       "proofArea": 6,
       "implementation": [
         {
-          "path": "apps/api/src/earnings.controller.ts",
-          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "path": "apps/mobile/app/ganhos.tsx",
+          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/ganhos.tsx",
-          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "path": "apps/api/src/earnings.controller.ts",
+          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
           "mode": "100644"
         }
       ],
@@ -809,7 +812,9 @@
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`ganhos.tsx`, `earnings.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #181; FIN-RISK Issue #215"
     },
     {
       "id": "MOB-005",
@@ -822,18 +827,13 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "path": "apps/mobile/app/perfil.tsx",
+          "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/professional-profile.controller.ts",
+          "sha": "c7333a3d6b8b63d074885c5df9cc707482cc3949",
           "mode": "100644"
         }
       ],
@@ -847,8 +847,15 @@
           "path": "scripts/http-journey-e2e.sh",
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
+        },
+        {
+          "path": "scripts/http-professional-profile-input-e2e.sh",
+          "sha": "7d7cfe17644ea639cb5ea3bd7b0a2dd7ab795057",
+          "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`perfil.tsx`, `professional-profile.controller.ts`",
+      "historicalTestEvidenceColumn": "role/city persistidos"
     },
     {
       "id": "MOB-006",
@@ -861,18 +868,13 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "path": "apps/mobile/app/agenda.tsx",
+          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
           "mode": "100644"
         },
         {
           "path": "apps/api/src/work-assignments.controller.ts",
           "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
           "mode": "100644"
         }
       ],
@@ -887,7 +889,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`agenda.tsx`, `work-assignments.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #181/#199; device validation Issue #220"
     },
     {
       "id": "MOB-007",
@@ -900,18 +904,8 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
           "mode": "100644"
         }
       ],
@@ -926,7 +920,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`company-jobs.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #180"
     },
     {
       "id": "MOB-008",
@@ -939,6 +935,11 @@
       "proofArea": 9,
       "implementation": [
         {
+          "path": "apps/mobile/app/conversa.tsx",
+          "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
+          "mode": "100644"
+        },
+        {
           "path": "apps/api/src/conversations.controller.ts",
           "sha": "05f479c1ab3a2350c8bcd1fd32b1bdd574e62ec3",
           "mode": "100644"
@@ -946,11 +947,6 @@
         {
           "path": "apps/api/src/notifications.controller.ts",
           "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/conversa.tsx",
-          "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
           "mode": "100644"
         }
       ],
@@ -965,7 +961,9 @@
           "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`conversa.tsx`, `conversations.controller.ts`, `notifications.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #183; cross-tenant 404 testado historicamente"
     },
     {
       "id": "MOB-009",
@@ -978,18 +976,13 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "path": "apps/mobile/app/empresa-inicio.tsx",
+          "sha": "714095ed78b6669a42750d0ac54fbb861e354501",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/ratings.controller.ts",
+          "sha": "d4e41af53698b1658e620e717cafd1ec129a260a",
           "mode": "100644"
         }
       ],
@@ -1004,7 +997,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`empresa-inicio.tsx`, `ratings.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #172/#210"
     },
     {
       "id": "MOB-010",
@@ -1017,18 +1012,13 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "path": "apps/mobile/app/perfil.tsx",
+          "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/work-passport.controller.ts",
+          "sha": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
           "mode": "100644"
         }
       ],
@@ -1043,7 +1033,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`perfil.tsx`, `work-passport.controller.ts`",
+      "historicalTestEvidenceColumn": "média global ponderada; PR #181"
     },
     {
       "id": "MOB-011",
@@ -1053,7 +1045,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`index.tsx`, `entrar.tsx`, `criar-conta.tsx`, `SecureStore`",
+      "historicalTestEvidenceColumn": "PR #197; device validation pendente"
     },
     {
       "id": "MOB-012",
@@ -1063,7 +1057,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/lib/api.ts`",
+      "historicalTestEvidenceColumn": "PR #195; fallback oficial + override"
     },
     {
       "id": "MOB-013",
@@ -1073,7 +1069,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`disponibilidade.tsx`",
+      "historicalTestEvidenceColumn": "PR #200"
     },
     {
       "id": "MOB-014",
@@ -1083,7 +1081,9 @@
       "state": "PARTIAL",
       "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`agenda.tsx`, `expo-location`",
+      "historicalTestEvidenceColumn": "PR #199; Issue #220"
     },
     {
       "id": "TEST-JOURNEY-001",
@@ -1096,18 +1096,13 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
-          "mode": "100644"
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
         },
         {
           "path": "apps/api/src/work-assignments.controller.ts",
           "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
           "mode": "100644"
         }
       ],
@@ -1122,7 +1117,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`professional-journey.sh`, `http-journey-e2e.sh`",
+      "historicalTestEvidenceColumn": "CI #528 SUCCESS histórico; runner atual bloqueado; Issue #220"
     },
     {
       "id": "TEST-REPLACEMENT-001",
@@ -1140,13 +1137,8 @@
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/team-allocation.controller.ts",
-          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/candidatos.tsx",
-          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+          "path": "apps/api/src/talent-pools.controller.ts",
+          "sha": "3e4156f6d582028101c06c5c21e6a2a7c6bc5ab4",
           "mode": "100644"
         }
       ],
@@ -1155,8 +1147,15 @@
           "path": "scripts/matching-acceptance-e2e.cjs",
           "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-replacement-e2e.sh",
+          "sha": "f1025db62e0e534d874fa7252123f29e749f07a0",
+          "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`scripts/http-replacement-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #190"
     },
     {
       "id": "TEST-CONFIRM-001",
@@ -1169,18 +1168,8 @@
       "proofArea": 5,
       "implementation": [
         {
-          "path": "apps/api/src/replacement.controller.ts",
-          "sha": "809c27f1551c103adc9e6950f79555eb42d3b7db",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/team-allocation.controller.ts",
-          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/candidatos.tsx",
-          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
           "mode": "100644"
         }
       ],
@@ -1190,7 +1179,9 @@
           "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`company-confirmation-policy.ts`",
+      "historicalTestEvidenceColumn": "PR #157"
     },
     {
       "id": "TEST-COMPANY-ONBOARD-001",
@@ -1208,13 +1199,8 @@
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/company-members.controller.ts",
-          "sha": "b63fedb082c0b8ed20b1b9f7daebe5045705ab4d",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/lib/session.ts",
-          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "path": "apps/api/src/company-job-create.controller.ts",
+          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
           "mode": "100644"
         }
       ],
@@ -1229,7 +1215,9 @@
           "sha": "3f7107855c1e60de59e3c3fbf53b2e780f889c07",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`http-company-onboarding-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #179/#185"
     },
     {
       "id": "TEST-ANDROID-EXPORT-001",
@@ -1242,13 +1230,18 @@
       "proofArea": 10,
       "implementation": [
         {
-          "path": "scripts/build-android-pilot.sh",
-          "sha": "5f4f95c64a8c43f9744b1bfd5fbb9ec1180a2f42",
+          "path": "apps/mobile/package.json",
+          "sha": "e1646b540a738daa81828a71f00617a7714fad6f",
           "mode": "100644"
         },
         {
-          "path": "scripts/android-standalone-smoke.sh",
-          "sha": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+          "path": ".github/workflows/ci.yml",
+          "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+          "mode": "100644"
+        },
+        {
+          "path": "pnpm-lock.yaml",
+          "sha": "c1a67de447f42375a02a05a03661037262f9cd8d",
           "mode": "100644"
         }
       ],
@@ -1258,7 +1251,9 @@
           "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`apps/mobile/package.json`, `.github/workflows/ci.yml`, `pnpm-lock.yaml`",
+      "historicalTestEvidenceColumn": "CI #516/#528 SUCCESS; Issue #214"
     },
     {
       "id": "TEST-FIN-SIGNED-001",
@@ -1271,13 +1266,13 @@
       "proofArea": 6,
       "implementation": [
         {
-          "path": "apps/api/src/earnings.controller.ts",
-          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/ganhos.tsx",
-          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "path": "apps/api/src/payment-webhook.controller.ts",
+          "sha": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
           "mode": "100644"
         }
       ],
@@ -1286,8 +1281,15 @@
           "path": "scripts/ledger-completion-atomicity-e2e.cjs",
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "signed adapter + finance E2E",
+      "historicalTestEvidenceColumn": "PR #216; `SIGNED_PAYMENT_WEBHOOK_v1.75.md`; Issue #214"
     },
     {
       "id": "TEST-FIN-RECIPIENT-001",
@@ -1300,13 +1302,13 @@
       "proofArea": 6,
       "implementation": [
         {
-          "path": "apps/api/src/earnings.controller.ts",
-          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "path": "apps/api/src/payment-events.controller.ts",
+          "sha": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/ganhos.tsx",
-          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
           "mode": "100644"
         }
       ],
@@ -1315,8 +1317,15 @@
           "path": "scripts/ledger-completion-atomicity-e2e.cjs",
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "payout recipient + finance E2E",
+      "historicalTestEvidenceColumn": "PR #218; `PAYOUT_RECIPIENT_INTEGRITY_v1.77.md`"
     },
     {
       "id": "TEST-TRUST-CAUSAL-001",
@@ -1329,18 +1338,8 @@
       "proofArea": 8,
       "implementation": [
         {
-          "path": "apps/api/src/privacy-logging.ts",
-          "sha": "3f0eec1d30f2183cb2c5efb681e414638e8ed6b8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/main.ts",
-          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/lib/session.ts",
-          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "path": "apps/api/src/trust-events.controller.ts",
+          "sha": "ac760f24611da21d0b67f4b5ec5174915f07b73e",
           "mode": "100644"
         }
       ],
@@ -1349,8 +1348,15 @@
           "path": "scripts/security-acceptance-e2e.cjs",
           "sha": "6c114658a104aac99766c39abbd78e0629b26426",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-trust-causality-e2e.sh",
+          "sha": "4f2bff8383d9781e0a11e5c7db55944ed61c7e5a",
+          "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "trust causality E2E",
+      "historicalTestEvidenceColumn": "PR #217; `TRUST_CAUSAL_EVENTS_v1.76.md`"
     },
     {
       "id": "SEC-JOBS-001",
@@ -1371,11 +1377,6 @@
           "path": "apps/api/src/company-job-create.controller.ts",
           "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
           "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
-          "mode": "100644"
         }
       ],
       "tests": [
@@ -1384,7 +1385,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`company-jobs.controller.ts`, `company-job-create.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #152/#184/#185"
     },
     {
       "id": "SEC-AVAIL-001",
@@ -1397,18 +1400,13 @@
       "proofArea": 3,
       "implementation": [
         {
-          "path": "apps/api/src/jobs.controller.ts",
-          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "path": "apps/api/src/availability.controller.ts",
+          "sha": "fc225952e5063d65b344046d77dc1f8062026b3c",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/work-assignments.controller.ts",
-          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/agenda.tsx",
-          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "path": "apps/api/src/availability-input.ts",
+          "sha": "a5b2acc782df78f2c0a8716bf41e8ae63942ff28",
           "mode": "100644"
         }
       ],
@@ -1423,7 +1421,9 @@
           "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
           "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`availability.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #151 + jornada histórica"
     },
     {
       "id": "SEC-TEAM-001",
@@ -1436,18 +1436,8 @@
       "proofArea": 4,
       "implementation": [
         {
-          "path": "apps/api/src/company-jobs.controller.ts",
-          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/company-job-create.controller.ts",
-          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+          "path": "apps/api/src/team-allocation.controller.ts",
+          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
           "mode": "100644"
         }
       ],
@@ -1457,7 +1447,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`team-allocation.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #149"
     },
     {
       "id": "SEC-POOL-001",
@@ -1470,18 +1462,8 @@
       "proofArea": 4,
       "implementation": [
         {
-          "path": "apps/api/src/company-jobs.controller.ts",
-          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/company-job-create.controller.ts",
-          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/empresa.tsx",
-          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+          "path": "apps/api/src/talent-pools.controller.ts",
+          "sha": "3e4156f6d582028101c06c5c21e6a2a7c6bc5ab4",
           "mode": "100644"
         }
       ],
@@ -1491,7 +1473,9 @@
           "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`talent-pools.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #146/#189"
     },
     {
       "id": "SEC-SAFETY-001",
@@ -1504,18 +1488,13 @@
       "proofArea": 8,
       "implementation": [
         {
-          "path": "apps/api/src/privacy-logging.ts",
-          "sha": "3f0eec1d30f2183cb2c5efb681e414638e8ed6b8",
+          "path": "apps/api/src/safety-cases.controller.ts",
+          "sha": "aa62c24959e927e896b041b744c4c154a58591b0",
           "mode": "100644"
         },
         {
-          "path": "apps/api/src/main.ts",
-          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/lib/session.ts",
-          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "path": "apps/api/src/safety-admin.controller.ts",
+          "sha": "baf0a51aae1c2cae598dbf3e7bdb7660b6b1f7f7",
           "mode": "100644"
         }
       ],
@@ -1524,8 +1503,15 @@
           "path": "scripts/security-acceptance-e2e.cjs",
           "sha": "6c114658a104aac99766c39abbd78e0629b26426",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "sha": "3d9a713ac13d6a653184293ad508bd7d02be29cd",
+          "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`safety-cases.controller.ts`, `safety-admin.controller.ts`, migration 0030",
+      "historicalTestEvidenceColumn": "PR #159/#209/#213"
     },
     {
       "id": "SEC-RUNTIME-001",
@@ -1554,7 +1540,9 @@
           "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`database.service.ts`, `0027_runtime_rls_role.sql`",
+      "historicalTestEvidenceColumn": "PR #182"
     },
     {
       "id": "SEC-CHAT-001",
@@ -1575,11 +1563,6 @@
           "path": "apps/api/src/notifications.controller.ts",
           "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
           "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/app/conversa.tsx",
-          "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
-          "mode": "100644"
         }
       ],
       "tests": [
@@ -1593,7 +1576,9 @@
           "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
           "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`conversations.controller.ts`, `notifications.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #183/#193"
     },
     {
       "id": "TRUST-VERIFY-001",
@@ -1603,7 +1588,9 @@
       "state": "PARTIAL",
       "gap": "Baseline provider-neutral mantém PENDING; não KYC/KYB real.",
       "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
-      "proofArea": null
+      "proofArea": null,
+      "historicalCodeColumn": "`verification.controller.ts`, migration 0023",
+      "historicalTestEvidenceColumn": "PR #171; Issue #219"
     },
     {
       "id": "TRUST-CAUSAL-001",
@@ -1616,18 +1603,8 @@
       "proofArea": 8,
       "implementation": [
         {
-          "path": "apps/api/src/privacy-logging.ts",
-          "sha": "3f0eec1d30f2183cb2c5efb681e414638e8ed6b8",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/api/src/main.ts",
-          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
-          "mode": "100644"
-        },
-        {
-          "path": "apps/mobile/lib/session.ts",
-          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "path": "apps/api/src/trust-events.controller.ts",
+          "sha": "ac760f24611da21d0b67f4b5ec5174915f07b73e",
           "mode": "100644"
         }
       ],
@@ -1636,8 +1613,15 @@
           "path": "scripts/security-acceptance-e2e.cjs",
           "sha": "6c114658a104aac99766c39abbd78e0629b26426",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-trust-causality-e2e.sh",
+          "sha": "4f2bff8383d9781e0a11e5c7db55944ed61c7e5a",
+          "mode": "100644"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`trust-events.controller.ts`, migration 0031",
+      "historicalTestEvidenceColumn": "PR #217; `TRUST_CAUSAL_EVENTS_v1.76.md`"
     },
     {
       "id": "FIN-EVENT-001",
@@ -1650,13 +1634,13 @@
       "proofArea": 6,
       "implementation": [
         {
-          "path": "apps/api/src/earnings.controller.ts",
-          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "path": "apps/api/src/payment-events.controller.ts",
+          "sha": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/ganhos.tsx",
-          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "path": "apps/api/src/payment-webhook.controller.ts",
+          "sha": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
           "mode": "100644"
         }
       ],
@@ -1665,8 +1649,15 @@
           "path": "scripts/ledger-completion-atomicity-e2e.cjs",
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`payment-events.controller.ts`, migrations financeiras",
+      "historicalTestEvidenceColumn": "PR #169/#216/#218"
     },
     {
       "id": "FIN-WEBHOOK-001",
@@ -1679,13 +1670,18 @@
       "proofArea": 6,
       "implementation": [
         {
-          "path": "apps/api/src/earnings.controller.ts",
-          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "path": "apps/api/src/main.ts",
+          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/ganhos.tsx",
-          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/payment-webhook.controller.ts",
+          "sha": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
           "mode": "100644"
         }
       ],
@@ -1694,8 +1690,15 @@
           "path": "scripts/ledger-completion-atomicity-e2e.cjs",
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "`main.ts`, `signed-json-payment-provider.ts`, `payment-webhook.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #170/#216; `SIGNED_PAYMENT_WEBHOOK_v1.75.md`"
     },
     {
       "id": "FIN-PAYOUT-001",
@@ -1708,13 +1711,13 @@
       "proofArea": 6,
       "implementation": [
         {
-          "path": "apps/api/src/earnings.controller.ts",
-          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "path": "apps/api/src/payment-events.controller.ts",
+          "sha": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
           "mode": "100644"
         },
         {
-          "path": "apps/mobile/app/ganhos.tsx",
-          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
           "mode": "100644"
         }
       ],
@@ -1723,8 +1726,15 @@
           "path": "scripts/ledger-completion-atomicity-e2e.cjs",
           "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
           "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
         }
-      ]
+      ],
+      "historicalCodeColumn": "recipient provenance + migration 0032",
+      "historicalTestEvidenceColumn": "PR #218; `PAYOUT_RECIPIENT_INTEGRITY_v1.77.md`"
     },
     {
       "id": "REST-OPENAPI-001",
