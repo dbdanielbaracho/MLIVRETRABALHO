@@ -84,6 +84,9 @@ jobs:
           pnpm test
           node --test scripts/tests/http-auth-rate-limit.test.mjs
           node --test scripts/tests/project-activity-watch.test.mjs
+          node --test scripts/tests/android-entry-journey.test.mjs
+          node --test scripts/tests/android-entry-isolation.test.mjs
+          node --test scripts/tests/android-qmp-isolation.test.mjs
 
       - name: Verify production migration runner
         env:
@@ -154,3 +157,4 @@ jobs:
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-account-deactivation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/smoke-api.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 EXPECTED_VERSION=0.1.0 bash scripts/production-truth-gate.sh || { cat /tmp/mlivre-api.log; exit 1; }
+

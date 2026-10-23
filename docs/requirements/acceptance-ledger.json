@@ -3321,12 +3321,12 @@
   "protectedInputs": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+      "sha": "aa2c2d676586c83fe9f28765cd62f8edd46dbd88",
       "mode": "100644"
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "e0fc5f871dc3b498f71a38ff932c83b48716c35f",
+      "sha": "94a3f5906d996109e1737e68c32dd0db26ba261d",
       "mode": "100644"
     },
     {
@@ -4370,5 +4370,73 @@
         "draft": true
       }
     ]
+  },
+  "nativeCandidate": {
+    "baseMain": "048a90733f51b14a78db631e3cbf4b87920b84da",
+    "existingPR": 565,
+    "previousHead": "1b041de3b4f0dd1f7f2dc67dea780ec0febd90fb",
+    "sourceChanges": [
+      {
+        "path": "scripts/android-entry-journey.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c15620c2b723cc8e3acac221b857b9fa2264374"
+      },
+      {
+        "path": "scripts/android-qmp-isolation.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "686ad849272ed56dd1bcd7ab6207625487cab134"
+      },
+      {
+        "path": "scripts/tests/android-entry-isolation.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "76a1fa2e5c4ac4a680b480024a4285f8031991f1"
+      },
+      {
+        "path": "scripts/tests/android-qmp-isolation.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "012bbf28957762131e976430cd3c87d177355409"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "aa2c2d676586c83fe9f28765cd62f8edd46dbd88"
+      },
+      {
+        "path": ".github/workflows/standalone-pilot-apk.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "94a3f5906d996109e1737e68c32dd0db26ba261d"
+      },
+      {
+        "path": "scripts/verify-acceptance-ledger.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c0799fa1b1c9ed7b67158da8b826b537cdbff2b"
+      }
+    ],
+    "scope": "Owned emulator private QMP hardware fixture; actual guest MAC/backend/class plus DEVICE_DELETED required, then unchanged Android zero-address/route/radio checks. Native compatibility PENDING.",
+    "ownFullCIRequired": true,
+    "ownStandaloneAPKRequired": true,
+    "literalPostCIRequired": true,
+    "literalPostAPKRequired": true,
+    "evidence": "PENDING new own full CI/APK after proven duplicate event/idle timer race fix; no test assertion/deadline relaxed, no native run yet.",
+    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "previousFunctionalCandidate": {
+      "head": "74f96f92739005dd80e2fb93b3995a3fca3fe852",
+      "ownCI": 39990595319,
+      "ownAPK": {
+        "id": 39990595274,
+        "job": 120541032023,
+        "conclusion": "failure",
+        "stage": "Test standalone smoke gate and failure diagnostics",
+        "build": "skipped",
+        "error": "qmp_timeout instead of required qmp_device_removal_not_confirmed"
+      }
+    }
   }
 }

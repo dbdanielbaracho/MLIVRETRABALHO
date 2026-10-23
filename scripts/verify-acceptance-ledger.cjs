@@ -75,7 +75,10 @@ function verifyLedger(d, { root = process.cwd(), read = p => fs.readFileSync(pat
     const b = bytes(e.path); assert(b.length > e.bytes);
     same(sha(b.subarray(0, e.bytes)), e.sha, `original FULL prefix preserved ${e.path}`);
     const appendix = b.subarray(e.bytes).toString('utf8'); assert(appendix.includes(marker));
-    const rows = appendix.split('\n').filter(l => /^\|\d+\. /.test(l));
+    const start = appendix.indexOf(marker);
+    const next = appendix.indexOf('\n## ', start + marker.length);
+    const chapter = appendix.slice(start, next < 0 ? undefined : next);
+    const rows = chapter.split('\n').filter(l => /^\|\d+\. /.test(l));
     same(rows.length, 13, 'current table must enumerate all 13, not a historical snapshot');
     for (const a of d.areas) {
       const row = rows.find(l => l.startsWith(`|${a.id}. `));
