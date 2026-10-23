@@ -17564,3 +17564,36 @@ Mantidas9áreas aceitas[2,3,4,5,6,7,8,9,10];4pendentes[1,11,12,13]. Área11 cont
 ### OpenAPI — correção pelo JSON real (23/10/2026)
 
 CI39913107348/a1 do619bf56 falhou antesdobrowser:1938unitPASS, reconciliaçãoHTTP200 traz payableCents=null semledger;schema inteiro era incorreto. Corrigido para nullable conforme controller3030f292 e adicionada testemunhaHTTPPG para ausência de earning (nullpreservado;apenasaritméticaSIMULADAusa0), mantendo2345doearningconcluído. SemAPI/product/securitychange,semrerunbf56. NovoHEAD exige ownCIcompleto+review+POST; área11continuaPENDENTE. Fonte/primária noREST_OPENAPI_CONTRACT_2026-10-23.md.
+
+
+---
+
+## AREA12_TRUTH_RECONCILIATION_2026_10_23
+
+**Área12 — decisão técnica interna documentada pelo assistente, sob delegação do usuário. Publicação condicionada ao CI próprio completo, revisão do HEAD e CI literal pós-merge completos.** Esta proposta não declara os gates futuros como executados. Recibos terminais serão registrados no PR; se algum gate falhar, o aceite não fica efetivo.
+
+O critério original é conciliar requisito→implementação→teste real→PR/CI próprio→merge/CI literal→evidência→lacuna preservando integralmente os originais. Base auditada `4f036f78cef5436ec47545d811f8bffa48c48070`, CI literal39914386900SUCCESS/1938testes,106operações positivas,145requestspositivos,383respostas OpenAPI e12matrix+canônico/ProductionTruth. PR605/573/607 e584 já resolvidos; não repetir.
+
+[Recibo e limites](../evidencias/DOCUMENT_TRUTH_INTERNAL_ACCEPTANCE_2026-10-23.md), caminho canônico `docs/evidencias/DOCUMENT_TRUTH_INTERNAL_ACCEPTANCE_2026-10-23.md`. Ledger executável: `docs/requirements/acceptance-ledger.json`; checker `scripts/verify-acceptance-ledger.cjs` no gate HTTP existente. 55IDs históricos conservados e3contratos atuais conciliados. Não inferir conclusão pelo contador de testes.
+
+|Área|Estado técnico interno proposto após gates|Base/limite|
+|---|---|---|
+|1. Telas/layout/navegação|PENDENTE|Faltam percurso integral dos layouts/estados/navegação por plataforma e contratos ausentes de preferências/ajuda; handlers e emulador standalone não substituem render RN completo.|
+|2. Signup/login/auth|APROVADO INTERNO|PR568; CI39483543794→literal39516978383; recibo canônico no ledger.|
+|3. Profissionais/agenda|APROVADO INTERNO|PR595; CI39524136533→literal39525571515; recibo canônico no ledger.|
+|4. Empresas/equipes|APROVADO INTERNO|PR608; CI39834842796→literal39835939458; recibo canônico no ledger.|
+|5. Matching/alocação/substituição|APROVADO INTERNO|PR610; CI39842989991→literal39843862544; recibo canônico no ledger.|
+|6. Pagamentos simulados|APROVADO INTERNO|PR573; CI39638859504→literal39708675039; recibo canônico no ledger.|
+|7. PostgreSQL/RLS/tenant|APROVADO INTERNO|PR613; CI39872228407→literal39873134900; recibo canônico no ledger.|
+|8. Segurança interna|APROVADO INTERNO|PR615; CI39882883002→literal39885077256; recibo canônico no ledger.|
+|9. Notificações|APROVADO INTERNO|PR581; CI39602948825→literal39604852308; recibo canônico no ledger.|
+|10. Android standalone|APROVADO INTERNO|PR539; CI38672870429→literal38673970850; recibo canônico no ledger.|
+|11. Backend/API|PENDENTE|106 operações e OpenAPI3.1 reais comprovados no619, mas preferências/ajuda geral sem membership permanecem sem contrato/implementação. Não aceitar APIs necessárias inexistentes.|
+|12. Documento da Verdade|APROVADO INTERNO — publicação condicionada|Este pacote exige own+POST completos; não herda verde da base.|
+|13. CI/PR/automação|PENDENTE|Falta conciliação integral da governança de gates/Android por tipo de mudança/proteção merge/drafts; Watch é monitor e não executor.|
+
+Após os dois gates desta publicação:10aceitas[2,3,4,5,6,7,8,9,10,12];3pendentes[1,11,13]. Antes deles, estado publicado da base:9aceitas/4pendentes. Snapshot2026-09-24 e primeiras matrizes conservam sua data; runner bloqueado/pending work zero/probe público antigos não são estado corrente. Recibos parciais/falhos continuam história, sem rerun para verde.
+
+Os18CIs e12APKs dos nove produtos foram relidos de fontes primárias, comparando SHA anunciado, checkout sintético/árvore/pais e pós-merge literal; recibos canônicos mantêm as medições originais de bytes. Metadados atuais dos12artefatos conferem digest/tamanho/expiração; NÃO houve novo download de APK nesta reconciliação. Este checker é consistência offline do audit datado, não consulta/autenticação remota nova a cada execução.
+
+APK N/A deste pacote:185insumos protegidos, inclusive173mobile, workflows, React19.1.4/RN0.81.6/deps/lock/build/smoke preservados. Último produto Android literal fbaec2e7674810b2f5232b0fd0c6673e1aadff29/run39885077269/artifact12471849419; não APK deste SHA documental/teste. Não altera API/runtime/SQL/RLS/tenant/LGPD/credenciais ou controles browser15s/Fetch/CDP/CORS/sandbox/LNA/NetLog/asserts. Issues externas215/219/220/224/228 permanecem abertas;574/565 drafts não importados. Não aceita produção/PSP/dinheiro real/pentest/aparelho físico/Visual Truth/render RN completo/SecureStore nativo. Não encerra projeto/rotina por bloqueio externo.

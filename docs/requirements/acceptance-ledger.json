@@ -1,0 +1,4311 @@
+{
+  "version": 1,
+  "repository": "dbdanielbaracho/MLIVRETRABALHO",
+  "auditBase": "4f036f78cef5436ec47545d811f8bffa48c48070",
+  "auditTree": "fbdd3c82da5c71446d6940475a61ba2c4840f354",
+  "publication": "Area12 proposal becomes effective only after own full CI and literal post-merge full CI; terminal receipts in PR",
+  "scope": "Dated primary-source reconciliation and offline integrity, not remote authentication or external certification",
+  "accepted": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12
+  ],
+  "pending": [
+    1,
+    11,
+    13
+  ],
+  "areas": [
+    {
+      "id": 1,
+      "name": "Telas/layout/navegação",
+      "originalCriterion": "Percorrer telas/estados originais, confrontar layouts e funções por plataforma; identificar divergências concretas com regressão; Visual Truth físico fica EXTERNO",
+      "state": "PENDING",
+      "gap": "Faltam percurso integral dos layouts/estados/navegação por plataforma e contratos ausentes de preferências/ajuda; handlers e emulador standalone não substituem render RN completo.",
+      "acceptance": null
+    },
+    {
+      "id": 2,
+      "name": "Signup/login/auth",
+      "originalCriterion": "Verificar fluxos de signup/convite/expiração/revogação e troca de tenant por API e cliente; nenhuma permissão inferida",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 2
+      }
+    },
+    {
+      "id": 3,
+      "name": "Profissionais/agenda",
+      "originalCriterion": "Cobrir API/cliente da agenda, trabalho, presença e avaliação no mesmo owner/tenant e concorrência; dispositivo físico EXTERNO",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 3
+      }
+    },
+    {
+      "id": 4,
+      "name": "Empresas/equipes",
+      "originalCriterion": "Checklist de métodos/ACK, papéis owner/admin/manager/company, convites, contexto, prazos e estados vazios/erro",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 4
+      }
+    },
+    {
+      "id": 5,
+      "name": "Matching/alocação/substituição",
+      "originalCriterion": "Revalidar idempotência, concorrência, disponibilidade, escolha humana e vínculo empresa-profissional",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 5
+      }
+    },
+    {
+      "id": 6,
+      "name": "Pagamentos simulados",
+      "originalCriterion": "Provar ledger simulado, split teórico, rollback, reembolso/saldo negativo sem PSP real; sandbox/provider/KYC EXTERNOS #215/#228",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 6
+      }
+    },
+    {
+      "id": 7,
+      "name": "PostgreSQL/RLS/tenant",
+      "originalCriterion": "Auditar todas as tabelas/endpoints, políticas deny-by-default e isolamento entre tenants e papéis com E2E adversarial",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 7
+      }
+    },
+    {
+      "id": 8,
+      "name": "Segurança interna",
+      "originalCriterion": "Cobrir auth, concorrência, PII, rate limit, logs, retries e falhas; pentest independente/provider privacy EXTERNOS #219/#220",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 8
+      }
+    },
+    {
+      "id": 9,
+      "name": "Notificações",
+      "originalCriterion": "Auditar outbox/ACK/duplicidade, entrega, não-entrega e isolamento com falhas simuladas; provedor externo se aplicável separado",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 9
+      }
+    },
+    {
+      "id": 10,
+      "name": "Android standalone",
+      "originalCriterion": "Revalidar entradas native/build após mudanças, smoke no SHA aplicável; dispositivo físico, SecureStore nativo e piloto EXTERNOS #220",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "historical_product",
+        "proofArea": 10
+      }
+    },
+    {
+      "id": 11,
+      "name": "Backend/API",
+      "originalCriterion": "Inventariar endpoints e contratos por fluxo, testes de entradas inválidas, autorização, ACK, concorrência e APIs necessárias não implementadas",
+      "state": "PENDING",
+      "gap": "106 operações e OpenAPI3.1 reais comprovados no619, mas preferências/ajuda geral sem membership permanecem sem contrato/implementação. Não aceitar APIs necessárias inexistentes.",
+      "acceptance": null
+    },
+    {
+      "id": 12,
+      "name": "Documento da Verdade",
+      "originalCriterion": "Conciliar requisito↔PR↔CI/pós-CI↔teste↔lacuna, preservando integralmente arquivos originais; não reinterpretar snapshot histórico como estado corrente",
+      "state": "APPROVED_INTERNAL",
+      "gap": "",
+      "acceptance": {
+        "kind": "this_package",
+        "ownFullCIRequired": true,
+        "literalPostCIRequired": true,
+        "publication": "conditional_until_both_full_gates",
+        "prerequisites": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "name": "CI/PR/automação",
+      "originalCriterion": "Confirmar cobertura CI/Android por tipo de mudança, proteção merge, activity watch e ausência de aceites antecipados; rotina horária NÃO é agente 24/7",
+      "state": "PENDING",
+      "gap": "Falta conciliação integral da governança de gates/Android por tipo de mudança/proteção merge/drafts; Watch é monitor e não executor.",
+      "acceptance": null
+    }
+  ],
+  "requirements": [
+    {
+      "id": "INFRA-001",
+      "requirement": "Monorepo TypeScript com pnpm + Turborepo",
+      "legacyRow": "| INFRA-001 | Monorepo TypeScript com pnpm + Turborepo | MERGED / ÚLTIMO CI COMPLETO CONHECIDO GREEN | Documento da Verdade v1.5 §22.7 | `package.json`, `pnpm-workspace.yaml`, `turbo.json` | PR #1; merge `77fdcad`; histórico CI SUCCESS |",
+      "area": 13,
+      "state": "PARTIAL",
+      "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`package.json`, `pnpm-workspace.yaml`, `turbo.json`",
+      "historicalTestEvidenceColumn": "PR #1; merge `77fdcad`; histórico CI SUCCESS"
+    },
+    {
+      "id": "INFRA-LOCK-001",
+      "requirement": "Instalações pnpm reproduzíveis com lockfile congelado",
+      "legacyRow": "| INFRA-LOCK-001 | Instalações pnpm reproduzíveis com lockfile congelado | IMPLEMENTADO / FROZEN LOCKFILE | disciplina de build reproduzível | `pnpm-lock.yaml`, `.github/workflows/ci.yml` com `pnpm install --frozen-lockfile` | PR #198; CI #528 SUCCESS; runners atuais bloqueados antes dos steps |",
+      "area": 13,
+      "state": "PARTIAL",
+      "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`pnpm-lock.yaml`, `.github/workflows/ci.yml` com `pnpm install --frozen-lockfile`",
+      "historicalTestEvidenceColumn": "PR #198; CI #528 SUCCESS; runners atuais bloqueados antes dos steps"
+    },
+    {
+      "id": "API-001",
+      "requirement": "API NestJS + Fastify com health/readiness",
+      "legacyRow": "| API-001 | API NestJS + Fastify com health/readiness | DEPLOYED / RAILWAY SUCCESS / CURRENT PUBLIC PROBE PENDING | Documento da Verdade v1.5 §22.3 | `apps/api/` | deployment `5b251a58-896d-44ef-87d9-7c0ad5ddc601` SUCCESS; Postgres SUCCESS; pending work zero; Issue #214 mantém probe HTTP atual aberto |",
+      "area": 11,
+      "state": "PARTIAL",
+      "gap": "106 operações reais e OpenAPI3.1 verificados, mas preferências e suporte geral sem membership não implementados/sem contrato; probe público de produção histórico não é corrente.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/api/`",
+      "historicalTestEvidenceColumn": "deployment `5b251a58-896d-44ef-87d9-7c0ad5ddc601` SUCCESS; Postgres SUCCESS; pending work zero; Issue #214 mantém probe HTTP atual aberto"
+    },
+    {
+      "id": "SEC-001",
+      "requirement": "Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS",
+      "legacyRow": "| SEC-001 | Isolamento tenant-owned com `tenant_id` + PostgreSQL RLS | BASELINE MERGED + DEPLOYED / RUNTIME ROLE ENFORCED / PENTEST PENDENTE | `ADR-MT-001` | RLS + filtros explícitos tenant + `SET LOCAL ROLE app_runtime` | RLS suite; PR #181/#182/#183/#184/#188/#189; migration `0027`; pentest externo Issue #220 |",
+      "area": 7,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 7,
+      "implementation": [
+        {
+          "path": "apps/api/src/database.service.ts",
+          "sha": "371c1615e95271f5484de3e8bca883481d4e845f",
+          "mode": "100644"
+        },
+        {
+          "path": "packages/db/infra/roles.sql",
+          "sha": "2c4162a1360ee75182bf9285fbc8475956fc4f01",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "RLS + filtros explícitos tenant + `SET LOCAL ROLE app_runtime`",
+      "historicalTestEvidenceColumn": "RLS suite; PR #181/#182/#183/#184/#188/#189; migration `0027`; pentest externo Issue #220"
+    },
+    {
+      "id": "SEC-002",
+      "requirement": "Runtime tenant DB role sem owner/superuser/BYPASSRLS",
+      "legacyRow": "| SEC-002 | Runtime tenant DB role sem owner/superuser/BYPASSRLS | MERGED / HISTÓRICO CI GREEN / DEPLOYED | `ADR-MT-001` | `packages/db/infra/roles.sql`, `apps/api/src/database.service.ts`, `0027_runtime_rls_role.sql` | `app_runtime` NOLOGIN/NOSUPERUSER/NOBYPASSRLS; PR #182; testes históricos verdes |",
+      "area": 7,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 7,
+      "implementation": [
+        {
+          "path": "apps/api/src/database.service.ts",
+          "sha": "371c1615e95271f5484de3e8bca883481d4e845f",
+          "mode": "100644"
+        },
+        {
+          "path": "packages/db/infra/roles.sql",
+          "sha": "2c4162a1360ee75182bf9285fbc8475956fc4f01",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`packages/db/infra/roles.sql`, `apps/api/src/database.service.ts`, `0027_runtime_rls_role.sql`",
+      "historicalTestEvidenceColumn": "`app_runtime` NOLOGIN/NOSUPERUSER/NOBYPASSRLS; PR #182; testes históricos verdes"
+    },
+    {
+      "id": "CI-001",
+      "requirement": "CI executa frozen install, typecheck, build, Expo Android export, testes, migration runner, jornadas HTTP e Production Truth contract",
+      "legacyRow": "| CI-001 | CI executa frozen install, typecheck, build, Expo Android export, testes, migration runner, jornadas HTTP e Production Truth contract | PIPELINE ATIVO / EXECUÇÃO ATUAL BLOQUEADA POR RUNNER | Documento da Verdade v1.5 §22.9 | `.github/workflows/ci.yml` + jornadas HTTP | CI #516/#528 SUCCESS historicamente; runs atuais recebem `runner_id=0` e `steps=[]`; Issue #214 |",
+      "area": 13,
+      "state": "PARTIAL",
+      "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`.github/workflows/ci.yml` + jornadas HTTP",
+      "historicalTestEvidenceColumn": "CI #516/#528 SUCCESS historicamente; runs atuais recebem `runner_id=0` e `steps=[]`; Issue #214"
+    },
+    {
+      "id": "FIN-RISK",
+      "requirement": "Garantia/advance/credit/default",
+      "legacyRow": "| FIN-RISK | Garantia/advance/credit/default | OPEN/BLOCKING / ADR PROPOSTO / HARDENING NEUTRO DEPLOYED | Documento da Verdade v1.5 §13/§33; `ADR-FIN-001-PROPOSED.md` | payment events append-only, webhook HMAC raw-body, provider provenance, recipient-bound payouts | PR #169/#170/#216/#218; Issue #215; PSP/comercial/legal/unit economics/sandbox real pendentes |",
+      "area": 6,
+      "state": "EXTERNAL",
+      "gap": "Garantia/advance/crédito/default/PSP/comercial/legal não autorizados nem comprovados; #215/#228.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/api/src/earnings.controller.ts",
+          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/ganhos.tsx",
+          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "payment events append-only, webhook HMAC raw-body, provider provenance, recipient-bound payouts",
+      "historicalTestEvidenceColumn": "PR #169/#170/#216/#218; Issue #215; PSP/comercial/legal/unit economics/sandbox real pendentes"
+    },
+    {
+      "id": "TRUST-ARCH",
+      "requirement": "Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute",
+      "legacyRow": "| TRUST-ARCH | Enforcement definitivo KYC/KYB/no-show/reporting/suspension/dispute | OPEN/BLOCKING / BASELINE NEUTRO DEPLOYED / ENFORCEMENT NÃO ATIVO | Documento da Verdade v1.5 §33; `ADR-TRUST-001-PROPOSED.md` | reporting + verification provider-neutral + Safety audit + causal trust events | PR #159/#171/#213/#217; Issue #219; provider/revisão jurídica/appeals/enforcement externo pendentes |",
+      "area": 8,
+      "state": "EXTERNAL",
+      "gap": "Enforcement definitivo, provider e revisão jurídico-humana externos #219/#220.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 8,
+      "implementation": [
+        {
+          "path": "apps/api/src/privacy-logging.ts",
+          "sha": "3f0eec1d30f2183cb2c5efb681e414638e8ed6b8",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/main.ts",
+          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/lib/session.ts",
+          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/security-acceptance-e2e.cjs",
+          "sha": "6c114658a104aac99766c39abbd78e0629b26426",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "reporting + verification provider-neutral + Safety audit + causal trust events",
+      "historicalTestEvidenceColumn": "PR #159/#171/#213/#217; Issue #219; provider/revisão jurídica/appeals/enforcement externo pendentes"
+    },
+    {
+      "id": "MATCH-001",
+      "requirement": "Recomendações usam sinais reais em vez de placeholders",
+      "legacyRow": "| MATCH-001 | Recomendações usam sinais reais em vez de placeholders | BASELINE REAL / BACKEND DEPLOYED / MOBILE EXPOSTO | Matching Engine | availability + reliability + role fit reais; proximidade por cidade opcional/baixa precisão | PR #174/#175/#178/#187/#201/#212; ranking E2E adicionado |",
+      "area": 5,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 5,
+      "implementation": [
+        {
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/matching-acceptance-e2e.cjs",
+          "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "availability + reliability + role fit reais; proximidade por cidade opcional/baixa precisão",
+      "historicalTestEvidenceColumn": "PR #174/#175/#178/#187/#201/#212; ranking E2E adicionado"
+    },
+    {
+      "id": "ONBOARD-001",
+      "requirement": "Signup/onboarding sem fixture administrativa",
+      "legacyRow": "| ONBOARD-001 | Signup/onboarding sem fixture administrativa | IMPLEMENTADO / HTTP E2E HISTORICAMENTE GREEN / DEPLOYED | ADR-MT-001 + NETWORK_SHARED | empresa cria workspace/owner no signup; profissional independente descobre vagas | PR #179/#180 |",
+      "area": 2,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 2,
+      "implementation": [
+        {
+          "path": "apps/api/src/auth.controller.ts",
+          "sha": "c432aa1e28e02c8064144e913168cc64e8a38e97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/criar-conta.tsx",
+          "sha": "fba0cb3416b9cb538867fd7d542d3b9c118ce169",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/authentication-acceptance-e2e.cjs",
+          "sha": "35480732d0dab5b205a2f1be21b128ce57f03960",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/invitation-atomicity-e2e.cjs",
+          "sha": "3f7107855c1e60de59e3c3fbf53b2e780f889c07",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "empresa cria workspace/owner no signup; profissional independente descobre vagas",
+      "historicalTestEvidenceColumn": "PR #179/#180"
+    },
+    {
+      "id": "NETWORK-001",
+      "requirement": "Descoberta profissional cross-company sem membership prévio",
+      "legacyRow": "| NETWORK-001 | Descoberta profissional cross-company sem membership prévio | IMPLEMENTADO / DEPLOYED | ADR-MT-001 NETWORK_SHARED | `marketplace_jobs`, `marketplace_interests`, `professional_availability_network` | PR #180; migration `0026_network_shared_marketplace.sql` |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/api/src/jobs.controller.ts",
+          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/availability.controller.ts",
+          "sha": "fc225952e5063d65b344046d77dc1f8062026b3c",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`marketplace_jobs`, `marketplace_interests`, `professional_availability_network`",
+      "historicalTestEvidenceColumn": "PR #180; migration `0026_network_shared_marketplace.sql`"
+    },
+    {
+      "id": "MULTI-001",
+      "requirement": "Profissional opera com múltiplas empresas sem trocar workspace",
+      "legacyRow": "| MULTI-001 | Profissional opera com múltiplas empresas sem trocar workspace | IMPLEMENTADO / DEPLOYED | tenant isolation + friction gate | assignments/earnings/passport/notificações agregados | PR #181/#193; testes multiempresa históricos |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/api/src/work-assignments.controller.ts",
+          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/earnings.controller.ts",
+          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/work-passport.controller.ts",
+          "sha": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/notifications.controller.ts",
+          "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "assignments/earnings/passport/notificações agregados",
+      "historicalTestEvidenceColumn": "PR #181/#193; testes multiempresa históricos"
+    },
+    {
+      "id": "MULTI-NOTIF-001",
+      "requirement": "Notificações do profissional agregam múltiplas empresas sem troca de workspace",
+      "legacyRow": "| MULTI-NOTIF-001 | Notificações do profissional agregam múltiplas empresas sem troca de workspace | IMPLEMENTADO / DEPLOYED | tenant isolation + friction gate | `notifications.controller.ts`, `notificacoes.tsx`, `http-notifications-multi-company-e2e.sh` | PR #193; mark-read tenant-scoped |",
+      "area": 9,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 9,
+      "implementation": [
+        {
+          "path": "apps/api/src/notifications.controller.ts",
+          "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/notificacoes.tsx",
+          "sha": "5b92e71991bfa02a0be73bfd3dd1debf31a446c1",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/notification-atomicity-e2e.cjs",
+          "sha": "b4cea0d2e6c1a63f59affc16fe7618bca50a6691",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-notifications-multi-company-e2e.sh",
+          "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`notifications.controller.ts`, `notificacoes.tsx`, `http-notifications-multi-company-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #193; mark-read tenant-scoped"
+    },
+    {
+      "id": "COMPANY-JOBS-001",
+      "requirement": "Empresa seleciona vaga operacional sem digitar UUID",
+      "legacyRow": "| COMPANY-JOBS-001 | Empresa seleciona vaga operacional sem digitar UUID | IMPLEMENTADO / DEPLOYED | Friction Gate | `GET /v1/company/jobs`, `apps/mobile/app/candidatos.tsx` | PR #184; `COMPANY_JOB_SELECTION_v1.58.md` |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/candidatos.tsx",
+          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`GET /v1/company/jobs`, `apps/mobile/app/candidatos.tsx`",
+      "historicalTestEvidenceColumn": "PR #184; `COMPANY_JOB_SELECTION_v1.58.md`"
+    },
+    {
+      "id": "COMPANY-SHIFT-001",
+      "requirement": "Vaga publicada pelo mobile possui janela real de data/hora",
+      "legacyRow": "| COMPANY-SHIFT-001 | Vaga publicada pelo mobile possui janela real de data/hora | IMPLEMENTADO / DEPLOYED | Matching + Friction Gate | `apps/mobile/app/empresa.tsx`, `company-job-create.controller.ts` | PR #185; validações de janela |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/empresa.tsx",
+          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-job-create.controller.ts",
+          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`apps/mobile/app/empresa.tsx`, `company-job-create.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #185; validações de janela"
+    },
+    {
+      "id": "COMPANY-NAV-001",
+      "requirement": "Ações principais da empresa acessíveis diretamente pela tela Operação",
+      "legacyRow": "| COMPANY-NAV-001 | Ações principais da empresa acessíveis diretamente pela tela Operação | IMPLEMENTADO / MOBILE MERGED | Friction Gate | `apps/mobile/app/empresa-inicio.tsx` | PR #186; atalhos operacionais |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/app/empresa-inicio.tsx`",
+      "historicalTestEvidenceColumn": "PR #186; atalhos operacionais"
+    },
+    {
+      "id": "COMPANY-RANK-001",
+      "requirement": "Empresa vê interessados ordenados pela recomendação real do backend",
+      "legacyRow": "| COMPANY-RANK-001 | Empresa vê interessados ordenados pela recomendação real do backend | IMPLEMENTADO / MOBILE MERGED / DEVICE E2E PENDENTE | Matching Engine + decisão humana | `apps/mobile/app/candidatos.tsx`, recommendations endpoint | PR #201/#212; score 0–100 + razões; confirmação explícita |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/app/candidatos.tsx`, recommendations endpoint",
+      "historicalTestEvidenceColumn": "PR #201/#212; score 0–100 + razões; confirmação explícita"
+    },
+    {
+      "id": "COMPANY-ANALYTICS-001",
+      "requirement": "Empresa vê métricas factuais da operação sem previsão inventada",
+      "legacyRow": "| COMPANY-ANALYTICS-001 | Empresa vê métricas factuais da operação sem previsão inventada | IMPLEMENTADO / DEPLOYED | analytics descritivo | `company-analytics.controller.ts`, `analytics.tsx` | PR #211; taxas usam denominadores explícitos e `null` sem base |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/analytics.tsx",
+          "sha": "aff479659db2976acd7b3e0923e991b36273fce7",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-analytics.controller.ts",
+          "sha": "9d4aea6ba5f51260dd7b9f298837be9cb806b4ba",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`company-analytics.controller.ts`, `analytics.tsx`",
+      "historicalTestEvidenceColumn": "PR #211; taxas usam denominadores explícitos e `null` sem base"
+    },
+    {
+      "id": "TALENT-POOL-001",
+      "requirement": "Empresa transforma bom histórico em pool preferido reutilizável e gerencia pools sem UUID",
+      "legacyRow": "| TALENT-POOL-001 | Empresa transforma bom histórico em pool preferido reutilizável e gerencia pools sem UUID | IMPLEMENTADO / MOBILE MERGED | Friction Gate + replacement sourcing | `talent-pools.controller.ts`, `talentos.tsx` | PR #189/#194 |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/talentos.tsx",
+          "sha": "87872556f34ee09519f739c33a404322f1e677db",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/talent-pools.controller.ts",
+          "sha": "3e4156f6d582028101c06c5c21e6a2a7c6bc5ab4",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`talent-pools.controller.ts`, `talentos.tsx`",
+      "historicalTestEvidenceColumn": "PR #189/#194"
+    },
+    {
+      "id": "REPLACEMENT-001",
+      "requirement": "Empresa solicita, encontra e confirma substituto sem UUID/manual DB",
+      "legacyRow": "| REPLACEMENT-001 | Empresa solicita, encontra e confirma substituto sem UUID/manual DB | IMPLEMENTADO / DEPLOYED | Replacement Engine + Trust gate | `replacement.controller.ts`, `substituicoes.tsx`, `http-replacement-e2e.sh` | PR #187–#190; sem inferência automática de culpa |",
+      "area": 5,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 5,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/substituicoes.tsx",
+          "sha": "e2cf5a9af0d4cfc6755fd857cf6de91f30c45b80",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/replacement.controller.ts",
+          "sha": "809c27f1551c103adc9e6950f79555eb42d3b7db",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/matching-acceptance-e2e.cjs",
+          "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-replacement-e2e.sh",
+          "sha": "f1025db62e0e534d874fa7252123f29e749f07a0",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`replacement.controller.ts`, `substituicoes.tsx`, `http-replacement-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #187–#190; sem inferência automática de culpa"
+    },
+    {
+      "id": "ROADMAP-001",
+      "requirement": "Construção por fatias verticais mobile-first",
+      "legacyRow": "| ROADMAP-001 | Construção por fatias verticais mobile-first | ATIVO | Plano Mestre | `docs/roadmap/PLANO_MESTRE_EXECUCAO.md` | rastreabilidade contínua |",
+      "area": 13,
+      "state": "PARTIAL",
+      "gap": "Governança integral CI/Android por tipo de mudança, proteção merge e reconciliação de drafts ainda pendentes; Activity Watch não é build.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`docs/roadmap/PLANO_MESTRE_EXECUCAO.md`",
+      "historicalTestEvidenceColumn": "rastreabilidade contínua"
+    },
+    {
+      "id": "MOB-001",
+      "requirement": "Aplicativo mobile é o produto operacional principal",
+      "legacyRow": "| MOB-001 | Aplicativo mobile é o produto operacional principal | IN PROGRESS / ANDROID EXPORT HISTORICAMENTE GREEN / BACKEND PROD / DEVICE E2E PENDENTE | `apps/mobile/` | CI #516/#528 exportou Android real; aparelho físico Issue #220 |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/`",
+      "historicalTestEvidenceColumn": "CI #516/#528 exportou Android real; aparelho físico Issue #220"
+    },
+    {
+      "id": "MOB-002",
+      "requirement": "Navegação profissional Trabalhos / Agenda / Disponibilidade / Ganhos / Notificações / Perfil",
+      "legacyRow": "| MOB-002 | Navegação profissional Trabalhos / Agenda / Disponibilidade / Ganhos / Notificações / Perfil | IMPLEMENTADA / DEVICE E2E PENDENTE | `apps/mobile/app/` | PR #200; Issue #220 |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/app/`",
+      "historicalTestEvidenceColumn": "PR #200; Issue #220"
+    },
+    {
+      "id": "MOB-003",
+      "requirement": "Interesse em oportunidade em 1 ação",
+      "legacyRow": "| MOB-003 | Interesse em oportunidade em 1 ação | IMPLEMENTADO / NETWORK_SHARED | `trabalhos.tsx`, `jobs.controller.ts` | PR #180 |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/trabalhos.tsx",
+          "sha": "65c0de5b1b9a390eb403a1a01695038c30180928",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/jobs.controller.ts",
+          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`trabalhos.tsx`, `jobs.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #180"
+    },
+    {
+      "id": "MOB-004",
+      "requirement": "Ganhos acessíveis em 1 ação",
+      "legacyRow": "| MOB-004 | Ganhos acessíveis em 1 ação | IMPLEMENTADO / MULTIEMPRESA / PSP REAL PENDENTE | `ganhos.tsx`, `earnings.controller.ts` | PR #181; FIN-RISK Issue #215 |",
+      "area": 6,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/ganhos.tsx",
+          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/earnings.controller.ts",
+          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`ganhos.tsx`, `earnings.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #181; FIN-RISK Issue #215"
+    },
+    {
+      "id": "MOB-005",
+      "requirement": "Perfil profissional persistente",
+      "legacyRow": "| MOB-005 | Perfil profissional persistente | IMPLEMENTADO | `perfil.tsx`, `professional-profile.controller.ts` | role/city persistidos |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/perfil.tsx",
+          "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/professional-profile.controller.ts",
+          "sha": "c7333a3d6b8b63d074885c5df9cc707482cc3949",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        },
+        {
+          "path": "scripts/http-professional-profile-input-e2e.sh",
+          "sha": "7d7cfe17644ea639cb5ea3bd7b0a2dd7ab795057",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`perfil.tsx`, `professional-profile.controller.ts`",
+      "historicalTestEvidenceColumn": "role/city persistidos"
+    },
+    {
+      "id": "MOB-006",
+      "requirement": "Agenda/check-in/start/check-out/conclusão",
+      "legacyRow": "| MOB-006 | Agenda/check-in/start/check-out/conclusão | IMPLEMENTADO / MULTIEMPRESA / GEO OPCIONAL | `agenda.tsx`, `work-assignments.controller.ts` | PR #181/#199; device validation Issue #220 |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/agenda.tsx",
+          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/work-assignments.controller.ts",
+          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`agenda.tsx`, `work-assignments.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #181/#199; device validation Issue #220"
+    },
+    {
+      "id": "MOB-007",
+      "requirement": "Confirmação pela empresa após interesse",
+      "legacyRow": "| MOB-007 | Confirmação pela empresa após interesse | IMPLEMENTADA / MEMBERSHIP OPERACIONAL AUTOMÁTICO | `company-jobs.controller.ts` | PR #180 |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`company-jobs.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #180"
+    },
+    {
+      "id": "MOB-008",
+      "requirement": "Conversa associada ao assignment",
+      "legacyRow": "| MOB-008 | Conversa associada ao assignment | IMPLEMENTADA / TENANT-ISOLATED / DEPLOYED | `conversa.tsx`, `conversations.controller.ts`, `notifications.controller.ts` | PR #183; cross-tenant 404 testado historicamente |",
+      "area": 9,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 9,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/conversa.tsx",
+          "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/conversations.controller.ts",
+          "sha": "05f479c1ab3a2350c8bcd1fd32b1bdd574e62ec3",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/notifications.controller.ts",
+          "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/notification-atomicity-e2e.cjs",
+          "sha": "b4cea0d2e6c1a63f59affc16fe7618bca50a6691",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-notifications-multi-company-e2e.sh",
+          "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`conversa.tsx`, `conversations.controller.ts`, `notifications.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #183; cross-tenant 404 testado historicamente"
+    },
+    {
+      "id": "MOB-009",
+      "requirement": "Empresa avalia profissional após conclusão",
+      "legacyRow": "| MOB-009 | Empresa avalia profissional após conclusão | IMPLEMENTADA / DEPLOYED | `empresa-inicio.tsx`, `ratings.controller.ts` | PR #172/#210 |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/empresa-inicio.tsx",
+          "sha": "714095ed78b6669a42750d0ac54fbb861e354501",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/ratings.controller.ts",
+          "sha": "d4e41af53698b1658e620e717cafd1ec129a260a",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`empresa-inicio.tsx`, `ratings.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #172/#210"
+    },
+    {
+      "id": "MOB-010",
+      "requirement": "Work Passport global",
+      "legacyRow": "| MOB-010 | Work Passport global | IMPLEMENTADO / MULTIEMPRESA | `perfil.tsx`, `work-passport.controller.ts` | média global ponderada; PR #181 |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/mobile/app/perfil.tsx",
+          "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/work-passport.controller.ts",
+          "sha": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`perfil.tsx`, `work-passport.controller.ts`",
+      "historicalTestEvidenceColumn": "média global ponderada; PR #181"
+    },
+    {
+      "id": "MOB-011",
+      "requirement": "Entrada/autenticação respeita sessão segura e tipo de conta",
+      "legacyRow": "| MOB-011 | Entrada/autenticação respeita sessão segura e tipo de conta | IMPLEMENTADA / MOBILE MERGED | `index.tsx`, `entrar.tsx`, `criar-conta.tsx`, `SecureStore` | PR #197; device validation pendente |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`index.tsx`, `entrar.tsx`, `criar-conta.tsx`, `SecureStore`",
+      "historicalTestEvidenceColumn": "PR #197; device validation pendente"
+    },
+    {
+      "id": "MOB-012",
+      "requirement": "Mobile usa API oficial por padrão fora do ambiente local",
+      "legacyRow": "| MOB-012 | Mobile usa API oficial por padrão fora do ambiente local | IMPLEMENTADO / MOBILE MERGED | `apps/mobile/lib/api.ts` | PR #195; fallback oficial + override |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`apps/mobile/lib/api.ts`",
+      "historicalTestEvidenceColumn": "PR #195; fallback oficial + override"
+    },
+    {
+      "id": "MOB-013",
+      "requirement": "Disponibilidade é preenchida em formato humano e convertida internamente",
+      "legacyRow": "| MOB-013 | Disponibilidade é preenchida em formato humano e convertida internamente | IMPLEMENTADA / MOBILE MERGED | `disponibilidade.tsx` | PR #200 |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`disponibilidade.tsx`",
+      "historicalTestEvidenceColumn": "PR #200"
+    },
+    {
+      "id": "MOB-014",
+      "requirement": "Localização no check-in/out é opcional e sem tracking em background",
+      "legacyRow": "| MOB-014 | Localização no check-in/out é opcional e sem tracking em background | IMPLEMENTADA / DEVICE VALIDATION PENDENTE | `agenda.tsx`, `expo-location` | PR #199; Issue #220 |",
+      "area": 1,
+      "state": "PARTIAL",
+      "gap": "Percurso completo de telas/layout/navegação e gestos em cada plataforma ainda não reconciliado; fixture de handler não é render RN/SecureStore/aparelho físico.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`agenda.tsx`, `expo-location`",
+      "historicalTestEvidenceColumn": "PR #199; Issue #220"
+    },
+    {
+      "id": "TEST-JOURNEY-001",
+      "requirement": "Signup → disponibilidade → vaga → interesse → recomendação → confirmação → assignment → chat/notificação → check-in → início → check-out → conclusão → earnings → avaliação → Work Passport → signout",
+      "legacyRow": "| TEST-JOURNEY-001 | Signup → disponibilidade → vaga → interesse → recomendação → confirmação → assignment → chat/notificação → check-in → início → check-out → conclusão → earnings → avaliação → Work Passport → signout | DB + HTTP E2E HISTORICAMENTE GREEN / DEVICE E2E PENDENTE | `professional-journey.sh`, `http-journey-e2e.sh` | CI #528 SUCCESS histórico; runner atual bloqueado; Issue #220 |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        },
+        {
+          "path": "apps/api/src/work-assignments.controller.ts",
+          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`professional-journey.sh`, `http-journey-e2e.sh`",
+      "historicalTestEvidenceColumn": "CI #528 SUCCESS histórico; runner atual bloqueado; Issue #220"
+    },
+    {
+      "id": "TEST-REPLACEMENT-001",
+      "requirement": "Dois profissionais → pool preferido → replacement request → auto-match → select → original cancelled → substituto confirmed",
+      "legacyRow": "| TEST-REPLACEMENT-001 | Dois profissionais → pool preferido → replacement request → auto-match → select → original cancelled → substituto confirmed | HTTP E2E HISTORICAMENTE GREEN / DEPLOYED | `scripts/http-replacement-e2e.sh` | PR #190 |",
+      "area": 5,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 5,
+      "implementation": [
+        {
+          "path": "apps/api/src/replacement.controller.ts",
+          "sha": "809c27f1551c103adc9e6950f79555eb42d3b7db",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/talent-pools.controller.ts",
+          "sha": "3e4156f6d582028101c06c5c21e6a2a7c6bc5ab4",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/matching-acceptance-e2e.cjs",
+          "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-replacement-e2e.sh",
+          "sha": "f1025db62e0e534d874fa7252123f29e749f07a0",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`scripts/http-replacement-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #190"
+    },
+    {
+      "id": "TEST-CONFIRM-001",
+      "requirement": "Confirmação repetida idempotente; estados incompatíveis rejeitados",
+      "legacyRow": "| TEST-CONFIRM-001 | Confirmação repetida idempotente; estados incompatíveis rejeitados | UNIT HISTORICAMENTE GREEN | `company-confirmation-policy.ts` | PR #157 |",
+      "area": 5,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 5,
+      "implementation": [
+        {
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/matching-acceptance-e2e.cjs",
+          "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`company-confirmation-policy.ts`",
+      "historicalTestEvidenceColumn": "PR #157"
+    },
+    {
+      "id": "TEST-COMPANY-ONBOARD-001",
+      "requirement": "Signup empresa → workspace owner → signin → publicação de vaga válida sem DB fixture",
+      "legacyRow": "| TEST-COMPANY-ONBOARD-001 | Signup empresa → workspace owner → signin → publicação de vaga válida sem DB fixture | HTTP E2E HISTORICAMENTE GREEN | `http-company-onboarding-e2e.sh` | PR #179/#185 |",
+      "area": 2,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 2,
+      "implementation": [
+        {
+          "path": "apps/api/src/auth.controller.ts",
+          "sha": "c432aa1e28e02c8064144e913168cc64e8a38e97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-job-create.controller.ts",
+          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/authentication-acceptance-e2e.cjs",
+          "sha": "35480732d0dab5b205a2f1be21b128ce57f03960",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/invitation-atomicity-e2e.cjs",
+          "sha": "3f7107855c1e60de59e3c3fbf53b2e780f889c07",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`http-company-onboarding-e2e.sh`",
+      "historicalTestEvidenceColumn": "PR #179/#185"
+    },
+    {
+      "id": "TEST-ANDROID-EXPORT-001",
+      "requirement": "Bundle/export Android real compila com stack Expo suportado",
+      "legacyRow": "| TEST-ANDROID-EXPORT-001 | Bundle/export Android real compila com stack Expo suportado | ÚLTIMO CI COMPLETO GREEN / CURRENT RUNNER BLOCKED | `apps/mobile/package.json`, `.github/workflows/ci.yml`, `pnpm-lock.yaml` | CI #516/#528 SUCCESS; Issue #214 |",
+      "area": 10,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 10,
+      "implementation": [
+        {
+          "path": "apps/mobile/package.json",
+          "sha": "e1646b540a738daa81828a71f00617a7714fad6f",
+          "mode": "100644"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+          "mode": "100644"
+        },
+        {
+          "path": "pnpm-lock.yaml",
+          "sha": "c1a67de447f42375a02a05a03661037262f9cd8d",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`apps/mobile/package.json`, `.github/workflows/ci.yml`, `pnpm-lock.yaml`",
+      "historicalTestEvidenceColumn": "CI #516/#528 SUCCESS; Issue #214"
+    },
+    {
+      "id": "TEST-FIN-SIGNED-001",
+      "requirement": "Webhook financeiro assinado rejeita tampering/replay e reconcilia fatos",
+      "legacyRow": "| TEST-FIN-SIGNED-001 | Webhook financeiro assinado rejeita tampering/replay e reconcilia fatos | IMPLEMENTADO / DEPLOYED / FULL CI RERUN PENDENTE | signed adapter + finance E2E | PR #216; `SIGNED_PAYMENT_WEBHOOK_v1.75.md`; Issue #214 |",
+      "area": 6,
+      "state": "PARTIAL",
+      "gap": "Contrato simulado: replay idêntico devolve fato/ACK existente, tampering ou fato divergente rejeitado; não rejeição universal de replay nem exactly-once.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/payment-webhook.controller.ts",
+          "sha": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "signed adapter + finance E2E",
+      "historicalTestEvidenceColumn": "PR #216; `SIGNED_PAYMENT_WEBHOOK_v1.75.md`; Issue #214"
+    },
+    {
+      "id": "TEST-FIN-RECIPIENT-001",
+      "requirement": "Payout para destinatário diferente do assignment é rejeitado",
+      "legacyRow": "| TEST-FIN-RECIPIENT-001 | Payout para destinatário diferente do assignment é rejeitado | IMPLEMENTADO / DEPLOYED / ADVERSARIAL BASELINE | payout recipient + finance E2E | PR #218; `PAYOUT_RECIPIENT_INTEGRITY_v1.77.md` |",
+      "area": 6,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/api/src/payment-events.controller.ts",
+          "sha": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "payout recipient + finance E2E",
+      "historicalTestEvidenceColumn": "PR #218; `PAYOUT_RECIPIENT_INTEGRITY_v1.77.md`"
+    },
+    {
+      "id": "TEST-TRUST-CAUSAL-001",
+      "requirement": "Trust event preserva causa, ator e isolamento tenant sem enforcement automático",
+      "legacyRow": "| TEST-TRUST-CAUSAL-001 | Trust event preserva causa, ator e isolamento tenant sem enforcement automático | IMPLEMENTADO / DEPLOYED | trust causality E2E | PR #217; `TRUST_CAUSAL_EVENTS_v1.76.md` |",
+      "area": 8,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 8,
+      "implementation": [
+        {
+          "path": "apps/api/src/trust-events.controller.ts",
+          "sha": "ac760f24611da21d0b67f4b5ec5174915f07b73e",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/security-acceptance-e2e.cjs",
+          "sha": "6c114658a104aac99766c39abbd78e0629b26426",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-trust-causality-e2e.sh",
+          "sha": "4f2bff8383d9781e0a11e5c7db55944ed61c7e5a",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "trust causality E2E",
+      "historicalTestEvidenceColumn": "PR #217; `TRUST_CAUSAL_EVENTS_v1.76.md`"
+    },
+    {
+      "id": "SEC-JOBS-001",
+      "requirement": "Company Jobs valida papel/vaga/lifecycle/janela do turno",
+      "legacyRow": "| SEC-JOBS-001 | Company Jobs valida papel/vaga/lifecycle/janela do turno | MERGED / DEPLOYED | `company-jobs.controller.ts`, `company-job-create.controller.ts` | PR #152/#184/#185 |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-job-create.controller.ts",
+          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`company-jobs.controller.ts`, `company-job-create.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #152/#184/#185"
+    },
+    {
+      "id": "SEC-AVAIL-001",
+      "requirement": "Availability rejeita timestamps inválidos",
+      "legacyRow": "| SEC-AVAIL-001 | Availability rejeita timestamps inválidos | MERGED | `availability.controller.ts` | PR #151 + jornada histórica |",
+      "area": 3,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 3,
+      "implementation": [
+        {
+          "path": "apps/api/src/availability.controller.ts",
+          "sha": "fc225952e5063d65b344046d77dc1f8062026b3c",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/availability-input.ts",
+          "sha": "a5b2acc782df78f2c0a8716bf41e8ae63942ff28",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`availability.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #151 + jornada histórica"
+    },
+    {
+      "id": "SEC-TEAM-001",
+      "requirement": "Team Allocation valida job/team/autorização",
+      "legacyRow": "| SEC-TEAM-001 | Team Allocation valida job/team/autorização | MERGED | `team-allocation.controller.ts` | PR #149 |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/api/src/team-allocation.controller.ts",
+          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`team-allocation.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #149"
+    },
+    {
+      "id": "SEC-POOL-001",
+      "requirement": "Talent Pools valida papel, histórico e tenant explícito",
+      "legacyRow": "| SEC-POOL-001 | Talent Pools valida papel, histórico e tenant explícito | MERGED / DEPLOYED | `talent-pools.controller.ts` | PR #146/#189 |",
+      "area": 4,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 4,
+      "implementation": [
+        {
+          "path": "apps/api/src/talent-pools.controller.ts",
+          "sha": "3e4156f6d582028101c06c5c21e6a2a7c6bc5ab4",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`talent-pools.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #146/#189"
+    },
+    {
+      "id": "SEC-SAFETY-001",
+      "requirement": "Safety case usa membership real, histórico imutável e acesso tenant",
+      "legacyRow": "| SEC-SAFETY-001 | Safety case usa membership real, histórico imutável e acesso tenant | MERGED / DEPLOYED | `safety-cases.controller.ts`, `safety-admin.controller.ts`, migration 0030 | PR #159/#209/#213 |",
+      "area": 8,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 8,
+      "implementation": [
+        {
+          "path": "apps/api/src/safety-cases.controller.ts",
+          "sha": "aa62c24959e927e896b041b744c4c154a58591b0",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/safety-admin.controller.ts",
+          "sha": "baf0a51aae1c2cae598dbf3e7bdb7660b6b1f7f7",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/security-acceptance-e2e.cjs",
+          "sha": "6c114658a104aac99766c39abbd78e0629b26426",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "sha": "3d9a713ac13d6a653184293ad508bd7d02be29cd",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`safety-cases.controller.ts`, `safety-admin.controller.ts`, migration 0030",
+      "historicalTestEvidenceColumn": "PR #159/#209/#213"
+    },
+    {
+      "id": "SEC-RUNTIME-001",
+      "requirement": "Operações tenant-owned assumem role NOBYPASSRLS",
+      "legacyRow": "| SEC-RUNTIME-001 | Operações tenant-owned assumem role NOBYPASSRLS | MERGED / DEPLOYED | `database.service.ts`, `0027_runtime_rls_role.sql` | PR #182 |",
+      "area": 7,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 7,
+      "implementation": [
+        {
+          "path": "apps/api/src/database.service.ts",
+          "sha": "371c1615e95271f5484de3e8bca883481d4e845f",
+          "mode": "100644"
+        },
+        {
+          "path": "packages/db/infra/roles.sql",
+          "sha": "2c4162a1360ee75182bf9285fbc8475956fc4f01",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`database.service.ts`, `0027_runtime_rls_role.sql`",
+      "historicalTestEvidenceColumn": "PR #182"
+    },
+    {
+      "id": "SEC-CHAT-001",
+      "requirement": "Chat/notificações respeitam assignment e tenant explícitos",
+      "legacyRow": "| SEC-CHAT-001 | Chat/notificações respeitam assignment e tenant explícitos | MERGED / DEPLOYED | `conversations.controller.ts`, `notifications.controller.ts` | PR #183/#193 |",
+      "area": 9,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 9,
+      "implementation": [
+        {
+          "path": "apps/api/src/conversations.controller.ts",
+          "sha": "05f479c1ab3a2350c8bcd1fd32b1bdd574e62ec3",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/notifications.controller.ts",
+          "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/notification-atomicity-e2e.cjs",
+          "sha": "b4cea0d2e6c1a63f59affc16fe7618bca50a6691",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-notifications-multi-company-e2e.sh",
+          "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`conversations.controller.ts`, `notifications.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #183/#193"
+    },
+    {
+      "id": "TRUST-VERIFY-001",
+      "requirement": "Baseline provider-neutral KYC/KYB",
+      "legacyRow": "| TRUST-VERIFY-001 | Baseline provider-neutral KYC/KYB | MERGED / DEPLOYED / PROVIDER REAL PENDENTE | `verification.controller.ts`, migration 0023 | PR #171; Issue #219 |",
+      "area": 11,
+      "state": "PARTIAL",
+      "gap": "Baseline provider-neutral mantém PENDING; não KYC/KYB real.",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": null,
+      "historicalCodeColumn": "`verification.controller.ts`, migration 0023",
+      "historicalTestEvidenceColumn": "PR #171; Issue #219"
+    },
+    {
+      "id": "TRUST-CAUSAL-001",
+      "requirement": "Trust events preservam causalidade e ator e são append-only no runtime",
+      "legacyRow": "| TRUST-CAUSAL-001 | Trust events preservam causalidade e ator e são append-only no runtime | MERGED / DEPLOYED | `trust-events.controller.ts`, migration 0031 | PR #217; `TRUST_CAUSAL_EVENTS_v1.76.md` |",
+      "area": 8,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 8,
+      "implementation": [
+        {
+          "path": "apps/api/src/trust-events.controller.ts",
+          "sha": "ac760f24611da21d0b67f4b5ec5174915f07b73e",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/security-acceptance-e2e.cjs",
+          "sha": "6c114658a104aac99766c39abbd78e0629b26426",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-trust-causality-e2e.sh",
+          "sha": "4f2bff8383d9781e0a11e5c7db55944ed61c7e5a",
+          "mode": "100644"
+        }
+      ],
+      "historicalCodeColumn": "`trust-events.controller.ts`, migration 0031",
+      "historicalTestEvidenceColumn": "PR #217; `TRUST_CAUSAL_EVENTS_v1.76.md`"
+    },
+    {
+      "id": "FIN-EVENT-001",
+      "requirement": "Fatos financeiros externos não fabricáveis por company/admin",
+      "legacyRow": "| FIN-EVENT-001 | Fatos financeiros externos não fabricáveis por company/admin | MERGED / DEPLOYED | `payment-events.controller.ts`, migrations financeiras | PR #169/#216/#218 |",
+      "area": 6,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/api/src/payment-events.controller.ts",
+          "sha": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/payment-webhook.controller.ts",
+          "sha": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`payment-events.controller.ts`, migrations financeiras",
+      "historicalTestEvidenceColumn": "PR #169/#216/#218"
+    },
+    {
+      "id": "FIN-WEBHOOK-001",
+      "requirement": "Raw body preservado e webhook HMAC provider-neutral",
+      "legacyRow": "| FIN-WEBHOOK-001 | Raw body preservado e webhook HMAC provider-neutral | MERGED / DEPLOYED / PSP SANDBOX REAL PENDENTE | `main.ts`, `signed-json-payment-provider.ts`, `payment-webhook.controller.ts` | PR #170/#216; `SIGNED_PAYMENT_WEBHOOK_v1.75.md` |",
+      "area": 6,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/api/src/main.ts",
+          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/payment-webhook.controller.ts",
+          "sha": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "`main.ts`, `signed-json-payment-provider.ts`, `payment-webhook.controller.ts`",
+      "historicalTestEvidenceColumn": "PR #170/#216; `SIGNED_PAYMENT_WEBHOOK_v1.75.md`"
+    },
+    {
+      "id": "FIN-PAYOUT-001",
+      "requirement": "Payout fica vinculado ao profissional correto do assignment",
+      "legacyRow": "| FIN-PAYOUT-001 | Payout fica vinculado ao profissional correto do assignment | MERGED / DEPLOYED / DINHEIRO REAL DESATIVADO | recipient provenance + migration 0032 | PR #218; `PAYOUT_RECIPIENT_INTEGRITY_v1.77.md` |",
+      "area": 6,
+      "state": "COVERED_INTERNAL",
+      "gap": "",
+      "scope": "Só requisito interno descrito; cláusulas externas e físicas não aceitas",
+      "proofArea": 6,
+      "implementation": [
+        {
+          "path": "apps/api/src/payment-events.controller.ts",
+          "sha": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/signed-json-payment-provider.ts",
+          "sha": "26dd37d8dd0e2126a54ccb96445e23524ab1c8ef",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-finance-reconciliation-e2e.sh",
+          "sha": "c074953289f22665d2dcdc9ca071c38ae41c4e74",
+          "mode": "100755"
+        }
+      ],
+      "historicalCodeColumn": "recipient provenance + migration 0032",
+      "historicalTestEvidenceColumn": "PR #218; `PAYOUT_RECIPIENT_INTEGRITY_v1.77.md`"
+    },
+    {
+      "id": "REST-OPENAPI-001",
+      "requirement": "REST + OpenAPI, DVT v1.4 §22.4",
+      "area": 11,
+      "state": "COVERED_INTERNAL",
+      "gap": "Não encerra a Área11 por arrasto.",
+      "evidence": [
+        "docs/api/openapi.json",
+        "docs/evidencias/REST_OPENAPI_CONTRACT_2026-10-23.md"
+      ],
+      "code": [
+        "scripts/openapi-contract.cjs",
+        "scripts/backend-contract-acceptance-e2e.cjs"
+      ]
+    },
+    {
+      "id": "PREFERENCES-CONTRACT-001",
+      "requirement": "Preferências e seus efeitos funcionais",
+      "area": 11,
+      "state": "PENDING",
+      "gap": "Campos, autoridade, escopo, defaults, persistência e efeito no matching não definidos; sem implementação comprovada. Não inventar defaults."
+    },
+    {
+      "id": "GENERAL-HELP-AUTHORITY-001",
+      "requirement": "Ajuda geral sem membership",
+      "area": 11,
+      "state": "PENDING",
+      "gap": "Autoridade, isolamento e retenção sem contrato completo/implementação; suporte tenant não prova acesso geral. Não contornar tenant/RLS."
+    }
+  ],
+  "legacy": {
+    "path": "docs/requirements/REQUIREMENTS_LEDGER.md",
+    "sha": "da135aacb6691b54126f2b7acf0c068ed0701031",
+    "ids": [
+      "INFRA-001",
+      "INFRA-LOCK-001",
+      "API-001",
+      "SEC-001",
+      "SEC-002",
+      "CI-001",
+      "FIN-RISK",
+      "TRUST-ARCH",
+      "MATCH-001",
+      "ONBOARD-001",
+      "NETWORK-001",
+      "MULTI-001",
+      "MULTI-NOTIF-001",
+      "COMPANY-JOBS-001",
+      "COMPANY-SHIFT-001",
+      "COMPANY-NAV-001",
+      "COMPANY-RANK-001",
+      "COMPANY-ANALYTICS-001",
+      "TALENT-POOL-001",
+      "REPLACEMENT-001",
+      "ROADMAP-001",
+      "MOB-001",
+      "MOB-002",
+      "MOB-003",
+      "MOB-004",
+      "MOB-005",
+      "MOB-006",
+      "MOB-007",
+      "MOB-008",
+      "MOB-009",
+      "MOB-010",
+      "MOB-011",
+      "MOB-012",
+      "MOB-013",
+      "MOB-014",
+      "TEST-JOURNEY-001",
+      "TEST-REPLACEMENT-001",
+      "TEST-CONFIRM-001",
+      "TEST-COMPANY-ONBOARD-001",
+      "TEST-ANDROID-EXPORT-001",
+      "TEST-FIN-SIGNED-001",
+      "TEST-FIN-RECIPIENT-001",
+      "TEST-TRUST-CAUSAL-001",
+      "SEC-JOBS-001",
+      "SEC-AVAIL-001",
+      "SEC-TEAM-001",
+      "SEC-POOL-001",
+      "SEC-SAFETY-001",
+      "SEC-RUNTIME-001",
+      "SEC-CHAT-001",
+      "TRUST-VERIFY-001",
+      "TRUST-CAUSAL-001",
+      "FIN-EVENT-001",
+      "FIN-WEBHOOK-001",
+      "FIN-PAYOUT-001"
+    ]
+  },
+  "proofs": [
+    {
+      "area": 2,
+      "pr": 568,
+      "head": "148f3cded8dc679d54662cd0988e7f8087fae15c",
+      "merge": "b035000fed28dd47bbd95413abe09c67b7e53256",
+      "receipt": {
+        "path": "docs/evidencias/AUTHENTICATION_INTERNAL_ACCEPTANCE_2026-10-20.md",
+        "sha": "bee43b5c367621f6006cbe9f8d448ec01f55b96c"
+      },
+      "ownCI": {
+        "id": 39483543794,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "148f3cded8dc679d54662cd0988e7f8087fae15c",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-20T19:26:57Z",
+        "updated_at": "2026-10-20T19:33:13Z",
+        "job": 118838012035,
+        "checkout": "c57ca5b09c6716bae9239c7f3c690a956ba74104",
+        "checkoutLine": "2026-10-20T19:27:18.5165748Z c57ca5b09c6716bae9239c7f3c690a956ba74104",
+        "counts": [
+          217,
+          1141,
+          501,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-20T19:29:45.7666993Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-20T19:29:47.6927029Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-20T19:33:10.8576423Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "aa056a276b7cb01342436b3c4753e710d299ae8c",
+        "checkoutParents": [
+          "8a8dd6d22f46b5762b306c2484ce58e0b9efe30f",
+          "148f3cded8dc679d54662cd0988e7f8087fae15c"
+        ]
+      },
+      "postCI": {
+        "id": 39516978383,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "b035000fed28dd47bbd95413abe09c67b7e53256",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-20T23:44:36Z",
+        "updated_at": "2026-10-20T23:50:48Z",
+        "job": 118951378500,
+        "checkout": "b035000fed28dd47bbd95413abe09c67b7e53256",
+        "checkoutLine": "2026-10-20T23:45:05.5722104Z b035000fed28dd47bbd95413abe09c67b7e53256",
+        "counts": [
+          217,
+          1141,
+          501,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-20T23:47:33.8738074Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-20T23:47:35.6453459Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-20T23:50:44.5053298Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "aa056a276b7cb01342436b3c4753e710d299ae8c",
+        "checkoutParents": [
+          "8a8dd6d22f46b5762b306c2484ce58e0b9efe30f",
+          "148f3cded8dc679d54662cd0988e7f8087fae15c"
+        ]
+      },
+      "apk": {
+        "applicable": true,
+        "own": {
+          "id": 39483543757,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "148f3cded8dc679d54662cd0988e7f8087fae15c",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-20T19:26:57Z",
+          "updated_at": "2026-10-20T19:37:50Z",
+          "job": 118838012065,
+          "checkout": "c57ca5b09c6716bae9239c7f3c690a956ba74104",
+          "checkoutLine": "2026-10-20T19:27:05.5307854Z c57ca5b09c6716bae9239c7f3c690a956ba74104",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-20T19:37:43.5613143Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "aa056a276b7cb01342436b3c4753e710d299ae8c",
+          "checkoutParents": [
+            "8a8dd6d22f46b5762b306c2484ce58e0b9efe30f",
+            "148f3cded8dc679d54662cd0988e7f8087fae15c"
+          ],
+          "artifacts": [
+            {
+              "id": 12292947821,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913659,
+              "digest": "sha256:79c7c0810ec2587bef5fd908e3ee7b15c7d07ba5eed67f2b955bcfdd506f9d4d",
+              "expired": false,
+              "expires_at": "2026-11-03T19:37:44Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        },
+        "post": {
+          "id": 39516978384,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "b035000fed28dd47bbd95413abe09c67b7e53256",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-20T23:44:36Z",
+          "updated_at": "2026-10-20T23:56:24Z",
+          "job": 118951378660,
+          "checkout": "b035000fed28dd47bbd95413abe09c67b7e53256",
+          "checkoutLine": "2026-10-20T23:44:45.3628314Z b035000fed28dd47bbd95413abe09c67b7e53256",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-20T23:56:16.5630679Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "aa056a276b7cb01342436b3c4753e710d299ae8c",
+          "checkoutParents": [
+            "8a8dd6d22f46b5762b306c2484ce58e0b9efe30f",
+            "148f3cded8dc679d54662cd0988e7f8087fae15c"
+          ],
+          "artifacts": [
+            {
+              "id": 12309750041,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913648,
+              "digest": "sha256:677d311f813f6916308edeaa224a0fda98ed6090f65bb864d91cad175efdb6c4",
+              "expired": false,
+              "expires_at": "2026-11-03T23:56:17Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        }
+      },
+      "ancestry": {
+        "base": "b035000fed28dd47bbd95413abe09c67b7e53256",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 51
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/auth.controller.ts",
+          "sha": "c432aa1e28e02c8064144e913168cc64e8a38e97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-members.controller.ts",
+          "sha": "b63fedb082c0b8ed20b1b9f7daebe5045705ab4d",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/lib/session.ts",
+          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/authentication-acceptance-e2e.cjs",
+          "sha": "35480732d0dab5b205a2f1be21b128ce57f03960",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/invitation-atomicity-e2e.cjs",
+          "sha": "3f7107855c1e60de59e3c3fbf53b2e780f889c07",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 3,
+      "pr": 595,
+      "head": "ae4609fb9dc990195e7d1af62a02654d192f17c8",
+      "merge": "80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+      "receipt": {
+        "path": "docs/evidencias/PROFESSIONAL_JOURNEY_INTERNAL_ACCEPTANCE_2026-10-21.md",
+        "sha": "1fbd9b5b9ef077c4b99e3cbb27c0960bfc6a10ef"
+      },
+      "ownCI": {
+        "id": 39524136533,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "ae4609fb9dc990195e7d1af62a02654d192f17c8",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-21T00:54:30Z",
+        "updated_at": "2026-10-21T01:00:47Z",
+        "job": 118974720066,
+        "checkout": "aec125c1185f5074c2f36b84b37ea4b73a60e593",
+        "checkoutLine": "2026-10-21T00:54:50.2427055Z aec125c1185f5074c2f36b84b37ea4b73a60e593",
+        "counts": [
+          217,
+          1150,
+          501,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-21T00:57:28.4081716Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-21T00:57:30.2740399Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-21T01:00:42.4103171Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "e551100db837e222e29c8bea679d3de970a2072f",
+        "checkoutParents": [
+          "42ecc26cd36dce60cbee4fa419f139a2d0325414",
+          "ae4609fb9dc990195e7d1af62a02654d192f17c8"
+        ]
+      },
+      "postCI": {
+        "id": 39525571515,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-21T01:08:36Z",
+        "updated_at": "2026-10-21T01:14:27Z",
+        "job": 118979276410,
+        "checkout": "80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+        "checkoutLine": "2026-10-21T01:08:57.1803776Z 80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+        "counts": [
+          217,
+          1150,
+          501,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-21T01:11:22.8978572Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-21T01:11:24.6826995Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-21T01:14:22.5902241Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "e551100db837e222e29c8bea679d3de970a2072f",
+        "checkoutParents": [
+          "42ecc26cd36dce60cbee4fa419f139a2d0325414",
+          "ae4609fb9dc990195e7d1af62a02654d192f17c8"
+        ]
+      },
+      "apk": {
+        "applicable": true,
+        "own": {
+          "id": 39524136442,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "ae4609fb9dc990195e7d1af62a02654d192f17c8",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-21T00:54:30Z",
+          "updated_at": "2026-10-21T01:06:43Z",
+          "job": 118974719103,
+          "checkout": "aec125c1185f5074c2f36b84b37ea4b73a60e593",
+          "checkoutLine": "2026-10-21T00:54:36.7642961Z aec125c1185f5074c2f36b84b37ea4b73a60e593",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-21T01:06:36.1982640Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "e551100db837e222e29c8bea679d3de970a2072f",
+          "checkoutParents": [
+            "42ecc26cd36dce60cbee4fa419f139a2d0325414",
+            "ae4609fb9dc990195e7d1af62a02654d192f17c8"
+          ],
+          "artifacts": [
+            {
+              "id": 12312855653,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913671,
+              "digest": "sha256:e38471fe8773312014d81abb647b81968f86065e7ccee13aca5e0ae6fc5cb5e0",
+              "expired": false,
+              "expires_at": "2026-11-04T01:06:37Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        },
+        "post": {
+          "id": 39525571483,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-21T01:08:36Z",
+          "updated_at": "2026-10-21T01:22:00Z",
+          "job": 118979276273,
+          "checkout": "80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+          "checkoutLine": "2026-10-21T01:08:43.7225546Z 80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-21T01:21:53.3174082Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "e551100db837e222e29c8bea679d3de970a2072f",
+          "checkoutParents": [
+            "42ecc26cd36dce60cbee4fa419f139a2d0325414",
+            "ae4609fb9dc990195e7d1af62a02654d192f17c8"
+          ],
+          "artifacts": [
+            {
+              "id": 12313937759,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913661,
+              "digest": "sha256:254d4ce6a53b72e7ff5b1a438336cedfb89b689995f5cfaad9b9750f6be09fc6",
+              "expired": false,
+              "expires_at": "2026-11-04T01:21:55Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        }
+      },
+      "ancestry": {
+        "base": "80f3ac49f5f7177d6a8d193a27881b74ffff4763",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 46
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/jobs.controller.ts",
+          "sha": "185be30435f34dc270461fefce284a37ac7a3b5e",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/work-assignments.controller.ts",
+          "sha": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/agenda.tsx",
+          "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/professional-chronology-e2e.cjs",
+          "sha": "a32c84e93ed91b9749f629a98df5cc9fcdfef4b5",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-journey-e2e.sh",
+          "sha": "425af125b56c0bc6725e421a5d691f36dddbb177",
+          "mode": "100755"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 4,
+      "pr": 608,
+      "head": "eeb6f5b71d0fc818b84be26bbdb9ac5ae51a9aa2",
+      "merge": "b5c77478619765e2ea6b115f8674a64c7a7e156b",
+      "receipt": {
+        "path": "docs/evidencias/COMPANY_INTERNAL_ACCEPTANCE_2026-10-22.md",
+        "sha": "f6c379aa36d7087244efbd600c8db8df50578fdf"
+      },
+      "ownCI": {
+        "id": 39834842796,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "eeb6f5b71d0fc818b84be26bbdb9ac5ae51a9aa2",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T18:50:09Z",
+        "updated_at": "2026-10-22T18:56:21Z",
+        "job": 120020313103,
+        "checkout": "906d87f88034a0647cdc505831a14b3e98eeba83",
+        "checkoutLine": "2026-10-22T18:50:30.8277098Z 906d87f88034a0647cdc505831a14b3e98eeba83",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T18:53:13.5479730Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T18:53:14.1587443Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T18:53:15.9701969Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T18:53:17.0938490Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T18:56:16.3142228Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "30d1c954ccfba9d425671fb10934a3a314da2f73",
+        "checkoutParents": [
+          "322c049e09553f8d3b845f013ca3e3c0802c2bfc",
+          "eeb6f5b71d0fc818b84be26bbdb9ac5ae51a9aa2"
+        ]
+      },
+      "postCI": {
+        "id": 39835939458,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "b5c77478619765e2ea6b115f8674a64c7a7e156b",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T18:57:51Z",
+        "updated_at": "2026-10-22T19:02:23Z",
+        "job": 120024168013,
+        "checkout": "b5c77478619765e2ea6b115f8674a64c7a7e156b",
+        "checkoutLine": "2026-10-22T18:58:18.0912890Z b5c77478619765e2ea6b115f8674a64c7a7e156b",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T19:00:06.4522932Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T19:00:06.8392260Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T19:00:07.9245814Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T19:00:08.5862440Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T19:02:20.1035834Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "30d1c954ccfba9d425671fb10934a3a314da2f73",
+        "checkoutParents": [
+          "322c049e09553f8d3b845f013ca3e3c0802c2bfc",
+          "eeb6f5b71d0fc818b84be26bbdb9ac5ae51a9aa2"
+        ]
+      },
+      "apk": {
+        "applicable": false,
+        "reason": "Produto sem alteração dos insumos Android; justificativa no recibo original, não APK do seu SHA."
+      },
+      "ancestry": {
+        "base": "b5c77478619765e2ea6b115f8674a64c7a7e156b",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 26
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/company-jobs.controller.ts",
+          "sha": "e888c6a6db28bd3f48223f150a5895ffc6c26d9c",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/company-job-create.controller.ts",
+          "sha": "50acee5e5f13731101bc77abcb29d5e21c946206",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/empresa.tsx",
+          "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/company-acceptance-e2e.cjs",
+          "sha": "2f395c93b4a3ba20d4feef16745733cc158f7fb4",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 5,
+      "pr": 610,
+      "head": "a71ff7f2d2f41c5595cba046ff81bb524cb8bd55",
+      "merge": "4b8f2c817cfd6df73ff56fc859efcfcc54502a27",
+      "receipt": {
+        "path": "docs/evidencias/MATCHING_INTERNAL_ACCEPTANCE_2026-10-22.md",
+        "sha": "39ad9661b5cbfc2174b2c9bd825945c0d00dc6ae"
+      },
+      "ownCI": {
+        "id": 39842989991,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "a71ff7f2d2f41c5595cba046ff81bb524cb8bd55",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T19:46:18Z",
+        "updated_at": "2026-10-22T19:51:12Z",
+        "job": 120048743242,
+        "checkout": "8b5d3ec7763dcca0f1ab366a424ede080cfbb28c",
+        "checkoutLine": "2026-10-22T19:46:45.0177723Z 8b5d3ec7763dcca0f1ab366a424ede080cfbb28c",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T19:48:53.5370870Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T19:48:53.9407876Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T19:48:55.0927772Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T19:48:55.8081859Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T19:51:08.8767529Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "eb1779a73185fd7f6264e1eb8f0dc1eb08d7b639",
+        "checkoutParents": [
+          "dd696b16c56c8d623e572ce080be3d7823e5438a",
+          "a71ff7f2d2f41c5595cba046ff81bb524cb8bd55"
+        ]
+      },
+      "postCI": {
+        "id": 39843862544,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "4b8f2c817cfd6df73ff56fc859efcfcc54502a27",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T19:52:21Z",
+        "updated_at": "2026-10-22T19:58:06Z",
+        "job": 120051823121,
+        "checkout": "4b8f2c817cfd6df73ff56fc859efcfcc54502a27",
+        "checkoutLine": "2026-10-22T19:52:42.9020125Z 4b8f2c817cfd6df73ff56fc859efcfcc54502a27",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T19:55:13.0476678Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T19:55:13.5856582Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T19:55:15.1158370Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T19:55:16.0646874Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T19:58:01.3531704Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "eb1779a73185fd7f6264e1eb8f0dc1eb08d7b639",
+        "checkoutParents": [
+          "dd696b16c56c8d623e572ce080be3d7823e5438a",
+          "a71ff7f2d2f41c5595cba046ff81bb524cb8bd55"
+        ]
+      },
+      "apk": {
+        "applicable": false,
+        "reason": "Produto sem alteração dos insumos Android; justificativa no recibo original, não APK do seu SHA."
+      },
+      "ancestry": {
+        "base": "4b8f2c817cfd6df73ff56fc859efcfcc54502a27",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 22
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/replacement.controller.ts",
+          "sha": "809c27f1551c103adc9e6950f79555eb42d3b7db",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/team-allocation.controller.ts",
+          "sha": "a316e0362c7d4de75bcf8cf0c347b6d21bfcac7f",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/candidatos.tsx",
+          "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/matching-acceptance-e2e.cjs",
+          "sha": "8e984d6b465c1821f119c028577b0a7856d45695",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 6,
+      "pr": 573,
+      "head": "68b1d8bd8cee9b472f569c710c1758b2fc71977c",
+      "merge": "1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+      "receipt": {
+        "path": "docs/evidencias/AREA6_INTERNAL_ACCEPTANCE_2026-10-22.md",
+        "sha": "bcb4a0d1ff244063a27834cb3dbc3898d7368236"
+      },
+      "ownCI": {
+        "id": 39638859504,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "68b1d8bd8cee9b472f569c710c1758b2fc71977c",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-21T16:53:39Z",
+        "updated_at": "2026-10-21T16:59:35Z",
+        "job": 119356793805,
+        "checkout": "7677ac3fbeb6219c64f378e8ffd80685ac5111d9",
+        "checkoutLine": "2026-10-21T16:54:00.1763780Z 7677ac3fbeb6219c64f378e8ffd80685ac5111d9",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-21T16:56:35.6970465Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-21T16:56:36.3127208Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-21T16:56:38.1077955Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-21T16:56:39.2057258Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-21T16:59:30.9258370Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "080e142b16df0d629fabc29d8940b03cfa40e553",
+        "checkoutParents": [
+          "7caa5f1404b0ac12e50e1953440e30177af93054",
+          "68b1d8bd8cee9b472f569c710c1758b2fc71977c"
+        ]
+      },
+      "postCI": {
+        "id": 39708675039,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T01:57:40Z",
+        "updated_at": "2026-10-22T02:03:49Z",
+        "job": 119594571633,
+        "checkout": "1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+        "checkoutLine": "2026-10-22T01:58:00.6254273Z 1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T02:00:41.0083202Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T02:00:41.6452944Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T02:00:43.5140951Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T02:00:44.6837126Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T02:03:45.1521882Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "080e142b16df0d629fabc29d8940b03cfa40e553",
+        "checkoutParents": [
+          "7caa5f1404b0ac12e50e1953440e30177af93054",
+          "68b1d8bd8cee9b472f569c710c1758b2fc71977c"
+        ]
+      },
+      "apk": {
+        "applicable": true,
+        "own": {
+          "id": 39638859659,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "68b1d8bd8cee9b472f569c710c1758b2fc71977c",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-21T16:53:39Z",
+          "updated_at": "2026-10-21T17:06:08Z",
+          "job": 119356794982,
+          "checkout": "7677ac3fbeb6219c64f378e8ffd80685ac5111d9",
+          "checkoutLine": "2026-10-21T16:53:46.8710528Z 7677ac3fbeb6219c64f378e8ffd80685ac5111d9",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-21T17:06:03.0645178Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "080e142b16df0d629fabc29d8940b03cfa40e553",
+          "checkoutParents": [
+            "7caa5f1404b0ac12e50e1953440e30177af93054",
+            "68b1d8bd8cee9b472f569c710c1758b2fc71977c"
+          ],
+          "artifacts": [
+            {
+              "id": 12363534293,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913862,
+              "digest": "sha256:66124dcdd736d85146f98785d752df3894e6a80e745f59d6219529043d2182aa",
+              "expired": false,
+              "expires_at": "2026-11-04T17:06:03Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        },
+        "post": {
+          "id": 39708675307,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-22T01:57:40Z",
+          "updated_at": "2026-10-22T02:10:21Z",
+          "job": 119594572956,
+          "checkout": "1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+          "checkoutLine": "2026-10-22T01:57:48.4338403Z 1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-22T02:10:13.3592105Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "080e142b16df0d629fabc29d8940b03cfa40e553",
+          "checkoutParents": [
+            "7caa5f1404b0ac12e50e1953440e30177af93054",
+            "68b1d8bd8cee9b472f569c710c1758b2fc71977c"
+          ],
+          "artifacts": [
+            {
+              "id": 12396378712,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913839,
+              "digest": "sha256:2f1b75c2f67d4139c26c8f280cfa90e671505818ce704f863ef2752fd8c79537",
+              "expired": false,
+              "expires_at": "2026-11-05T02:10:14Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        }
+      },
+      "ancestry": {
+        "base": "1b85403cafd9e17bceeb3ea47ce27fdf03c1496e",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 31
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/earnings.controller.ts",
+          "sha": "f091a1262e2c7a9934358883ea2ef8919ababf97",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/ganhos.tsx",
+          "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/ledger-completion-atomicity-e2e.cjs",
+          "sha": "1b9534fe52c7f660adc6a0fcf1c8074f9870543c",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 7,
+      "pr": 613,
+      "head": "325c6d761f624de2dbe3f0918c48e73d60ea0ed8",
+      "merge": "d6b8c72389fd0825e2a96c25f5722a9d265844c2",
+      "receipt": {
+        "path": "docs/evidencias/TENANT_ISOLATION_INTERNAL_ACCEPTANCE_2026-10-22.md",
+        "sha": "2bd7f1c7bef5e75523c8f443745d5315c3f916a8"
+      },
+      "ownCI": {
+        "id": 39872228407,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "325c6d761f624de2dbe3f0918c48e73d60ea0ed8",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T23:30:24Z",
+        "updated_at": "2026-10-22T23:36:43Z",
+        "job": 120149166133,
+        "checkout": "3494aa65f8a4ba04d99219f5cbd53690fd99f666",
+        "checkoutLine": "2026-10-22T23:30:46.2807248Z 3494aa65f8a4ba04d99219f5cbd53690fd99f666",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T23:33:27.8674209Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T23:33:28.4995280Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T23:33:30.3537363Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T23:33:31.8818992Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T23:33:35.6596065Z TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS {\"tenantTables\":27,\"tableScopes\":{\"tenants\":\"PLATFORM\",\"identities\":\"PLATFORM\",\"sessions\":\"PLATFORM\",\"auth_signin_limits\":\"PLATFORM\",\"terms_acceptances\":\"PLATFORM\",\"taxonomy_roles\":\"PLATFORM\",\"schema_migrations\":\"PLATFORM\",\"privacy_legal_holds\":\"PLATFORM\",\"privacy_requests\":\"PLATFORM\",\"privacy_retention_runs\":\"PLATFORM\",\"privacy_legal_hold_reviews\":\"PLATFORM\",\"professional_profiles\":\"PROFESSIONAL_OWNED\",\"professional_capabilities\":\"PROFESSIONAL_OWNED\",\"professional_availability_network\":\"PROFESSIONAL_OWNED\",\"marketplace_jobs\":\"NETWORK_SHARED\",\"marketplace_interests\":\"NETWORK_SHARED\",\"marketplace_company_reputation\":\"NETWORK_SHARED\"},\"all106RoutesInventoried\":true,\"all74TenantHeaderRoutesDeniedForeignAndAnonymous\":true,\"globalAndIdentityRuntimeLeastPrivilege\":true,\"realPostgreSQL\":true,\"externalPentest\":false,\"nativeUI\":false,\"production\":false}",
+          "2026-10-22T23:36:39.9066339Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "1969278483372480dd1874e5d6b06bc7daddcfc5",
+        "checkoutParents": [
+          "e88f8d4ff9f11b92e82b4c9510c50c4607ca09a8",
+          "325c6d761f624de2dbe3f0918c48e73d60ea0ed8"
+        ]
+      },
+      "postCI": {
+        "id": 39873134900,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "d6b8c72389fd0825e2a96c25f5722a9d265844c2",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-22T23:38:39Z",
+        "updated_at": "2026-10-22T23:43:49Z",
+        "job": 120152158629,
+        "checkout": "d6b8c72389fd0825e2a96c25f5722a9d265844c2",
+        "checkoutLine": "2026-10-22T23:38:59.8445399Z d6b8c72389fd0825e2a96c25f5722a9d265844c2",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-22T23:41:11.0216633Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-22T23:41:11.5363719Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-22T23:41:13.0184540Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-22T23:41:13.9288635Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-22T23:41:16.6629491Z TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS {\"tenantTables\":27,\"tableScopes\":{\"tenants\":\"PLATFORM\",\"identities\":\"PLATFORM\",\"sessions\":\"PLATFORM\",\"auth_signin_limits\":\"PLATFORM\",\"terms_acceptances\":\"PLATFORM\",\"taxonomy_roles\":\"PLATFORM\",\"schema_migrations\":\"PLATFORM\",\"privacy_legal_holds\":\"PLATFORM\",\"privacy_requests\":\"PLATFORM\",\"privacy_retention_runs\":\"PLATFORM\",\"privacy_legal_hold_reviews\":\"PLATFORM\",\"professional_profiles\":\"PROFESSIONAL_OWNED\",\"professional_capabilities\":\"PROFESSIONAL_OWNED\",\"professional_availability_network\":\"PROFESSIONAL_OWNED\",\"marketplace_jobs\":\"NETWORK_SHARED\",\"marketplace_interests\":\"NETWORK_SHARED\",\"marketplace_company_reputation\":\"NETWORK_SHARED\"},\"all106RoutesInventoried\":true,\"all74TenantHeaderRoutesDeniedForeignAndAnonymous\":true,\"globalAndIdentityRuntimeLeastPrivilege\":true,\"realPostgreSQL\":true,\"externalPentest\":false,\"nativeUI\":false,\"production\":false}",
+          "2026-10-22T23:43:45.8698500Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "1969278483372480dd1874e5d6b06bc7daddcfc5",
+        "checkoutParents": [
+          "e88f8d4ff9f11b92e82b4c9510c50c4607ca09a8",
+          "325c6d761f624de2dbe3f0918c48e73d60ea0ed8"
+        ]
+      },
+      "apk": {
+        "applicable": false,
+        "reason": "Produto sem alteração dos insumos Android; justificativa no recibo original, não APK do seu SHA."
+      },
+      "ancestry": {
+        "base": "d6b8c72389fd0825e2a96c25f5722a9d265844c2",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 14
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/database.service.ts",
+          "sha": "371c1615e95271f5484de3e8bca883481d4e845f",
+          "mode": "100644"
+        },
+        {
+          "path": "packages/db/infra/roles.sql",
+          "sha": "2c4162a1360ee75182bf9285fbc8475956fc4f01",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 8,
+      "pr": 615,
+      "head": "75b838fd3333e2d2b58b32c8e09080dd4f0e7368",
+      "merge": "fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+      "receipt": {
+        "path": "docs/evidencias/SECURITY_INTERNAL_ACCEPTANCE_2026-10-23.md",
+        "sha": "44a18bec858d40ea76a65b2cb9a58e3b3a1fdcb0"
+      },
+      "ownCI": {
+        "id": 39882883002,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "75b838fd3333e2d2b58b32c8e09080dd4f0e7368",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-23T01:14:40Z",
+        "updated_at": "2026-10-23T01:20:41Z",
+        "job": 120184170938,
+        "checkout": "1471db0663d5fff083f125584b62cf16336f4ff4",
+        "checkoutLine": "2026-10-23T01:14:59.7840753Z 1471db0663d5fff083f125584b62cf16336f4ff4",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-23T01:17:34.8622172Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-23T01:17:35.4783094Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-23T01:17:37.2653039Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-23T01:17:38.3532167Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-23T01:17:41.6668716Z TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS {\"tenantTables\":27,\"tableScopes\":{\"tenants\":\"PLATFORM\",\"identities\":\"PLATFORM\",\"sessions\":\"PLATFORM\",\"auth_signin_limits\":\"PLATFORM\",\"terms_acceptances\":\"PLATFORM\",\"taxonomy_roles\":\"PLATFORM\",\"schema_migrations\":\"PLATFORM\",\"privacy_legal_holds\":\"PLATFORM\",\"privacy_requests\":\"PLATFORM\",\"privacy_retention_runs\":\"PLATFORM\",\"privacy_legal_hold_reviews\":\"PLATFORM\",\"professional_profiles\":\"PROFESSIONAL_OWNED\",\"professional_capabilities\":\"PROFESSIONAL_OWNED\",\"professional_availability_network\":\"PROFESSIONAL_OWNED\",\"marketplace_jobs\":\"NETWORK_SHARED\",\"marketplace_interests\":\"NETWORK_SHARED\",\"marketplace_company_reputation\":\"NETWORK_SHARED\"},\"all106RoutesInventoried\":true,\"all74TenantHeaderRoutesDeniedForeignAndAnonymous\":true,\"globalAndIdentityRuntimeLeastPrivilege\":true,\"realPostgreSQL\":true,\"externalPentest\":false,\"nativeUI\":false,\"production\":false}",
+          "2026-10-23T01:17:42.5097977Z SECURITY_AUTHENTICATION_CONCURRENCY_PASS {\"realHTTPPostgres\":true,\"parallelFailures\":8,\"unauthorized\":7,\"locked\":1,\"storedPasswordsScrypt\":true,\"storedTokensSHA256\":true,\"explicitRecovery\":true}",
+          "2026-10-23T01:17:42.5805172Z SECURITY_PRIVATE_EXPORT_PASS {\"realPersistedMessagesAndRating\":true,\"ownContentPreserved\":true,\"thirdPartyContentRedacted\":true,\"outsiderEmptyPrivateData\":true,\"credentialsAndOperatorFieldsAbsent\":true}",
+          "2026-10-23T01:17:42.6672475Z SECURITY_FAILURE_RECOVERY_PASS {\"realDatabaseFault\":true,\"http500\":true,\"noSuccessACK\":true,\"zeroPartialRows\":true,\"sqlAttempts\":1,\"automaticRetry\":false,\"explicitManualRetry201\":true,\"ownedFaultRemoved\":true}",
+          "2026-10-23T01:17:42.9653323Z SECURITY_MOBILE_LOG_AND_SESSION_PASS {\"warningsRetained\":true,\"noRawError\":true,\"realQueueAndVerifiedStorageCore\":true,\"nativeSecureStore\":false}",
+          "2026-10-23T01:17:42.9656620Z SECURITY_INTERNAL_ACCEPTANCE_HTTP_PG_PASS {\"authentication\":true,\"concurrentRateLimit\":true,\"privateExport\":true,\"realFaultRecovery\":true,\"noAutomaticRetry\":true,\"serverLogPrivacy\":true,\"requests\":43,\"disposableLocalOnly\":true,\"externalPentest\":false,\"physicalDevice\":false,\"production\":false}",
+          "2026-10-23T01:20:38.3224221Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "643b08f635eaa47f1624d89ebc569324fe2e1839",
+        "checkoutParents": [
+          "23b62c2423c105350e442ebab3b5030619711b35",
+          "75b838fd3333e2d2b58b32c8e09080dd4f0e7368"
+        ]
+      },
+      "postCI": {
+        "id": 39885077256,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-23T01:37:48Z",
+        "updated_at": "2026-10-23T01:44:03Z",
+        "job": 120191255226,
+        "checkout": "fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+        "checkoutLine": "2026-10-23T01:38:09.8487562Z fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+        "counts": [
+          217,
+          1186,
+          519,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-23T01:40:49.9695236Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-23T01:40:50.6065008Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-23T01:40:52.5023730Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-23T01:40:53.6304609Z LEDGER_COMPLETION_ATOMICITY_HTTP_PG_PASS {\"rollback\":true,\"explicitRecovery201\":true,\"oneExactPayableLedger\":true,\"repeatComplete400\":true,\"foreignLedgerUnchanged\":true,\"authIsolation\":true,\"ownedHookRemoved\":true,\"providerOrRealMoneyOrNativeUI\":false}",
+          "2026-10-23T01:40:57.1049884Z TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS {\"tenantTables\":27,\"tableScopes\":{\"tenants\":\"PLATFORM\",\"identities\":\"PLATFORM\",\"sessions\":\"PLATFORM\",\"auth_signin_limits\":\"PLATFORM\",\"terms_acceptances\":\"PLATFORM\",\"taxonomy_roles\":\"PLATFORM\",\"schema_migrations\":\"PLATFORM\",\"privacy_legal_holds\":\"PLATFORM\",\"privacy_requests\":\"PLATFORM\",\"privacy_retention_runs\":\"PLATFORM\",\"privacy_legal_hold_reviews\":\"PLATFORM\",\"professional_profiles\":\"PROFESSIONAL_OWNED\",\"professional_capabilities\":\"PROFESSIONAL_OWNED\",\"professional_availability_network\":\"PROFESSIONAL_OWNED\",\"marketplace_jobs\":\"NETWORK_SHARED\",\"marketplace_interests\":\"NETWORK_SHARED\",\"marketplace_company_reputation\":\"NETWORK_SHARED\"},\"all106RoutesInventoried\":true,\"all74TenantHeaderRoutesDeniedForeignAndAnonymous\":true,\"globalAndIdentityRuntimeLeastPrivilege\":true,\"realPostgreSQL\":true,\"externalPentest\":false,\"nativeUI\":false,\"production\":false}",
+          "2026-10-23T01:40:57.9716984Z SECURITY_AUTHENTICATION_CONCURRENCY_PASS {\"realHTTPPostgres\":true,\"parallelFailures\":8,\"unauthorized\":7,\"locked\":1,\"storedPasswordsScrypt\":true,\"storedTokensSHA256\":true,\"explicitRecovery\":true}",
+          "2026-10-23T01:40:58.0589596Z SECURITY_PRIVATE_EXPORT_PASS {\"realPersistedMessagesAndRating\":true,\"ownContentPreserved\":true,\"thirdPartyContentRedacted\":true,\"outsiderEmptyPrivateData\":true,\"credentialsAndOperatorFieldsAbsent\":true}",
+          "2026-10-23T01:40:58.1511134Z SECURITY_FAILURE_RECOVERY_PASS {\"realDatabaseFault\":true,\"http500\":true,\"noSuccessACK\":true,\"zeroPartialRows\":true,\"sqlAttempts\":1,\"automaticRetry\":false,\"explicitManualRetry201\":true,\"ownedFaultRemoved\":true}",
+          "2026-10-23T01:40:58.4506976Z SECURITY_MOBILE_LOG_AND_SESSION_PASS {\"warningsRetained\":true,\"noRawError\":true,\"realQueueAndVerifiedStorageCore\":true,\"nativeSecureStore\":false}",
+          "2026-10-23T01:40:58.4511046Z SECURITY_INTERNAL_ACCEPTANCE_HTTP_PG_PASS {\"authentication\":true,\"concurrentRateLimit\":true,\"privateExport\":true,\"realFaultRecovery\":true,\"noAutomaticRetry\":true,\"serverLogPrivacy\":true,\"requests\":43,\"disposableLocalOnly\":true,\"externalPentest\":false,\"physicalDevice\":false,\"production\":false}",
+          "2026-10-23T01:44:00.4250321Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "643b08f635eaa47f1624d89ebc569324fe2e1839",
+        "checkoutParents": [
+          "23b62c2423c105350e442ebab3b5030619711b35",
+          "75b838fd3333e2d2b58b32c8e09080dd4f0e7368"
+        ]
+      },
+      "apk": {
+        "applicable": true,
+        "own": {
+          "id": 39882882955,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "75b838fd3333e2d2b58b32c8e09080dd4f0e7368",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-23T01:14:40Z",
+          "updated_at": "2026-10-23T01:28:02Z",
+          "job": 120184170854,
+          "checkout": "1471db0663d5fff083f125584b62cf16336f4ff4",
+          "checkoutLine": "2026-10-23T01:14:47.5193029Z 1471db0663d5fff083f125584b62cf16336f4ff4",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-23T01:27:55.0944208Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "643b08f635eaa47f1624d89ebc569324fe2e1839",
+          "checkoutParents": [
+            "23b62c2423c105350e442ebab3b5030619711b35",
+            "75b838fd3333e2d2b58b32c8e09080dd4f0e7368"
+          ],
+          "artifacts": [
+            {
+              "id": 12472265834,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913857,
+              "digest": "sha256:a8233907e08d393b021af7955e37b68746fd7df41884b833ace60592121d08ce",
+              "expired": false,
+              "expires_at": "2026-11-06T01:27:56Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        },
+        "post": {
+          "id": 39885077269,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-23T01:37:48Z",
+          "updated_at": "2026-10-23T01:50:36Z",
+          "job": 120191254974,
+          "checkout": "fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+          "checkoutLine": "2026-10-23T01:37:57.1224074Z fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-23T01:50:28.2457797Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "643b08f635eaa47f1624d89ebc569324fe2e1839",
+          "checkoutParents": [
+            "23b62c2423c105350e442ebab3b5030619711b35",
+            "75b838fd3333e2d2b58b32c8e09080dd4f0e7368"
+          ],
+          "artifacts": [
+            {
+              "id": 12471849419,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913870,
+              "digest": "sha256:e82d9472c43c6067db11958f2de1673d55dd1312151518b677deb66ae917f35f",
+              "expired": false,
+              "expires_at": "2026-11-06T01:50:29Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        }
+      },
+      "ancestry": {
+        "base": "fbaec2e7674810b2f5232b0fd0c6673e1aadff29",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 7
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/privacy-logging.ts",
+          "sha": "3f0eec1d30f2183cb2c5efb681e414638e8ed6b8",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/main.ts",
+          "sha": "3500c1c5d67283c1a7d3a3fe9218c8e93d07f6fc",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/lib/session.ts",
+          "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/security-acceptance-e2e.cjs",
+          "sha": "6c114658a104aac99766c39abbd78e0629b26426",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 9,
+      "pr": 581,
+      "head": "d7d2eefac47192c344ca6818bc3fab5484842fb6",
+      "merge": "a3368c840ab5202ebf9f2f3f6d69295769150622",
+      "receipt": {
+        "path": "docs/evidencias/CONVERSATION_NOTIFICATION_INTERNAL_ACCEPTANCE_2026-10-21.md",
+        "sha": "c5ebdda4e9ba2fdfae43d136deaf216efc6332a8"
+      },
+      "ownCI": {
+        "id": 39602948825,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "d7d2eefac47192c344ca6818bc3fab5484842fb6",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-21T12:51:12Z",
+        "updated_at": "2026-10-21T12:55:41Z",
+        "job": 119231801108,
+        "checkout": "fd4c8956b2eecfbe55dda17191b1504ada8fc69d",
+        "checkoutLine": "2026-10-21T12:51:39.9138736Z fd4c8956b2eecfbe55dda17191b1504ada8fc69d",
+        "counts": [
+          217,
+          1168,
+          506,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-21T12:53:26.0732970Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-21T12:53:26.4406509Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-21T12:53:27.4969336Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-21T12:55:37.8790575Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "cb7ed386481870990a22c8fa4d17df76da2d15b0",
+        "checkoutParents": [
+          "0604cd0871d8bcd59c00f1768c7803190eb86e30",
+          "d7d2eefac47192c344ca6818bc3fab5484842fb6"
+        ]
+      },
+      "postCI": {
+        "id": 39604852308,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "a3368c840ab5202ebf9f2f3f6d69295769150622",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-21T13:04:48Z",
+        "updated_at": "2026-10-21T13:11:28Z",
+        "job": 119238306202,
+        "checkout": "a3368c840ab5202ebf9f2f3f6d69295769150622",
+        "checkoutLine": "2026-10-21T13:05:09.8479974Z a3368c840ab5202ebf9f2f3f6d69295769150622",
+        "counts": [
+          217,
+          1168,
+          506,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-21T13:08:04.0425210Z NOTIFICATION_ATOMICITY_PASS five injected HTTP500 rollbacks including second-recipient failure plus four positive phases; no delivery/provider/outbox claim",
+          "2026-10-21T13:08:04.7477944Z PROFESSIONAL_CHRONOLOGY_PASS actual HTTP/Postgres Date objects, ascending assignments, descending passport/earnings, scoped and outsider isolation, real mobile loaders; not Android render or physical evidence",
+          "2026-10-21T13:08:06.8073657Z AUTHENTICATION_ACCEPTANCE_JOURNEY_PASS {\"signupCompanyAndProfessional\":true,\"normalizedAndDuplicateEmail\":true,\"invalidClientNoPOST\":true,\"wrongPasswordRejected\":true,\"actualOwnerAndMemberships\":true,\"crossTenantDenied\":true,\"twoCompanyClientContext\":true,\"emailBoundSingleUseInvites\":true,\"revokedInviteRejectedByClientAndAPI\":true,\"expiredInviteRejectedAndRenewed\":true,\"expiredSessionRejected\":true,\"oldLogoutCannotClearNewLogin\":true,\"remoteRevocation401\":true,\"verifiedClientClear\":true,\"mobileCoreBlobs\":{\"signup\":\"800faeb27d041108ab7c1c9018f749c32d2a0010\",\"signin\":\"453de55dfc31d983fc8e279b8c91104913a927b0\",\"company-members\":\"85c86260e3cecc70df9e8ffe24dd246f5cab9d7a\",\"session-transaction\":\"d10eb3b0ce05326947aa216d30db2571d1501dc8\"},\"realHTTPPostgres\":true,\"storage\":\"explicit in-memory adapter; NOT native SecureStore\",\"physicalDevice\":false,\"production\":false}",
+          "2026-10-21T13:11:25.6511318Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "cb7ed386481870990a22c8fa4d17df76da2d15b0",
+        "checkoutParents": [
+          "0604cd0871d8bcd59c00f1768c7803190eb86e30",
+          "d7d2eefac47192c344ca6818bc3fab5484842fb6"
+        ]
+      },
+      "apk": {
+        "applicable": true,
+        "own": {
+          "id": 39602948797,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "d7d2eefac47192c344ca6818bc3fab5484842fb6",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-21T12:51:12Z",
+          "updated_at": "2026-10-21T13:02:07Z",
+          "job": 119231801149,
+          "checkout": "fd4c8956b2eecfbe55dda17191b1504ada8fc69d",
+          "checkoutLine": "2026-10-21T12:51:21.7542455Z fd4c8956b2eecfbe55dda17191b1504ada8fc69d",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-21T13:01:59.1304242Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "cb7ed386481870990a22c8fa4d17df76da2d15b0",
+          "checkoutParents": [
+            "0604cd0871d8bcd59c00f1768c7803190eb86e30",
+            "d7d2eefac47192c344ca6818bc3fab5484842fb6"
+          ],
+          "artifacts": [
+            {
+              "id": 12347671834,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913709,
+              "digest": "sha256:fafbf39a23e92fcfe3397b18fbbe5b3a5be815ff81308e0294683047df1b2f88",
+              "expired": false,
+              "expires_at": "2026-11-04T13:02:01Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        },
+        "post": {
+          "id": 39604852162,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "a3368c840ab5202ebf9f2f3f6d69295769150622",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-21T13:04:48Z",
+          "updated_at": "2026-10-21T13:17:36Z",
+          "job": 119238304831,
+          "checkout": "a3368c840ab5202ebf9f2f3f6d69295769150622",
+          "checkoutLine": "2026-10-21T13:04:56.9210976Z a3368c840ab5202ebf9f2f3f6d69295769150622",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-21T13:17:27.6238101Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "cb7ed386481870990a22c8fa4d17df76da2d15b0",
+          "checkoutParents": [
+            "0604cd0871d8bcd59c00f1768c7803190eb86e30",
+            "d7d2eefac47192c344ca6818bc3fab5484842fb6"
+          ],
+          "artifacts": [
+            {
+              "id": 12349315177,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28913714,
+              "digest": "sha256:10d9d6488699b48299b01a4f99775f94b46b4b5f9ec23a95c7e7f7b5d4fa721c",
+              "expired": false,
+              "expires_at": "2026-11-04T13:17:29Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        }
+      },
+      "ancestry": {
+        "base": "a3368c840ab5202ebf9f2f3f6d69295769150622",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 39
+      },
+      "implementation": [
+        {
+          "path": "apps/api/src/conversations.controller.ts",
+          "sha": "05f479c1ab3a2350c8bcd1fd32b1bdd574e62ec3",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/api/src/notifications.controller.ts",
+          "sha": "dfe072e660b41060ff809eeefc489ae9aeb3981a",
+          "mode": "100644"
+        },
+        {
+          "path": "apps/mobile/app/conversa.tsx",
+          "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/notification-atomicity-e2e.cjs",
+          "sha": "b4cea0d2e6c1a63f59affc16fe7618bca50a6691",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/http-notifications-multi-company-e2e.sh",
+          "sha": "10742df46fdf25448a802f979fdb25f75cdf7fdd",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    },
+    {
+      "area": 10,
+      "pr": 539,
+      "head": "f8626256750129a557ef5c5bcf60eff1f311cde4",
+      "merge": "f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+      "receipt": {
+        "path": "docs/evidencias/ANDROID_STANDALONE_INTERNAL_ACCEPTANCE_2026-10-15.md",
+        "sha": "31cf4f975cfad0373868ffc3b3404b15c963842b"
+      },
+      "ownCI": {
+        "id": 38672870429,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "f8626256750129a557ef5c5bcf60eff1f311cde4",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-15T02:47:43Z",
+        "updated_at": "2026-10-15T02:51:07Z",
+        "job": 116219791014,
+        "checkout": "06f8e34ad05318b4ea4fcba8e564cb60c3030320",
+        "checkoutLine": "2026-10-15T02:48:05.6188583Z 06f8e34ad05318b4ea4fcba8e564cb60c3030320",
+        "counts": [
+          127,
+          750,
+          392,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-15T02:51:02.6812737Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "a2775bbaa0794048364477a3ca5c39a8f4fcfb64",
+        "checkoutParents": [
+          "b2b25a5e21dae06cf322ec726bc0fe444e625100",
+          "f8626256750129a557ef5c5bcf60eff1f311cde4"
+        ]
+      },
+      "postCI": {
+        "id": 38673970850,
+        "name": "CI",
+        "path": ".github/workflows/ci.yml",
+        "head_sha": "f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-10-15T03:00:22Z",
+        "updated_at": "2026-10-15T03:04:11Z",
+        "job": 116223244281,
+        "checkout": "f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+        "checkoutLine": "2026-10-15T03:00:41.0648731Z f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+        "counts": [
+          127,
+          750,
+          392,
+          3,
+          11
+        ],
+        "unitFailures": [],
+        "witnesses": [
+          "2026-10-15T03:04:07.3507726Z PASS: Production Truth Gate health/readiness contract"
+        ],
+        "checkoutTree": "a2775bbaa0794048364477a3ca5c39a8f4fcfb64",
+        "checkoutParents": [
+          "e756d5ecf5af4c804e02b31ca8158fb49510a7d4",
+          "f8626256750129a557ef5c5bcf60eff1f311cde4"
+        ]
+      },
+      "apk": {
+        "applicable": true,
+        "own": {
+          "id": 38672870436,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "f8626256750129a557ef5c5bcf60eff1f311cde4",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-15T02:47:43Z",
+          "updated_at": "2026-10-15T02:59:34Z",
+          "job": 116219791241,
+          "checkout": "06f8e34ad05318b4ea4fcba8e564cb60c3030320",
+          "checkoutLine": "2026-10-15T02:47:48.3142588Z 06f8e34ad05318b4ea4fcba8e564cb60c3030320",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-15T02:59:28.1990703Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "a2775bbaa0794048364477a3ca5c39a8f4fcfb64",
+          "checkoutParents": [
+            "b2b25a5e21dae06cf322ec726bc0fe444e625100",
+            "f8626256750129a557ef5c5bcf60eff1f311cde4"
+          ],
+          "artifacts": [
+            {
+              "id": 11944714839,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28911947,
+              "digest": "sha256:8e9ce6eb0b57e0a81e1a65efdddafa91be6648caeea0d8d3802de78e1dc25fdb",
+              "expired": false,
+              "expires_at": "2026-10-29T02:59:29Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        },
+        "post": {
+          "id": 38673970923,
+          "name": "Standalone Pilot APK",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "head_sha": "f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1,
+          "created_at": "2026-10-15T03:00:22Z",
+          "updated_at": "2026-10-15T03:10:56Z",
+          "job": 116223244739,
+          "checkout": "f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+          "checkoutLine": "2026-10-15T03:00:29.9891667Z f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+          "counts": [],
+          "unitFailures": [],
+          "witnesses": [
+            "2026-10-15T03:10:48.9809506Z DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
+          ],
+          "checkoutTree": "a2775bbaa0794048364477a3ca5c39a8f4fcfb64",
+          "checkoutParents": [
+            "e756d5ecf5af4c804e02b31ca8158fb49510a7d4",
+            "f8626256750129a557ef5c5bcf60eff1f311cde4"
+          ],
+          "artifacts": [
+            {
+              "id": 11945526772,
+              "name": "MLivreTrabalho-standalone-apk",
+              "size_in_bytes": 28911942,
+              "digest": "sha256:422c1a965e94fec5b5fb4d960e3ee9a303be25856e0374cfb56bfca977c76d49",
+              "expired": false,
+              "expires_at": "2026-10-29T03:10:50Z"
+            }
+          ],
+          "freshMetadataOnly": true
+        }
+      },
+      "ancestry": {
+        "base": "f0767618020c1efe20b8ce5d24ab10cb296c1f59",
+        "head": "4f036f78cef5436ec47545d811f8bffa48c48070",
+        "behind": 0,
+        "ahead": 183
+      },
+      "implementation": [
+        {
+          "path": "scripts/build-android-pilot.sh",
+          "sha": "5f4f95c64a8c43f9744b1bfd5fbb9ec1180a2f42",
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/android-standalone-smoke.sh",
+          "sha": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+          "mode": "100644"
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+          "mode": "100644"
+        }
+      ],
+      "evidenceScope": "INTERNAL_ONLY; source references at audited main, historical exact-SHA execution in canonical receipt; no physical/production/provider certification"
+    }
+  ],
+  "normativePrefixes": [
+    {
+      "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
+      "bytes": 4010041,
+      "sha": "fd5d192b1620e3dcac29286673573e67b513c283"
+    },
+    {
+      "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
+      "bytes": 4350850,
+      "sha": "786e72dea918d97fb812fb4cf9c940652f3a89cc"
+    },
+    {
+      "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
+      "bytes": 3999884,
+      "sha": "4eecdd14b77186145ea04f24f7af94890dc73fb0"
+    },
+    {
+      "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
+      "bytes": 3584119,
+      "sha": "974556917c2c6f081fb2bb4c845fa42615a486b5"
+    },
+    {
+      "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
+      "bytes": 3994675,
+      "sha": "321dbeff90e4c7820cb7f1c446d70b8a2e61e8ac"
+    },
+    {
+      "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
+      "bytes": 3995239,
+      "sha": "0017633ef17f8fe6a0aef6a4dd55ef00ba376e68"
+    }
+  ],
+  "protectedInputs": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
+      "mode": "100644"
+    },
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "sha": "e0fc5f871dc3b498f71a38ff932c83b48716c35f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha": "9a4a75a94b50730bbe129c51965b30656605b49d",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app.json",
+      "sha": "77f1007b792ee4fa2d10dd5e5a8316762467ef8e",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/_layout.tsx",
+      "sha": "d75f4a26218d1c1fdfacef46b08fd2d2babaa05a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/agenda.tsx",
+      "sha": "764dcb964bdf79ae0337d6ae5a59cdc030e48a77",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/analytics.tsx",
+      "sha": "aff479659db2976acd7b3e0923e991b36273fce7",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/candidatos.tsx",
+      "sha": "e5f68ec17a307d71d0c115e191c3be480e24cd6b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/casos-seguranca.tsx",
+      "sha": "b4e3ccafaa50d4cfad34733f12820008289b68ec",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/conversa.tsx",
+      "sha": "25e6191e1664ee0f98c96d026ff3aed96faa2798",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/copilot.tsx",
+      "sha": "ecc9ca4ecafbdd5131c30e130ba0075c6d8d5526",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/criar-conta.tsx",
+      "sha": "fba0cb3416b9cb538867fd7d542d3b9c118ce169",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/disponibilidade.tsx",
+      "sha": "b4eb4736896148baec684b1b4ea6a5009919696e",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/empresa-conta.tsx",
+      "sha": "20c37cc92957e7bdb245e494d240dfcd40ebab80",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/empresa-inicio.tsx",
+      "sha": "714095ed78b6669a42750d0ac54fbb861e354501",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/empresa-notificacoes.tsx",
+      "sha": "f42c24a684a943e4b3f07dfa0e6c7c533aa36b11",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/empresa.tsx",
+      "sha": "b34777148cfab0b167f1d4d6b61777e44a087900",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/entrar.tsx",
+      "sha": "ec7c7914f5f2f310e905bff8b81103c4be433357",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/equipes.tsx",
+      "sha": "f7c6eacb4d951d37487473fc6572271ccefd31cb",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/ganhos.tsx",
+      "sha": "79ae7e2b6225da08eac0d100ee71ab8639165755",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/index.tsx",
+      "sha": "51d033d5ece17312b141da28ead40ecdfdf56705",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/membros.tsx",
+      "sha": "4b6140a7349049dd704bbb079f16de06d6be7589",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/notificacoes.tsx",
+      "sha": "5b92e71991bfa02a0be73bfd3dd1debf31a446c1",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/pagamentos.tsx",
+      "sha": "e2b3b16937945d11c0d45c31c9eff13a2cf0b96f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/perfil.tsx",
+      "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/planejamento.tsx",
+      "sha": "356460ad4b0a546fbd6b7ca5cf9650568e973c02",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/privacidade.tsx",
+      "sha": "c3ac45ef5005aac68491f117e48b9af104748fa9",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/profissional-inicio.tsx",
+      "sha": "a71b7c6ba11bf4cd35a6996448dda71ee598e731",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/seguranca.tsx",
+      "sha": "bbd76fdb4dfa7d764b4e29942b47d58368be2223",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/substituicoes.tsx",
+      "sha": "e2cf5a9af0d4cfc6755fd857cf6de91f30c45b80",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/talentos.tsx",
+      "sha": "87872556f34ee09519f739c33a404322f1e677db",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/app/trabalhos.tsx",
+      "sha": "65c0de5b1b9a390eb403a1a01695038c30180928",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/CompanyNav.tsx",
+      "sha": "8f54ab81505b317b8d64a7d1ea301d4c8ee2cc12",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/DeclaredCapabilities.tsx",
+      "sha": "8086dc0d623e6d1137fb821c9f5f9c1a07c70b67",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/GeneralSupport.tsx",
+      "sha": "344b2d82c2172af1f164649fdf2c9fa69400e265",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/NotificationsScreen.tsx",
+      "sha": "ea7dd8efc958c28730675ad8d6cc2bddc45067f2",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/ProfessionalNav.tsx",
+      "sha": "5c09010eea757e92c7dfc42bd7adeff1119c7380",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/SupportHistory.tsx",
+      "sha": "e99f37d6bdda66825e346f23b2f2c2fa2f6ee0f8",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/SupportRecovery.tsx",
+      "sha": "919d24e9a2548703d4991f5c68a437ed9041e219",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/components/SupportRequest.tsx",
+      "sha": "73827cddcfb0192f5fbd38f6b215cfc9c32f47bd",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/eas.json",
+      "sha": "fb64fcbd42deff7361ad26d1b7cd2fd06fd6a15f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/agenda.ts",
+      "sha": "48d3e08ae4e5ac1f4948c20549a330cc042a01ce",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/api.ts",
+      "sha": "46cf48a5fb37257af90aceb816b3791e6b1c3c7a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/availability-submit.ts",
+      "sha": "beccad934ab8d187f8cfddfba28b4526e2bb41b1",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/availability-window.ts",
+      "sha": "7b46379568f19b2c13b32df292685af647463534",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/bootstrap.ts",
+      "sha": "7aaecdbc168f9486500afc91d045b5ca881806fd",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-analytics.ts",
+      "sha": "28f59c89ccf1d35e114daa93cb3ef39da418c6a9",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-candidates.ts",
+      "sha": "d042f8221b70cca7c984138d941f185d94c89ba5",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-dashboard-actions.ts",
+      "sha": "42419db9d1971ba02b46047a572c79b3f8eef041",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-dashboard.ts",
+      "sha": "a865a546c903520964a807f488a5ec4114e9bbe8",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-job-publication.ts",
+      "sha": "45fb20b6b1b55447fe83207d4ac3806db7e7dca5",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-members.ts",
+      "sha": "85c86260e3cecc70df9e8ffe24dd246f5cab9d7a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-readonly.ts",
+      "sha": "4ec7f5151134f4ea11b09f2ce55dfd2a5cdd22d0",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-replacements.ts",
+      "sha": "7f52f95bcb5ff5b25c30be8d9870014fe1c5ccc6",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-safety.ts",
+      "sha": "5ab736715ffd3dc5ff83decc0739bf8c95276089",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/company-talents.ts",
+      "sha": "55f07c1e950a5f13036238ac6e1579e971a6aaba",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/conversation.ts",
+      "sha": "565a19b60e1c0a3aa244df92dbfb09dc9b27d718",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/copilot-response.ts",
+      "sha": "856d4d5210972be202e7502f6c9c3281b50adc43",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/earnings.ts",
+      "sha": "9afe1a24109c42ad4825eeda40ff1dcef164e84c",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/home-cards.ts",
+      "sha": "d6e4ccf9d71ab072e01e3b2915558a6586edec36",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/jobs.ts",
+      "sha": "54d0814ace6e91565e0fa9c8722ea734594b015f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/notifications.ts",
+      "sha": "3928db3607370a459eca506a1610671d6c655bee",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/passport-history.ts",
+      "sha": "e72f0ce1df88d4624ba78295b87ff861493fdda6",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/privacy-actions.ts",
+      "sha": "e116dec3da68da1e41b666c7d3e8739a6d4ac5a7",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/privacy-requests.ts",
+      "sha": "3f69d87acd77d803bc0394ce412b3e85213d8b97",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/professional-capabilities.ts",
+      "sha": "e3ef307eaaa4a3755eda2f9f30b652bca1d5550b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/professional-home.ts",
+      "sha": "ca9e396fceec67ad5b9fe99965a1479bc9a9d0f0",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/professional-profile.ts",
+      "sha": "c33dce25b0de5ab42512c846b2418895b92178de",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/professional-safety.ts",
+      "sha": "123e637dc1019e9fece11a64d5f5257bb4d6e3c9",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/professional-support.ts",
+      "sha": "865f1b87195d5860cc7f8f03d20c00c48b92fd1b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/profile-submit.ts",
+      "sha": "7ff33c6e83c858577f6d0a31aa1fd6914b4cd609",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/session-context.ts",
+      "sha": "8a23f577cf222016694d6995822b632c0a71434f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/session-transaction.ts",
+      "sha": "d10eb3b0ce05326947aa216d30db2571d1501dc8",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/session.ts",
+      "sha": "2be0e1f28380f9b4f8d18e39a48489dbf87fa9f0",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/signin.ts",
+      "sha": "453de55dfc31d983fc8e279b8c91104913a927b0",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/signup.ts",
+      "sha": "800faeb27d041108ab7c1c9018f749c32d2a0010",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/startup-route.ts",
+      "sha": "b8cbb6fcbb50b3d592d077b5c31db3f155ec8fff",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/support-contexts.ts",
+      "sha": "61df65a69aca6acae2d1575304f5ed4191470ca7",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/support-intent-storage.ts",
+      "sha": "b266454649a7658b5231207edaec7e269e9da8b9",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/support-intent.ts",
+      "sha": "190926f412bb22ccf556899f6ae93dfe523c77ff",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/support-submission.ts",
+      "sha": "be61cef11a2033fc0bca2899b518efcd56022839",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/lib/teams.ts",
+      "sha": "eeeab168bfb62c62f2552d28bd6600ae23adada1",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/package.json",
+      "sha": "e1646b540a738daa81828a71f00617a7714fad6f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/agenda-actions.test.mjs",
+      "sha": "1e1964cc18cbabe419c8b70a5b4e9c8f2a9ed366",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/agenda-read-deadline.test.mjs",
+      "sha": "9419980016590846a43daeb7c9ebc719ed8231e9",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/agenda-support-screen.test.mjs",
+      "sha": "ff7f91eb8ae8d15aa440707a6909ae9c97a3308d",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/agenda.test.mjs",
+      "sha": "934aa0350620a8e0b85fc63db9bbed110c2b4854",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/availability-calendar-screen.test.mjs",
+      "sha": "b0c5cb20f354400db0c4dc934779ec800d321dbd",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/availability-screen-deadline.test.mjs",
+      "sha": "0f5607ef3750c788a7657dbac299bc6afd3e8777",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/availability-submit.test.mjs",
+      "sha": "340ceb0dbb8a7f5e0e502514279997df0fc9cc9c",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/availability-window.test.mjs",
+      "sha": "8796c551a1db8fc8ea9687e6cab57542ec750d73",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/candidate-confirm-deadline.test.mjs",
+      "sha": "1da09eeb72786d7553c2caf8828f6ef4d56bd108",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/candidate-confirm-session-guard.test.mjs",
+      "sha": "81e44156aa9630e3842b92af33428a686b1a7928",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/candidates-expired-read.test.mjs",
+      "sha": "6ea6740b371d48521829c2b3c003bfa7887b9391",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/candidates-read-deadline.test.mjs",
+      "sha": "0bc2846acc7dad856994cdfdacf583b07b5d8f89",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-analytics.test.mjs",
+      "sha": "1ea2952808f7aa44731918bca8f4554ac26fee5a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-candidates.test.mjs",
+      "sha": "e37d04a92b8df9999369d2c984419141541c762b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-dashboard-actions.test.mjs",
+      "sha": "01cd94d601274d78940c7cc30003830ca9ca8a53",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-dashboard.test.mjs",
+      "sha": "6c5a7a3c1dc0df2bc505756a88991e7ad4e6ac9a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-job-publication.test.mjs",
+      "sha": "0f4437a3555309b6599976aec9c31a5b692d97b0",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-members.test.mjs",
+      "sha": "9897a83bd52a3a19c3bdf4f940a787edc397253a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-publication-context-deadline.test.mjs",
+      "sha": "010543d05c7716ad3cb4cfc48567f220086c4ae3",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-readonly.test.mjs",
+      "sha": "1b1d09278a6b6321a90852bccd20582037e7b2ed",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-replacement-ack-uuid.test.mjs",
+      "sha": "a53cd57ec830d2c6faf7667c954c5dbf267f7776",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-replacements.test.mjs",
+      "sha": "456bdc4dd6a3ca86e36e7289b1d39eb960342833",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-safety.test.mjs",
+      "sha": "570bea7965d597a837a1cf1835a93f4fc87f1f19",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/company-talents.test.mjs",
+      "sha": "155d414d3aef54db23dc8eedb7c854d8a45e0525",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/conversation-calendar.test.mjs",
+      "sha": "403aa9317aa7f82b3042b56ae758cdfe5c9f0176",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/conversation-controller-cleanup.test.mjs",
+      "sha": "9c3cdbf55372ec8387e5bfcadfb8d7dd2f175297",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/conversation-read-deadline.test.mjs",
+      "sha": "fd83e07ff77f5c4ef84f4eca771fe81df99e435c",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/conversation-send-screen-deadline.test.mjs",
+      "sha": "580ab20f9914bf4d6ca8f1adf9beb0fe4cd43eb6",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/conversation.test.mjs",
+      "sha": "457e155044d518faaee0650cef135468a02838e6",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/copilot-response.test.mjs",
+      "sha": "ed2136aee8c40a466a8dc51530a104015ef4b2b7",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/copilot-screen-deadline.test.mjs",
+      "sha": "fc55d439d39f25d1ed3bbc76c2a8ae6b1e736850",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/declared-capabilities.test.mjs",
+      "sha": "81be22f88f1842ea449589b88b4545a27dbc009b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/earnings-controller-cleanup.test.mjs",
+      "sha": "6cbf6645bfd2b7e36eda1e260c67a9ec1905f43f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/earnings.test.mjs",
+      "sha": "d886827477cf1a7e111eb7cb4ad24a3f3c1394cd",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/general-support.test.mjs",
+      "sha": "97073823b6ea06ab8a72a8f72b9fe7eb68b88dcb",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/home-cards.test.mjs",
+      "sha": "d60371e0bcb12e97b8af1d2c50a4cd3944241d56",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/interest-screen-deadline.test.mjs",
+      "sha": "009ed1bd4db47b102223474e16bcdbbac5bd00f0",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/invitation-accept-deadline.test.mjs",
+      "sha": "b276e85f116dccca5fb6f800d9a4cb7e2e5a9ade",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/invitation-create-deadline.test.mjs",
+      "sha": "52973e05433b4f4cdb602d0fbbbfd8d02b982265",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/jobs-read-controller-cleanup.test.mjs",
+      "sha": "c39715bb7f543cee59eef58b4be351a13ee3ed91",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/jobs.test.mjs",
+      "sha": "5ed8e51d785af4c54de11e3a61bca09426b7a95e",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/member-support-calendar.test.mjs",
+      "sha": "6dd1fe043e2822357c5e9f090ea197b2b924c4e4",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/notifications-read-deadline.test.mjs",
+      "sha": "508bb7c7778d868a2c21b7059dd10c10bc0ae86f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/notifications-write-deadline.test.mjs",
+      "sha": "ffcd9625f56d5af2a394db0da37f1a993b80a6de",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/notifications.test.mjs",
+      "sha": "bd21ae0efa3fa6c8f99a1e573490f745de48b98e",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/operations-deadline-screen.test.mjs",
+      "sha": "ddadf21ddd0895fe35d9c4df9d6ccfe8d3b53710",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/passport-history.test.mjs",
+      "sha": "67c1c472ef9292e984bdbfb716813068473af5de",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/passport-safety-calendar.test.mjs",
+      "sha": "5ad0bde5ee19381be2115ba5687c428585580e85",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/planner-screen-deadline.test.mjs",
+      "sha": "5bb08d09cc4af4b37c37a63de68273719a2c43a2",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/primary-read-deadline.test.mjs",
+      "sha": "ee297621b25e80f12f203837c1d2b42f23df242d",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/privacy-actions.test.mjs",
+      "sha": "0a69cc2358b1ed13b87f84baf11b8a8eab9447e4",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/privacy-requests.test.mjs",
+      "sha": "e5095d9047542a5414519422efd5e891e906fcd2",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/privacy-write-deadline.test.mjs",
+      "sha": "f9783551999b68589bdbbff2d9f03db6a9d6808d",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/professional-home.test.mjs",
+      "sha": "d87761c9e81a48a6a3bb89f72563efee514a4ad4",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/professional-profile.test.mjs",
+      "sha": "7898ada26ea546fc3137a688e86478fb10332430",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/professional-safety.test.mjs",
+      "sha": "8fc94c9216dbad9b5fc483e0837f5d69a1881443",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/professional-support.test.mjs",
+      "sha": "b2c5967bf7e4cdc270d68205b2d0e96009b4109c",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/profile-analytics-read-deadline.test.mjs",
+      "sha": "2df00828279c9660a8ed365f1a3be149169cae7e",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/profile-save-screen-deadline.test.mjs",
+      "sha": "bb11da6d351fa2026fba12eec293e63e42b103cd",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/profile-submit.test.mjs",
+      "sha": "3e3dd073d8c642ffabbd325cc34350bac8d33164",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/publication-screen-uncertain-deadline.test.mjs",
+      "sha": "9d11388afedbbe01e6ac15be0d9558e5d5328513",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/replacement-create-screen-deadline.test.mjs",
+      "sha": "d0423c9b93767886251470009fede3a8ad0e34c3",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/replacement-match-screen-deadline.test.mjs",
+      "sha": "a297f51ec3aa52a2ce3e08fb6351c9cc1fe80e76",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/replacement-read-controller-cleanup.test.mjs",
+      "sha": "3a0f44b631e6a0cce8cb74e22ea7607e4db87a3c",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/replacement-select-screen-deadline.test.mjs",
+      "sha": "747753e9f044c02377a149a815211e5117ea58bc",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/response-calendar-contract.test.mjs",
+      "sha": "630e26b4037cd59c17713451c2d34aa98b4917ba",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/revoke-screen-deadline.test.mjs",
+      "sha": "a64a7963d655e4e1d706f3455ee5d96f92fc2849",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/secondary-read-deadline.test.mjs",
+      "sha": "cc641c6180ad8ce624220e41bb5da3f980f2b466",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/session-clear.test.mjs",
+      "sha": "ac626a1e1e2b3f5873da15c129e0b5f7101ad454",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/session-context.test.mjs",
+      "sha": "f36b32432e8cd4654954445e1359812c4ed098af",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/session-tenant.test.mjs",
+      "sha": "e40e2d1932c825cd61c8ebe489fc05e317293813",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/session-transaction.test.mjs",
+      "sha": "6b60b6e08030e12a55ea002996caee7929341ae6",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/signin-screen-deadline.test.mjs",
+      "sha": "3d188e71b180978bf900edcff96b32c4df1de41b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/signin.test.mjs",
+      "sha": "a580a51b608116701024ff5c102d76b0bb1712a4",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/signout-screen-deadline.test.mjs",
+      "sha": "07f5b11eb3dfeea58a271c8caf027aade76ed359",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/signup-screen-deadline.test.mjs",
+      "sha": "4f92e840adb8dfa6eb1c6fb941fd8061c1257093",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/signup-screen.test.mjs",
+      "sha": "eace3ff93514dd1d182006e598136a057d352509",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/signup.test.mjs",
+      "sha": "483ace20f18b2cd7053be06a50c91004ec15545f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/startup-route.test.mjs",
+      "sha": "242d7516e9c090a817ad8ae88a6daf9497e77a8b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/startup-screen-deadline.test.mjs",
+      "sha": "ae28131f4a72e5c71a6603d5ba31464c9f3e988b",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-calendar.test.mjs",
+      "sha": "26e4c07812c7b020c68c7f3c1d2f9483e327c978",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-history-read-deadline.test.mjs",
+      "sha": "408c4a5458e3baa4b23554cc2bfde807071db8cd",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-history-screen.test.mjs",
+      "sha": "537f3e97b1cbcfbe8ac9efaf7a90adcb6ecc685f",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-intent.test.mjs",
+      "sha": "bce844ae4c40f452c4d9db3961beaccff97d2108",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-recovery-screen.test.mjs",
+      "sha": "9c041fff637ecf15064c828805cef36dad133786",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-request-screen.test.mjs",
+      "sha": "c833939e03e63a17abbd9b195f631c6675871e64",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-submission-calendar.test.mjs",
+      "sha": "7783fea5e432339b8cf4cc417c2fad6ff9fe6949",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/support-submission.test.mjs",
+      "sha": "35845a334a6e271a976fd8ea1dc935833dc8ad58",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/talents-safety-read-deadline.test.mjs",
+      "sha": "547ae928eda25b2ab28ac64f90b3028d275fe653",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/teams-read-deadline.test.mjs",
+      "sha": "fa39a5639095d53b0e9f6491c4a926e47eeb9236",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/teams.test.mjs",
+      "sha": "b202b682a7fbd4977fd99d49156bb7802aadb2f7",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tests/window-ack-calendar.test.mjs",
+      "sha": "1bb7956ba411c2e93c03f5c0e2fe2addfff6cb1a",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/mobile/tsconfig.json",
+      "sha": "aee4c01aa16c5c63c241fe3d76cbff8d020081ca",
+      "mode": "100644"
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha": "74b784d824d97f1a52c6d34fa5668e36de1a5b9e",
+      "mode": "100644"
+    },
+    {
+      "path": "package.json",
+      "sha": "936bb3649f5bb1b9810039ba35d339189f0a530c",
+      "mode": "100644"
+    },
+    {
+      "path": "packages/db/package.json",
+      "sha": "de1a031b964c3ed27e9deaa34a43841326088669",
+      "mode": "100644"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha": "c1a67de447f42375a02a05a03661037262f9cd8d",
+      "mode": "100644"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha": "b98f8b436f1d0dc6f3c11a4f905bdeb06fed9c65",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/android-standalone-smoke.sh",
+      "sha": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/build-android-pilot.sh",
+      "sha": "5f4f95c64a8c43f9744b1bfd5fbb9ec1180a2f42",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/android-standalone-smoke.test.mjs",
+      "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+      "mode": "100644"
+    },
+    {
+      "path": "turbo.json",
+      "sha": "69b52e4bf7f26b248ba310394940dcaa42b700c5",
+      "mode": "100644"
+    }
+  ],
+  "externalIssues": [
+    {
+      "number": 215,
+      "state": "open",
+      "title": "FIN-RISK: close provider, compliance, unit economics and sandbox gates"
+    },
+    {
+      "number": 219,
+      "state": "open",
+      "title": "TRUST-ARCH: close provider, runtime privacy controls and pentest gates"
+    },
+    {
+      "number": 220,
+      "state": "open",
+      "title": "Pilot readiness: physical-device E2E, distribution and independent pentest"
+    },
+    {
+      "number": 224,
+      "state": "open",
+      "title": "WEB-ARCH: build the complementary Next.js enterprise web app"
+    },
+    {
+      "number": 228,
+      "state": "open",
+      "title": "PROVIDER-DUE-DILIGENCE: contact PSP/KYC shortlist and collect commercial sandbox evidence"
+    }
+  ],
+  "openDrafts": [
+    {
+      "number": 574,
+      "head": "4770c1d9d35db657125c7fad39203b58844b2d24",
+      "draft": true
+    },
+    {
+      "number": 565,
+      "head": "aa0d375da22f95e7274a1551f2a97b9aa9cd8ff1",
+      "draft": true
+    }
+  ],
+  "currentRegression": {
+    "id": 39914386900,
+    "sha": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "checkout": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "counts": [
+      217,
+      1186,
+      521,
+      3,
+      11
+    ],
+    "markers": [
+      "2026-10-23T06:57:44.5389028Z OPENAPI_REAL_HTTP_JSON_CONTRACT_PASS {\"operations\":106,\"positiveOperations\":106,\"validatedPositiveRequests\":145,\"validatedResponses\":383,\"schemas\":76,\"unsupportedKeywords\":0,\"scope\":\"documented JSON Schema subset; business-state assertions remain in the real journey\"}",
+      "2026-10-23T06:59:52.5283891Z WEB_BROWSER_DIAGNOSTIC_MATRIX_RESULT status=0",
+      "2026-10-23T07:01:03.9064949Z PASS: Production Truth Gate health/readiness contract"
+    ]
+  },
+  "limits": [
+    "No physical device",
+    "No independent pentest",
+    "No production/provider/PSP/real money",
+    "No new APK bytes downloaded",
+    "No complete RN render or native SecureStore proof"
+  ]
+}
