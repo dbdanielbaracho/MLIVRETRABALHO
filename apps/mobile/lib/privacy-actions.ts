@@ -3,7 +3,12 @@ export type ActionRequest=(path:string,method:'GET'|'POST',body?:{requestType:Ma
 export type ActionFailure={status:'rejected'|'unknown';message?:string};
 const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
 const id=(value:unknown)=>typeof value==='string'&&!!value.trim();
-const date=(value:unknown)=>typeof value==='string'&&Number.isFinite(new Date(value).getTime());
+const date=(value:unknown):value is string=>{
+ if(typeof value!=='string')return false;
+ const match=/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value);if(!match)return false;
+ const calendar=new Date(0);calendar.setUTCHours(0,0,0,0);calendar.setUTCFullYear(Number(match[1]),Number(match[2])-1,Number(match[3]));
+ return calendar.getUTCFullYear()===Number(match[1])&&calendar.getUTCMonth()===Number(match[2])-1&&calendar.getUTCDate()===Number(match[3])&&Number.isFinite(new Date(value).getTime());
+};
 const required=new Set<ManualPrivacyType>(['correction','restriction','objection','automated_decision_review']);
 export function samePrivacySession(current:Record<string,string>,displayed:Record<string,string>):boolean{return !!displayed.Authorization&&current.Authorization===displayed.Authorization;}
 async function rejected(response:{status:number;json():Promise<unknown>}):Promise<ActionFailure>{let message:string|undefined;try{const body:unknown=await response.json();if(record(body)&&typeof body.message==='string')message=body.message;}catch{/* Do not invent a server reason. */}return {status:response.status>=400&&response.status<500?'rejected':'unknown',message};}

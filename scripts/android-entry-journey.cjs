@@ -57,7 +57,7 @@ module.exports={configuration,emulatorSerial,assertOffline,nodes,target,hasText,
 async function main(){
  const config=configuration(process.env),out=path.join(config.workspace,'artifacts/android-entry-journey');
  assert.ok(!fs.existsSync(out),'fresh_artifact_directory_required');fs.mkdirSync(out,{recursive:true});
- let serial,stage='configuration',isolationFailure=null,permissionStopped=false;const captures=[],checks=[];
+ let serial,stage='configuration',isolationFailure=null,permissionStopped=false;const captures=[],checks=[],hardwareEvidence=[];
  function run(binary,args,{binaryOutput=false,timeout=10000,diagnostic=null}={}){
   const r=spawnSync(binary,args,{encoding:binaryOutput?null:'utf8',timeout,maxBuffer:binaryOutput?12000000:2000000});
   const denied=!binaryOutput&&/SecurityException|Permission Denial|Permission denied|not allowed/i.test(String(r.stdout||'')+'\n'+String(r.stderr||''));
@@ -93,15 +93,16 @@ async function main(){
   assert.equal(adb('shell','sha256sum',installed.slice(8)).trim().split(/\s/)[0],apkSHA,'installed_apk_mismatch');
   const screen=adb('shell','wm','size').match(/Physical size: (\d+)x(\d+)/);assert.ok(screen,'physical_size_required');size={width:Number(screen[1]),height:Number(screen[2])};
   isolate('force-stop','shell','am','force-stop',PACKAGE);isolate('airplane-mode','shell','cmd','connectivity','airplane-mode','enable');isolate('wifi-disable','shell','svc','wifi','disable');isolate('data-disable','shell','svc','data','disable');
-  // Use only the Ethernet command advertised by this exact emulator; no root or permission changes.
-  const ethernetHelp=isolate('ethernet-help','shell','cmd','ethernet','help');
-  console.log('ANDROID_ENTRY_ETHERNET_HELP '+JSON.stringify({text:ethernetHelp.slice(0,16000),sha256:digest(Buffer.from(ethernetHelp))}));
-  assert.ok(ethernetHelp.length<16000&&/^\s*set-ethernet-enabled\s+<enabled\|disabled>\s*$/m.test(ethernetHelp),'supported_ethernet_disable_required');
-  isolate('ethernet-disable','shell','cmd','ethernet','set-ethernet-enabled','disabled');
+  // This image has no Ethernet binder service. Detach only its observed virtual Ethernet NIC
+  // through the private monitor of this job's owned QEMU, never through guest privileges.
+  stage='offline-isolation:qmp-ethernet';
+  const mac=isolate('ethernet-mac','shell','cat','/sys/class/net/eth0/address').trim().toLowerCase();
+  stage='offline-isolation:qmp-ethernet';
+  const {isolateEthernet}=require('./android-qmp-isolation.cjs');
+  const hardware=await isolateEthernet(mac,row=>{hardwareEvidence.push(row);console.log('ANDROID_ENTRY_ETHERNET_HARDWARE '+JSON.stringify(row));}).catch(error=>{if(error.message==='permission_denied_stop')permissionStopped=true;throw error;});
   stage='offline-isolation';
-  console.log('ANDROID_ENTRY_ETHERNET_DISABLE_REQUESTED '+JSON.stringify({command:'cmd ethernet set-ethernet-enabled disabled',authority:'existing emulator shell',root:false,permissionChanges:false}));
   const end=Date.now()+15000;while(Date.now()<end){try{offline();break;}catch(error){if(!/airplane_not_enabled|wifi_not_disabled|mobile_data_not_disabled|default_route_present|global_address_present/.test(error.message))throw error;await pause();}}offline();
-  console.log('ANDROID_ENTRY_PROVENANCE '+JSON.stringify({...config,workspace:undefined,serial,apkSHA256:apkSHA,tree:run('git',['-C',config.workspace,'show','-s','--format=%T','HEAD']).trim(),sdk:adb('shell','getprop','ro.build.version.sdk').trim(),offline:offline()}));
+  console.log('ANDROID_ENTRY_PROVENANCE '+JSON.stringify({...config,workspace:undefined,serial,apkSHA256:apkSHA,tree:run('git',['-C',config.workspace,'show','-s','--format=%T','HEAD']).trim(),sdk:adb('shell','getprop','ro.build.version.sdk').trim(),hardware,offline:offline()}));
   stage='fresh-owned-app';assert.equal(adb('shell','pm','clear',PACKAGE).trim(),'Success','fresh_app_clear_failed');
   adb('shell','monkey','-p',PACKAGE,'-c','android.intent.category.LAUNCHER','1');
   let xml=await wait('signed-out-landing',x=>hasText(x,'Trabalho certo, na hora certa.')&&hasText(x,'Entrar')&&hasText(x,'Criar conta'));
@@ -129,10 +130,11 @@ async function main(){
   const receipt={...config,workspace:undefined,serial,apkSHA256:apkSHA,result:'success',checks,captures,firstPid,relaunchedPid,offline:offline(),scope:'native standalone emulator entry/invalid-input only; no successful auth, API/PG UI, SecureStore persistence, physical/VisualTruth or area acceptance'};
   fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});console.log('ANDROID_ENTRY_JOURNEY_PASS '+JSON.stringify(receipt));
  }catch(error){
-  const receipt={...config,workspace:undefined,result:'failure',stage,error:String(error.message).slice(0,180),isolationFailure,permissionStopped,checks,captures};
+  const receipt={...config,workspace:undefined,result:'failure',stage,error:String(error.message).slice(0,180),isolationFailure,permissionStopped,hardwareEvidence,checks,captures};
   if(!permissionStopped&&serial&&size)try{capture('failure',hierarchy());}catch{/* Diagnostics cannot convert failure to success. */}
   fs.writeFileSync(path.join(out,'failure.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});
   console.error('ANDROID_ENTRY_JOURNEY_FAIL '+JSON.stringify(receipt));throw error;
  }finally{if(!permissionStopped&&serial)try{adb('shell','am','force-stop',PACKAGE);}catch{/* Original result remains authoritative. */}}
 }
 if(require.main===module)main().catch(error=>{console.error('ANDROID_ENTRY_PROCESS_FAIL '+JSON.stringify({name:error.name,code:error.code||null}));process.exitCode=1;});
+

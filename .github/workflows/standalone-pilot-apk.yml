@@ -10,6 +10,8 @@ on:
       - 'scripts/tests/android-entry-journey.test.mjs'
       - 'scripts/tests/android-entry-isolation.test.mjs'
       - 'scripts/android-entry-journey.cjs'
+      - 'scripts/android-qmp-isolation.cjs'
+      - 'scripts/tests/android-qmp-isolation.test.mjs'
       - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
       - 'package.json'
@@ -25,6 +27,8 @@ on:
       - 'scripts/tests/android-entry-journey.test.mjs'
       - 'scripts/tests/android-entry-isolation.test.mjs'
       - 'scripts/android-entry-journey.cjs'
+      - 'scripts/android-qmp-isolation.cjs'
+      - 'scripts/tests/android-qmp-isolation.test.mjs'
       - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
       - 'package.json'
@@ -61,6 +65,7 @@ jobs:
           node --test scripts/tests/android-standalone-smoke.test.mjs
           node --test scripts/tests/android-entry-journey.test.mjs
           node --test scripts/tests/android-entry-isolation.test.mjs
+          node --test scripts/tests/android-qmp-isolation.test.mjs
       - name: Build standalone APK
         env:
           EXPO_PUBLIC_API_URL: https://mlivretrabalho.predibeacon.com/v1
@@ -80,6 +85,9 @@ jobs:
           test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
           echo "KVM_READY device=/dev/kvm"
 
+      - name: Prepare private monitor for this job's owned emulator
+        run: node scripts/android-qmp-isolation.cjs prepare
+
       - name: Device smoke test — install and launch without Metro
         env:
           MLIVRE_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -90,7 +98,7 @@ jobs:
           profile: pixel_6
           disable-animations: false
           disable-linux-hw-accel: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save -qemu -qmp unix:${{ env.MLIVRE_QMP_SOCKET }},server,nowait
           script: |
             bash scripts/android-standalone-smoke.sh
             node scripts/android-entry-journey.cjs
@@ -125,3 +133,4 @@ jobs:
           path: artifacts/android-pilot/
           if-no-files-found: error
           retention-days: 14
+

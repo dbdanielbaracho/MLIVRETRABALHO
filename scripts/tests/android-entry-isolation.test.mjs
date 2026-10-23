@@ -46,8 +46,8 @@ async function execute(faultCommand,fault){
  return{calls,logs,receipt:JSON.parse(row[1]),process};
 }
 test('real entry main records exact late exit20 output without entering forms',async()=>{
- const r=await execute('shell cmd ethernet help',{status:20,signal:null,stdout:'service usage unavailable\n',stderr:'fixture shell diagnostic\n'});
- assert.equal(r.receipt.error,'command_failed_adb_20');assert.equal(r.receipt.stage,'offline-isolation:ethernet-help');
+ const r=await execute('shell svc data disable',{status:20,signal:null,stdout:'service usage unavailable\n',stderr:'fixture shell diagnostic\n'});
+ assert.equal(r.receipt.error,'command_failed_adb_20');assert.equal(r.receipt.stage,'offline-isolation:data-disable');
  assert.equal(r.receipt.isolationFailure.status,20);assert.equal(r.receipt.isolationFailure.stderr.text,'fixture shell diagnostic\n');
  assert.equal(r.receipt.permissionStopped,false);assert.deepEqual(r.receipt.checks,[]);assert.deepEqual(r.receipt.captures,[]);
  assert.equal(r.calls.some(x=>/set-ethernet-enabled|pm clear|input tap|input text|monkey/.test(x.command)),false);
@@ -74,3 +74,4 @@ test('permission denial with zero exit status still fails closed before further 
  assert.equal(r.receipt.isolationFailure.status,0);assert.equal(r.calls.at(-1).command,'shell svc wifi disable');
  assert.equal(r.process.exitCode,1);
 });
+

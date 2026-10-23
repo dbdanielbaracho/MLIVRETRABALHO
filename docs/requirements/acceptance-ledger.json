@@ -167,7 +167,7 @@
       "name": "CI/PR/automação",
       "originalCriterion": "Confirmar cobertura CI/Android por tipo de mudança, proteção merge, activity watch e ausência de aceites antecipados; rotina horária NÃO é agente 24/7",
       "state": "PENDING",
-      "gap": "Falta conciliação integral da governança de gates/Android por tipo de mudança/proteção merge/drafts; Watch é monitor e não executor. Main protected:false e rulesets[] confirmados23/10;proteçãoadministrativa necessária naissue622. Isso não bloqueia desenvolvimento seguro nem substitui os demais critérios13.",
+      "gap": "Falta conciliação integral da governança de gates/Android por tipo de mudança/proteção merge/drafts; Watch é monitor e não executor.",
       "acceptance": null
     }
   ],
@@ -1236,7 +1236,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha": "7325ca21e5f7a99afc36417d24499c54e5fc2ec0",
+          "sha": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
           "mode": "100644"
         },
         {
@@ -3321,12 +3321,12 @@
   "protectedInputs": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha": "7325ca21e5f7a99afc36417d24499c54e5fc2ec0",
+      "sha": "aa2c2d676586c83fe9f28765cd62f8edd46dbd88",
       "mode": "100644"
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "b191a51bcd96c1de01870500a3cf650cbef99daf",
+      "sha": "94a3f5906d996109e1737e68c32dd0db26ba261d",
       "mode": "100644"
     },
     {
@@ -3636,12 +3636,12 @@
     },
     {
       "path": "apps/mobile/lib/privacy-actions.ts",
-      "sha": "e116dec3da68da1e41b666c7d3e8739a6d4ac5a7",
+      "sha": "0fa7701c4cc982c486c397607d25ee766a74f1bc",
       "mode": "100644"
     },
     {
       "path": "apps/mobile/lib/privacy-requests.ts",
-      "sha": "3f69d87acd77d803bc0394ce412b3e85213d8b97",
+      "sha": "5919555bb11b6b855a2730c5ba10585c6bdb7337",
       "mode": "100644"
     },
     {
@@ -4308,53 +4308,123 @@
     "No new APK bytes downloaded",
     "No complete RN render or native SecureStore proof"
   ],
-  "nativeCandidate": {
+  "privacyCandidate": {
     "baseMain": "4c2dae79f8f63d7ba48b757b4885313a5d53a530",
-    "existingPR": 565,
+    "existingPR": 574,
+    "previousHead": "4770c1d9d35db657125c7fad39203b58844b2d24",
     "sourceChanges": [
       {
-        "path": "scripts/android-entry-journey.cjs",
-        "oldSHA": "acc519b306ee74b7517277de69da8a283105fc92",
-        "newSHA": "f7d5ad94d8fd034a296210f0fbeaf2b0e628857e"
+        "path": "apps/mobile/lib/privacy-actions.ts",
+        "sha": "0fa7701c4cc982c486c397607d25ee766a74f1bc",
+        "mode": "100644",
+        "type": "blob"
       },
       {
-        "path": "scripts/tests/android-entry-isolation.test.mjs",
-        "oldSHA": null,
-        "newSHA": "790e75f583ea169fce1f28b58205637ef427f84f"
+        "path": "apps/mobile/lib/privacy-requests.ts",
+        "sha": "5919555bb11b6b855a2730c5ba10585c6bdb7337",
+        "mode": "100644",
+        "type": "blob"
       },
       {
-        "path": ".github/workflows/ci.yml",
-        "oldSHA": "3bd3edc0bf40ea53ed61a3c4026f29052d49a1db",
-        "newSHA": "7325ca21e5f7a99afc36417d24499c54e5fc2ec0"
+        "path": "apps/mobile/tests/privacy-calendar-screen.test.mjs",
+        "sha": "da577c80a62cc9597ba5b8ab7efe419ce0274f5e",
+        "mode": "100644",
+        "type": "blob"
       },
       {
-        "path": ".github/workflows/standalone-pilot-apk.yml",
-        "oldSHA": "6f08a87233b6ea53d69b7f4f67ecf27b5a2d252f",
-        "newSHA": "b191a51bcd96c1de01870500a3cf650cbef99daf"
+        "path": "apps/mobile/tests/privacy-calendar.test.mjs",
+        "sha": "a3878adf79d1b2fb3e40aeaf025e20d878484a8b",
+        "mode": "100644",
+        "type": "blob"
       }
     ],
-    "scope": "identify exact failing isolation command and preserve bounded stdout/stderr; stop all subsequent in-process ADB actions on permission denial; no isolation repair or area acceptance inferred",
+    "scope": "strict existing privacy response calendars before success effects; no new area approval",
     "ownFullCIRequired": true,
     "ownStandaloneAPKRequired": true,
     "literalPostCIRequired": true,
     "literalPostAPKRequired": true,
-    "evidence": "New candidate own CI/APK PENDING at preparation. Earlier green CI and partial smoke are historical; not new candidate proof.",
-    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
-    "reason": "Source pins of two workflows deliberately reconciled for this candidate; historical CI and APK receipts not reassigned to candidate.",
-    "previousHead": "b63d2c97bd1c54759375680240570726095c8836",
-    "previousOwnCI": {
-      "id": 39950306733,
-      "conclusion": "success",
-      "checkout": "761c4cdb71936af2e76a77d9656a6c64c1eb69ea",
-      "tree": "0bc48d35450dcf912963dbb7a9a949a715fab152"
+    "baseline": {
+      "existingTests": 35,
+      "passed": 8,
+      "failed": 27
     },
-    "previousOwnAPK": {
-      "id": 39950306845,
-      "conclusion": "failure",
-      "stage": "offline-isolation",
-      "error": "command_failed_adb_20",
-      "exactCommandUnproven": true,
-      "validatedAPKUpload": "skipped"
-    }
+    "candidateLocal": {
+      "existingTests": 35,
+      "passed": 35,
+      "focal": 90,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "evidence": "PENDING ownCI/APK at preparation; local Node24.19.0 pre-JSX hooks/JSON fixtures, not RN/native/HTTPPG execution",
+    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "actualOpenDraftsAtPreparation": [
+      {
+        "pr": 565,
+        "head": "1b041de3b4f0dd1f7f2dc67dea780ec0febd90fb",
+        "draft": true
+      },
+      {
+        "pr": 574,
+        "head": "4770c1d9d35db657125c7fad39203b58844b2d24",
+        "draft": true
+      }
+    ]
+  },
+  "nativeCandidate": {
+    "baseMain": "048a90733f51b14a78db631e3cbf4b87920b84da",
+    "existingPR": 565,
+    "previousHead": "1b041de3b4f0dd1f7f2dc67dea780ec0febd90fb",
+    "sourceChanges": [
+      {
+        "path": "scripts/android-entry-journey.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c15620c2b723cc8e3acac221b857b9fa2264374"
+      },
+      {
+        "path": "scripts/android-qmp-isolation.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "763ef547e803906fc3f507ab524c59759ea90c39"
+      },
+      {
+        "path": "scripts/tests/android-entry-isolation.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "76a1fa2e5c4ac4a680b480024a4285f8031991f1"
+      },
+      {
+        "path": "scripts/tests/android-qmp-isolation.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "012bbf28957762131e976430cd3c87d177355409"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "aa2c2d676586c83fe9f28765cd62f8edd46dbd88"
+      },
+      {
+        "path": ".github/workflows/standalone-pilot-apk.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "94a3f5906d996109e1737e68c32dd0db26ba261d"
+      },
+      {
+        "path": "scripts/verify-acceptance-ledger.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c0799fa1b1c9ed7b67158da8b826b537cdbff2b"
+      }
+    ],
+    "scope": "Owned emulator private QMP hardware fixture; actual guest MAC/backend/class plus DEVICE_DELETED required, then unchanged Android zero-address/route/radio checks. Native compatibility PENDING.",
+    "ownFullCIRequired": true,
+    "ownStandaloneAPKRequired": true,
+    "literalPostCIRequired": true,
+    "literalPostAPKRequired": true,
+    "evidence": "Pending ownCI/APK. Local Unix sockets EPERM: six transport cases blocked, no permission workaround. Four adapted/old diagnostics plus ten old models pass locally. No native/local proof or new area acceptance.",
+    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070"
   }
 }
