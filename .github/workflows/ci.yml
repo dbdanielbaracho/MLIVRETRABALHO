@@ -154,3 +154,44 @@ jobs:
           BASE_URL=http://127.0.0.1:3000 bash scripts/http-account-deactivation-e2e.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 bash scripts/smoke-api.sh || { cat /tmp/mlivre-api.log; exit 1; }
           BASE_URL=http://127.0.0.1:3000 EXPECTED_VERSION=0.1.0 bash scripts/production-truth-gate.sh || { cat /tmp/mlivre-api.log; exit 1; }
+
+  android_scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test conditional Android publication policy
+        run: node --test scripts/tests/ci-android-policy.test.mjs
+      - name: Classify the actual committed diff
+        id: scope
+        run: node scripts/ci-android-policy.cjs classify
+
+  android:
+    needs: android_scope
+    if: needs.android_scope.outputs.required == 'true'
+    uses: ./.github/workflows/standalone-pilot-apk.yml
+    permissions:
+      contents: read
+
+  merge_policy:
+    name: merge-policy
+    needs: [foundation, android_scope, android]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require the complete applicable jobs on this checkout
+        env:
+          MLIVRE_JOB_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/ci-android-policy.cjs publish
