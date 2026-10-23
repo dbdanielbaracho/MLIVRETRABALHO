@@ -1,1 +1,4 @@
 import test from'node:test';import assert from'node:assert/strict';import{verticalPack}from'./vertical-packs';test('active vertical packs include operating checklist and team template',()=>{const p=verticalPack('events');assert.equal(p?.active,true);assert.ok((p?.checklist.length??0)>0);assert.ok((p?.defaultTeam.length??0)>0)});
+import{VERTICAL_PACKS}from'./vertical-packs';
+test('vertical-pack contract rejects inherited and absent catalog names',()=>{for(const id of ['constructor','__proto__','toString','valueOf','hasOwnProperty','not-a-pack'])assert.equal(verticalPack(id),null,id)});
+test('every explicit catalog pack preserves its public configuration including inactive packs',()=>{for(const id of Object.keys(VERTICAL_PACKS)){const p=verticalPack(id);assert.equal(p,VERTICAL_PACKS[id as keyof typeof VERTICAL_PACKS]);assert.ok(Array.isArray(p?.roles));assert.ok(Array.isArray(p?.checklist));}assert.equal(verticalPack('retail')?.active,false);});
