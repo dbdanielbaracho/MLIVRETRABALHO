@@ -1,0 +1,119 @@
+{
+  "format": 1,
+  "scope": "Historical Web desktop captures, NOT native UI or current cycle results",
+  "sourcePR": 567,
+  "sourceHead": "3a66a7108cfadf52d8bb50b9bdb903f29c06fa8d",
+  "tree": "66f89c3ef2902dad6d1d59e0210be7229c3a857c",
+  "runs": [
+    {
+      "kind": "own",
+      "checkout": "42ffc6a2a3536ff8c74bf732748210dce3f1b261",
+      "checkoutKind": "synthetic",
+      "orderedParents": [
+        "f98b5f618c5b78772c360b93d17e6028f0021008",
+        "3a66a7108cfadf52d8bb50b9bdb903f29c06fa8d"
+      ],
+      "run": 38890073248,
+      "job": 116937140753,
+      "attempt": 1,
+      "result": "success",
+      "frames": [
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-own-login.png",
+          "label": "login",
+          "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+          "bytes": 33686,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-own-company-a-created.png",
+          "label": "company-a-created",
+          "sha256": "7d510a5e85e0b0387ab575e4d337a12554872932b4692a5bad456269378610e9",
+          "bytes": 132876,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-own-company-a-team-read-unavailable.png",
+          "label": "company-a-team-read-unavailable",
+          "sha256": "eeb850e0cf0cd88366c81727fa7cd0620c34f25533f2de38229e1e102f754b56",
+          "bytes": 141835,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-own-company-a-team-read-recovered.png",
+          "label": "company-a-team-read-recovered",
+          "sha256": "4facf06a2381b3745fbf2dcb6887629b2760cd715ecc4d52019dde99aa93ce44",
+          "bytes": 133137,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-own-company-b-isolated.png",
+          "label": "company-b-isolated",
+          "sha256": "7b7ac786d2d2d7e319aad42bd6b15e48a6b7edcda577c03ff3a4b72f54fc0ee3",
+          "bytes": 132014,
+          "width": 1365,
+          "height": 900
+        }
+      ]
+    },
+    {
+      "kind": "post",
+      "checkout": "3e098cd51cd2fd84f21e144a600a814a2cb1a150",
+      "checkoutKind": "literal-merge",
+      "orderedParents": [
+        "f98b5f618c5b78772c360b93d17e6028f0021008",
+        "3a66a7108cfadf52d8bb50b9bdb903f29c06fa8d"
+      ],
+      "run": 38891514441,
+      "job": 116942544994,
+      "attempt": 2,
+      "result": "success",
+      "frames": [
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-post-login.png",
+          "label": "login",
+          "sha256": "75fd151d88601595f208804f64845c07201286708d5eee7e50fe72acb19425dc",
+          "bytes": 33686,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-post-company-a-created.png",
+          "label": "company-a-created",
+          "sha256": "786a1a917728faf3d59537dc415716a279f27de7179c99b483da84d6bf71a42d",
+          "bytes": 133199,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-post-company-a-team-read-unavailable.png",
+          "label": "company-a-team-read-unavailable",
+          "sha256": "4c05317f8c40646589d271cf2be246ecb0aadf51ee65018e362c591e8bfac265",
+          "bytes": 142259,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-post-company-a-team-read-recovered.png",
+          "label": "company-a-team-read-recovered",
+          "sha256": "e77cbc1d424a689ef92590bed68fe659783d8fac69c18172ee42679793321108",
+          "bytes": 133501,
+          "width": 1365,
+          "height": 900
+        },
+        {
+          "path": "docs/evidencias/web-browser-2026-10-16/pr567-post-company-b-isolated.png",
+          "label": "company-b-isolated",
+          "sha256": "26bdabb3cfef15ee8bb44d6890bd8e3c6747f61d56d888238dfc6588ebd72801",
+          "bytes": 131919,
+          "width": 1365,
+          "height": 900
+        }
+      ]
+    }
+  ]
+}

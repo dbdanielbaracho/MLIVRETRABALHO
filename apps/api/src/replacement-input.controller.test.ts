@@ -5,11 +5,12 @@ import {ReplacementController} from './replacement.controller';
 import type {DatabaseService} from './database.service';
 import type {AuthService} from './auth.service';
 const ID='11111111-2222-3333-4444-555555555555',PRO='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',NEW='99999999-8888-7777-6666-555555555555';
-function setup(options:{authorized?:boolean;membership?:boolean;role?:string;found?:boolean;original?:boolean;status?:string;candidate?:boolean;available?:boolean;inserted?:boolean;recipient?:boolean;originalProfessionalId?:string;insertedStatus?:string;error?:Error}={}){
+function setup(options:{authorized?:boolean;membership?:boolean;role?:string;found?:boolean;original?:boolean;status?:string;candidate?:boolean;available?:boolean;inserted?:boolean;recipient?:boolean;originalProfessionalId?:string;insertedStatus?:string;error?:Error;failSqlPrefix?:string;sqlFailure?:Error}={}){
  const queries:{sql:string;params:unknown[]}[]=[],contexts:string[]=[],memberships:unknown[][]=[];
  const auth={identityFromAuthorization:async()=>{if(options.authorized===false)throw new UnauthorizedException();return{id:'trusted-identity'};},requireMembership:async(...args:unknown[])=>{memberships.push(args);if(options.membership===false)throw new UnauthorizedException();return{role:options.role??'owner'};}};
  const db={tenant:async(tenant:string,op:(db:unknown)=>Promise<unknown>)=>{contexts.push(tenant);if(options.error)throw options.error;return op({query:async(sql:string,params:unknown[]=[])=>{
  queries.push({sql,params});
+ if(options.failSqlPrefix&&sql.startsWith(options.failSqlPrefix))throw options.sqlFailure??new Error('fixture_sql_failure');
  if(sql.startsWith('SELECT assignment_id'))return{rows:options.found===false?[]:[{assignmentId:ID}]};
  if(sql.startsWith('SELECT job_id'))return{rows:options.original===false?[]:[{jobId:NEW,status:options.status??'confirmed',isOriginalProfessional:typeof params[2]==='string'&&params[2].toLowerCase()===(options.originalProfessionalId??ID).toLowerCase()}]};
  if(sql.startsWith('SELECT status'))return{rows:options.found===false?[]:[{status:options.status??'confirmed'}]};
@@ -130,5 +131,29 @@ test('replacement cannot claim matched with an existing substitute assignment ou
  const h=setup({insertedStatus:'confirmed'});
  assert.deepEqual(await h.controller.select(ID,{professionalId:PRO},'Bearer fixture','trusted-tenant'),
   {replacementRequestId:ID,assignmentId:NEW,replacedAssignmentId:ID,professionalId:PRO,status:'matched'});
+});
+
+const replacementSelectFailureStages=[
+ {prefix:'INSERT INTO work_assignments',params:['trusted-tenant',NEW,PRO]},
+ {prefix:'UPDATE work_assignments',params:[ID,'trusted-tenant']},
+ {prefix:'UPDATE replacement_requests',params:[ID,PRO,'trusted-tenant']},
+ {prefix:'SELECT active_tenant_professional_identity',params:[PRO]},
+ {prefix:'INSERT INTO notifications',params:['trusted-tenant','trusted-recipient']},
+] as const;
+for(const [stageIndex,stage]of replacementSelectFailureStages.entries())test('replacement select propagates '+stage.prefix+' failure without matched ACK retry or later SQL',async()=>{
+ const failure=new Error('explicit select failure at '+stage.prefix);
+ const h=setup({failSqlPrefix:stage.prefix,sqlFailure:failure});
+ let acknowledged:Awaited<ReturnType<ReplacementController['select']>>|undefined;
+ await assert.rejects(async()=>{acknowledged=await h.controller.select(ID,{professionalId:PRO,tenantId:'forged',identityId:'forged'} as never,'Bearer fixture','trusted-tenant');},(error:unknown)=>error===failure);
+ assert.equal(acknowledged,undefined);
+ assert.deepEqual(h.contexts,['trusted-tenant']);
+ assert.deepEqual(h.memberships,[['trusted-identity','trusted-tenant']]);
+ const failed=h.queries.filter(query=>query.sql.startsWith(stage.prefix));
+ assert.equal(failed.length,1,'the failed operation must not retry automatically');
+ assert.deepEqual(failed[0]!.params,stage.params);
+ assert.equal(h.queries.at(-1),failed[0],'no SQL may follow the failure');
+ assert.equal(h.queries.some(query=>replacementSelectFailureStages.slice(stageIndex+1).some(later=>query.sql.startsWith(later.prefix))),false);
+ assert.ok(h.queries.every(query=>!query.params.includes('forged')));
+ // This adapter records attempted queries; PostgreSQL transaction rollback needs its own HTTP/PG evidence.
 });
 

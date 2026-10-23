@@ -3,6 +3,8 @@ set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
 [[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
+node scripts/verify-acceptance-ledger.cjs
+node --test scripts/tests/acceptance-ledger.test.mjs
 GPS_INPUT_DIR="$(mktemp -d)"
 trap 'rm -rf "$GPS_INPUT_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
@@ -42,9 +44,11 @@ PROFESSIONAL_ID="$(printf '%s' "$PROFILE" | json_field id)"
 
 AVAILABILITY="$(request POST /v1/availability/mine "$PRO_TOKEN" '' "{\"startsAt\":\"$AVAIL_START\",\"endsAt\":\"$AVAIL_END\"}")"
 contains "$AVAILABILITY" 'startsAt'
+node -e 'process.stdout.write(JSON.stringify({payload:{startsAt:process.argv[1],endsAt:process.argv[2]},ack:JSON.parse(process.argv[3])}))' -- "$AVAIL_START" "$AVAIL_END" "$AVAILABILITY" | node scripts/mobile-chat-support-contract.cjs availability
 
 JOB="$(request POST /v1/company/jobs "$COMPANY_TOKEN" "$TENANT_ID" "{\"title\":\"Bartender A\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Centro\",\"startsAt\":\"$START_AT\",\"endsAt\":\"$END_AT\",\"payCents\":25000}")"
 JOB_ID="$(printf '%s' "$JOB" | json_field id)"
+node -e 'process.stdout.write(JSON.stringify({payload:{title:"Bartender A",location:"Centro",workCity:"São Paulo",startsAt:process.argv[1],endsAt:process.argv[2],payCents:25000},ack:JSON.parse(process.argv[3])}))' -- "$START_AT" "$END_AT" "$JOB" | node scripts/mobile-chat-support-contract.cjs publication
 JOB2="$(request POST /v1/company/jobs "$COMPANY2_TOKEN" "$TENANT2_ID" "{\"title\":\"Bartender B\",\"requiredRole\":\"Bartender\",\"workCity\":\"São Paulo\",\"location\":\"Paulista\",\"startsAt\":\"$START2_AT\",\"endsAt\":\"$END2_AT\",\"payCents\":30000}")"
 JOB2_ID="$(printf '%s' "$JOB2" | json_field id)"
 
@@ -249,6 +253,7 @@ COMPANY_MESSAGE="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$CO
 contains "$COMPANY_MESSAGE" 'confirme seu horário'
 PRO_MESSAGES="$(request GET "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID")"
 contains "$PRO_MESSAGES" 'confirme seu horário'
+node -e 'process.stdout.write(JSON.stringify({assignmentId:process.argv[1],ack:JSON.parse(process.argv[2]),messages:JSON.parse(process.argv[3])}))' -- "$ASSIGNMENT_ID" "$COMPANY_MESSAGE" "$PRO_MESSAGES" | node scripts/mobile-chat-support-contract.cjs chat
 PRO_NOTIFICATIONS="$(request GET /v1/notifications/mine "$PRO_TOKEN" "$TENANT_ID")"
 contains "$PRO_NOTIFICATIONS" 'new_message'
 PRO_REPLY="$(request POST "/v1/conversations/$ASSIGNMENT_ID/messages" "$PRO_TOKEN" "$TENANT_ID" '{"body":"Confirmado, estarei no horário."}')"
@@ -412,11 +417,37 @@ request GET /v1/notifications/mine "$COMPANY2_TOKEN" "$TENANT2_ID" | json_equal 
 if [[ "$CHAT_CHAR_FAILURES" != 0 ]]; then echo "FAIL: chat_character_limit $CHAT_CHAR_FAILURES oversized requests were not HTTP400" >&2; exit 1; fi
 echo 'PASS: chat accepts4000 database Unicode characters, rejects4001 with400, and preserves authority messages notifications and tenant isolation'
 
+# Notification/conversation acceptance fixture: real HTTP + PostgreSQL, deliberate local CI-only notification faults,
+# rollback, ACK/replay, two-recipient inboxes and tenant isolation.
+node scripts/notification-atomicity-e2e.cjs
+
 # Fresh professional multi-company chronology fixture; all prior assertions remain unchanged.
 node scripts/professional-chronology-e2e.cjs
 
 # Fresh safety/support chronology fixture; immutable events and all prior assertions remain unchanged.
 node scripts/safety-support-chronology-e2e.cjs
+
+# Full signup/invitation/expiry/context/revocation journey: actual mobile core + disposable HTTP/PostgreSQL.
+node scripts/authentication-acceptance-e2e.cjs
+
+# Disposable invitation renewal/acceptance/promotion rollback; existing gates remain mandatory.
+node scripts/invitation-atomicity-e2e.cjs
+
+# Ledger completion, rollback, simulated split and negative-balance journey use only disposable local HTTP/PostgreSQL.
+node scripts/ledger-completion-atomicity-e2e.cjs
+
+# Full company roles/publication/teams/client journey uses fresh disposable local HTTP/PostgreSQL.
+node scripts/company-acceptance-e2e.cjs
+
+# Actual matching/allocation/replacement clients use fresh disposable local HTTP/PostgreSQL.
+node scripts/matching-acceptance-e2e.cjs
+
+# Whole-schema tenant boundary, runtime least privilege and real connection reuse.
+node scripts/tenant-boundary-acceptance-e2e.cjs
+
+# Integrated internal security: real authentication concurrency, private export, owned failure and server-log canaries.
+SECURITY_ACCEPTANCE_API_LOG=/tmp/mlivre-api.log node scripts/security-acceptance-e2e.cjs
+node scripts/backend-contract-acceptance-e2e.cjs
 
 # Real Web browser journey uses separate localhost ports and fresh disposable identities.
 bash scripts/web-browser-journey-e2e.sh

@@ -1,3 +1,4 @@
+import { privateOperationFailure } from './privacy-logging';
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -61,6 +62,6 @@ async function main(){
   }
 }
 
-if(require.main===module){void main().catch(error=>{console.error(error);process.exitCode=1;});}
+if(require.main===module){void main().catch(error=>{privateOperationFailure('migrate',error);process.exitCode=1;});}
 
 export { migrationBody, checksum };

@@ -16,9 +16,9 @@ jobs:
 
     services:
       postgres:
-        # Public ECR mirrors the Docker Official Image and avoids Docker Hub's
-        # anonymous pull-rate limit on hosted GitHub runners.
-        image: public.ecr.aws/docker/library/postgres:17
+        # Public ECR hit quota before checkout; test Docker Official Image source.
+        # Keep PostgreSQL 17 and all required CI gates unchanged.
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -66,8 +66,18 @@ jobs:
           test -d apps/mobile/dist
           find apps/mobile/dist -type f | grep -q .
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Install PostgreSQL client and current signed Chrome Stable
+        run: |
+          sudo install -d -m 0755 /etc/apt/keyrings
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://dl.google.com/linux/linux_signing_key.pub \
+            | gpg --dearmor \
+            | sudo tee /etc/apt/keyrings/google-chrome.gpg >/dev/null
+          echo 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main' \
+            | sudo tee /etc/apt/sources.list.d/google-chrome.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client google-chrome-stable
+          google-chrome --version
 
       - name: Run tests
         run: |

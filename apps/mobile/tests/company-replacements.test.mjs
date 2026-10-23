@@ -62,3 +62,22 @@ test('replacement identifiers must match the API UUID contract before any transp
  assert.equal(await selectReplacement(request,replacement,'professional-text'),false);
  assert.equal(calls,0);
 });
+
+test('replacement assignment dates reject impossible calendars without discarding a valid sibling section',async()=>{
+ const bad=['2026-02-30T12:00:00Z','2025-02-29T12:00:00+00:00','2026-04-31T09:15:00-03:00'];
+ for(const value of bad){
+  const result=await loadReplacements(async path=>response(path.endsWith('assignments')?[{...assignment,startsAt:value}]:[replacement]));
+  assert.equal(result.assignments.status,'error');assert.deepEqual(result.replacements,{status:'ready',data:[replacement]});
+  const badEnd=await loadReplacements(async path=>response(path.endsWith('assignments')?[{...assignment,endsAt:value}]:[replacement]));
+  assert.equal(badEnd.assignments.status,'error');
+ }
+});
+test('replacement assignment calendar preserves leap day, timezone and optional timestamps',async()=>{
+ for(const value of ['2024-02-29T12:00:00Z','2026-03-01T00:00:00+14:00','1970-01-01T00:00:00Z']){
+  const actual={...assignment,startsAt:value,endsAt:value};
+  const result=await loadReplacements(async path=>response(path.endsWith('assignments')?[actual]:[replacement]));
+  assert.deepEqual(result.assignments,{status:'ready',data:[actual]});
+ }
+ const empty=await loadReplacements(async path=>response(path.endsWith('assignments')?[{...assignment,startsAt:null,endsAt:null}]:[replacement]));
+ assert.equal(empty.assignments.status,'ready');
+});
