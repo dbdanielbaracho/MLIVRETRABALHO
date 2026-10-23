@@ -1,5 +1,5 @@
 import type { LoggerService } from '@nestjs/common';
-import type { FastifyLoggerOptions } from 'fastify';
+import type { FastifyServerOptions } from 'fastify';
 
 const methods=new Set(['GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS']);
 const components=new Set(['NestFactory','InstanceLoader','RoutesResolver','RouterExplorer','NestApplication','ExceptionsHandler','Bootstrap']);
@@ -49,7 +49,7 @@ export function privateHttpMetadata(value:unknown):Record<string,unknown>{
  return record;
 }
 
-export const privateHttpLogger:FastifyLoggerOptions={
+export const privateHttpLogger:Exclude<FastifyServerOptions<any>['logger'],boolean|undefined>={
  level:'info',
  hooks:{
   logMethod(args,method){
