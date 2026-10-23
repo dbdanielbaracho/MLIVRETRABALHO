@@ -3636,12 +3636,12 @@
     },
     {
       "path": "apps/mobile/lib/privacy-actions.ts",
-      "sha": "e116dec3da68da1e41b666c7d3e8739a6d4ac5a7",
+      "sha": "0fa7701c4cc982c486c397607d25ee766a74f1bc",
       "mode": "100644"
     },
     {
       "path": "apps/mobile/lib/privacy-requests.ts",
-      "sha": "3f69d87acd77d803bc0394ce412b3e85213d8b97",
+      "sha": "5919555bb11b6b855a2730c5ba10585c6bdb7337",
       "mode": "100644"
     },
     {
@@ -4307,5 +4307,68 @@
     "No production/provider/PSP/real money",
     "No new APK bytes downloaded",
     "No complete RN render or native SecureStore proof"
-  ]
+  ],
+  "privacyCandidate": {
+    "baseMain": "4c2dae79f8f63d7ba48b757b4885313a5d53a530",
+    "existingPR": 574,
+    "previousHead": "4770c1d9d35db657125c7fad39203b58844b2d24",
+    "sourceChanges": [
+      {
+        "path": "apps/mobile/lib/privacy-actions.ts",
+        "sha": "0fa7701c4cc982c486c397607d25ee766a74f1bc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/lib/privacy-requests.ts",
+        "sha": "5919555bb11b6b855a2730c5ba10585c6bdb7337",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/tests/privacy-calendar-screen.test.mjs",
+        "sha": "da577c80a62cc9597ba5b8ab7efe419ce0274f5e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/tests/privacy-calendar.test.mjs",
+        "sha": "a3878adf79d1b2fb3e40aeaf025e20d878484a8b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    ],
+    "scope": "strict existing privacy response calendars before success effects; no new area approval",
+    "ownFullCIRequired": true,
+    "ownStandaloneAPKRequired": true,
+    "literalPostCIRequired": true,
+    "literalPostAPKRequired": true,
+    "baseline": {
+      "existingTests": 35,
+      "passed": 8,
+      "failed": 27
+    },
+    "candidateLocal": {
+      "existingTests": 35,
+      "passed": 35,
+      "focal": 90,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "evidence": "PENDING ownCI/APK at preparation; local Node24.19.0 pre-JSX hooks/JSON fixtures, not RN/native/HTTPPG execution",
+    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "actualOpenDraftsAtPreparation": [
+      {
+        "pr": 565,
+        "head": "1b041de3b4f0dd1f7f2dc67dea780ec0febd90fb",
+        "draft": true
+      },
+      {
+        "pr": 574,
+        "head": "4770c1d9d35db657125c7fad39203b58844b2d24",
+        "draft": true
+      }
+    ]
+  }
 }
