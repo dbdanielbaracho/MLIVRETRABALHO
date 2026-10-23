@@ -1236,7 +1236,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha": "3bd3edc0bf40ea53ed61a3c4026f29052d49a1db",
+          "sha": "7325ca21e5f7a99afc36417d24499c54e5fc2ec0",
           "mode": "100644"
         },
         {
@@ -3321,12 +3321,12 @@
   "protectedInputs": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha": "3bd3edc0bf40ea53ed61a3c4026f29052d49a1db",
+      "sha": "7325ca21e5f7a99afc36417d24499c54e5fc2ec0",
       "mode": "100644"
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "6f08a87233b6ea53d69b7f4f67ecf27b5a2d252f",
+      "sha": "b191a51bcd96c1de01870500a3cf650cbef99daf",
       "mode": "100644"
     },
     {
@@ -4313,23 +4313,48 @@
     "existingPR": 565,
     "sourceChanges": [
       {
+        "path": "scripts/android-entry-journey.cjs",
+        "oldSHA": "acc519b306ee74b7517277de69da8a283105fc92",
+        "newSHA": "f7d5ad94d8fd034a296210f0fbeaf2b0e628857e"
+      },
+      {
+        "path": "scripts/tests/android-entry-isolation.test.mjs",
+        "oldSHA": null,
+        "newSHA": "790e75f583ea169fce1f28b58205637ef427f84f"
+      },
+      {
         "path": ".github/workflows/ci.yml",
-        "oldSHA": "b42bd9e89aa8052e2d1d9e36c63b4dee621b4e25",
-        "newSHA": "3bd3edc0bf40ea53ed61a3c4026f29052d49a1db"
+        "oldSHA": "3bd3edc0bf40ea53ed61a3c4026f29052d49a1db",
+        "newSHA": "7325ca21e5f7a99afc36417d24499c54e5fc2ec0"
       },
       {
         "path": ".github/workflows/standalone-pilot-apk.yml",
-        "oldSHA": "e0fc5f871dc3b498f71a38ff932c83b48716c35f",
-        "newSHA": "6f08a87233b6ea53d69b7f4f67ecf27b5a2d252f"
+        "oldSHA": "6f08a87233b6ea53d69b7f4f67ecf27b5a2d252f",
+        "newSHA": "b191a51bcd96c1de01870500a3cf650cbef99daf"
       }
     ],
-    "scope": "candidate adds emulator Ethernet precondition; no area accepted",
+    "scope": "identify exact failing isolation command and preserve bounded stdout/stderr; stop all subsequent in-process ADB actions on permission denial; no isolation repair or area acceptance inferred",
     "ownFullCIRequired": true,
     "ownStandaloneAPKRequired": true,
     "literalPostCIRequired": true,
     "literalPostAPKRequired": true,
-    "evidence": "PENDING at preparation; terminal primary receipts in PR565",
+    "evidence": "New candidate own CI/APK PENDING at preparation. Earlier green CI and partial smoke are historical; not new candidate proof.",
     "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
-    "reason": "Source pins of two workflows deliberately reconciled for this candidate; historical CI and APK receipts not reassigned to candidate."
+    "reason": "Source pins of two workflows deliberately reconciled for this candidate; historical CI and APK receipts not reassigned to candidate.",
+    "previousHead": "b63d2c97bd1c54759375680240570726095c8836",
+    "previousOwnCI": {
+      "id": 39950306733,
+      "conclusion": "success",
+      "checkout": "761c4cdb71936af2e76a77d9656a6c64c1eb69ea",
+      "tree": "0bc48d35450dcf912963dbb7a9a949a715fab152"
+    },
+    "previousOwnAPK": {
+      "id": 39950306845,
+      "conclusion": "failure",
+      "stage": "offline-isolation",
+      "error": "command_failed_adb_20",
+      "exactCommandUnproven": true,
+      "validatedAPKUpload": "skipped"
+    }
   }
 }

@@ -8,6 +8,7 @@ on:
       - 'scripts/build-android-pilot.sh'
       - 'scripts/android-standalone-smoke.sh'
       - 'scripts/tests/android-entry-journey.test.mjs'
+      - 'scripts/tests/android-entry-isolation.test.mjs'
       - 'scripts/android-entry-journey.cjs'
       - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
@@ -22,6 +23,7 @@ on:
       - 'scripts/build-android-pilot.sh'
       - 'scripts/android-standalone-smoke.sh'
       - 'scripts/tests/android-entry-journey.test.mjs'
+      - 'scripts/tests/android-entry-isolation.test.mjs'
       - 'scripts/android-entry-journey.cjs'
       - 'scripts/tests/android-standalone-smoke.test.mjs'
       - '.github/workflows/standalone-pilot-apk.yml'
@@ -58,6 +60,7 @@ jobs:
         run: |
           node --test scripts/tests/android-standalone-smoke.test.mjs
           node --test scripts/tests/android-entry-journey.test.mjs
+          node --test scripts/tests/android-entry-isolation.test.mjs
       - name: Build standalone APK
         env:
           EXPO_PUBLIC_API_URL: https://mlivretrabalho.predibeacon.com/v1
