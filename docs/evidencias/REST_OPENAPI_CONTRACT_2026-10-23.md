@@ -1009,3 +1009,10 @@ Missing preference semantics/persistence/matching effect and general support wit
 \`\`\`
 
 Six normative documents preserve their entire current main UTF-8 contents as prefix and append the same chapter/reference. Original DVT versions, memory and all prior evidence remain unchanged. Post-publication final ownCI/merge/POST receipts belong in terminal PR metadata; do not create an artificial commit to repeat the same SHA for green.
+
+
+### Correction from actual HTTP/PG evidence
+
+First candidate bf56c3d89390b528d7a543856e4338174fa0c822/treea15ec7a7595d646989b71ba68c7d50e99e19a8e3: ownCI39913107348/job120280403848/attempt1 FAILURE. Actualcheckoutb4660c0b92647c1f3a442ba0f48ae674c4b5da2e at06:42:34.5623935Z,syntheticparents[3ca,bf56],treea15ec exact.1938unit/types/build/export/migrations/privacy passed. HTTP step stopped06:44:38.4299458Z at OPENAPI_type_GET /v1/company/payment-events/reconciliation/response/200/items/payableCents. Status200 was correct; schema was wrong. No browser/ProductionTruth success is attributed to this failed run. No rerun.
+
+Actual unchanged payment-events.controller.ts3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313 LEFT JOIN projects el.amount_cents as payableCents, which is null with no earning. Only professionalPayableCents inside simulatedSplit falls back to0. Corrected the schema to nullable payableCents/earningStatus and documented no_earning; retained strict integer arithmetic in the simulatedSplit. Added a real integrated assertion on the already-created assignments without an earning: payableCents=null,earningStatus=null,professionalPayableCents=0. The completed earning still must equal2345andplatformremainder0. New OPENAPI_RECONCILIATION_ABSENT_EARNING_PASS marker contains counts/booleans only. No API parser, SQL, product, security, browser timeout/assertion or dependency change. This is a concrete contract correction, not a retry commit or a fabricated product defect. New head must run its own completeCI; acceptance remains pending.

@@ -7958,16 +7958,46 @@
             "type": "integer"
           },
           "payableCents": {
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "earningStatus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reconciliationStatus": {
+            "type": "string",
+            "enum": [
+              "no_earning",
+              "reconciled",
+              "overpaid",
+              "pending"
+            ]
           },
           "simulatedSplit": {
             "type": "object",
             "properties": {
+              "professionalPayableCents": {
+                "type": "integer"
+              },
               "platformRemainderCents": {
                 "type": "integer"
               }
             },
             "required": [
+              "professionalPayableCents",
               "platformRemainderCents"
             ],
             "additionalProperties": true
@@ -7977,9 +8007,12 @@
           "assignmentId",
           "capturedCents",
           "payableCents",
+          "earningStatus",
+          "reconciliationStatus",
           "simulatedSplit"
         ],
-        "additionalProperties": true
+        "additionalProperties": true,
+        "description": "A LEFT JOIN without an earning returns payableCents=null, earningStatus=null and reconciliationStatus=no_earning. Only simulatedSplit.professionalPayableCents uses 0 as the explicit arithmetic fallback. Do not conflate absent earning with a zero-valued earning."
       },
       "CareerProgress": {
         "type": "object",
