@@ -7,6 +7,27 @@ const {createRequire}=require('node:module');
 const {randomUUID,createHash}=require('node:crypto');
 const {localConfiguration,requireLocalDatabasePeer}=require('./professional-chronology-e2e.cjs');
 let stage='configuration';
+async function storageLogContract(){
+ const vm=require('node:vm'),{stripTypeScriptTypes}=require('node:module'),{inspect}=require('node:util');
+ const evaluate=(path,names,context)=>vm.runInNewContext(stripTypeScriptTypes(readFileSync(path,'utf8').replace(/^import .*$/gm,''),{mode:'transform'}).replace(/\bexport\s+/g,'')+'\n({'+names.join(',')+'})',context);
+ const transaction=evaluate('apps/mobile/lib/session-transaction.ts',['createSessionQueue','persistVerifiedSession','clearExpectedSession','persistExpectedTenant'],{});
+ const canary='SyntheticNativeError-'+randomUUID(),warnings=[],values=new Map();let fail=true;
+ const failure=()=>{const error=new Error(canary);Object.assign(error,{token:canary,details:canary});return error;};
+ const SecureStore={getItemAsync:async key=>{if(fail)throw failure();return values.get(key)??null;},setItemAsync:async(key,value)=>{if(fail)throw failure();values.set(key,value);},deleteItemAsync:async key=>{if(fail)throw failure();values.delete(key);}};
+ const storage=evaluate('apps/mobile/lib/session.ts',['getSession','saveSession','clearSession','getTenant','saveTenant','clearTenant','saveVerifiedSignin','clearSessionForAuthorization','saveTenantForContext','authenticatedTenantHeaders'],{...transaction,SecureStore,console:{warn:(...args)=>warnings.push(args)}});
+ assert.equal(await storage.getSession(),null);assert.equal(await storage.getTenant(),null);
+ await storage.saveSession(canary);await storage.saveTenant(canary);await storage.clearSession();await storage.clearTenant();
+ assert.equal(warnings.length,6,'Storage warnings must remain observable');
+ const leaked=inspect(warnings).includes(canary);console.log('SECURITY_MOBILE_LOG_OBSERVED '+JSON.stringify({actualSource:true,nativeAdapterFixture:true,warnings:warnings.length,canaryDisclosed:leaked,physicalDevice:false}));
+ assert.equal(leaked,false,'Mobile diagnostic disclosed the injected storage error');
+ fail=false;const token='SyntheticStored-'+randomUUID(),tenant=randomUUID();
+ assert.equal(await storage.saveVerifiedSignin({token,tenantId:tenant},null,()=>true),'saved');
+ assert.equal(await storage.getSession(),token);assert.equal(await storage.getTenant(),tenant);
+ const nextTenant=randomUUID();assert.equal(await storage.saveTenantForContext(nextTenant,{Authorization:'Bearer '+token,'x-tenant-id':tenant},()=>true),'saved');
+ assert.equal((await storage.authenticatedTenantHeaders())['x-tenant-id'],nextTenant);
+ assert.equal(await storage.clearSessionForAuthorization('Bearer '+token),'cleared');assert.equal(await storage.getSession(),null);assert.equal(await storage.getTenant(),null);
+ console.log('SECURITY_MOBILE_LOG_AND_SESSION_PASS '+JSON.stringify({warningsRetained:true,noRawError:true,realQueueAndVerifiedStorageCore:true,nativeSecureStore:false}));
+}
 async function main(){
  const config=localConfiguration(process.env);
  const logPath=process.env.SECURITY_ACCEPTANCE_API_LOG;
@@ -80,22 +101,31 @@ async function main(){
   await call('/v1/privacy/export',{status:401});await call('/v1/company/dashboard/assignments',{token:outsider.token,tenant:company.tenant,status:401});
   console.log('SECURITY_PRIVATE_EXPORT_PASS '+JSON.stringify({realPersistedMessagesAndRating:true,ownContentPreserved:true,thirdPartyContentRedacted:true,outsiderEmptyPrivateData:true,credentialsAndOperatorFieldsAbsent:true}));
   stage='owned-failure';
+  const cliRequest=await call('/v1/privacy/requests',{method:'POST',token:pro.token,body:{requestType:'correction',details:canaries.body},status:201});
   const before=(await db.query('SELECT id FROM privacy_requests WHERE identity_id=$1 ORDER BY id',[pro.id])).rows;
   // The sequence is an out-of-transaction witness of exactly one failed SQL attempt.
   // Only the fresh fixture identity/detail matches; no policy/ACL/runtime code is changed.
   await db.query('CREATE SEQUENCE public.'+prefix+'_attempts;');faultInstalled=true;
   await db.query("CREATE FUNCTION public."+prefix+"() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.identity_id='"+pro.id+"'::uuid AND NEW.request_details='"+canaries.body+"' THEN PERFORM nextval('public."+prefix+"_attempts'); RAISE EXCEPTION '"+canaries.fault+"' USING ERRCODE='P0001'; END IF; RETURN NEW; END $$;");
-  await db.query('CREATE TRIGGER '+prefix+' BEFORE INSERT ON public.privacy_requests FOR EACH ROW EXECUTE FUNCTION public.'+prefix+'();');
+  await db.query('CREATE TRIGGER '+prefix+' BEFORE INSERT OR UPDATE ON public.privacy_requests FOR EACH ROW EXECUTE FUNCTION public.'+prefix+'();');
   const failed=await call('/v1/privacy/requests',{method:'POST',token:pro.token,body:{requestType:'correction',details:canaries.body},status:500});
   assert.equal(failed.requestId,undefined);assert.ok(!JSON.stringify(failed).includes(canaries.fault),'Raw database error in response');
   assert.deepEqual((await db.query('SELECT id FROM privacy_requests WHERE identity_id=$1 ORDER BY id',[pro.id])).rows,before);
   const sequence=(await db.query('SELECT last_value::int n,is_called FROM public.'+prefix+'_attempts')).rows[0];assert.equal(sequence.n,1);assert.equal(sequence.is_called,true);
+  const {spawnSync}=require('node:child_process');
+  const cli=spawnSync(process.execPath,['apps/api/dist/privacy-requests-ops.js','start',cliRequest.requestId,'test:security-owned-fault'],{env:{...process.env,PRIVACY_MAINTENANCE_DATABASE_URL:config.databaseUrl,PRIVACY_OPERATOR_ID:'ci:security-acceptance'},encoding:'utf8',timeout:15000,maxBuffer:65536});
+  assert.equal(cli.error,undefined);assert.equal(cli.status,1);assert.equal(cli.stdout.trim(),'');
+  assert.equal((await db.query('SELECT last_value::int n FROM public.'+prefix+'_attempts')).rows[0].n,2,'Exactly one additional failed CLI SQL attempt');
+  const cliRow=(await db.query('SELECT status,evidence_ref FROM privacy_requests WHERE id=$1 AND identity_id=$2',[cliRequest.requestId,pro.id])).rows[0];assert.equal(cliRow.status,'submitted');assert.equal(cliRow.evidence_ref,null);
+  console.log('SECURITY_OPERATION_LOG_OBSERVED '+JSON.stringify({realChildProcessAndDatabase:true,exitCode:cli.status,noSuccessOutput:true,canaryDisclosed:cli.stderr.includes(canaries.fault)}));
+  assert.ok(!cli.stderr.includes(canaries.fault),'Operator diagnostic disclosed private SQL error');
+  assert.ok(cli.stderr.includes('database_P0001'),'Operator error must retain safe SQL diagnostics');
   await removeFault();
   const recoveredRequest=await call('/v1/privacy/requests',{method:'POST',token:pro.token,body:{requestType:'correction',details:canaries.body},status:201});
   assert.equal((await db.query('SELECT request_details FROM privacy_requests WHERE id=$1 AND identity_id=$2',[recoveredRequest.requestId,pro.id])).rows[0].request_details,canaries.body);
   console.log('SECURITY_FAILURE_RECOVERY_PASS '+JSON.stringify({realDatabaseFault:true,http500:true,noSuccessACK:true,zeroPartialRows:true,sqlAttempts:1,automaticRetry:false,explicitManualRetry201:true,ownedFaultRemoved:true}));
   stage='server-log-privacy';
-  await call('/v1/health?email='+encodeURIComponent(pro.email)+'&accessToken='+canaries.query,{headers:{authorization:'Bearer '+pro.token,cookie:'session='+canaries.password,'x-request-id':canaries.query}});
+  await call('/v1/health/ready?email='+encodeURIComponent(pro.email)+'&accessToken='+canaries.query,{headers:{authorization:'Bearer '+pro.token,cookie:'session='+canaries.password,'x-request-id':canaries.query}});
   await call('/v1/'+canaries.path,{status:404,headers:{authorization:'Bearer '+pro.token}});
   await call('/v1/auth/signin',{method:'POST',body:{email:pro.email,password:canaries.body},status:401});
   await call('/v1/auth/signout',{method:'POST',token:pro.token,body:{},status:201});
@@ -111,7 +141,9 @@ async function main(){
   assert.ok(/"reqId"\s*:\s*"[^"\r\n]+"/.test(log),'Request correlation missing');
   console.log('SECURITY_LOG_PRIVACY_OBSERVED '+JSON.stringify({actualAPILog:true,scannedBytes:Buffer.byteLength(log),syntheticCategories:Object.keys(categories),violations,statusDiagnostics:statuses,requestCorrelation:true}));
   assert.equal(violations.length,0,'API logs exposed synthetic credential/PII canaries');
+  assert.ok(/"event"\s*:\s*"application_error"/.test(log)&&/"code"\s*:\s*"P0001"/.test(log),'Application error diagnostics must remain observable');
+  stage='mobile-storage-privacy';await storageLogContract();
   console.log('SECURITY_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({authentication:true,concurrentRateLimit:true,privateExport:true,realFaultRecovery:true,noAutomaticRetry:true,serverLogPrivacy:true,requests,disposableLocalOnly:true,externalPentest:false,physicalDevice:false,production:false}));
  }finally{await removeFault();await db.end();}
 }
-if(require.main===module)main().catch(()=>{console.error('SECURITY_INTERNAL_ACCEPTANCE_FAIL '+JSON.stringify({stage,details:'assertion_failed; synthetic values omitted'}));process.exitCode=1;});
+if(require.main===module)(process.argv.includes('--storage-only')?storageLogContract():main()).catch(()=>{console.error('SECURITY_INTERNAL_ACCEPTANCE_FAIL '+JSON.stringify({stage,details:'assertion_failed; synthetic values omitted'}));process.exitCode=1;});
