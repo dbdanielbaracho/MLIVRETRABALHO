@@ -19572,3 +19572,10 @@ NovajornadaampliafalhaPGparaaçãoCLIrealsobreprópriafixture/exit1/semACK/semro
 ## Área8 — tipo de opções do logger alinhado ao adaptador — 22/10/2026
 
 HEAD eaa5f47e19508381c178fc7b1d6dbfccf387b90b CI39882323962/job120182338726attempt1FAIL SOMENTETypecheck:FastifyLoggerOptions não incluihooksPino e nãoequivaleaointersectionloggerdeFastifyServerOptions;TS2322/2353/7006. Build/unit/HTTP/browser posterioresSKIP; não1936PASSnesseHEAD,nãofalhaChrome. APK39882323906segueexecução (nãoaprovar/aindaempassarnãoemprestarparanovoSHA). CorreçãorealSomenteimport+anotação paraExclude<FastifyServerOptions<any>['logger'],boolean|undefined>,mesmotipodeopçõesdogenericserverusadopeloFastifyAdapter. Semcastemruntime,passthroughargs,relaxamento deallowlist/log/guards/deadline,semSAMESHArerun. Mesmamudançamobiletrêswarnings exigeAPKprópriononovoHEAD. Área8continuaPENDENTEownCIAPK/literalPOST;8aceitas/5pendentes. Fonte/errointegraisappendnanotaexistente,originaisFULLpreservados.
+
+
+---
+
+## Área8 — compatibilidade estrutural entre as versões Fastify do lock — 22/10/2026
+
+4dee17366d549d7b9c374a85378a5de7da760ef6/CI39882633172/job120183368922attempt1FAILsóTypecheckTS2322. Primária01:12:42.9330844Z..9358730Z identifica dois tipos nominais: Fastify direto5.12.5 eFastify5.11.3 dentrodoNestAdapter11.2.6; objeto anotado amplamenteherdavaserializers.reqincompatíveismesmoquenãousado. Lock1b854 eversõespermaneceminalterados. Corrigir inferindosomenteobjetoimplementado[level/hooks],parâmetroargsunknown[],alvorefletidoFunction e thisunknown,semcast/any/dedup/alterardeps/config. Reflect.apply jáenviasómetadataprivada; nãopassthroughdeinput. Istoécompatibilidade decompilação real, nãoRCAdeChrome/native. Build/unit/HTTP posterioresSKIPnesseHEAD;APK39882633087anteriornãoemprestadoparanovocandidato. Área8PENDENTEownCIAPKePOSTliteral;8aceitas5pendentes. Sócódigo+evidência,semSAMESHArerun/statuscommit.

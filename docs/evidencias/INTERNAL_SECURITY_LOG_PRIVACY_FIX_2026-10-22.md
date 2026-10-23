@@ -1277,3 +1277,138 @@ Baseline3ed3CI39881170789/job120178629061FAIL(semretry):1936unit/tipos/build/exp
 NovoHEAD`eaa5f47e19508381c178fc7b1d6dbfccf387b90b`/tree`8f38154b67eb3b4978938fd070675d7e058f8099`, pai3ed3ff7fe44ce6b849e37a565e1bdd92ec20051e, normalFF/forcefalse. **APKAPLICÁVEL**agora poralterar apps/mobile/lib/session.ts (três warnings,nenhum storagecontractchange).183/184protectedinputsbyteiguaisfora sessão; React19.1.4/RN0.81.6/depslock/workflowsintactos. Exigir ownCI+APKstandaloneSUCCESS+review+expectedmergeONCE+literalPOSTCIAPK. NenhumAPKantigousadocomobuildnovo.
 
 Área8PENDENTE,8áreasaceitas/5pendentes[1,8,11,12,13]. FULLprimária/errata/fontes/normas/modeloMobile e173+184manifestos em docs/evidencias/INTERNAL_SECURITY_LOG_PRIVACY_FIX_2026-10-22.md. AnteriorINTERNAL_SECURITY_ACCEPTANCE_JOURNEYpreservadoFULL.6normas append-onlyoriginaisFULL; semnovoPR,zerorerunSAMESHA/cancel/statuscommit.
+
+---
+
+## Área8 — compatibilidade estrutural entre as versões Fastify do lock — 22/10/2026
+
+4dee17366d549d7b9c374a85378a5de7da760ef6/CI39882633172/job120183368922attempt1FAILsóTypecheckTS2322. Primária01:12:42.9330844Z..9358730Z identifica dois tipos nominais: Fastify direto5.12.5 eFastify5.11.3 dentrodoNestAdapter11.2.6; objeto anotado amplamenteherdavaserializers.reqincompatíveismesmoquenãousado. Lock1b854 eversõespermaneceminalterados. Corrigir inferindosomenteobjetoimplementado[level/hooks],parâmetroargsunknown[],alvorefletidoFunction e thisunknown,semcast/any/dedup/alterardeps/config. Reflect.apply jáenviasómetadataprivada; nãopassthroughdeinput. Istoécompatibilidade decompilação real, nãoRCAdeChrome/native. Build/unit/HTTP posterioresSKIPnesseHEAD;APK39882633087anteriornãoemprestadoparanovocandidato. Área8PENDENTEownCIAPKePOSTliteral;8aceitas5pendentes. Sócódigo+evidência,semSAMESHArerun/statuscommit.
+
+
+## Primária Typecheck de4dee
+```text
+2026-10-23T01:12:42.9300048Z ##[error]src/main.ts(12,26): error TS2322: Type 'FastifyLoggerOptions<any, FastifyRequest<RouteGenericInterface, any, IncomingMessage | Http2ServerRequest, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<...>>, FastifyReply<...>> & LoggerOptions<...>' is not assignable to type 'boolean | (FastifyLoggerOptions<any, FastifyRequest<RouteGenericInterface, any, IncomingMessage | Http2ServerRequest, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<...>>, FastifyReply<...>> & LoggerOptions<...>) | undefined'.
+2026-10-23T01:12:42.9323751Z ##[error]command (/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/apps/api) /opt/hostedtoolcache/node/22.23.3/x64/bin/pnpm run typecheck exited (2)
+2026-10-23T01:12:42.9326629Z @mlivretrabalho/api#typecheck:  ERROR  command (/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/apps/api) /opt/hostedtoolcache/node/22.23.3/x64/bin/pnpm run typecheck exited (2)
+2026-10-23T01:12:42.9327522Z  ERROR  run failed: command  exited (2)
+2026-10-23T01:12:42.9330844Z   Type 'import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/logger").FastifyLoggerOptions<any, import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/request").FastifyRequest<import("/home/runner/wo...' is not assignable to type 'import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/logger").FastifyLoggerOptions<any, import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/request").FastifyRequest<import("/home/runner/wo...' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+2026-10-23T01:12:42.9337502Z     Type 'FastifyLoggerOptions<any, FastifyRequest<RouteGenericInterface, any, IncomingMessage | Http2ServerRequest, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<...>>, FastifyReply<...>> & LoggerOptions<...>' is not assignable to type 'FastifyLoggerOptions<any, FastifyRequest<RouteGenericInterface, any, IncomingMessage | Http2ServerRequest, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<...>>, FastifyReply<...>>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+2026-10-23T01:12:42.9340023Z       The types of 'serializers.req' are incompatible between these types.
+2026-10-23T01:12:42.9342951Z         Type '(req: import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/request").FastifyRequest<import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/route").RouteGenericInterface, any, import("http").I...' is not assignable to type '(req: import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/request").FastifyRequest<import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/route").RouteGenericInterface, any, import("http").I...'.
+2026-10-23T01:12:42.9345995Z           Types of parameters 'req' and 'req' are incompatible.
+2026-10-23T01:12:42.9349326Z             Type 'import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/request").FastifyRequest<import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/route").RouteGenericInterface, any, import("http").Incomin...' is not assignable to type 'import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/request").FastifyRequest<import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/route").RouteGenericInterface, any, import("http").Incomin...' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+2026-10-23T01:12:42.9352404Z               The types of 'server.withTypeProvider().decorate' are incompatible between these types.
+2026-10-23T01:12:42.9355856Z                 Type 'import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/instance").DecorationMethod<import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.11.3/node_modules/fastify/types/instance").FastifyInstance<import("/home/runner/work/ML...' is not assignable to type 'import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/instance").DecorationMethod<import("/home/runner/work/MLIVRETRABALHO/MLIVRETRABALHO/node_modules/.pnpm/fastify@5.12.5/node_modules/fastify/types/instance").FastifyInstance<import("/home/runner/work/ML...'.
+2026-10-23T01:12:42.9358730Z                   Target signature provides too few arguments. Expected 2 or more, but got 1.
+2026-10-23T01:12:42.9359531Z  ELIFECYCLE  Command failed with exit code 2.
+2026-10-23T01:12:42.9359774Z 
+2026-10-23T01:12:42.9359908Z  Tasks:    3 successful, 4 total
+2026-10-23T01:12:42.9360194Z Cached:    0 cached, 4 total
+2026-10-23T01:12:42.9360446Z   Time:    8.668s 
+2026-10-23T01:12:42.9360735Z Failed:    @mlivretrabalho/api#typecheck
+2026-10-23T01:12:42.9360924Z 
+```
+
+## Fonte atual logger integral
+```typescript
+import type { LoggerService } from '@nestjs/common';
+
+const methods=new Set(['GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS']);
+const components=new Set(['NestFactory','InstanceLoader','RoutesResolver','RouterExplorer','NestApplication','ExceptionsHandler','Bootstrap']);
+const errorTypes=new Set(['Error','TypeError','RangeError','SyntaxError','HttpException','BadRequestException','UnauthorizedException','ForbiddenException','NotFoundException']);
+const databaseCodes=new Set(['08000','08003','08006','22P02','22001','22003','23502','23503','23505','23514','40001','40P01','42501','57014','57P01','P0001']);
+const operationReasons=new Set([
+ 'DATABASE_URL_required','PRIVACY_MAINTENANCE_DATABASE_URL_required','PRIVACY_MAINTENANCE_DATABASE_URL_required_for_apply','PRIVACY_OPERATOR_ID_required','PRIVACY_OPERATOR_ID_required_for_apply','PRIVACY_OPERATOR_ID_too_long',
+ 'privacy_retention_already_running','privacy_retention_run_missing','privacy_request_not_startable','privacy_request_not_finishable','operator_note_too_long','request_id_invalid',
+ 'scope_type_invalid','legal_hold_scope_not_found','legal_hold_not_reviewable','legal_hold_review_history_missing','legal_hold_not_releasable',
+ 'usage: privacy-requests-ops <list|start|complete|partial|reject> [requestId] [resolution/evidence/note]',
+ 'usage: privacy-legal-holds-ops <list|history|create|review|release> ...',
+ ...['tenant_id','scope_type','scope_id','reason','evidence_ref','review_at','hold_id','review_note','next_review_at','release_reason','resolution_code'].flatMap(field=>['_required','_too_long','_invalid','_must_be_future'].map(suffix=>field+suffix)),
+]);
+const object=(value:unknown):Record<string,unknown>=>value!==null&&typeof value==='object'?value as Record<string,unknown>:{};
+
+export function privateOperationCode(value:unknown):string{
+ const error=object(value);
+ if(typeof error.message==='string'&&operationReasons.has(error.message))return error.message;
+ if(typeof error.message==='string'&&/^migration_checksum_mismatch:/.test(error.message))return 'migration_checksum_mismatch';
+ if(typeof error.code==='string'&&databaseCodes.has(error.code))return 'database_'+error.code;
+ return 'unexpected_error';
+}
+
+export function privateOperationFailure(operation:string,value:unknown):void{
+ const name=['migrate','privacy_retention','privacy_requests','privacy_legal_holds'].includes(operation)?operation:'operation';
+ process.stderr.write(JSON.stringify({event:'operation_error',operation:name,code:privateOperationCode(value),error:privateErrorMetadata(value)})+'\n');
+}
+
+// Diagnostic metadata is allowlisted. Messages, stacks, headers, cookies, URLs,
+// raw route parameters, request/response bodies and SQL details never enter a log.
+export function privateErrorMetadata(value:unknown):Record<string,unknown>{
+ const error=object(value);
+ return {type:typeof error.name==='string'&&errorTypes.has(error.name)?error.name:'Error',...(typeof error.code==='string'&&databaseCodes.has(error.code)?{code:error.code}:{})};
+}
+
+export function privateHttpMetadata(value:unknown):Record<string,unknown>{
+ const fields=object(value),req=object(fields.req),res=object(fields.res),route=object(req.routeOptions).url;
+ const record:Record<string,unknown>={event:fields.res?'http_response':fields.req?'http_request':'http_event'};
+ if(fields.req){
+  record.method=typeof req.method==='string'&&methods.has(req.method)?req.method:'OTHER';
+  // routeOptions.url is the registered route pattern, never raw request.url.
+  record.route=typeof route==='string'&&route.length<=180&&/^\/v1(?:\/[A-Za-z0-9:_-]+)*$/.test(route)?route:'unmatched';
+ }
+ if(typeof res.statusCode==='number'&&Number.isInteger(res.statusCode)&&res.statusCode>=100&&res.statusCode<=599)record.statusCode=res.statusCode;
+ if(typeof fields.responseTime==='number'&&Number.isFinite(fields.responseTime)&&fields.responseTime>=0)record.elapsedMs=Math.min(fields.responseTime,86400000);
+ if(fields.err)record.error=privateErrorMetadata(fields.err);
+ return record;
+}
+
+export const privateHttpLogger={
+ level:'info',
+ hooks:{
+  logMethod(this:unknown,args:unknown[],method:Function){
+   // Pino's hook runs before interpolation and serialization. Do not forward a
+   // free-form message or an unreviewed object, even on unmatched routes/errors.
+   Reflect.apply(method,this,[privateHttpMetadata(args[0]),'http_event']);
+  },
+ },
+};
+
+function applicationLog(level:string,message:unknown,parameters:unknown[]):void{
+ const context=parameters.at(-1);
+ const record={level,event:level==='error'||level==='fatal'?'application_error':'application_event',component:typeof context==='string'&&components.has(context)?context:'Application',...(level==='error'||level==='fatal'?{error:privateErrorMetadata(message)}:{})};
+ process.stdout.write(JSON.stringify(record)+'\n');
+}
+
+export const privateApplicationLogger:LoggerService={
+ log(message:unknown,...parameters:unknown[]){applicationLog('log',message,parameters);},
+ warn(message:unknown,...parameters:unknown[]){applicationLog('warn',message,parameters);},
+ error(message:unknown,...parameters:unknown[]){applicationLog('error',message,parameters);},
+ debug(message:unknown,...parameters:unknown[]){applicationLog('debug',message,parameters);},
+ verbose(message:unknown,...parameters:unknown[]){applicationLog('verbose',message,parameters);},
+ fatal(message:unknown,...parameters:unknown[]){applicationLog('fatal',message,parameters);},
+};
+
+```
+
+## FULLBODY4dee
+
+## CURRENT — opções de logger corretamente tipadas; novos gates obrigatórios
+
+HEAD`4dee17366d549d7b9c374a85378a5de7da760ef6`/tree`a29b24812e65492383d7738674c2b62880cc627e`, paieaa5f47e19508381c178fc7b1d6dbfccf387b90b, normalFFexpected/forcefalse. Correção de tipo utiliza logger deFastifyServerOptions<any>, que inclui as opçõesPino/hookdogenericserverusadopeloAdaptador. Semcast/gateweaken/runtimeallowlistchange. CI39882323962eaa5FAILsóTypecheckTS2322/2353/7006;posterioresSKIP, semunit/HTTP/browserPASSatribuídos. APK39882323906anteriorinprogress,nãousadoparanovoHEAD.
+
+OwnfullCI+APKpróprioNONOVOSHA+review+expectedmerge+literalPOSTCIAPK continuamobrigatórios. Área8nãoaceitaatéfecharcadeia. NoteexistenteFULLprefix+erro/loggeratual/corpoanteriorappend;6normasFULLprefixpreservadas.
+
+---
+
+## Preparação funcional preservada integralmente
+
+## Segurança interna — diagnóstico privado e jornada completa
+
+Logs reais expuseram canários da URL/query e mensagem de erro PostgreSQL;modelo do storage móvel também expôs Errorbruto. Este pacote mantém status/correlação/códigos seguros, removendo valores privados do Fastify/Nest, CLIserror eerror_coderetenção, além dos três console.warn deSecureStore. Fluxos,retornos,queues,auth,tenant/RLS/ACL,regrasretenção,SQL,códigosHTTP,CORS,15s/browsernão sãoalterados. Nenhumgrants/serviçoexterno/custo/credencial/pentest/PSP/físico/produção.
+
+Jornada integrada realHTTP/PostgreSQL:8falhasloginconcorrentes/7×401+1×429/limiterPG8/resetmanual;passwordscrypt/tokenSHA256;mensagens/ratingreais comexportown/thirdparty;PGfaultAPI500/semACK/0partial/oneSQLattempt eCLIexit1/rollbackownrow/oneadditionalattempt;manualrecovery201;canáriosquery/path/header/body/PGerro/diagnósticosstatus200/201/401/404/429/500+reqId+errorcode;actualmobilequeue/storagefixture6warningssemcanário/login/tenant/logout. ModeloSecureStoreexplícito NÃO nativeproof. Gatescompanheirosauth,roles,PGbarreiras,RLS,notificações,ledger,privacyretention/legalhold,browser12+canonical/ProductionTruthmantidos.
+
+Baseline3ed3CI39881170789/job120178629061FAIL(semretry):1936unit/tipos/build/export/migration/privacyPASS;novajornadaauth/PII/faultPASS. FALHADA FIXTUREusou/v1/health404antesdavarredurafinal, corrigida para /v1/health/ready;NÃObugHealthController. Independentemente, logsprimáriosNest01:00:20.4020922Z eFastify.4032602ZrevelamcanáriosSQL/query. NãoalegarbaselineFULLPASSnemfalhadetestecomoRCAlogger. Fonte173runtimeauditada[85API77mobile11Web];Websemconsoleexposing;stdoutdeCLIprivilegiado éresultadofuncionalcontrolado, nãologpúblico.
+
+NovoHEAD`eaa5f47e19508381c178fc7b1d6dbfccf387b90b`/tree`8f38154b67eb3b4978938fd070675d7e058f8099`, pai3ed3ff7fe44ce6b849e37a565e1bdd92ec20051e, normalFF/forcefalse. **APKAPLICÁVEL**agora poralterar apps/mobile/lib/session.ts (três warnings,nenhum storagecontractchange).183/184protectedinputsbyteiguaisfora sessão; React19.1.4/RN0.81.6/depslock/workflowsintactos. Exigir ownCI+APKstandaloneSUCCESS+review+expectedmergeONCE+literalPOSTCIAPK. NenhumAPKantigousadocomobuildnovo.
+
+Área8PENDENTE,8áreasaceitas/5pendentes[1,8,11,12,13]. FULLprimária/errata/fontes/normas/modeloMobile e173+184manifestos em docs/evidencias/INTERNAL_SECURITY_LOG_PRIVACY_FIX_2026-10-22.md. AnteriorINTERNAL_SECURITY_ACCEPTANCE_JOURNEYpreservadoFULL.6normas append-onlyoriginaisFULL; semnovoPR,zerorerunSAMESHA/cancel/statuscommit.

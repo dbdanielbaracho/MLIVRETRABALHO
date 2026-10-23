@@ -1,5 +1,4 @@
 import type { LoggerService } from '@nestjs/common';
-import type { FastifyServerOptions } from 'fastify';
 
 const methods=new Set(['GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS']);
 const components=new Set(['NestFactory','InstanceLoader','RoutesResolver','RouterExplorer','NestApplication','ExceptionsHandler','Bootstrap']);
@@ -49,10 +48,10 @@ export function privateHttpMetadata(value:unknown):Record<string,unknown>{
  return record;
 }
 
-export const privateHttpLogger:Exclude<FastifyServerOptions<any>['logger'],boolean|undefined>={
+export const privateHttpLogger={
  level:'info',
  hooks:{
-  logMethod(args,method){
+  logMethod(this:unknown,args:unknown[],method:Function){
    // Pino's hook runs before interpolation and serialization. Do not forward a
    // free-form message or an unreviewed object, even on unmatched routes/errors.
    Reflect.apply(method,this,[privateHttpMetadata(args[0]),'http_event']);
