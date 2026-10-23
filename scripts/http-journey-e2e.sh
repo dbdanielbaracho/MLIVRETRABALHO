@@ -3,6 +3,8 @@ set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:3000}"
 [[ "$BASE_URL" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { echo 'Local disposable API required' >&2; exit 1; }
+node scripts/verify-acceptance-ledger.cjs
+node --test scripts/tests/acceptance-ledger.test.mjs
 GPS_INPUT_DIR="$(mktemp -d)"
 trap 'rm -rf "$GPS_INPUT_DIR"' EXIT
 STAMP="$(date +%s)-$RANDOM"
