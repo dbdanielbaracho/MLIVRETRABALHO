@@ -3,7 +3,7 @@
   "info": {
     "title": "MLivreTrabalho REST API",
     "version": "0.1.0",
-    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Preferences and general support without membership are not implemented. No production server is advertised."
+    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support without membership remains pending. No production server is advertised."
   },
   "servers": [
     {
@@ -2667,6 +2667,16 @@
                         "excludes"
                       ],
                       "additionalProperties": true
+                    },
+                    "preferences": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/PreferencesContent"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   },
                   "required": [
@@ -2674,7 +2684,8 @@
                     "generatedAt",
                     "identity",
                     "memberships",
-                    "notice"
+                    "notice",
+                    "preferences"
                   ],
                   "additionalProperties": true
                 }
@@ -5815,6 +5826,82 @@
           }
         }
       }
+    },
+    "/v1/me/preferences": {
+      "get": {
+        "operationId": "get_v1_me_preferences",
+        "tags": [
+          "Preferences"
+        ],
+        "summary": "GET /v1/me/preferences",
+        "x-nest-controller": "PreferencesController",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful owned-scope JSON response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error: invalid input/state, denied identity/role/membership, missing resource, conflict, throttle or unavailable dependency. Status and message remain the NestJS runtime contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Requires active identity and professional profile, without company membership. 400 professional_profile_required when absent. Responses never borrow another identity's preferences."
+      },
+      "put": {
+        "operationId": "put_v1_me_preferences",
+        "tags": [
+          "Preferences"
+        ],
+        "summary": "PUT /v1/me/preferences",
+        "x-nest-controller": "PreferencesController",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful owned-scope JSON response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error: invalid input/state, denied identity/role/membership, missing resource, conflict, throttle or unavailable dependency. Status and message remain the NestJS runtime contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesInput"
+              }
+            }
+          }
+        },
+        "description": "Requires active identity and professional profile, without company membership. 400 professional_profile_required when absent. Responses never borrow another identity's preferences."
+      }
     }
   },
   "components": {
@@ -8092,11 +8179,124 @@
           "verifiedHistory"
         ],
         "additionalProperties": true
+      },
+      "PreferencesContent": {
+        "type": "object",
+        "properties": {
+          "preferredRoleIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "At most20 canonical active role IDs; distinct sorted IDs on response."
+          },
+          "preferredCities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "At most10 city labels, 1..100 Unicode codepoints each, NFC/trim/collapsed spaces; case-insensitive pt-BR deduplication preserves accents."
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "preferredRoleIds",
+          "preferredCities",
+          "revision",
+          "updatedAt"
+        ],
+        "additionalProperties": true
+      },
+      "Preferences": {
+        "type": "object",
+        "properties": {
+          "configured": {
+            "type": "boolean"
+          },
+          "preferredRoleIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "At most20 canonical active role IDs; distinct sorted IDs on response."
+          },
+          "preferredCities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "At most10 city labels, 1..100 Unicode codepoints each, NFC/trim/collapsed spaces; case-insensitive pt-BR deduplication preserves accents."
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "configured",
+          "preferredRoleIds",
+          "preferredCities",
+          "revision",
+          "updatedAt"
+        ],
+        "additionalProperties": true,
+        "description": "Missing: configured=false, empty lists, revision=0, updatedAt=null. Saved empty is configured=true with positive revision and timestamp. GET never creates data."
+      },
+      "PreferencesInput": {
+        "type": "object",
+        "properties": {
+          "preferredRoleIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "At most20 canonical active role IDs; distinct sorted IDs on response."
+          },
+          "preferredCities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "At most10 city labels, 1..100 Unicode codepoints each, NFC/trim/collapsed spaces; case-insensitive pt-BR deduplication preserves accents."
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "preferredRoleIds",
+          "preferredCities",
+          "expectedRevision"
+        ],
+        "additionalProperties": true,
+        "description": "Runtime rejects unknown fields and limits above. Both lists replace previous content. Atomic comparison of expectedRevision; 409 preferences_revision_conflict on divergence. Authentication binds owner; no tenant header. No matching/ranking effect."
       }
     }
   },
   "x-contract-source": {
-    "commit": "3ca16763cfde9da583e643707d052c5799332783",
+    "commit": "8b09570b94dad64d9be07efcabfb9e7997c44616",
     "controllerBlobs": {
       "auth.controller.ts": "c432aa1e28e02c8064144e913168cc64e8a38e97",
       "availability.controller.ts": "fc225952e5063d65b344046d77dc1f8062026b3c",
@@ -8119,7 +8319,8 @@
       "payment-events.controller.ts": "3030f292e35b5fbeb7c1c1bc0cd74149ea6d6313",
       "payment-webhook.controller.ts": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
       "planner.controller.ts": "ceae97178b4f9b7fe9cf819e47d328bfcd09c790",
-      "privacy.controller.ts": "4c9427c20213a838fda51adc2547014f31ef5456",
+      "preferences.controller.ts": "0301f78aa55d54632243ae0fbf980cc8d01c0aa6",
+      "privacy.controller.ts": "2015ca92e4ae19bb4e20926f8fc41f9382f27744",
       "professional-capabilities.controller.ts": "6325906dea732851d6ed8f75be11c7baecbc7c5e",
       "professional-planner.controller.ts": "5220558e1f5610607134b497bf95e16cecf39edb",
       "professional-profile.controller.ts": "c7333a3d6b8b63d074885c5df9cc707482cc3949",

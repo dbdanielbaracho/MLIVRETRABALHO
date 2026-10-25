@@ -12,7 +12,7 @@ const tenantTables=['assignment_cancellations','company_jobs','company_member_in
 const otherScopes={
  tenants:'PLATFORM',identities:'PLATFORM',sessions:'PLATFORM',auth_signin_limits:'PLATFORM',terms_acceptances:'PLATFORM',taxonomy_roles:'PLATFORM',schema_migrations:'PLATFORM',
  privacy_legal_holds:'PLATFORM',privacy_requests:'PLATFORM',privacy_retention_runs:'PLATFORM',privacy_legal_hold_reviews:'PLATFORM',
- professional_profiles:'PROFESSIONAL_OWNED',professional_capabilities:'PROFESSIONAL_OWNED',professional_availability_network:'PROFESSIONAL_OWNED',
+ professional_profiles:'PROFESSIONAL_OWNED',professional_preferences:'PROFESSIONAL_OWNED',professional_capabilities:'PROFESSIONAL_OWNED',professional_availability_network:'PROFESSIONAL_OWNED',
  marketplace_jobs:'NETWORK_SHARED',marketplace_interests:'NETWORK_SHARED',marketplace_company_reputation:'NETWORK_SHARED'
 };
 const readable=new Set(['professional_profiles','professional_capabilities','professional_availability_network','marketplace_jobs','marketplace_interests','marketplace_company_reputation','taxonomy_roles']);
@@ -37,7 +37,7 @@ function inventory(){
  const registered=module.match(/controllers:\s*\[([^\]]+)\]/s)?.[1].match(/\w+Controller/g);
  assert.deepEqual([...controllers].sort(),[...registered].sort(),'Every registered controller must be inventoried');
  check(new Set(routes.map(r=>r.method+' '+r.path)).size===routes.length,'unique_routes');
- check(controllers.length===43&&routes.length===106&&routes.filter(r=>r.tenantHeader).length===74,'review_scope_drift_requires_explicit_reconciliation');
+ check(controllers.length===44&&routes.length===108&&routes.filter(r=>r.tenantHeader).length===74,'review_scope_drift_requires_explicit_reconciliation');
  return{controllers,routes,sources};
 }
 async function main(){
@@ -245,7 +245,7 @@ async function main(){
   for(const token of tokens)await call({token},null,'/v1/auth/signout','POST',{},201);tokens.clear();
   console.log('TENANT_BOUNDARY_ENDPOINTS_PASS '+JSON.stringify({registeredControllers:routeInventory.controllers.length,inventoriedRoutes:routeInventory.routes.length,tenantHeaderRoutes:denied/2,negativeHTTPRequests:denied,controllerSourceGitBlobs:routeInventory.sources,actualDatabaseServicePoolSize:1,commitAndRollbackReuse:true,identityAPIsRemainOperational:true,requests}));
   console.log('TENANT_BOUNDARY_RUNTIME_ACL_OBSERVED '+JSON.stringify({violations}));check(violations.length===0,'runtime_permissions_exceed_declared_scope');
-  console.log('TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({tenantTables:27,tableScopes:otherScopes,all106RoutesInventoried:true,all74TenantHeaderRoutesDeniedForeignAndAnonymous:true,globalAndIdentityRuntimeLeastPrivilege:true,realPostgreSQL:true,externalPentest:false,nativeUI:false,production:false}));
+  console.log('TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({tenantTables:27,tableScopes:otherScopes,all108RoutesInventoried:true,all74TenantHeaderRoutesDeniedForeignAndAnonymous:true,globalAndIdentityRuntimeLeastPrivilege:true,realPostgreSQL:true,externalPentest:false,nativeUI:false,production:false}));
  }finally{
   if(transaction)await db.query('ROLLBACK');
   for(const token of tokens)await fetch(config.origin+'/v1/auth/signout',{method:'POST',redirect:'error',signal:AbortSignal.timeout(15000),headers:{authorization:'Bearer '+token}}).catch(()=>{});

@@ -6,6 +6,7 @@ import { MeController } from './me.controller';
 import { DatabaseService } from './database.service';
 import { AuthService } from './auth.service';
 import { ProfessionalProfileController } from './professional-profile.controller';
+import { PreferencesController } from './preferences.controller';
 import { WorkAssignmentsController } from './work-assignments.controller';
 import { EarningsController } from './earnings.controller';
 import { WorkPassportController } from './work-passport.controller';
@@ -51,6 +52,7 @@ import { CancellationController } from './cancellation.controller';
     AuthController,
     MeController,
     ProfessionalProfileController,
+    PreferencesController,
     WorkAssignmentsController,
     EarningsController,
     WorkPassportController,

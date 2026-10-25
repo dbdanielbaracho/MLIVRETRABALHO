@@ -64,6 +64,11 @@ INSERT INTO privacy_legal_holds(scope_type,scope_id,reason,evidence_ref) VALUES
  ('identity','$IDENTITY_HELD','retention test identity hold','test:identity');
 SQL
 
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q <<SQL
+INSERT INTO professional_preferences(identity_id,preferred_role_ids,preferred_cities,revision)
+SELECT id,ARRAY['hospitality.bartender'],ARRAY['São Paulo'],1 FROM identities WHERE id IN('$IDENTITY','$IDENTITY_ANON','$IDENTITY_HELD');
+SQL
+
 # Destructive mode must fail closed unless a separate maintenance connection is explicit.
 if DATABASE_URL="$DB_URL" node apps/api/dist/privacy-retention.js --apply >/tmp/privacy-retention-missing-maintenance.log 2>&1; then
   echo "FAIL: retention apply accepted DATABASE_URL without maintenance URL" >&2
@@ -83,6 +88,10 @@ WORKER_HELD_CHAT="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversat
 CONV_DELETED="$(psql "$DB_URL" -tAc "SELECT (count(*)=0)::int FROM conversations WHERE id='$CONV_DELETE'")"
 CONV_HELD="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversations WHERE id='$CONV_HOLD'")"
 CONV_WORKER_HELD="$(psql "$DB_URL" -tAc "SELECT (count(*)=1)::int FROM conversations WHERE id='$CONV_WORKER_HOLD'")"
+
+test "$(psql "$DB_URL" -tAc "SELECT count(*) FROM professional_preferences WHERE identity_id='$IDENTITY_ANON'")" = "0"
+test "$(psql "$DB_URL" -tAc "SELECT count(*) FROM professional_preferences WHERE identity_id IN('$IDENTITY','$IDENTITY_HELD')")" = "2"
+echo "PREFERENCES_RETENTION_LEGAL_HOLD_PG_PASS active_and_held_preserved=true deactivated_40_days_removed=true"
 
 test "$CLEARED" = "1"
 test "$HELD" = "1"

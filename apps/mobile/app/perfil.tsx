@@ -92,6 +92,7 @@ export default function Perfil(){
  </View>
  <View style={s.menu}>{rows.map(([icon,label])=><Pressable key={label} style={s.row} accessibilityRole="button" onPress={()=>{
   if(label==='Disponibilidade'){router.push('/disponibilidade');return;}
+  if(label==='Preferências'){router.push('/preferencias');return;}
   if(label==='Notificações'){router.push('/notificacoes');return;}
   if(label==='Termos e privacidade'){router.push('/privacidade');return;}
   setExpanded(expanded===label?null:label);
