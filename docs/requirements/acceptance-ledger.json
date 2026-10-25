@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
           "mode": "100644"
         }
       ],
@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "3551435df6d93440aa8e3e92623af45715c32f59",
+          "sha": "e0077d30b443fdd4b2a4edbd6fb1da0f925199ea",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
           "mode": "100644"
         }
       ],
@@ -4930,6 +4930,76 @@
         },
         "pins": []
       }
+    },
+    "operatorAPIIncrement": {
+      "baseHead": "2055b468b44a3a6ea04dc314ab0382da7b274228",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "sha": "84e87942ced186f0273a19c40ff7ac72155cf7c5",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "sha": "3afd2a9ef2327aaa4967389487b71b35fc4e1f2b",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/platform-support-operator-acceptance-e2e.cjs",
+          "sha": "99b61c9a644c8d5576ea5a3bfaaceb75963742f2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "sha": "e0077d30b443fdd4b2a4edbd6fb1da0f925199ea",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        },
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "3551435df6d93440aa8e3e92623af45715c32f59",
+          "new": "e0077d30b443fdd4b2a4edbd6fb1da0f925199ea"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        }
+      ],
+      "scope": "Two session-bound assigned-operator HTTP routes; 46 controllers/116 operations. No role or assignment authority inferred from tenant membership. Synthetic CI role/assignment setup only; administrative authority, queue/UI and positive restricted-runtime RLS proof pending. DRAFT; no operational activation/merge/acceptance.",
+      "validation": "Local JS syntax and OpenAPI/source consistency preparation; full real HTTP/PostgreSQL and own CI/Android PENDING.",
+      "primarySource": "OWASP Authorization Cheat Sheet consulted 2026-10-25: deny by default, authorize every request/resource, least privilege. https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
     }
   }
 }

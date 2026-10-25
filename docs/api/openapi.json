@@ -3,7 +3,7 @@
   "info": {
     "title": "MLivreTrabalho REST API",
     "version": "0.1.0",
-    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support without membership remains pending. No production server is advertised."
+    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support owner and assigned-operator HTTP operations are implemented; administrative assignment authority, operator queue, mobile UI and final restricted-runtime proof remain pending. Intake is disabled by default. No production server is advertised."
   },
   "servers": [
     {
@@ -6183,6 +6183,102 @@
           }
         }
       }
+    },
+    "/v1/platform-support/cases/{id}": {
+      "get": {
+        "operationId": "get__v1_platform_support_cases__id_",
+        "tags": [
+          "Platform support operator"
+        ],
+        "summary": "GET /v1/platform-support/cases/{id}",
+        "x-nest-controller": "PlatformSupportOperatorController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active session and active platform operator assigned to this case; requester remains active; reads and replies audited atomically.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportOperatorDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error; unauthenticated/inactive session401, unavailable assignment404, invalid body400, conflicting receipt or closed case409.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform-support/cases/{id}/responses": {
+      "post": {
+        "operationId": "post__v1_platform_support_cases__id__responses",
+        "tags": [
+          "Platform support operator"
+        ],
+        "summary": "POST /v1/platform-support/cases/{id}/responses",
+        "x-nest-controller": "PlatformSupportOperatorController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Active session and active platform operator assigned to this case; requester remains active; reads and replies audited atomically.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error; unauthenticated/inactive session401, unavailable assignment404, invalid body400, conflicting receipt or closed case409.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportResponseInput"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8979,11 +9075,168 @@
           "closedAt"
         ],
         "additionalProperties": true
+      },
+      "PlatformSupportOperatorDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "body": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "resolvesCase": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "body",
+                "createdAt",
+                "resolvesCase"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "description",
+          "status",
+          "createdAt",
+          "closedAt",
+          "responses"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resolvesCase": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "body",
+          "createdAt",
+          "resolvesCase"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportResponseInput": {
+        "type": "object",
+        "properties": {
+          "responseKey": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resolve": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "responseKey",
+          "body",
+          "resolve"
+        ],
+        "additionalProperties": true,
+        "description": "Strict server validation rejects unknown fields; plain text 1..4000 Unicode code points after trim; responseKey identifies a receipt only within this assigned case."
       }
     }
   },
   "x-contract-source": {
-    "commit": "41d7c89969fc823a8060c7de9d42303f59f3b291",
+    "commit": "2055b468b44a3a6ea04dc314ab0382da7b274228",
     "controllerBlobs": {
       "auth.controller.ts": "c432aa1e28e02c8064144e913168cc64e8a38e97",
       "availability.controller.ts": "fc225952e5063d65b344046d77dc1f8062026b3c",
@@ -9028,7 +9281,8 @@
       "work-assignments.controller.ts": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
       "work-graph.controller.ts": "5bed24a5999a66290a3eb058b09d70948e8c17f6",
       "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
-      "platform-support.controller.ts": "4455553a343b67cca100404d5b349de540a732ca"
+      "platform-support.controller.ts": "4455553a343b67cca100404d5b349de540a732ca",
+      "platform-support-operator.controller.ts": "84e87942ced186f0273a19c40ff7ac72155cf7c5"
     }
   }
 }
