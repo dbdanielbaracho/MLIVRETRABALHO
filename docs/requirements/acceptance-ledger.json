@@ -4778,7 +4778,7 @@
           "path": "apps/api/src/platform-support-operator-store.ts",
           "mode": "100644",
           "type": "blob",
-          "sha": "2bf858f9024e26146b14f24c6ecd708e5462d810"
+          "sha": "1874833038a704e9f422358a8fa7e9ed6021ae5d"
         },
         {
           "path": "apps/api/src/platform-support-operator-store.pg.ts",
@@ -4797,46 +4797,16 @@
           "mode": "100644",
           "type": "blob",
           "sha": "630bbe836f1e0ea43d8cb76efa62bbd3cd4fcd66"
-        },
-        {
-          "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
-          "mode": "100644",
-          "type": "blob",
-          "sha": "7710ca2248af09104e919fd99d025c47e44db867"
-        },
-        {
-          "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
-          "mode": "100644",
-          "type": "blob",
-          "sha": "b5478364f1222859ba5e400970d77cec3ecc4d0c"
-        },
-        {
-          "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
-          "mode": "100644",
-          "type": "blob",
-          "sha": "45a0ff31bc548e2e2e2f30454bcee40cd86336c7"
-        },
-        {
-          "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
-          "mode": "100644",
-          "type": "blob",
-          "sha": "ea2a08acba0cb909538c66c385bb754ae6a872db"
-        },
-        {
-          "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
-          "mode": "100644",
-          "type": "blob",
-          "sha": "637bb6d63d06a9e69fb10344e4b083da8dbaee87"
-        },
-        {
-          "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
-          "mode": "100644",
-          "type": "blob",
-          "sha": "466eaa18c2e475afaf3ab4b03160e6b66d708545"
         }
       ],
-      "scope": "Internal assigned-operator detail/reply service only. No HTTP/controller/session binding, administrative assignment authority, pagination or UI. Fixture role/assignment provisioning is synthetic, not real operational authority. Runtime positive RLS proof pending.",
-      "validation": "TypeScript transform/syntax passed locally. Real isolated PostgreSQL operator fixture and whole CI/Android PENDING own head. No merge/acceptance/activation."
+      "typecheckCorrection": {
+        "failedHead": "ad604316744619fdd4c1718889c19bf373b8de18",
+        "failedRun": 40218466523,
+        "message": "TS2339 inferred spread of Record<string,any> erased description; use explicit AssignedCase in query and callback",
+        "old": "2bf858f9024e26146b14f24c6ecd708e5462d810",
+        "new": "1874833038a704e9f422358a8fa7e9ed6021ae5d"
+      },
+      "scope": "Internal assigned-operator service; HTTP/session binding, administrative assignment authority, pagination/UI and positive restricted-runtime RLS proof pending. No operational activation or new acceptance."
     }
   }
 }

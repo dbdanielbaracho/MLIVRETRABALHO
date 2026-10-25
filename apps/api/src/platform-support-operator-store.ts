@@ -1,18 +1,19 @@
 import type {PoolClient} from 'pg';
 import {platformSupportInput} from './platform-support-input';
 type Transactions={transaction<T>(work:(db:PoolClient)=>Promise<T>):Promise<T>};
+type AssignedCase={id:string;category:string;description:string|null;status:string;createdAt:Date;closedAt:Date|null};
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
 // Internal service only: no route, automatic assignment, capability activation or role provisioning.
 export class PlatformSupportOperatorStore{
  constructor(private readonly database:Transactions){}
- private assigned<T>(actor:string,caseId:string,work:(db:PoolClient,row:Record<string,any>)=>Promise<T>){
+ private assigned<T>(actor:string,caseId:string,work:(db:PoolClient,row:AssignedCase)=>Promise<T>){
   if(!uuid(caseId))throw Error('platform_support_not_found');
   return this.database.transaction(async db=>{
    await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
    // Locks make role/identity/assignment revocation serialize with this operation.
    if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[actor])).rows[0])throw Error('platform_support_identity_required');
    if(!(await db.query('SELECT identity_id FROM platform_support_operators WHERE identity_id=$1 AND active FOR SHARE',[actor])).rows[0])throw Error('platform_support_not_found');
-   const row=(await db.query(`SELECT c.id,c.category,c.description,c.status,c.created_at AS "createdAt",c.closed_at AS "closedAt"
+   const row=(await db.query<AssignedCase>(`SELECT c.id,c.category,c.description,c.status,c.created_at AS "createdAt",c.closed_at AS "closedAt"
     FROM platform_support_cases c JOIN platform_support_assignments a ON a.case_id=c.id
     JOIN identities requester ON requester.id=c.owner_identity_id
     WHERE c.id=$1 AND a.operator_identity_id=$2 AND a.revoked_at IS NULL AND requester.deactivated_at IS NULL
