@@ -2677,6 +2677,12 @@
                           "type": "null"
                         }
                       ]
+                    },
+                    "platformSupport": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PlatformSupportExportCase"
+                      }
                     }
                   },
                   "required": [
@@ -2685,7 +2691,8 @@
                     "identity",
                     "memberships",
                     "notice",
-                    "preferences"
+                    "preferences",
+                    "platformSupport"
                   ],
                   "additionalProperties": true
                 }
@@ -2703,7 +2710,7 @@
             }
           }
         },
-        "description": "Export includes only the authenticated identity’s owned/authored data and redacts third-party free text. This GET also records the privacy access request."
+        "description": "Export includes only the authenticated identity’s owned/authored data and redacts third-party free text. This GET also records the privacy access request. Includes owned platform support cases and responses, with operator identity and internal assignment/audit metadata omitted; intake remains separately disabled by default."
       }
     },
     "/v1/privacy/deactivate": {
@@ -8292,6 +8299,108 @@
         ],
         "additionalProperties": true,
         "description": "Runtime rejects unknown fields and limits above. Both lists replace previous content. Atomic comparison of expectedRevision; 409 preferences_revision_conflict on divergence. Authentication binds owner; no tenant header. No matching/ranking effect."
+      },
+      "PlatformSupportExportCase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "body": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "body",
+                "createdAt"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "closedAt",
+          "responses"
+        ],
+        "additionalProperties": true
       }
     }
   },
@@ -8320,7 +8429,7 @@
       "payment-webhook.controller.ts": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
       "planner.controller.ts": "ceae97178b4f9b7fe9cf819e47d328bfcd09c790",
       "preferences.controller.ts": "0301f78aa55d54632243ae0fbf980cc8d01c0aa6",
-      "privacy.controller.ts": "2015ca92e4ae19bb4e20926f8fc41f9382f27744",
+      "privacy.controller.ts": "1a35fbb520ae148ff451b3af1cf9a7fb9376bdd3",
       "professional-capabilities.controller.ts": "6325906dea732851d6ed8f75be11c7baecbc7c5e",
       "professional-planner.controller.ts": "5220558e1f5610607134b497bf95e16cecf39edb",
       "professional-profile.controller.ts": "c7333a3d6b8b63d074885c5df9cc707482cc3949",

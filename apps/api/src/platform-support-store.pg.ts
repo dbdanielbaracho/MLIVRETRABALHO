@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {PlatformSupportStore} from './platform-support-store';
+import {verifyPlatformSupportPrivacy} from './platform-support-privacy.pg';
 export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
  const url=new URL(config.databaseUrl);
  assert.ok(['localhost','127.0.0.1','[::1]'].includes(url.hostname));assert.equal(url.pathname,'/mlivretrabalho_http');
@@ -51,5 +52,6 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   const policies=(await setup.query('SELECT relrowsecurity,relforcerowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=$1 AND c.relkind=\'r\' AND c.relname LIKE \'platform_support_%\'',[schema])).rows;
   assert.equal(policies.length,7);assert.ok(policies.every(p=>p.relrowsecurity&&p.relforcerowsecurity));
   console.log('PLATFORM_SUPPORT_INTAKE_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,defaultDisabled:true,operatorRequired:true,ownerIsolation:true,concurrentReplaySingleCaseAndAudit:true,payloadConflict:true,auditFailureRollsBackCase:true,expiryAndRevocation:true,tenantRuntimeDenied:true,allSevenTablesForcedRLS:true,http:false,operatorAPI:false,production:false}));
+  await verifyPlatformSupportPrivacy(setup,db,store,owner,foreign,operator);
  }finally{await setup.query('ROLLBACK').catch(()=>undefined);await setup.query('SET search_path TO public');await setup.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);setup.release();await pool.end();}
 }

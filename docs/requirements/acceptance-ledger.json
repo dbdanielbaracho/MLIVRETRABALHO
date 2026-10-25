@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "bafe240bcc2bedddded9d219a86c3867a1bceea4",
+          "sha": "4bed14ee494f95526e530d439263807147e93086",
           "mode": "100644"
         }
       ],
@@ -4603,7 +4603,7 @@
   "platformSupportCandidate": {
     "baseMain": "755a41e8defc574dcd5fbaa20024ce1a07630213",
     "decision": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/issues/624",
-    "scope": "UNEXPOSED intake persistence foundation; default disabled. No API/controller/UI/operations/retention/export implementation claimed. Must remain draft until the full vertical and own gates are ready.",
+    "scope": "DRAFT: intake foundation plus owned privacy export and guarded maintenance retention; platform intake/operator API, audited assignment/revocation, pagination and UI not implemented.",
     "sourceChanges": [
       {
         "path": "apps/api/src/platform-support-input.ts",
@@ -4627,7 +4627,7 @@
         "path": "apps/api/src/platform-support-store.pg.ts",
         "mode": "100644",
         "type": "blob",
-        "sha": "e27bba514a30770531d7cc81ca0d70a769b75f7c"
+        "sha": "c541681b97c88d55ce77d399612eda9e33aba281"
       },
       {
         "path": "packages/db/migrations/0074_platform_support_intake.sql",
@@ -4639,13 +4639,43 @@
         "path": "scripts/backend-contract-acceptance-e2e.cjs",
         "mode": "100644",
         "type": "blob",
-        "sha": "bafe240bcc2bedddded9d219a86c3867a1bceea4"
+        "sha": "4bed14ee494f95526e530d439263807147e93086"
       },
       {
         "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
         "mode": "100644",
         "type": "blob",
         "sha": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      },
+      {
+        "path": "apps/api/src/platform-support-privacy.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d9188b4a01bcc151318bed8da7e0e606103ac60"
+      },
+      {
+        "path": "apps/api/src/platform-support-privacy.pg.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f0bf262d22b7952d1620397d2682f2a72bf454d"
+      },
+      {
+        "path": "apps/api/src/privacy.controller.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1a35fbb520ae148ff451b3af1cf9a7fb9376bdd3"
+      },
+      {
+        "path": "apps/api/src/privacy-retention.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca3a6c876cb5d0bd10dcfc4873f76f75aa89a0cd"
+      },
+      {
+        "path": "docs/api/openapi.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0615f49ffe3e7ab5a9ebf10205e93a3cc5ce49c4"
       }
     ],
     "sourcePinReconciliation": [
@@ -4682,7 +4712,64 @@
     ],
     "ownFullCIAndApplicableAndroidRequired": true,
     "literalPostCIAndApplicableAndroidRequired": true,
-    "evidence": "Two pure input tests passed locally; isolated PostgreSQL fixture wired into the guarded whole backend journey, PENDING CI execution. No acceptance, operational activation or production.",
-    "reproducedDefect": "Original normalizer accepted lone UTF-16 surrogate, while Node UTF-8 conversion changed content. Reject NUL/lone surrogates before digest; valid emoji4000 boundary preserved. Two input tests pass after correction; fixture asserts no intent for malformed text."
+    "evidence": "Prior intake head39beb own CI40209551127 success retained in PR receipt. New privacy increment needs its own full CI and applicable Android; no merge/post or new acceptance.",
+    "reproducedDefect": "Original normalizer accepted lone UTF-16 surrogate, while Node UTF-8 conversion changed content. Reject NUL/lone surrogates before digest; valid emoji4000 boundary preserved. Two input tests pass after correction; fixture asserts no intent for malformed text.",
+    "privacyIncrement": {
+      "baseHead": "39beb2f198a951ec22b050afb601c149cf3799ea",
+      "previousSourceChanges": [
+        {
+          "path": "apps/api/src/platform-support-input.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "970e0fc908e439b75b8da75fee97611122fdcdf7"
+        },
+        {
+          "path": "apps/api/src/platform-support-input.test.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f3714ee72a34ad502897d407bcb847609417cc14"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "24ff01b82279d3a6908aa7274c1df3ba462999a4"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e27bba514a30770531d7cc81ca0d70a769b75f7c"
+        },
+        {
+          "path": "packages/db/migrations/0074_platform_support_intake.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b0a15457e5afe7f6bd60eac558f92bf167909a79"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bafe240bcc2bedddded9d219a86c3867a1bceea4"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "bafe240bcc2bedddded9d219a86c3867a1bceea4",
+          "new": "4bed14ee494f95526e530d439263807147e93086"
+        }
+      ],
+      "metadataDecision": "Content-free case/assignment/response identifiers removed after closed365 days once no recent/held audit remains; held requester/response-author/actor evidence preserved. Delegated data minimization; no statutory-period claim.",
+      "localValidation": "Type stripping/syntax,108-operation source/OpenAPI consistency, readonly dry-run and inactive export smoke passed. Actual PostgreSQL/HTTP and complete CI/Android PENDING this new head."
+    }
   }
 }

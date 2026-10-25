@@ -1,5 +1,6 @@
 import { privateOperationFailure, privateOperationCode } from './privacy-logging';
 import { Pool } from 'pg';
+import {retainPlatformSupport} from './platform-support-privacy';
 
 const APPLY=process.argv.includes('--apply');
 const GEO_DAYS=30;
@@ -52,6 +53,7 @@ async function main(){
           WHERE participant.conversation_id=c.id
         )`,[CHAT_DAYS])).rows[0]?.count??0;
 
+    let platformSupport=await retainPlatformSupport(pool,false);
     let runId:string|null=null;
     if(APPLY){
       const client=await pool.connect();
@@ -70,6 +72,7 @@ async function main(){
         runId=run.id;
 
         await client.query('BEGIN');
+        platformSupport=await retainPlatformSupport(client,true);
         await client.query('DELETE FROM sessions WHERE expires_at<=now()');
         await client.query(`DELETE FROM professional_preferences p USING identities i
           WHERE p.identity_id=i.id AND i.deactivated_at IS NOT NULL
@@ -129,7 +132,7 @@ async function main(){
       }
     }
 
-    process.stdout.write(JSON.stringify({mode:APPLY?'apply':'dry-run',runId,operatorId:APPLY?operatorId:null,expiredSessions,geoCandidates,profileCandidates,chatCandidates,geoDays:GEO_DAYS,profileDays:PROFILE_DAYS,chatDays:CHAT_DAYS})+'\n');
+    process.stdout.write(JSON.stringify({mode:APPLY?'apply':'dry-run',runId,operatorId:APPLY?operatorId:null,expiredSessions,geoCandidates,profileCandidates,chatCandidates,geoDays:GEO_DAYS,profileDays:PROFILE_DAYS,chatDays:CHAT_DAYS,platformSupport})+'\n');
   }finally{await pool.end();}
 }
 

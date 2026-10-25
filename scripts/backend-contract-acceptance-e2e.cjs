@@ -154,7 +154,19 @@ async function main(){
   console.log('OPENAPI_RECONCILIATION_ABSENT_EARNING_PASS '+JSON.stringify({rows:withoutEarning.length,payableIsNull:true,earningStatusIsNull:true,onlySimulatedArithmeticUsesZero:true}));
   const reconciled=reconciliationRows.find(r=>r.assignmentId===assignment);scalar(reconciled,'capturedCents',2345);scalar(reconciled,'payableCents',2345);scalar(reconciled.simulatedSplit,'platformRemainderCents',0);
   const request=await call(pro,'POST','/v1/privacy/requests',{requestType:'correction',details:'Owned correction'});needId(request.requestId);has(await call(pro,'GET','/v1/privacy/requests'),request.requestId);
+  // Synthetic private cases seed only the guarded disposable HTTP database; capability stays false.
+  const supportExportOwn=randomUUID(),supportExportForeign=randomUUID();
+  for(const [caseId,identityId]of [[supportExportOwn,pro.id],[supportExportForeign,sub.id]]){
+   await db.query("INSERT INTO platform_support_intents(request_key,owner_identity_id,payload_hash,submitted_at) VALUES($1,$2,$3,now())",[caseId,identityId,'a'.repeat(64)]);
+   await db.query("INSERT INTO platform_support_cases(id,owner_identity_id,category,description) VALUES($1,$2,'other','Synthetic export request')",[caseId,identityId]);
+   await db.query("INSERT INTO platform_support_responses(case_id,operator_identity_id,body) VALUES($1,$2,'Synthetic export response')",[caseId,admin.id]);
+  }
   const exported=await call(pro,'GET','/v1/privacy/export');assert.ok(exported.identity);scalar(exported.identity,'id',pro.id);assert.deepEqual(exported.preferences,savedPreferences);
+  assert.equal(exported.platformSupport.length,1);scalar(exported.platformSupport[0],'id',supportExportOwn);scalar(exported.platformSupport[0],'description','Synthetic export request');scalar(exported.platformSupport[0].responses[0],'body','Synthetic export response');
+  assert.ok(!JSON.stringify(exported.platformSupport).includes(supportExportForeign));assert.ok(!JSON.stringify(exported.platformSupport).includes(admin.id));
+  assert.deepEqual((await call(owner,'GET','/v1/privacy/export')).platformSupport,[]);
+  assert.equal((await db.query("SELECT enabled FROM platform_support_capability WHERE singleton=true")).rows[0].enabled,false);
+  console.log('PLATFORM_SUPPORT_PRIVACY_EXPORT_HTTP_PG_PASS '+JSON.stringify({actualHTTPPostgres:true,ownedCasesAndResponses:true,foreignOwnerAndCompanyExcluded:true,operatorIdentityRedacted:true,capabilityRemainsDisabled:true,production:false}));
   scalar(await call(retired,'POST','/v1/privacy/deactivate',undefined,200),'deactivated',true);await negative(retired,'GET','/v1/me/preferences',undefined,401);
   scalar(await call(pro,'DELETE','/v1/professional-capabilities/'+role.id),'ok',true);assert.ok(!(await call(pro,'GET','/v1/professional-capabilities')).some(r=>r.roleId===role.id));
   stage='complete-positive-contract-catalog';
