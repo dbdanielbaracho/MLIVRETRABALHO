@@ -10,6 +10,7 @@ const tenantTables=['assignment_cancellations','company_jobs','company_member_in
 // Explicit exceptions to TENANT, per ADR-MT-001 and the introducing migrations.
 // These are not assigned an artificial tenant: authentication/identity APIs enforce their owner.
 const otherScopes={
+ platform_support_capability:'PLATFORM',platform_support_operators:'PLATFORM',platform_support_intents:'PROFESSIONAL_OWNED',platform_support_cases:'PROFESSIONAL_OWNED',platform_support_assignments:'PLATFORM',platform_support_responses:'PLATFORM',platform_support_audit:'PLATFORM',
  tenants:'PLATFORM',identities:'PLATFORM',sessions:'PLATFORM',auth_signin_limits:'PLATFORM',terms_acceptances:'PLATFORM',taxonomy_roles:'PLATFORM',schema_migrations:'PLATFORM',
  privacy_legal_holds:'PLATFORM',privacy_requests:'PLATFORM',privacy_retention_runs:'PLATFORM',privacy_legal_hold_reviews:'PLATFORM',
  professional_profiles:'PROFESSIONAL_OWNED',professional_preferences:'PROFESSIONAL_OWNED',professional_capabilities:'PROFESSIONAL_OWNED',professional_availability_network:'PROFESSIONAL_OWNED',

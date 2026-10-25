@@ -76,6 +76,7 @@ async function main(){
  const security=async()=>(await db.query("SELECT tablename,policyname,roles,cmd,qual,with_check FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows;
  try{
   requireLocalDatabasePeer((await db.query('SELECT current_database() name')).rows[0],db.connection.stream.remoteAddress);
+  await require('../apps/api/dist/platform-support-store.pg.js').verifyPlatformSupportIntake(config);
   const policiesBefore=await security();
   stage='public-and-identity';
   scalar(await call(null,'GET','/v1/health/ready'), 'database','ok');
