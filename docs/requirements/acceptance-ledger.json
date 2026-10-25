@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
           "mode": "100644"
         }
       ],
@@ -828,7 +828,7 @@
       "implementation": [
         {
           "path": "apps/mobile/app/perfil.tsx",
-          "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
+          "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
           "mode": "100644"
         },
         {
@@ -1013,7 +1013,7 @@
       "implementation": [
         {
           "path": "apps/mobile/app/perfil.tsx",
-          "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
+          "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
           "mode": "100644"
         },
         {
@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "3d9a713ac13d6a653184293ad508bd7d02be29cd",
+          "sha": "9759ec6b5bde0c51a2d48eca968d64990b2b6939",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
           "mode": "100644"
         }
       ],
@@ -3441,7 +3441,7 @@
     },
     {
       "path": "apps/mobile/app/perfil.tsx",
-      "sha": "c492039ee8542f513e6a148ba18a94671f54332c",
+      "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
       "mode": "100644"
     },
     {
@@ -4430,5 +4430,174 @@
         "draft": true
       }
     ]
+  },
+  "preferencesCandidate": {
+    "baseMain": "8b09570b94dad64d9be07efcabfb9e7997c44616",
+    "decision": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/issues/624",
+    "scope": "Identity-owned professional preferences API, CAS storage, profile navigation/editor, recovery, private export and deactivation retention. General platform support remains a separate pending implementation. No new area approval.",
+    "sourceChanges": [
+      {
+        "path": "apps/api/src/app.module.ts",
+        "sha": "97525f612209b006ded3c5a43c3986d8642ceabe",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/api/src/privacy.controller.ts",
+        "sha": "2015ca92e4ae19bb4e20926f8fc41f9382f27744",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/api/src/privacy-retention.ts",
+        "sha": "1f29f0ae5bc1caf0c9633e1c311c76d9377a4e9a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/app/perfil.tsx",
+        "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/backend-contract-acceptance-e2e.cjs",
+        "sha": "9759ec6b5bde0c51a2d48eca968d64990b2b6939",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/privacy-retention-e2e.sh",
+        "sha": "9b70bbe70d56965d38096a9b85ec86b4d524d09d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "docs/api/openapi.json",
+        "sha": "54690863ec04615aa57a4d990a21f867c7e74003",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/api/src/preferences-input.ts",
+        "sha": "ae8664463b625989fabe2c49f834f72980234759",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/api/src/preferences-input.test.ts",
+        "sha": "a9116502d90eb076084b650fefe4ea12e5b3036e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/api/src/preferences.controller.ts",
+        "sha": "0301f78aa55d54632243ae0fbf980cc8d01c0aa6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/api/src/preferences.controller.test.ts",
+        "sha": "f219aa157db593a1e69f5a8666ac9686e7f137fb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "packages/db/migrations/0073_professional_preferences.sql",
+        "sha": "c6726155f3a3a1b14c1b8fe688c247ff90c3db97",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "scripts/preferences-acceptance-e2e.cjs",
+        "sha": "67286fc90d20d9429da89ddc93af74f555decb38",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/lib/preferences.ts",
+        "sha": "c2ff2fe92f0a54ee298eceaaf42f2fe3fa263c7d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/app/preferencias.tsx",
+        "sha": "d0d377c6634ec4eeb855f8e979451a316a2e48f7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/tests/preferences.test.mjs",
+        "sha": "23fd7d5e823835361ff5380e253f4c233199fec1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "apps/mobile/tests/preferences-screen.test.mjs",
+        "sha": "75dfc4ce901c6bb62aeccc81e100625c78e74ee5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    ],
+    "sourcePinReconciliation": [
+      {
+        "at": "requirements/3/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+        "new": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea"
+      },
+      {
+        "at": "requirements/4/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+        "new": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea"
+      },
+      {
+        "at": "requirements/25/implementation/0",
+        "path": "apps/mobile/app/perfil.tsx",
+        "old": "c492039ee8542f513e6a148ba18a94671f54332c",
+        "new": "7ac6f245895ecbae44d3b48adcf7023fde293ef6"
+      },
+      {
+        "at": "requirements/30/implementation/0",
+        "path": "apps/mobile/app/perfil.tsx",
+        "old": "c492039ee8542f513e6a148ba18a94671f54332c",
+        "new": "7ac6f245895ecbae44d3b48adcf7023fde293ef6"
+      },
+      {
+        "at": "requirements/47/tests/1",
+        "path": "scripts/backend-contract-acceptance-e2e.cjs",
+        "old": "3d9a713ac13d6a653184293ad508bd7d02be29cd",
+        "new": "9759ec6b5bde0c51a2d48eca968d64990b2b6939"
+      },
+      {
+        "at": "requirements/48/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+        "new": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea"
+      },
+      {
+        "at": "proofs/5/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "802c1dddb45e2b00d0758bd4113a42c0a1f0fbbf",
+        "new": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea"
+      },
+      {
+        "at": "protectedInputs/24",
+        "path": "apps/mobile/app/perfil.tsx",
+        "old": "c492039ee8542f513e6a148ba18a94671f54332c",
+        "new": "7ac6f245895ecbae44d3b48adcf7023fde293ef6"
+      }
+    ],
+    "ownFullCIAndApplicableAndroidRequired": true,
+    "literalPostCIAndApplicableAndroidRequired": true,
+    "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
+    "evidence": "Preparation: 3 actual input tests +10 actual client/parser/pre-JSX screen-hook tests pass on Node24.22.1; 108-operation source/OpenAPI inventory passes. PostgreSQL real HTTP, complete compilation/suite and canonical Android are PENDING own CI. No RN render/physical-device/production claim."
   }
 }

@@ -53,6 +53,7 @@ export class PrivacyController {
     const availability=profile?(await this.db.query(
       'SELECT id,starts_at AS "startsAt",ends_at AS "endsAt",created_at AS "createdAt" FROM professional_availability_network WHERE professional_id=$1 ORDER BY starts_at',[profile.id]
     )).rows:[];
+    const preferences=(await this.db.query('SELECT preferred_role_ids AS "preferredRoleIds",preferred_cities AS "preferredCities",revision::float8 AS revision,updated_at AS "updatedAt" FROM professional_preferences WHERE identity_id=$1',[identity.id])).rows[0]??null;
 
     const assignments:any[]=[],earnings:any[]=[],verifications:any[]=[],notifications:any[]=[],authoredMessages:any[]=[],ratingsReceived:any[]=[],ratingsAuthored:any[]=[],trustEvents:any[]=[],safetyReports:any[]=[],safetyRelated:any[]=[],appeals:any[]=[];
     for(const membership of memberships){
@@ -91,7 +92,7 @@ export class PrivacyController {
     const privacyRequests=(await this.db.query('SELECT id,request_type AS "requestType",request_details AS "requestDetails",status,resolution_code AS "resolutionCode",created_at AS "createdAt",updated_at AS "updatedAt",completed_at AS "completedAt" FROM privacy_requests WHERE identity_id=$1 ORDER BY created_at',[identity.id])).rows;
     return {
       requestId,generatedAt:new Date().toISOString(),identity:identityRow,
-      memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),professionalProfile:profile,availability,
+      memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),professionalProfile:profile,availability,preferences,
       assignments,earnings,verifications,notifications,authoredMessages,ratingsReceived,ratingsAuthored,trustEvents,safetyReports,safetyRelated,appeals,privacyRequests,
       notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator evidence/notes']}
     };

@@ -71,6 +71,10 @@ async function main(){
 
         await client.query('BEGIN');
         await client.query('DELETE FROM sessions WHERE expires_at<=now()');
+        await client.query(`DELETE FROM professional_preferences p USING identities i
+          WHERE p.identity_id=i.id AND i.deactivated_at IS NOT NULL
+            AND i.deactivated_at < now()-($1::int * interval '1 day')
+            AND NOT EXISTS (SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=i.id)`,[PROFILE_DAYS]);
         await client.query(`UPDATE work_assignments wa
           SET check_in_lat=NULL,check_in_lng=NULL,check_out_lat=NULL,check_out_lng=NULL
           FROM professional_profiles p
