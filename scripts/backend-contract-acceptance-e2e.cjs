@@ -171,7 +171,7 @@ async function main(){
   scalar(await call(retired,'POST','/v1/privacy/deactivate',undefined,200),'deactivated',true);await negative(retired,'GET','/v1/me/preferences',undefined,401);
   scalar(await call(pro,'DELETE','/v1/professional-capabilities/'+role.id),'ok',true);assert.ok(!(await call(pro,'GET','/v1/professional-capabilities')).some(r=>r.roleId===role.id));
   stage='complete-positive-contract-catalog';
-  const missing=catalog.routes.filter(r=>!positives.has(r.method+' '+r.path));console.log('BACKEND_POSITIVE_CONTRACT_CATALOG '+JSON.stringify({controllers:catalog.controllers.length,registeredRoutes:catalog.routes.length,observedPositiveRoutes:positives.size,missing:missing.map(r=>r.method+' '+r.path)}));assert.equal(missing.length,1,'Only final signout is deferred until denial checks');assert.equal(missing[0].path,'/v1/auth/signout');
+  const missing=catalog.routes.filter(r=>!positives.has(r.method+' '+r.path));console.log('BACKEND_POSITIVE_CONTRACT_CATALOG '+JSON.stringify({controllers:catalog.controllers.length,registeredRoutes:catalog.routes.length,observedPositiveRoutes:positives.size,missing:missing.map(r=>r.method+' '+r.path)}));assert.equal(missing.length,0,'All registered routes including the fixture-session signout have positive requests');
   stage='invalid-input-and-permission-contracts';
   const ownBefore=await snapshot(owner.tenant);
   const invalid=[

@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "c3ee965f6514bb538fc64d3fc4040574a004f5a2",
+          "sha": "3551435df6d93440aa8e3e92623af45715c32f59",
           "mode": "100644"
         }
       ],
@@ -4852,7 +4852,7 @@
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
           "mode": "100644",
           "type": "blob",
-          "sha": "c3ee965f6514bb538fc64d3fc4040574a004f5a2"
+          "sha": "3551435df6d93440aa8e3e92623af45715c32f59"
         },
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
@@ -4906,7 +4906,18 @@
         }
       ],
       "scope": "Six session-authenticated owner HTTP routes; 45 controllers/114 operations. Capability stays false outside guarded synthetic CI fixture. Operator API, administrative assignment authority, UI and positive restricted-runtime RLS proof remain pending; DRAFT, no merge/activation/acceptance.",
-      "validation": "Local JS syntax, source/OpenAPI schema consistency and owner input rejection smoke passed. Full real HTTP/PostgreSQL and own CI/Android PENDING."
+      "validation": "Local JS syntax, source/OpenAPI schema consistency and owner input rejection smoke passed. Full real HTTP/PostgreSQL and own CI/Android PENDING.",
+      "catalogCorrection": {
+        "previousHead": "86befb7217eaa7fc001bd587659d1a12f84abd94",
+        "reason": "New actual session-revocation journey positively exercises auth/signout before the catalog check. Require zero missing positive routes there instead of deferring one; final pro signout/denial remains unchanged.",
+        "pins": [
+          {
+            "at": "requirements/47/tests/1",
+            "old": "c3ee965f6514bb538fc64d3fc4040574a004f5a2",
+            "new": "3551435df6d93440aa8e3e92623af45715c32f59"
+          }
+        ]
+      }
     }
   }
 }
