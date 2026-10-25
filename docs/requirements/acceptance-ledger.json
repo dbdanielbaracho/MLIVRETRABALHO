@@ -4917,6 +4917,18 @@
             "new": "3551435df6d93440aa8e3e92623af45715c32f59"
           }
         ]
+      },
+      "noticeContractCorrection": {
+        "failedHead": "44b8f69dfd72e40f867ba93f0998185dbf109787",
+        "failedRun": 40223832340,
+        "observed": "OWNER_API_HTTP_PG_PASS and OpenAPI114/460 passed; later legacy export check expected old exact redaction notice. Preserve strict equality to the new canonical authorized-own-response exception; all data redaction assertions retained.",
+        "source": {
+          "path": "scripts/http-privacy-export-e2e.sh",
+          "sha": "52f27e27154e20bd5cc2fe988d8396b34381e181",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "pins": []
       }
     }
   }
