@@ -2710,7 +2710,7 @@
             }
           }
         },
-        "description": "Export includes only the authenticated identity’s owned/authored data and redacts third-party free text. This GET also records the privacy access request. Includes owned platform support cases and responses, with operator identity and internal assignment/audit metadata omitted; intake remains separately disabled by default."
+        "description": "Export includes only the authenticated identity’s owned/authored data and redacts unrelated third-party free text. This GET also records the privacy access request. Includes owned platform support cases and responses, with operator identity and internal assignment/audit metadata omitted; intake remains separately disabled by default."
       }
     },
     "/v1/privacy/deactivate": {
@@ -5909,6 +5909,280 @@
         },
         "description": "Requires active identity and professional profile, without company membership. 400 professional_profile_required when absent. Responses never borrow another identity's preferences."
       }
+    },
+    "/v1/me/platform-support": {
+      "get": {
+        "operationId": "get__v1_me_platform_support",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/me/platform-support",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9][0-9]?|100)$"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post__v1_me_platform_support",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "POST /v1/me/platform-support",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/platform-support/intent": {
+      "post": {
+        "operationId": "post__v1_me_platform_support_intent",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "POST /v1/me/platform-support/intent",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportIntent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/platform-support/recovery/{key}": {
+      "get": {
+        "operationId": "get__v1_me_platform_support_recovery__key_",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/me/platform-support/recovery/{key}",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportRecovery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/platform-support/{id}": {
+      "get": {
+        "operationId": "get__v1_me_platform_support__id_",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/me/platform-support/{id}",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/platform-support/{id}/withdraw": {
+      "post": {
+        "operationId": "post__v1_me_platform_support__id__withdraw",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "POST /v1/me/platform-support/{id}/withdraw",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportWithdrawal"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8401,11 +8675,315 @@
           "responses"
         ],
         "additionalProperties": true
+      },
+      "PlatformSupportInput": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "category",
+          "description"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportIntent": {
+        "type": "object",
+        "properties": {
+          "requestKey": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "requestKey",
+          "expiresAt"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportAck": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "status",
+          "createdAt"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportRecovery": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PlatformSupportAck"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "prepared"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": true
+          }
+        ]
+      },
+      "PlatformSupportPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "app_access",
+                    "profile",
+                    "preferences",
+                    "notifications",
+                    "privacy",
+                    "other"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "reviewing",
+                    "resolved",
+                    "withdrawn",
+                    "expired"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "category",
+                "status",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "acceptingRequests": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor",
+          "acceptingRequests"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "body": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "resolvesCase": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "body",
+                "createdAt",
+                "resolvesCase"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "closedAt",
+          "responses"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportWithdrawal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "status": {
+            "const": "withdrawn"
+          },
+          "closedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "closedAt"
+        ],
+        "additionalProperties": true
       }
     }
   },
   "x-contract-source": {
-    "commit": "8b09570b94dad64d9be07efcabfb9e7997c44616",
+    "commit": "41d7c89969fc823a8060c7de9d42303f59f3b291",
     "controllerBlobs": {
       "auth.controller.ts": "c432aa1e28e02c8064144e913168cc64e8a38e97",
       "availability.controller.ts": "fc225952e5063d65b344046d77dc1f8062026b3c",
@@ -8429,7 +9007,7 @@
       "payment-webhook.controller.ts": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
       "planner.controller.ts": "ceae97178b4f9b7fe9cf819e47d328bfcd09c790",
       "preferences.controller.ts": "0301f78aa55d54632243ae0fbf980cc8d01c0aa6",
-      "privacy.controller.ts": "1a35fbb520ae148ff451b3af1cf9a7fb9376bdd3",
+      "privacy.controller.ts": "e448d9bc22bdc9638c27f20ef4dc898749a53e5b",
       "professional-capabilities.controller.ts": "6325906dea732851d6ed8f75be11c7baecbc7c5e",
       "professional-planner.controller.ts": "5220558e1f5610607134b497bf95e16cecf39edb",
       "professional-profile.controller.ts": "c7333a3d6b8b63d074885c5df9cc707482cc3949",
@@ -8449,7 +9027,8 @@
       "vertical-packs.controller.ts": "98a2b07f18f277c19220d588d1e44c945b11c8f4",
       "work-assignments.controller.ts": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
       "work-graph.controller.ts": "5bed24a5999a66290a3eb058b09d70948e8c17f6",
-      "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7"
+      "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
+      "platform-support.controller.ts": "4455553a343b67cca100404d5b349de540a732ca"
     }
   }
 }

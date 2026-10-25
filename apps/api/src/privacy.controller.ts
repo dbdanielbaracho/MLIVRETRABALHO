@@ -96,7 +96,7 @@ export class PrivacyController {
       requestId,generatedAt:new Date().toISOString(),identity:identityRow,
       memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),professionalProfile:profile,availability,preferences,
       assignments,earnings,verifications,notifications,authoredMessages,ratingsReceived,ratingsAuthored,trustEvents,safetyReports,safetyRelated,appeals,privacyRequests,platformSupport,
-      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator evidence/notes']}
+      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity or an authorized platform response to their own request',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator evidence/notes']}
     };
   }
 

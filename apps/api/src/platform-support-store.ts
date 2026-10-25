@@ -4,7 +4,7 @@ import {platformSupportInput,platformSupportDigest} from './platform-support-inp
 type Transactions={transaction<T>(work:(db:PoolClient)=>Promise<T>):Promise<T>};
 export class PlatformSupportStore{
  constructor(private readonly database:Transactions){}
- private owner<T>(identityId:string,work:(db:PoolClient)=>Promise<T>){return this.database.transaction(async db=>{
+ protected owner<T>(identityId:string,work:(db:PoolClient)=>Promise<T>){return this.database.transaction(async db=>{
   await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[identityId]);
   if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[identityId])).rows[0])throw Error('platform_support_identity_required');
   return work(db);
