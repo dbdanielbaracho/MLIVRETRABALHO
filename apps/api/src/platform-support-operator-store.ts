@@ -22,12 +22,12 @@ export class PlatformSupportOperatorStore{
    return work(db,row);
   });
  }
- detail(actor:string,caseId:string){return this.assigned(actor,caseId,async(db,row)=>{
+ async detail(actor:string,caseId:string){return this.assigned(actor,caseId,async(db,row)=>{
   const responses=(await db.query('SELECT id,body,created_at AS "createdAt",resolves_case AS "resolvesCase" FROM platform_support_responses WHERE case_id=$1 ORDER BY created_at,id',[caseId])).rows;
   await db.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,action) VALUES($1,$2,'read')",[caseId,actor]);
   return {...row,responses};
  });}
- respond(actor:string,caseId:string,value:unknown){
+ async respond(actor:string,caseId:string,value:unknown){
   const x=value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:null;
   const text=x&&platformSupportInput({category:'other',description:x.body});
   if(!x||Object.keys(x).some(k=>!['responseKey','body','resolve'].includes(k))||!uuid(x.responseKey)||typeof x.resolve!=='boolean'||!text)throw Error('platform_support_response_invalid');

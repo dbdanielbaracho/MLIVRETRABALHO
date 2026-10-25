@@ -4778,7 +4778,7 @@
           "path": "apps/api/src/platform-support-operator-store.ts",
           "mode": "100644",
           "type": "blob",
-          "sha": "1874833038a704e9f422358a8fa7e9ed6021ae5d"
+          "sha": "3f3a0e5eb2585f0784e59aaafd3e20a9f6046606"
         },
         {
           "path": "apps/api/src/platform-support-operator-store.pg.ts",
@@ -4806,7 +4806,14 @@
         "old": "2bf858f9024e26146b14f24c6ecd708e5462d810",
         "new": "1874833038a704e9f422358a8fa7e9ed6021ae5d"
       },
-      "scope": "Internal assigned-operator service; HTTP/session binding, administrative assignment authority, pagination/UI and positive restricted-runtime RLS proof pending. No operational activation or new acceptance."
+      "scope": "Internal assigned-operator service; HTTP/session binding, administrative assignment authority, pagination/UI and positive restricted-runtime RLS proof pending. No operational activation or new acceptance.",
+      "asyncCorrection": {
+        "failedHead": "03809993451d4f498fc821a7d869a38e09b093f8",
+        "failedRun": 40218608434,
+        "reproduction": "respond validation threw synchronously before assert.rejects; async detail/respond now consistently return rejecting Promises; local regression passed without DB",
+        "old": "1874833038a704e9f422358a8fa7e9ed6021ae5d",
+        "new": "3f3a0e5eb2585f0784e59aaafd3e20a9f6046606"
+      }
     }
   }
 }
