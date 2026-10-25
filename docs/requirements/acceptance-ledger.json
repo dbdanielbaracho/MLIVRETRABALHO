@@ -5008,7 +5008,7 @@
           "path": "apps/api/src/platform-support-dispatch-store.ts",
           "mode": "100644",
           "type": "blob",
-          "sha": "9e81b18c4f4ef7ae49b182ee810be02857ccae45"
+          "sha": "d69aba807bf4827b362374956820f565e318489d"
         },
         {
           "path": "apps/api/src/platform-support-dispatch-store.pg.ts",
@@ -5100,6 +5100,13 @@
             "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
           }
         ]
+      },
+      "typecheckCorrection": {
+        "failedHead": "541a46e2128b54c35474b20eac78173fc31463c0",
+        "failedRun": 40232773764,
+        "observed": "TS2345: RETURNING rows[0] may be undefined under strict indexed access. Explicitly fail the transaction when RETURNING has no row before constructing ACK.",
+        "old": "9e81b18c4f4ef7ae49b182ee810be02857ccae45",
+        "new": "d69aba807bf4827b362374956820f565e318489d"
       }
     }
   }

@@ -29,6 +29,7 @@ export class PlatformSupportDispatchStore{
    if(prior&&prior.revokedAt===null)await db.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,subject_identity_id,action) VALUES($1,$2,$3,'revoked')",[caseId,actor,prior.operatorId]);
    const next=(target===null?await db.query<Assignment>('UPDATE platform_support_assignments SET revoked_at=now(),revision=revision+1 WHERE case_id=$1 RETURNING operator_identity_id AS "operatorId",revision,revoked_at AS "revokedAt"',[caseId]):await db.query<Assignment>('INSERT INTO platform_support_assignments(case_id,operator_identity_id,revision) VALUES($1,$2,1) ON CONFLICT(case_id) DO UPDATE SET operator_identity_id=$2,assigned_at=now(),revoked_at=NULL,revision=platform_support_assignments.revision+1 RETURNING operator_identity_id AS "operatorId",revision,revoked_at AS "revokedAt"',[caseId,target])).rows[0];
    if(target!==null)await db.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,subject_identity_id,action) VALUES($1,$2,$3,'assigned')",[caseId,actor,target]);
+   if(!next)throw Error('platform_support_not_found');
    return ack(next);
   });
  }
