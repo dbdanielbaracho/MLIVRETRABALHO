@@ -5296,7 +5296,7 @@
           "path": "apps/mobile/lib/platform-support.ts",
           "mode": "100644",
           "type": "blob",
-          "sha": "115144d4306b45e20c588ef2615522a52d8749c4"
+          "sha": "0edaa081e627efe1e8f7ee3028f325e81d07cb28"
         },
         {
           "path": "apps/mobile/lib/platform-support-storage.ts",
@@ -5314,7 +5314,7 @@
           "path": "apps/mobile/tests/platform-support-screen.test.mjs",
           "mode": "100644",
           "type": "blob",
-          "sha": "1e43b3b6a579dfb9878b829c5bf557c24053ab5b"
+          "sha": "e6d3596720b93b9b8fa30637f10a66b51350cc2c"
         },
         {
           "path": "apps/mobile/app/perfil.tsx",
@@ -5344,7 +5344,24 @@
         }
       ],
       "scope": "Standalone platform help screen and unconditional Profile entry, existing company support preserved. Identity-bound minimal encrypted descriptor, no message/token persistence, strict ACK/recoveryGET/no automatic POST; explicit same-key retry after prepared. 15s covers auth/storage/transport/JSON; stale/blur/cancel ignored. Queue/detail/withdraw states. No real activation or acceptance; rendered/runtimeRLS proof pending.",
-      "validation": "18 local parser/flow/real pre-JSX handler tests pass, not native/render evidence. Own fullCI/Android pending."
+      "validation": "18 local parser/flow/real pre-JSX handler tests pass, not native/render evidence. Own fullCI/Android pending.",
+      "typecheckCorrection": {
+        "failedHead": "a9b644d9a7a485a24fcd85e2cc86814a9944ed02",
+        "failedRun": 40246000154,
+        "reason": "TS2339 closure-mutated local narrowed to never in catch; typed mutable reference preserves actual pending descriptor. Normal handler test timeout50ms; intentionally stalled timeout test remains8ms.",
+        "pins": [
+          {
+            "path": "apps/mobile/lib/platform-support.ts",
+            "old": "115144d4306b45e20c588ef2615522a52d8749c4",
+            "new": "0edaa081e627efe1e8f7ee3028f325e81d07cb28"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+            "old": "1e43b3b6a579dfb9878b829c5bf557c24053ab5b",
+            "new": "e6d3596720b93b9b8fa30637f10a66b51350cc2c"
+          }
+        ]
+      }
     }
   }
 }

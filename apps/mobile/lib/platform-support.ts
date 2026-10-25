@@ -45,9 +45,9 @@ export function createPlatformSupportFlow(options:Options){
  let busy=false,active:AbortController|null=null,boundIdentity:string|null=null;
  async function run(work:(c:{id:string;request(path:string,method?:'GET'|'POST',body?:unknown,key?:string):Promise<Response>;guard():Promise<void>;pending(row:PlatformIntent):void})=>Promise<PlatformResult>,rebind=false):Promise<PlatformResult>{
   if(busy)return {status:'busy'};busy=true;
-  const controller=new AbortController();active=controller;let record:PlatformIntent|null=null,timer:ReturnType<typeof setTimeout>|undefined,timedOut=false;
+  const controller=new AbortController();active=controller;const pending:{current:PlatformIntent|null}={current:null};let timer:ReturnType<typeof setTimeout>|undefined,timedOut=false;
   const current=()=>options.isCurrent()&&!controller.signal.aborted;
-  const interrupted=new Promise<PlatformResult>(resolve=>{controller.signal.addEventListener('abort',()=>resolve(timedOut?(record?{status:'unknown',identityId:record.identityId,record}:{status:'error'}):{status:'stale'}),{once:true});timer=setTimeout(()=>{timedOut=true;controller.abort();},options.timeoutMs&&options.timeoutMs>0&&options.timeoutMs<=15000?options.timeoutMs:15000);});
+  const interrupted=new Promise<PlatformResult>(resolve=>{controller.signal.addEventListener('abort',()=>resolve(timedOut?(pending.current?{status:'unknown',identityId:pending.current.identityId,record:pending.current}:{status:'error'}):{status:'stale'}),{once:true});timer=setTimeout(()=>{timedOut=true;controller.abort();},options.timeoutMs&&options.timeoutMs>0&&options.timeoutMs<=15000?options.timeoutMs:15000);});
   const operation=(async():Promise<PlatformResult>=>{
    try{
     const h=await options.getHeaders(),authorization=h.Authorization;if(!current())return {status:'stale'};if(!authorization)return {status:'session'};
@@ -55,8 +55,8 @@ export function createPlatformSupportFlow(options:Options){
     const request=async(path:string,method:'GET'|'POST'='GET',body?:unknown,key?:string)=>{await guard();const r=await options.transport(path,{method,headers:{Authorization:authorization,...(body===undefined?{}:{'content-type':'application/json'}),...(key?{'idempotency-key':key}:{})},...(body===undefined?{}:{body:JSON.stringify(body)}),signal:controller.signal});await guard();return r;};
     const meResponse=await request('/me'),me:unknown=await meResponse.json();await guard();if(meResponse.status===401)return {status:'session'};if(!meResponse.ok||!object(me)||!uuid(me.id))return {status:'error'};
     const identityId=me.id.toLowerCase();if(rebind)boundIdentity=identityId;else if(boundIdentity!==identityId)return {status:'stale'};
-    const result=await work({id:identityId,request,guard,pending:r=>{record=r;}});await guard();return result;
-   }catch(e){if(e instanceof Error&&e.message==='stale'||!current())return {status:'stale'};return record?{status:'unknown',identityId:record.identityId,record}:{status:'error'};}
+    const result=await work({id:identityId,request,guard,pending:r=>{pending.current=r;}});await guard();return result;
+   }catch(e){if(e instanceof Error&&e.message==='stale'||!current())return {status:'stale'};return pending.current?{status:'unknown',identityId:pending.current.identityId,record:pending.current}:{status:'error'};}
   })();
   try{return await Promise.race([operation,interrupted]);}finally{if(timer!==undefined)clearTimeout(timer);if(active===controller){active=null;busy=false;}}
  }
