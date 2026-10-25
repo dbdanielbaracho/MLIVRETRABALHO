@@ -1,3 +1,4 @@
+import {verifyPlatformSupportDispatch} from './platform-support-dispatch-store.pg';
 // Disposable PostgreSQL fixture invoked only by the guarded CI journey; no HTTP surface.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -19,6 +20,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   await setup.query('CREATE TABLE identities(id uuid PRIMARY KEY,deactivated_at timestamptz)');
   await setup.query(readFileSync('packages/db/migrations/0074_platform_support_intake.sql','utf8'));
   await setup.query(readFileSync('packages/db/migrations/0075_platform_support_response_receipt.sql','utf8'));
+  await setup.query(readFileSync('packages/db/migrations/0076_platform_support_dispatch.sql','utf8'));
   await setup.query('INSERT INTO identities(id) VALUES($1),($2),($3)',[owner,foreign,operator]);
   const db={transaction:async<T>(work:(c:import('pg').PoolClient)=>Promise<T>)=>{const c=await pool.connect();try{await c.query('BEGIN');await c.query(`SET LOCAL search_path TO ${schema},public`);const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}};
   const store=new PlatformSupportStore(db),error=(message:string)=>(e:unknown)=>e instanceof Error&&e.message===message;
@@ -52,9 +54,10 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[owner]);await assert.rejects(store.recover(owner,prepared.requestKey),error('platform_support_identity_required'));
   await setup.query('BEGIN');try{await setup.query('SET LOCAL ROLE app_runtime');await assert.rejects(setup.query('SELECT * FROM platform_support_cases'),(e:unknown)=>(e as {code:string}).code==='42501');}finally{await setup.query('ROLLBACK');}
   const policies=(await setup.query('SELECT relrowsecurity,relforcerowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=$1 AND c.relkind=\'r\' AND c.relname LIKE \'platform_support_%\'',[schema])).rows;
-  assert.equal(policies.length,7);assert.ok(policies.every(p=>p.relrowsecurity&&p.relforcerowsecurity));
-  console.log('PLATFORM_SUPPORT_INTAKE_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,defaultDisabled:true,operatorRequired:true,ownerIsolation:true,concurrentReplaySingleCaseAndAudit:true,payloadConflict:true,auditFailureRollsBackCase:true,expiryAndRevocation:true,tenantRuntimeDenied:true,allSevenTablesForcedRLS:true,http:false,operatorAPI:false,production:false}));
+  assert.equal(policies.length,8);assert.ok(policies.every(p=>p.relrowsecurity&&p.relforcerowsecurity));
+  console.log('PLATFORM_SUPPORT_INTAKE_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,defaultDisabled:true,operatorRequired:true,ownerIsolation:true,concurrentReplaySingleCaseAndAudit:true,payloadConflict:true,auditFailureRollsBackCase:true,expiryAndRevocation:true,tenantRuntimeDenied:true,allEightTablesForcedRLS:true,http:false,operatorAPI:false,production:false}));
   await verifyPlatformSupportOperator(setup,db,store,owner,foreign,operator);
+  await verifyPlatformSupportDispatch(setup,db,store,owner,foreign,operator);
   await verifyPlatformSupportPrivacy(setup,db,store,owner,foreign,operator);
  }finally{await setup.query('ROLLBACK').catch(()=>undefined);await setup.query('SET search_path TO public');await setup.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);setup.release();await pool.end();}
 }

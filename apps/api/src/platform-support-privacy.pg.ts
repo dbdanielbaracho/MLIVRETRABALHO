@@ -58,5 +58,10 @@ export async function verifyPlatformSupportPrivacy(setup:PoolClient,db:{transact
  await db.transaction(c=>retainPlatformSupport(c,true));
  assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_cases WHERE id=$1',[heldCase])).rows[0].n,0);
  assert.equal((await setup.query('SELECT description FROM platform_support_cases WHERE id=$1',[authorHeldCase])).rows[0].description,null);
- console.log('PLATFORM_SUPPORT_PRIVACY_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,ownedExport:true,operatorIdentityRedacted:true,dryRunNoWrites:true,closed90Days:true,inactive180DaysExpiresNotResolves:true,deactivated30Days:true,holdAndRelease:true,audit365Days:true,digest24Hours:true,expiredKeyNeverRecreates:true,auditFailureRollsBack:true,http:false,production:false}));
+ const subjectCase=await seed(owner,400),subject=randomUUID();await setup.query('INSERT INTO identities(id) VALUES($1)',[subject]);
+ await setup.query("INSERT INTO privacy_legal_holds(scope_type,scope_id) VALUES('identity',$1)",[subject]);
+ const subjectAudit=(await setup.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,subject_identity_id,action,created_at) VALUES($1,$2,$3,'assigned',now()-interval '366 days') RETURNING id",[subjectCase,owner,subject])).rows[0].id;
+ await db.transaction(c=>retainPlatformSupport(c,true));assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_audit WHERE id=$1',[subjectAudit])).rows[0].n,1);assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_cases WHERE id=$1',[subjectCase])).rows[0].n,1);
+ await setup.query('UPDATE privacy_legal_holds SET released_at=now() WHERE scope_id=$1',[subject]);await db.transaction(c=>retainPlatformSupport(c,true));assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_cases WHERE id=$1',[subjectCase])).rows[0].n,0);
+ console.log('PLATFORM_SUPPORT_PRIVACY_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,ownedExport:true,operatorIdentityRedacted:true,dryRunNoWrites:true,closed90Days:true,inactive180DaysExpiresNotResolves:true,deactivated30Days:true,holdAndRelease:true,assignmentSubjectHoldAndRelease:true,audit365Days:true,digest24Hours:true,expiredKeyNeverRecreates:true,auditFailureRollsBack:true,http:false,production:false}));
 }

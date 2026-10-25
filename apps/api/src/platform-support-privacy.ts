@@ -27,12 +27,12 @@ export async function retainPlatformSupport(db:Pick<PoolClient,'query'>,apply:bo
  const contents=`c.description IS NOT NULL AND (${closedContent} OR ${deactivatedOwner}) AND NOT ${caseHeld}`;
  const responses=`r.body IS NOT NULL AND (${closedContent} OR ${deactivatedOwner} OR EXISTS(SELECT 1 FROM identities o WHERE o.id=r.operator_identity_id AND o.deactivated_at<=now()-interval '30 days')) AND NOT ${caseHeld}`;
  const audits=`a.created_at<=now()-interval '365 days'
-  AND NOT EXISTS(SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=a.actor_identity_id)
+  AND NOT EXISTS(SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id IN(a.actor_identity_id,a.subject_identity_id))
   AND NOT EXISTS(SELECT 1 FROM platform_support_cases c WHERE c.id=a.case_id AND ${caseHeld})`;
  // Content-free case/assignment/response identifiers are removed after the separate audit horizon.
  const metadata=`c.closed_at<=now()-interval '365 days' AND NOT ${caseHeld}
   AND NOT EXISTS(SELECT 1 FROM platform_support_audit a WHERE a.case_id=c.id AND (a.created_at>now()-interval '365 days'
-   OR EXISTS(SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id=a.actor_identity_id)))`;
+   OR EXISTS(SELECT 1 FROM privacy_legal_holds h WHERE h.released_at IS NULL AND h.scope_type='identity' AND h.scope_id IN(a.actor_identity_id,a.subject_identity_id))))`;
  const expired=`i.expires_at<=now() AND NOT ${ownerHeld}`;
  if(!apply)return {
   expiredCases:await count(`SELECT count(*)::int count FROM platform_support_cases c WHERE ${inactive}`),

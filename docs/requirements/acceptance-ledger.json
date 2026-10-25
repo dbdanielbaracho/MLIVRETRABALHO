@@ -5000,6 +5000,81 @@
       "scope": "Two session-bound assigned-operator HTTP routes; 46 controllers/116 operations. No role or assignment authority inferred from tenant membership. Synthetic CI role/assignment setup only; administrative authority, queue/UI and positive restricted-runtime RLS proof pending. DRAFT; no operational activation/merge/acceptance.",
       "validation": "Local JS syntax and OpenAPI/source consistency preparation; full real HTTP/PostgreSQL and own CI/Android PENDING.",
       "primarySource": "OWASP Authorization Cheat Sheet consulted 2026-10-25: deny by default, authorize every request/resource, least privilege. https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+    },
+    "dispatchIncrement": {
+      "baseHead": "e99b680044aa08c8c6aa34a208a76184b106e060",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9e81b18c4f4ef7ae49b182ee810be02857ccae45"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b707800edfd1a2136bec75b4f6bb5918180c31c7"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4096837fff75fea6b4f7db3f07ff5aefea9bd0b"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d5d3ca39a2919a59b179db906cfa5a8094b3df12"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5683b8b0b5cc612fb095b9cd5ad4003b98eb1bb8"
+        },
+        {
+          "path": "packages/db/migrations/0076_platform_support_dispatch.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "974a6867d362acade284596f9109e6cd75a994b3"
+        }
+      ],
+      "scope": "Internal dedicated administrative assignment/revocation authority; CAS and actor/subject audit. No administrative HTTP/CLI or operator role provisioning; no real administrator, operator or activation. RLS positive/runtime/UI pending. DRAFT.",
+      "validation": "Local TypeScript transform passed; real PostgreSQL/own CI/Android pending.",
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "old": null,
+          "new": "9e81b18c4f4ef7ae49b182ee810be02857ccae45"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.pg.ts",
+          "old": null,
+          "new": "b707800edfd1a2136bec75b4f6bb5918180c31c7"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "ede8af37c1e60f90b61ea54d260269df21e54d59",
+          "new": "c4096837fff75fea6b4f7db3f07ff5aefea9bd0b"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.ts",
+          "old": "4d9188b4a01bcc151318bed8da7e0e606103ac60",
+          "new": "d5d3ca39a2919a59b179db906cfa5a8094b3df12"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.pg.ts",
+          "old": "7f0bf262d22b7952d1620397d2682f2a72bf454d",
+          "new": "5683b8b0b5cc612fb095b9cd5ad4003b98eb1bb8"
+        },
+        {
+          "path": "packages/db/migrations/0076_platform_support_dispatch.sql",
+          "old": null,
+          "new": "974a6867d362acade284596f9109e6cd75a994b3"
+        }
+      ]
     }
   }
 }
