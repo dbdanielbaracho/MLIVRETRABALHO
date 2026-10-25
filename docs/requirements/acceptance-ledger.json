@@ -828,7 +828,7 @@
       "implementation": [
         {
           "path": "apps/mobile/app/perfil.tsx",
-          "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b",
           "mode": "100644"
         },
         {
@@ -1013,7 +1013,7 @@
       "implementation": [
         {
           "path": "apps/mobile/app/perfil.tsx",
-          "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b",
           "mode": "100644"
         },
         {
@@ -3441,7 +3441,7 @@
     },
     {
       "path": "apps/mobile/app/perfil.tsx",
-      "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+      "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b",
       "mode": "100644"
     },
     {
@@ -5282,6 +5282,69 @@
       ],
       "scope": "Assigned active operator GET queue, active requester, stable microsecond/UUID cursor20/default100max, headers only, transactional audit. Shared unchanged owner parser. HTTP proof22rows/ties/isolation/revocation/rollback. No role, capability, production or area activation; UI/positive restricted-runtime RLS pending.",
       "validation": "Local TypeScript transform/JS syntax preparation passed; full own HTTP/PostgreSQL/CI/Android pending."
+    },
+    "mobileUIIncrement": {
+      "baseHead": "224340d379aa4d142a68cf3a324be580a0579533",
+      "sources": [
+        {
+          "path": "apps/mobile/app/ajuda-plataforma.tsx",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bf452cd2185c306406311b340b61a928fb0d7609"
+        },
+        {
+          "path": "apps/mobile/lib/platform-support.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "115144d4306b45e20c588ef2615522a52d8749c4"
+        },
+        {
+          "path": "apps/mobile/lib/platform-support-storage.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c2c4985c845d68c2f6b2e0639598d9ed359e3a7c"
+        },
+        {
+          "path": "apps/mobile/tests/platform-support.test.mjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "300df77d2cb976d86f084173a378674cc8a32c5b"
+        },
+        {
+          "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1e43b3b6a579dfb9878b829c5bf557c24053ab5b"
+        },
+        {
+          "path": "apps/mobile/app/perfil.tsx",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        }
+      ],
+      "pins": [
+        {
+          "at": "requirements/25/implementation/0",
+          "path": "apps/mobile/app/perfil.tsx",
+          "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        },
+        {
+          "at": "requirements/30/implementation/0",
+          "path": "apps/mobile/app/perfil.tsx",
+          "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        },
+        {
+          "at": "protectedInputs/24",
+          "path": "apps/mobile/app/perfil.tsx",
+          "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        }
+      ],
+      "scope": "Standalone platform help screen and unconditional Profile entry, existing company support preserved. Identity-bound minimal encrypted descriptor, no message/token persistence, strict ACK/recoveryGET/no automatic POST; explicit same-key retry after prepared. 15s covers auth/storage/transport/JSON; stale/blur/cancel ignored. Queue/detail/withdraw states. No real activation or acceptance; rendered/runtimeRLS proof pending.",
+      "validation": "18 local parser/flow/real pre-JSX handler tests pass, not native/render evidence. Own fullCI/Android pending."
     }
   }
 }
