@@ -1,18 +1,24 @@
+import {platformSupportPage} from './platform-support-page';
 import type {PoolClient} from 'pg';
 import {platformSupportInput} from './platform-support-input';
 type Transactions={transaction<T>(work:(db:PoolClient)=>Promise<T>):Promise<T>};
 type AssignedCase={id:string;category:string;description:string|null;status:string;createdAt:Date;closedAt:Date|null};
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
-// Internal service only: no route, automatic assignment, capability activation or role provisioning.
+// Session-bound controller supplies the actor; this store never activates intake or provisions roles.
 export class PlatformSupportOperatorStore{
  constructor(private readonly database:Transactions){}
- private assigned<T>(actor:string,caseId:string,work:(db:PoolClient,row:AssignedCase)=>Promise<T>){
-  if(!uuid(caseId))throw Error('platform_support_not_found');
+ private operator<T>(actor:string,work:(db:PoolClient)=>Promise<T>){
   return this.database.transaction(async db=>{
    await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
    // Locks make role/identity/assignment revocation serialize with this operation.
    if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[actor])).rows[0])throw Error('platform_support_identity_required');
    if(!(await db.query('SELECT identity_id FROM platform_support_operators WHERE identity_id=$1 AND active FOR SHARE',[actor])).rows[0])throw Error('platform_support_not_found');
+   return work(db);
+  });
+ }
+ private assigned<T>(actor:string,caseId:string,work:(db:PoolClient,row:AssignedCase)=>Promise<T>){
+  if(!uuid(caseId))throw Error('platform_support_not_found');
+  return this.operator(actor,async db=>{
    const row=(await db.query<AssignedCase>(`SELECT c.id,c.category,c.description,c.status,c.created_at AS "createdAt",c.closed_at AS "closedAt"
     FROM platform_support_cases c JOIN platform_support_assignments a ON a.case_id=c.id
     JOIN identities requester ON requester.id=c.owner_identity_id
@@ -20,6 +26,19 @@ export class PlatformSupportOperatorStore{
     FOR UPDATE OF c FOR SHARE OF a,requester`,[caseId,actor])).rows[0];
    if(!row)throw Error('platform_support_not_found');
    return work(db,row);
+  });
+ }
+ async list(actor:string,limitValue:unknown,cursorValue:unknown){
+  const {limit,cursor}=platformSupportPage(limitValue,cursorValue);
+  return this.operator(actor,async db=>{
+   const rows=(await db.query(`SELECT c.id,c.category,c.status,c.created_at AS "createdAt",c.updated_at AS "updatedAt",to_char(c.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS "cursorAt"
+    FROM platform_support_cases c JOIN platform_support_assignments a ON a.case_id=c.id JOIN identities requester ON requester.id=c.owner_identity_id
+    WHERE a.operator_identity_id=$1 AND a.revoked_at IS NULL AND requester.deactivated_at IS NULL
+    AND ($2::timestamptz IS NULL OR (c.created_at,c.id)<($2::timestamptz,$3::uuid))
+    ORDER BY c.created_at DESC,c.id DESC LIMIT $4 FOR SHARE OF c,a,requester`,[actor,cursor?.[0]??null,cursor?.[1]??null,limit+1])).rows;
+   const page=rows.slice(0,limit),last=page.at(-1);
+   for(const row of page)await db.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,action) VALUES($1,$2,'read')",[row.id,actor]);
+   return {items:page.map(({cursorAt,...row})=>row),nextCursor:rows.length>limit&&last?Buffer.from(JSON.stringify([last.cursorAt,last.id])).toString('base64url'):null};
   });
  }
  async detail(actor:string,caseId:string){return this.assigned(actor,caseId,async(db,row)=>{

@@ -1,4 +1,4 @@
-import {BadRequestException,Body,ConflictException,Controller,Get,Headers,NotFoundException,Post,Param,UnauthorizedException} from '@nestjs/common';
+import {BadRequestException,Body,ConflictException,Controller,Get,Headers,NotFoundException,Post,Param,Query,UnauthorizedException} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {DatabaseService} from './database.service';
 import {PlatformSupportOperatorStore} from './platform-support-operator-store';
@@ -16,10 +16,12 @@ export class PlatformSupportOperatorController{
    if(code==='platform_support_identity_required')throw new UnauthorizedException(code);
    if(code==='platform_support_not_found')throw new NotFoundException(code);
    if(['platform_support_payload_conflict','platform_support_case_closed'].includes(code))throw new ConflictException(code);
-   if(['platform_support_input_invalid','platform_support_response_invalid'].includes(code))throw new BadRequestException(code);
+   if(['platform_support_input_invalid','platform_support_response_invalid','platform_support_page_invalid'].includes(code))throw new BadRequestException(code);
    throw error;
   }
  }
+ @Get()
+ list(@Query('limit')limit:unknown,@Query('cursor')cursor:unknown,@Headers('authorization')a?:string){return this.invoke(a,id=>this.store.list(id,limit,cursor));}
  @Get(':id')
  detail(@Param('id')caseId:string,@Headers('authorization')a?:string){return this.invoke(a,id=>this.store.detail(id,caseId));}
  @Post(':id/responses')

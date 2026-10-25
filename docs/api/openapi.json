@@ -3,7 +3,7 @@
   "info": {
     "title": "MLivreTrabalho REST API",
     "version": "0.1.0",
-    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support owner and assigned-operator HTTP operations are implemented; dedicated administrative operator-role and assignment operations are implemented; operator queue, mobile UI and final restricted-runtime proof remain pending. Intake is disabled by default. No production server is advertised."
+    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support owner and assigned-operator HTTP operations are implemented; dedicated administrative operator-role and assignment operations are implemented; assigned operator queue is implemented; mobile UI and final restricted-runtime proof remain pending. Intake is disabled by default. No production server is advertised."
   },
   "servers": [
     {
@@ -6385,6 +6385,58 @@
           }
         }
       }
+    },
+    "/v1/platform-support/cases": {
+      "get": {
+        "operationId": "get__v1_platform_support_cases",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/platform-support/cases",
+        "x-nest-controller": "PlatformSupportOperatorController",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9][0-9]?|100)$"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assigned case headers only; reads audited atomically.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportOperatorPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid page400, denied session401, unavailable operator authority404 or atomic read audit failure500.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Assigned cases for the active session-bound operator; active requester and current unrevoked assignment required on every page. All case statuses, including closed history, remain visible while assigned. Default20/max100, descending PostgreSQL microseconds/UUID cursor. No descriptions, responses or identity metadata in page. No snapshot guarantee across assignment changes; every page reauthorizes. Intake capability does not block authorized historical reads."
+      }
     }
   },
   "components": {
@@ -9439,11 +9491,80 @@
           "revokedAt"
         ],
         "additionalProperties": true
+      },
+      "PlatformSupportOperatorPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "app_access",
+                    "profile",
+                    "preferences",
+                    "notifications",
+                    "privacy",
+                    "other"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "reviewing",
+                    "resolved",
+                    "withdrawn",
+                    "expired"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "category",
+                "status",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": true
       }
     }
   },
   "x-contract-source": {
-    "commit": "5d642c973f1658f3e69494b873caa5cf938e5105",
+    "commit": "6b8fd58030a254355a7ad506d1040a70cff09d27",
     "controllerBlobs": {
       "auth.controller.ts": "c432aa1e28e02c8064144e913168cc64e8a38e97",
       "availability.controller.ts": "fc225952e5063d65b344046d77dc1f8062026b3c",
@@ -9489,7 +9610,7 @@
       "work-graph.controller.ts": "5bed24a5999a66290a3eb058b09d70948e8c17f6",
       "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
       "platform-support.controller.ts": "4455553a343b67cca100404d5b349de540a732ca",
-      "platform-support-operator.controller.ts": "84e87942ced186f0273a19c40ff7ac72155cf7c5",
+      "platform-support-operator.controller.ts": "dc0964cd76fc35891808eb899a7e1a8c86b60d40",
       "platform-support-admin.controller.ts": "b4e1245f814aeb63ddfe41f825ca0ae123ed35fc"
     }
   }
