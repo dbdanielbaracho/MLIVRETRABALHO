@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+          "sha": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+          "sha": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+          "sha": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+          "sha": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
           "mode": "100644"
         }
       ],
@@ -5074,7 +5074,33 @@
           "old": null,
           "new": "974a6867d362acade284596f9109e6cd75a994b3"
         }
-      ]
+      ],
+      "scopeCorrection": {
+        "priorHead": "0ede52761f86b70b4a8cc07829285eefef5cf929",
+        "reason": "New dedicated administrator table explicitly classified PLATFORM and included in existing real runtime denial probes; unclassified-table gate remains strict.",
+        "pins": [
+          {
+            "at": "requirements/3/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          },
+          {
+            "at": "requirements/4/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          },
+          {
+            "at": "requirements/48/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          },
+          {
+            "at": "proofs/5/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          }
+        ]
+      }
     }
   }
 }
