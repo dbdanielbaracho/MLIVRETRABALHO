@@ -5128,7 +5128,7 @@
           "path": "scripts/platform-support-admin-acceptance-e2e.cjs",
           "mode": "100644",
           "type": "blob",
-          "sha": "e0fdf69a87566c3e6415fb4e5122b64e3ef1a7f8"
+          "sha": "44a5a364c4759bca11655b2199e95f766ff97f7e"
         },
         {
           "path": "packages/db/migrations/0077_platform_support_operator_roles.sql",
@@ -5194,7 +5194,13 @@
         }
       ],
       "scope": "Two session-bound dedicated administrator HTTP operations for audited CAS operator role and case assignment; revoke invalidates assignments and regrant never resurrects. Bootstrap fixture only, no real activation/provisioning, RLS positive/UI/queue pending.",
-      "validation": "Local syntax/TypeScript transform passed; full own HTTP/PostgreSQL/CI/Android pending."
+      "validation": "Local syntax/TypeScript transform passed; full own HTTP/PostgreSQL/CI/Android pending.",
+      "multiCaseProof": {
+        "previousHead": "e815d714663845ae9e1dacd5b6a017ff015b1bdd",
+        "reason": "Strengthen actual HTTP witness from one case to two assigned cases: audit failure preserves both; revocation denies both; role regrant resurrects neither.",
+        "old": "e0fdf69a87566c3e6415fb4e5122b64e3ef1a7f8",
+        "new": "44a5a364c4759bca11655b2199e95f766ff97f7e"
+      }
     }
   }
 }

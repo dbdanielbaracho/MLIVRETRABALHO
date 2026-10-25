@@ -20,16 +20,19 @@ module.exports=async function({db,call,negative,account,company,foreign}){
   const assigned=await call(admin,'POST',assignment,assign);assert.equal(assigned.revision,1);assert.deepEqual(await call(admin,'POST',assignment,assign),assigned);
   assert.equal((await call(operator,'GET',detail)).id,created.id);
   await negative(admin,'POST',assignment,{targetOperatorId:null,expectedRevision:0},409);
+  const secondIntent=await call(requester,'POST',own+'/intent',input),second=await call(requester,'POST',own,input,201,{'idempotency-key':secondIntent.requestKey});
+  await call(admin,'POST',root+'/cases/'+second.id+'/assignment',assign);const secondDetail='/v1/platform-support/cases/'+second.id;
   const fault='role_fault_'+randomUUID().replaceAll('-','');
   await db.query(`CREATE FUNCTION ${fault}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action='operator_revoked' AND NEW.subject_identity_id='${operator.id}'::uuid THEN RAISE EXCEPTION 'synthetic_role_audit_fault'; END IF; RETURN NEW; END $$`);
   await db.query(`CREATE TRIGGER ${fault} BEFORE INSERT ON platform_support_audit FOR EACH ROW EXECUTE FUNCTION ${fault}()`);
-  try{await negative(admin,'POST',role,{active:false,expectedRevision:1},500);assert.equal((await call(operator,'GET',detail)).id,created.id);assert.equal((await db.query('SELECT revision FROM platform_support_assignments WHERE case_id=$1',[created.id])).rows[0].revision,1);}
+  try{await negative(admin,'POST',role,{active:false,expectedRevision:1},500);assert.equal((await call(operator,'GET',detail)).id,created.id);assert.equal((await call(operator,'GET',secondDetail)).id,second.id);assert.equal((await db.query('SELECT revision FROM platform_support_assignments WHERE case_id=$1',[created.id])).rows[0].revision,1);}
   finally{await db.query(`DROP TRIGGER ${fault} ON platform_support_audit`);await db.query(`DROP FUNCTION ${fault}()`);}
   const revoked=await call(admin,'POST',role,{active:false,expectedRevision:1});assert.equal(revoked.revision,2);assert.deepEqual(await call(admin,'POST',role,{active:false,expectedRevision:1}),revoked);
   await negative(operator,'GET',detail,undefined,404);
   await negative(operator,'POST',detail+'/responses',{responseKey:randomUUID(),body:'Denied',resolve:false},404);
+  await negative(operator,'GET',secondDetail,undefined,404);
   const regranted=await call(admin,'POST',role,{active:true,expectedRevision:2});assert.equal(regranted.revision,3);
-  await negative(operator,'GET',detail,undefined,404); // Old assignment never resurrects.
+  await negative(operator,'GET',detail,undefined,404);await negative(operator,'GET',secondDetail,undefined,404); // Neither old assignment resurrects.
   await negative(admin,'POST',role,{active:false,expectedRevision:1},409);
   assert.equal((await call(admin,'POST',assignment,{...assign,expectedRevision:2})).revision,3);
   assert.equal((await call(operator,'GET',detail)).id,created.id);
@@ -41,5 +44,5 @@ module.exports=async function({db,call,negative,account,company,foreign}){
   await db.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[admin.id]);
   await call(admin,'POST','/v1/auth/signout');await negative(admin,'POST',role,{active:false,expectedRevision:3},401);
  }finally{await db.query('UPDATE platform_support_capability SET enabled=false');await db.query('UPDATE platform_support_administrators SET active=false WHERE identity_id=$1',[admin.id]);await db.query('UPDATE platform_support_operators SET active=false WHERE identity_id=$1',[operator.id]);}
- console.log('PLATFORM_SUPPORT_ADMIN_API_HTTP_PG_PASS '+JSON.stringify({actualHTTPPostgres:true,sessionBoundDedicatedAdministrator:true,twoCompaniesAndOperatorDenied:true,concurrentRoleGrantSingleAudit:true,assignmentCAS:true,roleRevocationAtomicAllAssignments:true,regrantDoesNotResurrect:true,auditFailureRollsBackRoleAndAssignment:true,actorAndSubjectAudit:true,revokedDeactivatedAndSignedOutDenied:true,bootstrapSyntheticOnly:true,positiveRuntimeRLSProof:false,operationalActivation:false,production:false}));
+ console.log('PLATFORM_SUPPORT_ADMIN_API_HTTP_PG_PASS '+JSON.stringify({actualHTTPPostgres:true,sessionBoundDedicatedAdministrator:true,twoCompaniesAndOperatorDenied:true,concurrentRoleGrantSingleAudit:true,assignmentCAS:true,roleRevocationAtomicTwoAssignments:true,regrantDoesNotResurrect:true,auditFailureRollsBackRoleAndAssignment:true,actorAndSubjectAudit:true,revokedDeactivatedAndSignedOutDenied:true,bootstrapSyntheticOnly:true,positiveRuntimeRLSProof:false,operationalActivation:false,production:false}));
 };
