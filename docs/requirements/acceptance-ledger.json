@@ -4609,13 +4609,13 @@
         "path": "apps/api/src/platform-support-input.ts",
         "mode": "100644",
         "type": "blob",
-        "sha": "68c42ce7de73e20073feaa40400cd2d7ff11016e"
+        "sha": "970e0fc908e439b75b8da75fee97611122fdcdf7"
       },
       {
         "path": "apps/api/src/platform-support-input.test.ts",
         "mode": "100644",
         "type": "blob",
-        "sha": "7a29b92a12188425ef4934e9af0c1432e46e538c"
+        "sha": "f3714ee72a34ad502897d407bcb847609417cc14"
       },
       {
         "path": "apps/api/src/platform-support-store.ts",
@@ -4627,7 +4627,7 @@
         "path": "apps/api/src/platform-support-store.pg.ts",
         "mode": "100644",
         "type": "blob",
-        "sha": "1fe0ec9c0f81c0e5e00922b82078523f734f4b1b"
+        "sha": "e27bba514a30770531d7cc81ca0d70a769b75f7c"
       },
       {
         "path": "packages/db/migrations/0074_platform_support_intake.sql",
@@ -4682,6 +4682,7 @@
     ],
     "ownFullCIAndApplicableAndroidRequired": true,
     "literalPostCIAndApplicableAndroidRequired": true,
-    "evidence": "Two pure input tests passed locally; isolated PostgreSQL fixture wired into the guarded whole backend journey, PENDING CI execution. No acceptance, operational activation or production."
+    "evidence": "Two pure input tests passed locally; isolated PostgreSQL fixture wired into the guarded whole backend journey, PENDING CI execution. No acceptance, operational activation or production.",
+    "reproducedDefect": "Original normalizer accepted lone UTF-16 surrogate, while Node UTF-8 conversion changed content. Reject NUL/lone surrogates before digest; valid emoji4000 boundary preserved. Two input tests pass after correction; fixture asserts no intent for malformed text."
   }
 }

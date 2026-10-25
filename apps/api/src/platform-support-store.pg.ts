@@ -24,6 +24,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   await setup.query('UPDATE platform_support_capability SET enabled=true');
   await assert.rejects(store.prepare(owner,input),error('platform_support_unavailable'));
   await setup.query('INSERT INTO platform_support_operators(identity_id,active) VALUES($1,true)',[operator]);
+  await assert.rejects(store.prepare(owner,{...input,description:'\ud800'}),error('platform_support_input_invalid'));
   const prepared=await store.prepare(owner,input);assert.ok(prepared.requestKey);
   assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_cases')).rows[0].n,0);
   await assert.rejects(store.submit(foreign,prepared.requestKey,input),error('platform_support_not_found'));
