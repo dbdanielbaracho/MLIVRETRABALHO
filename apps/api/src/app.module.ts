@@ -1,3 +1,4 @@
+import {PlatformSupportAdminController} from './platform-support-admin.controller';
 import {PlatformSupportOperatorController} from './platform-support-operator.controller';
 import {PlatformSupportController} from './platform-support.controller';
 import { Module } from '@nestjs/common';
@@ -50,6 +51,7 @@ import { CancellationController } from './cancellation.controller';
 @Module({
   controllers: [
     PlatformSupportController,
+    PlatformSupportAdminController,
     PlatformSupportOperatorController,
     HealthController,
     JobsController,

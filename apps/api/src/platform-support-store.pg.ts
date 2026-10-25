@@ -21,6 +21,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   await setup.query(readFileSync('packages/db/migrations/0074_platform_support_intake.sql','utf8'));
   await setup.query(readFileSync('packages/db/migrations/0075_platform_support_response_receipt.sql','utf8'));
   await setup.query(readFileSync('packages/db/migrations/0076_platform_support_dispatch.sql','utf8'));
+  await setup.query(readFileSync('packages/db/migrations/0077_platform_support_operator_roles.sql','utf8'));
   await setup.query('INSERT INTO identities(id) VALUES($1),($2),($3)',[owner,foreign,operator]);
   const db={transaction:async<T>(work:(c:import('pg').PoolClient)=>Promise<T>)=>{const c=await pool.connect();try{await c.query('BEGIN');await c.query(`SET LOCAL search_path TO ${schema},public`);const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}};
   const store=new PlatformSupportStore(db),error=(message:string)=>(e:unknown)=>e instanceof Error&&e.message===message;

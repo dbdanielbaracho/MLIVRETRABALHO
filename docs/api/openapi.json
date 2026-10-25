@@ -3,7 +3,7 @@
   "info": {
     "title": "MLivreTrabalho REST API",
     "version": "0.1.0",
-    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support owner and assigned-operator HTTP operations are implemented; administrative assignment authority, operator queue, mobile UI and final restricted-runtime proof remain pending. Intake is disabled by default. No production server is advertised."
+    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support owner and assigned-operator HTTP operations are implemented; dedicated administrative operator-role and assignment operations are implemented; operator queue, mobile UI and final restricted-runtime proof remain pending. Intake is disabled by default. No production server is advertised."
   },
   "servers": [
     {
@@ -6279,6 +6279,112 @@
           }
         }
       }
+    },
+    "/v1/platform-support/admin/operators/{id}": {
+      "post": {
+        "operationId": "post__v1_platform_support_admin_operators__id_",
+        "tags": [
+          "Platform support administration"
+        ],
+        "summary": "POST /v1/platform-support/admin/operators/{id}",
+        "x-nest-controller": "PlatformSupportAdminController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportRoleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Dedicated active administrator, active session; revision-bound atomic operation and audit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportRoleAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error401session,403authority,404missing target/case,400invalid input,409revision/state conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform-support/admin/cases/{id}/assignment": {
+      "post": {
+        "operationId": "post__v1_platform_support_admin_cases__id__assignment",
+        "tags": [
+          "Platform support administration"
+        ],
+        "summary": "POST /v1/platform-support/admin/cases/{id}/assignment",
+        "x-nest-controller": "PlatformSupportAdminController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportAssignmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Dedicated active administrator, active session; revision-bound atomic operation and audit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportAssignmentAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error401session,403authority,404missing target/case,400invalid input,409revision/state conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -9232,11 +9338,112 @@
         ],
         "additionalProperties": true,
         "description": "Strict server validation rejects unknown fields; plain text 1..4000 Unicode code points after trim; responseKey identifies a receipt only within this assigned case."
+      },
+      "PlatformSupportRoleInput": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        },
+        "required": [
+          "active",
+          "expectedRevision"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportRoleAck": {
+        "type": "object",
+        "properties": {
+          "identityId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "identityId",
+          "active",
+          "revision"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportAssignmentInput": {
+        "type": "object",
+        "properties": {
+          "targetOperatorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        },
+        "required": [
+          "targetOperatorId",
+          "expectedRevision"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportAssignmentAck": {
+        "type": "object",
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "operatorId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "caseId",
+          "operatorId",
+          "revision",
+          "revokedAt"
+        ],
+        "additionalProperties": true
       }
     }
   },
   "x-contract-source": {
-    "commit": "2055b468b44a3a6ea04dc314ab0382da7b274228",
+    "commit": "5d642c973f1658f3e69494b873caa5cf938e5105",
     "controllerBlobs": {
       "auth.controller.ts": "c432aa1e28e02c8064144e913168cc64e8a38e97",
       "availability.controller.ts": "fc225952e5063d65b344046d77dc1f8062026b3c",
@@ -9282,7 +9489,8 @@
       "work-graph.controller.ts": "5bed24a5999a66290a3eb058b09d70948e8c17f6",
       "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
       "platform-support.controller.ts": "4455553a343b67cca100404d5b349de540a732ca",
-      "platform-support-operator.controller.ts": "84e87942ced186f0273a19c40ff7ac72155cf7c5"
+      "platform-support-operator.controller.ts": "84e87942ced186f0273a19c40ff7ac72155cf7c5",
+      "platform-support-admin.controller.ts": "b4e1245f814aeb63ddfe41f825ca0ae123ed35fc"
     }
   }
 }

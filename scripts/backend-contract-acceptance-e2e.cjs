@@ -27,7 +27,7 @@ function inventory(){
  }
  const module=readFileSync('apps/api/src/app.module.ts','utf8'),registered=module.match(/controllers:\s*\[([^\]]+)\]/s)?.[1].match(/\w+Controller/g);
  assert.deepEqual([...controllers].sort(),[...registered].sort(),'Registered controller inventory drift');
- assert.equal(controllers.length,46);assert.equal(routes.length,116);assert.equal(new Set(routes.map(r=>r.method+' '+r.path)).size,116);
+ assert.equal(controllers.length,47);assert.equal(routes.length,118);assert.equal(new Set(routes.map(r=>r.method+' '+r.path)).size,118);
  return {controllers,routes,sources};
 }
 module.exports={inventory};
@@ -88,6 +88,7 @@ async function main(){
   async function profile(actor,label){const p=await call(actor,'PUT','/v1/professional-profile',{displayName:'Backend '+label,homeCity:'São Paulo',primaryRole:'Bartender'});actor.professionalId=needId(p.id);scalar(await call(actor,'GET','/v1/professional-profile'),'id',p.id);const a=await call(actor,'POST','/v1/availability/mine',{startsAt:iso(1),endsAt:iso(300)});needId(a.id);has(await call(actor,'GET','/v1/availability/mine'),a.id);}
   await require('./platform-support-owner-acceptance-e2e.cjs')({db,call,negative,account,company:owner});
   await require('./platform-support-operator-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
+  await require('./platform-support-admin-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
   await profile(pro,'professional');await profile(sub,'substitute');
   const savedPreferences=await require('./preferences-acceptance-e2e.cjs').preferencesJourney({db,call,negative,pro,sub,owner,role});
   const cap=await call(pro,'PUT','/v1/professional-capabilities/'+role.id,{skills:[],certifications:[],provenLevel:'entry'});scalar(cap,'roleId',role.id);has(await call(pro,'GET','/v1/professional-capabilities'),role.id,'roleId');
@@ -224,11 +225,11 @@ async function main(){
   for(const [method,path,body]of [['GET','/v1/company/members'],['GET','/v1/company/payment-events'],['GET','/v1/company/safety-cases'],['POST','/v1/verification/business/request'],['POST','/v1/company/integrity/cases',{assignmentId:assignment,kind:'other',evidence:'fixture'}]])await negative(pro,method,path,body,403);
   assert.deepEqual(await snapshot(owner.tenant),ownBefore,'Rejected commands must not change owned tenant rows');assert.deepEqual(await snapshot(foreign.tenant),foreignBefore,'Other tenant rows must remain byte-equivalent');assert.deepEqual(await security(),policiesBefore,'No security policy changes');
   scalar(await call(pro,'POST','/v1/auth/signout'),'ok',true);await negative(pro,'GET','/v1/me',undefined,401);await negative(retired,'GET','/v1/me',undefined,401);
-  assert.equal(positives.size,116);
-  console.log('BACKEND_CONTRACT_COVERAGE_OBSERVED '+JSON.stringify({controllers:46,routes:116,positiveRoutes:positives.size,negativeCases:negatives.length,requests,violations,routeContracts:catalog.routes.map(r=>({method:r.method,path:r.path,positiveRequests:positives.get(r.method+' '+r.path)})),controllerGitBlobs:catalog.sources}));
+  assert.equal(positives.size,118);
+  console.log('BACKEND_CONTRACT_COVERAGE_OBSERVED '+JSON.stringify({controllers:47,routes:118,positiveRoutes:positives.size,negativeCases:negatives.length,requests,violations,routeContracts:catalog.routes.map(r=>({method:r.method,path:r.path,positiveRequests:positives.get(r.method+' '+r.path)})),controllerGitBlobs:catalog.sources}));
   assert.equal(violations.length,0,'Real HTTP contract violations require correction');
   openapi.finish(requests);
-  console.log('BACKEND_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({registeredControllers:46,inventoriedRoutes:116,allRoutesPositive:true,actualHTTPPostgres:true,invalidInputAndAuth:true,allTenantHeaderRoutesDeniedForeignAndAnonymous:true,otherTenantAll27TablesUnchanged:true,policyCatalogUnchanged:true,confirmedCompletedLedgerAndReviews:true,humanReplacementAndCancellation:true,safetySupportAuditAndConversion:true,simulatedSignedWebhookOnly:true,providerKYCStillPending:true,requests,nativeUI:false,externalPentest:false,production:false}));
+  console.log('BACKEND_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({registeredControllers:47,inventoriedRoutes:118,allRoutesPositive:true,actualHTTPPostgres:true,invalidInputAndAuth:true,allTenantHeaderRoutesDeniedForeignAndAnonymous:true,otherTenantAll27TablesUnchanged:true,policyCatalogUnchanged:true,confirmedCompletedLedgerAndReviews:true,humanReplacementAndCancellation:true,safetySupportAuditAndConversion:true,simulatedSignedWebhookOnly:true,providerKYCStillPending:true,requests,nativeUI:false,externalPentest:false,production:false}));
  }finally{await db.end();}
 }
 if(require.main===module){if(process.argv.includes('--inventory-only'))console.log(JSON.stringify(inventory()));else main().catch(()=>{console.error('BACKEND_INTERNAL_ACCEPTANCE_FAIL '+JSON.stringify({stage,lastContract,details:'contract_assertion; no response body, identity, token or raw error exported'}));process.exitCode=1;});}
