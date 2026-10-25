@@ -5,6 +5,7 @@ import {randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {PlatformSupportStore} from './platform-support-store';
 import {verifyPlatformSupportPrivacy} from './platform-support-privacy.pg';
+import {verifyPlatformSupportOperator} from './platform-support-operator-store.pg';
 export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
  const url=new URL(config.databaseUrl);
  assert.ok(['localhost','127.0.0.1','[::1]'].includes(url.hostname));assert.equal(url.pathname,'/mlivretrabalho_http');
@@ -17,6 +18,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   await setup.query(`CREATE SCHEMA ${schema}`);await setup.query(`SET search_path TO ${schema},public`);
   await setup.query('CREATE TABLE identities(id uuid PRIMARY KEY,deactivated_at timestamptz)');
   await setup.query(readFileSync('packages/db/migrations/0074_platform_support_intake.sql','utf8'));
+  await setup.query(readFileSync('packages/db/migrations/0075_platform_support_response_receipt.sql','utf8'));
   await setup.query('INSERT INTO identities(id) VALUES($1),($2),($3)',[owner,foreign,operator]);
   const db={transaction:async<T>(work:(c:import('pg').PoolClient)=>Promise<T>)=>{const c=await pool.connect();try{await c.query('BEGIN');await c.query(`SET LOCAL search_path TO ${schema},public`);const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}};
   const store=new PlatformSupportStore(db),error=(message:string)=>(e:unknown)=>e instanceof Error&&e.message===message;
@@ -52,6 +54,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   const policies=(await setup.query('SELECT relrowsecurity,relforcerowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=$1 AND c.relkind=\'r\' AND c.relname LIKE \'platform_support_%\'',[schema])).rows;
   assert.equal(policies.length,7);assert.ok(policies.every(p=>p.relrowsecurity&&p.relforcerowsecurity));
   console.log('PLATFORM_SUPPORT_INTAKE_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,defaultDisabled:true,operatorRequired:true,ownerIsolation:true,concurrentReplaySingleCaseAndAudit:true,payloadConflict:true,auditFailureRollsBackCase:true,expiryAndRevocation:true,tenantRuntimeDenied:true,allSevenTablesForcedRLS:true,http:false,operatorAPI:false,production:false}));
+  await verifyPlatformSupportOperator(setup,db,store,owner,foreign,operator);
   await verifyPlatformSupportPrivacy(setup,db,store,owner,foreign,operator);
  }finally{await setup.query('ROLLBACK').catch(()=>undefined);await setup.query('SET search_path TO public');await setup.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);setup.release();await pool.end();}
 }
