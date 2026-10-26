@@ -20259,3 +20259,55 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   ],
   "validation": "Python syntax PASS; actual recorded ANR XML detection/normal frame negative PASS; YAML and first canonical runner unchanged assertions PASS. New own complete CI/Android/native22/visual review PENDING. No merge/postmerge/acceptance/operational activation or real credentials."
 }
+
+
+### PR632 — diagnóstico de bootstrap e ciclo de build, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "467c6863a498956a8ae8149e74dec471e8f54805",
+  "baselineRun": 40333674282,
+  "foundation": 121609394663,
+  "android": 121609625136,
+  "mergePolicy": 121617943095,
+  "baselineConclusion": "failure",
+  "reproduction": "Canonical smoke/native build/localURL/initialized-AVD guard/APIcleanup PASS, but Quickstep ANR repeated BEFORE LOGIN with zero HTTP despite reused data. PNG665831ed15a4406e196d36df81b0ee55c189e6db9ba808979f35485808f2d635/XML57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0 and artifact12655589178/29020354bytes/ZIPf5c851e571c5c6b0db1a06dead1287b314b1690a0648852315c56ed9003e32eb downloaded/hashverified/visually reviewed. Not a positive support state; no runtime approval for product994 fixes.",
+  "diagnosisLimit": "Previous driver cleared logcat before launch and lost the bootstrap ANR reason. Resource contention from build daemons is a hypothesis, NOT a proven root cause.",
+  "change": "Retain logcat without clearing; capture emulator-bootstrap-logcat.txt before package install and print bounded ANR/CPU-reason excerpts. Normal project Gradle wrapper --stop after each completed build, before emulator startup, with free-memory and aggregate Java RSS metadata before/after. No blanket process kill, root, permission grants, system-app input, ANR dismissal, alternate image, clock/storage injection or guard relaxation.",
+  "primary": "https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:stopping_an_existing_daemon",
+  "sources": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "sha": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "1c5570243fdbbbfdbdd7853c77259190b4600cec",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "pins": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+      "new": "2c5f2574b8f6815a5ca248272be437859d9c1260"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "ac15d027462010e063003e076e8488cb85489ba4",
+      "new": "1c5570243fdbbbfdbdd7853c77259190b4600cec"
+    }
+  ],
+  "sourcePinReconciliation": [
+    {
+      "at": "protectedInputs/1",
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+      "new": "2c5f2574b8f6815a5ca248272be437859d9c1260"
+    }
+  ],
+  "validation": "Python syntax and YAML/lifecycle ordering PASS. Original canonical build script/package/URL/artifact/first-runner/KVM controls preserved. Own full CI/Android/native22/visual review/ANR resource hypothesis PENDING. No merge/postmerge/acceptance/operational activation."
+}

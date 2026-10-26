@@ -118,9 +118,14 @@ def signin(kind):
     open_route('perfil');wait('sem vínculo com empresa');tap('sem vínculo com empresa');wait('Ajuda à plataforma')
 try:
     assert adb('shell','getprop','sys.boot_completed').strip()=='1'
+    boot_log=adb('logcat','-d');(OUT/'emulator-bootstrap-logcat.txt').write_text(boot_log)
+    boot_rows=boot_log.splitlines()
+    for i,line in enumerate(boot_rows):
+        if re.search(r'ANR in |am_anr|Input dispatching timed out',line):
+            for row in boot_rows[max(0,i-2):i+35]:print('NATIVE_BOOTSTRAP_DIAGNOSTIC '+row,flush=True)
     assert adb('shell','pm','list','packages',PACKAGE).strip()=='','fixture_package_must_be_absent'
     adb('install',str(OUT/'SupportFixture.apk'),timeout=120)
-    adb('logcat','-c');stage='unlinked-navigation';signin('pro')
+    stage='unlinked-navigation';signin('pro')
     wait('Atendimento da plataforma indisponível');screenshot('01-disabled-empty',True)
     n=None
     for _ in range(12):
