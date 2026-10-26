@@ -1,7 +1,7 @@
 'use strict';
 // CI-only loopback surface. No app endpoint, real operator or production provisioning.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
-const {randomUUID}=require('node:crypto'),{createRequire}=require('node:module');
+const {randomUUID,createHash}=require('node:crypto'),{createRequire}=require('node:module');
 const {Client}=createRequire(path.resolve('apps/api/package.json'))('pg');
 const root=path.resolve('/tmp/mlivre-support-native'),privateFile=path.join(root,'private.json'),modeFile=path.join(root,'fault.json'),trafficFile=path.join(root,'traffic.json');
 function guard(){assert.equal(process.env.CI,'true');assert.equal(process.env.GITHUB_REPOSITORY,'dbdanielbaracho/MLIVRETRABALHO');const u=new URL(process.env.DATABASE_URL);assert.ok(['localhost','127.0.0.1'].includes(u.hostname));assert.equal(u.pathname,'/mlivretrabalho_http');return u;}
@@ -16,6 +16,16 @@ async function command(name){
    const row=(await db.query('SELECT id FROM platform_support_cases WHERE owner_identity_id=$1 AND description=$2',[info.accounts.pro.id,'Native_first_request'])).rows[0];assert.ok(row);
    await request(info.actual,info.accounts.admin,'POST','/v1/platform-support/admin/cases/'+row.id+'/assignment',{targetOperatorId:info.accounts.operator.id,expectedRevision:0});
    await request(info.actual,info.accounts.operator,'POST','/v1/platform-support/cases/'+row.id+'/responses',{responseKey:randomUUID(),body:'Native platform reply',resolve:false});
+  }else if(name==='short-intent')await db.query("ALTER TABLE platform_support_intents ALTER COLUMN expires_at SET DEFAULT (now()+interval '12 seconds')");
+  else if(name==='normal-intent')await db.query("ALTER TABLE platform_support_intents ALTER COLUMN expires_at SET DEFAULT (now()+interval '24 hours')");
+  else if(name==='check-expired'){
+   assert.equal((await db.query('SELECT count(*)::int n FROM platform_support_intents WHERE owner_identity_id=$1 AND submitted_at IS NULL AND expires_at<=now()',[info.accounts.pro.id])).rows[0].n,1);
+   assert.equal((await db.query('SELECT count(*)::int n FROM platform_support_cases c JOIN platform_support_intents i ON i.request_key=c.id WHERE i.owner_identity_id=$1 AND i.submitted_at IS NULL',[info.accounts.pro.id])).rows[0].n,0);
+  }else if(name==='resolve-minimize'){
+   const row=(await db.query('SELECT id FROM platform_support_cases WHERE owner_identity_id=$1 AND description=$2',[info.accounts.pro.id,'Native_retry_request'])).rows[0];assert.ok(row);
+   await request(info.actual,info.accounts.admin,'POST','/v1/platform-support/admin/cases/'+row.id+'/assignment',{targetOperatorId:info.accounts.operator.id,expectedRevision:0});
+   await request(info.actual,info.accounts.operator,'POST','/v1/platform-support/cases/'+row.id+'/responses',{responseKey:randomUUID(),body:'Synthetic resolved response',resolve:true});
+   await db.query('UPDATE platform_support_cases SET description=NULL WHERE id=$1',[row.id]);await db.query('UPDATE platform_support_responses SET body=NULL WHERE case_id=$1',[row.id]);
   }else if(name==='expire')await db.query('DELETE FROM sessions WHERE identity_id=$1',[info.accounts.pro.id]);
   else if(name==='seed-history'){
    for(let i=0;i<21;i++){const body={category:'other',description:'Native_history_'+i},intent=await request(info.actual,info.accounts.pro,'POST','/v1/me/platform-support/intent',body);const r=await fetch(info.actual+'/v1/me/platform-support',{method:'POST',headers:{authorization:'Bearer '+info.accounts.pro.token,'content-type':'application/json','idempotency-key':intent.requestKey},body:JSON.stringify(body),signal:AbortSignal.timeout(10000)});assert.equal(r.status,201);}
@@ -32,7 +42,7 @@ async function start(){
  const accounts={},stamp=randomUUID().replaceAll('-',''),password='NativeFixture123';let server,closing=false;
  const capability=(await db.query('SELECT enabled FROM platform_support_capability WHERE singleton')).rows[0].enabled;
  async function close(){if(closing)return;closing=true;try{await new Promise(resolve=>server?server.close(resolve):resolve());
-  await db.query('UPDATE platform_support_capability SET enabled=$1',[capability]);
+  await db.query("ALTER TABLE platform_support_intents ALTER COLUMN expires_at SET DEFAULT (now()+interval '24 hours')");await db.query('UPDATE platform_support_capability SET enabled=$1',[capability]);
   const ids=Object.values(accounts).map(a=>a.id);await db.query('DELETE FROM sessions WHERE identity_id=ANY($1::uuid[])',[ids]);
   await db.query('DELETE FROM platform_support_audit WHERE actor_identity_id=ANY($1::uuid[]) OR subject_identity_id=ANY($1::uuid[]) OR case_id IN(SELECT id FROM platform_support_cases WHERE owner_identity_id=ANY($1::uuid[]))',[ids]);
   await db.query('DELETE FROM platform_support_cases WHERE owner_identity_id=ANY($1::uuid[])',[ids]);await db.query('DELETE FROM platform_support_intents WHERE owner_identity_id=ANY($1::uuid[])',[ids]);await db.query('DELETE FROM platform_support_administrators WHERE identity_id=ANY($1::uuid[])',[ids]);await db.query('DELETE FROM platform_support_operators WHERE identity_id=ANY($1::uuid[])',[ids]);
@@ -44,7 +54,8 @@ async function start(){
   server=http.createServer(async(req,res)=>{try{
    const url=new URL(req.url,'http://127.0.0.1');assert.ok(url.pathname.startsWith('/v1/'));assert.ok(['GET','POST','PUT','DELETE'].includes(req.method));let bytes=Buffer.alloc(0);for await(const part of req){bytes=Buffer.concat([bytes,part]);assert.ok(bytes.length<20000);}
    const mode=JSON.parse(fs.readFileSync(modeFile,'utf8')),isList=req.method==='GET'&&url.pathname==='/v1/me/platform-support',isSubmit=req.method==='POST'&&url.pathname==='/v1/me/platform-support';
-   const row={method:req.method,route:url.pathname.replace(/[a-f0-9-]{36}/g,':id'),cursor:url.searchParams.has('cursor'),at:new Date().toISOString()};traffic.push(row);fs.writeFileSync(trafficFile,JSON.stringify(traffic));
+   const row={...(isSubmit?{keyHash:createHash('sha256').update(String(req.headers['idempotency-key']??'')).digest('hex')}:{}),method:req.method,route:url.pathname.replace(/[a-f0-9-]{36}/g,':id'),cursor:url.searchParams.has('cursor'),at:new Date().toISOString()};traffic.push(row);fs.writeFileSync(trafficFile,JSON.stringify(traffic));
+   if(isSubmit&&mode.rejectSubmitOnce){fs.writeFileSync(modeFile,'{}');row.status=503;fs.writeFileSync(trafficFile,JSON.stringify(traffic));res.writeHead(503,{'content-type':'application/json'});res.end(JSON.stringify({statusCode:503,message:'synthetic_network_unavailable',error:'Service Unavailable'}));return;}
    if(isList&&mode.listErrorOnce){fs.writeFileSync(modeFile,'{}');res.writeHead(503,{'content-type':'application/json'});res.end(JSON.stringify({statusCode:503,message:'synthetic_network_unavailable',error:'Service Unavailable'}));return;}
    const headers={};for(const key of ['authorization','content-type','x-tenant-id','idempotency-key'])if(typeof req.headers[key]==='string')headers[key]=req.headers[key];
    const upstream=await fetch(application.origin+url.pathname+url.search,{method:req.method,headers,redirect:'error',signal:AbortSignal.timeout(10000),...(bytes.length?{body:bytes}:{} )}),body=Buffer.from(await upstream.arrayBuffer());

@@ -6714,7 +6714,39 @@
       ],
       "render": false,
       "activation": false,
-      "production": false
+      "production": false,
+      "recoveryCoverage": {
+        "previousHead": "e028c220c3747ec57abb54f3c8e64a9fdb6d2b5e",
+        "sources": [
+          {
+            "path": "scripts/platform-support-native-api.cjs",
+            "sha": "6a017e82d48a20f942c5a18cb49782d0d39d4fd7",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "a915dcbe772174bfb05c14b2bd89a42d0b1cfd01",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/platform-support-native-api.cjs",
+            "old": "b6903beeb352f45793429dfc6bfd184acaf78e6c",
+            "new": "6a017e82d48a20f942c5a18cb49782d0d39d4fd7"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "f76815658b77bb399c292718fb8b41ca775d6fcc",
+            "new": "a915dcbe772174bfb05c14b2bd89a42d0b1cfd01"
+          }
+        ],
+        "scope": "Expand planned native coverage to prepared/unavailable/conflict/explicit retry same-key/cleared/expired/resolved minimized (22 snapshots). Proxy503 leaves actual DB intent prepared; retries use real API payload conflict and correct commit; traffic key hashes prove one explicit identity key. Expiry accelerated only by disposable database default12seconds, restored24hours on normal path and cleanup; no device clock/root/storage injection or fake ACK. Resolved case uses actual admin/operator API then synthetic minimization only for UI-null state. Native control lookup scrolls to history and reads disabled semantics without clicking.",
+        "visualEvidence": "Original PNG/XML per state; hashes plus base64 chunks bounded16k for later byte-verified image inspection, no generated images or JSX/hooks/render inference.",
+        "validation": "Local Node/Python syntax PASS; actual expanded native UI/CI own SHA PENDING. Prior e028c22 run still in progress and not evidence for new bytes."
+      }
     }
   }
 }
