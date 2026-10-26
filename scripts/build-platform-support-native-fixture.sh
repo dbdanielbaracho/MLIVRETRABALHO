@@ -11,8 +11,16 @@ trap 'rm -rf "$STAGE"' EXIT
 git archive HEAD | tar -x -C "$STAGE"
 ln -s "$ROOT/node_modules" "$STAGE/node_modules"
 ln -s "$ROOT/apps/mobile/node_modules" "$STAGE/apps/mobile/node_modules"
-CANONICAL="$(sha256sum artifacts/android-pilot/MLivreTrabalho.apk | cut -d ' ' -f1)"
-export EXPO_PUBLIC_API_URL="$(node -p "require('/tmp/mlivre-support-native/public.json').api")"
+test "$#" -le 1
+if test "${1:-}" = --bundle-probe; then
+  PROBE=true
+  export EXPO_PUBLIC_API_URL=http://10.0.2.2:1/v1
+else
+  test "$#" = 0
+  PROBE=false
+  CANONICAL="$(sha256sum artifacts/android-pilot/MLivreTrabalho.apk | cut -d ' ' -f1)"
+  export EXPO_PUBLIC_API_URL="$(node -p "require('/tmp/mlivre-support-native/public.json').api")"
+fi
 [[ "$EXPO_PUBLIC_API_URL" =~ ^http://10\.0\.2\.2:[0-9]+/v1$ ]]
 export NODE_ENV=production
 node - "$STAGE" <<'JS'
@@ -31,6 +39,11 @@ config.watchFolders=[...new Set([...(config.watchFolders||[]),path.join(source,'
 config.resolver.nodeModulesPaths=[path.join(__dirname,'node_modules'),path.join(source,'apps/mobile/node_modules'),path.join(source,'node_modules')];
 module.exports=config;
 METRO
+if test "$PROBE" = true; then
+  pnpm exec expo export --platform android --output-dir "$STAGE/bundle-probe"
+  echo 'NATIVE_FIXTURE_MODULE_CLOSURE_PASS probeOnly=true UI=false production=false'
+  exit 0
+fi
 pnpm exec expo prebuild --platform android --clean
 mkdir -p android/app/src/main/res/xml android/app/src/main/res/raw
 # The fixture trusts only its ephemeral CA; external production HTTPS is not trusted.

@@ -1236,7 +1236,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha": "f05e734241be320aade188f19c3a7fa54f483e55",
+          "sha": "c38d89e91cd3c562be73b3f793115809cfb34e73",
           "mode": "100644"
         },
         {
@@ -3321,7 +3321,7 @@
   "protectedInputs": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha": "f05e734241be320aade188f19c3a7fa54f483e55",
+      "sha": "c38d89e91cd3c562be73b3f793115809cfb34e73",
       "mode": "100644"
     },
     {
@@ -6832,6 +6832,50 @@
         ],
         "scope": "Dependency visibility only within isolated Metro config; canonical/root app config and lock unchanged. Complete conditional keyboard dismissal in recovery field as well. No UI/product defect or native rendered proof yet.",
         "validation": "Local Shell/Python syntax PASS; new own full CI/Android/native UI PENDING."
+      },
+      "bundleClosureGate": {
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "bbef78a6858e82f526d23c35406c498dff39a8b4",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": ".github/workflows/ci.yml",
+            "sha": "c38d89e91cd3c562be73b3f793115809cfb34e73",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "old": "b0338b114caaf185346a619ce22fd44e39ad2191",
+            "new": "bbef78a6858e82f526d23c35406c498dff39a8b4"
+          },
+          {
+            "path": ".github/workflows/ci.yml",
+            "old": "f05e734241be320aade188f19c3a7fa54f483e55",
+            "new": "c38d89e91cd3c562be73b3f793115809cfb34e73"
+          }
+        ],
+        "sourcePinReconciliation": [
+          {
+            "at": "requirements/39/implementation/1",
+            "path": ".github/workflows/ci.yml",
+            "old": "f05e734241be320aade188f19c3a7fa54f483e55",
+            "new": "c38d89e91cd3c562be73b3f793115809cfb34e73"
+          },
+          {
+            "at": "protectedInputs/0",
+            "path": ".github/workflows/ci.yml",
+            "old": "f05e734241be320aade188f19c3a7fa54f483e55",
+            "new": "c38d89e91cd3c562be73b3f793115809cfb34e73"
+          }
+        ],
+        "scope": "After actual Metro failures before UI, run the identical staged Metro setup as --bundle-probe in foundation immediately after existing Android export. Explicit compilation-only local URL port1, no network/API execution or canonical APK prerequisite; temporary bundle removed. Full native build/UI remains mandatory in Android job, unchanged ordering/permissions/applicability. No render claim from bundle probe.",
+        "validation": "Bash syntax PASS; module closure/own full CI/Android/native22 snapshots PENDING."
       }
     }
   }

@@ -21896,3 +21896,7 @@ Testeguardfixture passa a serinvocadoexplicitamente na preparaçãoAndroid obrig
 
 ### PLATFORM_SUPPORT_NATIVE_WORKSPACE_DEPENDENCY_VISIBILITY_2026_10_26
 546c389/run40307101335 reproduziusegundafalhaMetronantesUI: entryabsolutovisível, importbareexpo-router emapp/_layout.tsx nãoresolvido. Própriodiretóriomobile/node_modulesé targetexternodo symlink; watchFolders/nodeModulesPaths dafixture passama incluí-loexplicitamente alémdo rootnode_modules, apenasdependências. Canonical/mobileconfigoriginal/lockfile/permissões intactos. Drivercompleta dispensacondicionalIME nocamporecoverytambém. SintaxeShell/PythonPASS, novoCI/nativebuild/render/visualreviewPENDENTES;semreabrir565/emprestarverde/aceite/merge/ativação.
+
+
+### PLATFORM_SUPPORT_NATIVE_BUNDLE_CLOSURE_GATE_2026_10_26
+Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe nafoundationlogoapósExportAndroidexistente, para feedback de dependênciasantesdaprovacompleta. Modo explícitocompilaçãosó/APIURLlocalporta1,nãorequisitaAPI/nãogeraAPK/nãolêartefatocanônico/temporárioremovido; nãocontascomorender. Buildnativo/jornada22capturas permanecemobrigatóriosnomesmojobAndroid comordem/permissões/aplicabilidadepreservadas. SourcepinCIativo old/newreconciliado. BashsyntaxPASS;moduleclosure/CI/Android/render/visualreviewdoNOVOSHApendentes,semmerge/aceite/ativação.
