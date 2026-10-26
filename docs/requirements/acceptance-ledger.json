@@ -5362,6 +5362,38 @@
           }
         ]
       }
+    },
+    "readRLSIncrement": {
+      "baseHead": "46032a2bd2df94098f7f8e23da0f3da70fa22fb7",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0078_platform_support_active_requester_rls.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "30e2b69223e93956535cfa457e7a3ccdb746334e"
+        },
+        {
+          "path": "apps/api/src/platform-support-read-rls.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f5fd2f659d2b816376fa2015ab86de5988cedfa"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2b74b80cc0883a652bccec04723a44d10717e6f1"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "d49dfbdb553609a835674fdc12e1a11e3e8e13cb",
+          "new": "2b74b80cc0883a652bccec04723a44d10717e6f1"
+        }
+      ],
+      "scope": "0078 strengthens owner intent/case and assigned-operator case SELECT with active requester and explicit operator context. No ACL/role/grant/bootstrap/activation changes in migrations. Actual old0074 baseline then0078 fixed read-policy fixture in guarded schema.",
+      "validation": "TypeScript syntax checked locally; PostgreSQL baseline reproduction/fixed proof and own full CI/Android pending. Disposable nonowner NOLOGIN NOBYPASS role/read ACLs/rows rolled back, app_runtime remains denied. NOT positive API runtime proof or rendered journey; draft, no acceptance."
     }
   }
 }
