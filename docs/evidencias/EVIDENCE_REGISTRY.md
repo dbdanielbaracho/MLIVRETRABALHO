@@ -20464,3 +20464,25 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "primary": "https://docs.expo.dev/guides/environment-variables/ ; https://metrobundler.dev/docs/configuration/#cachestores",
   "validation": "Bash/Node/Python syntax PASS; missing local URL reproduced against actual previous artifact. New own CI/full Android/native22 and visual review pending. Native failure screen only is NOT full render proof. Merge/acceptance/activation=false."
 }
+
+
+### PR632 — carregamento fechado do cache Metro, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "d13aa8128eb4cf885377f296ae9e8e0eb49bc641",
+  "baselineRun": 40321015512,
+  "foundation": 121565659042,
+  "android": 121565835568,
+  "mergePolicy": 121572144312,
+  "baselineConclusion": "failure",
+  "reproduction": "Foundation probe/localURL passed; Android actual dependency layout failed before UI loading stage Metro config: Cannot find module metro-cache. API cleanup PASS. No new native screenshots on d13; previous single failure screen only remains partial evidence.",
+  "source": {
+    "path": "scripts/build-platform-support-native-fixture.sh",
+    "old": "9c0d0cf79a0bae338b4056b5570bdebc2362e5da",
+    "new": "e5c65caa9d734f99d030248ce38b7558dcbea933"
+  },
+  "change": "Use documented cacheStores callback receiving FileStore from Metro instead of direct require of transitive pnpm dependency. Explicit config require + Expo bundle/localURL proof now run in BOTH probe and full mode before Gradle. Final APK localURL guard remains before install, no daemon/shared cache/network relaxation.",
+  "primary": "https://metrobundler.dev/docs/configuration/#cachestores",
+  "validation": "Bash syntax PASS; new own complete CI/Android/22-state native journey/visual review PENDING. No merge/postmerge/acceptance/activation."
+}

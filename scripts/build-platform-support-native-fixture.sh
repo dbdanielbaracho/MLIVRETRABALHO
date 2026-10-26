@@ -32,14 +32,13 @@ cd "$STAGE/apps/mobile"
 cat > metro.config.js <<'METRO'
 const {getDefaultConfig}=require('expo/metro-config');
 const path=require('node:path');
-const {FileStore}=require('metro-cache');
 const config=getDefaultConfig(__dirname);
 // Do not reuse the canonical bundle's transformed environment literals.
-config.cacheStores=[new FileStore({root:path.join(__dirname,'.fixture-metro-cache')})];
+config.cacheStores=({FileStore})=>[new FileStore({root:path.join(__dirname,'.fixture-metro-cache')})];
 config.cacheVersion='support-fixture-'+process.env.EXPO_PUBLIC_API_URL;
 module.exports=config;
 METRO
-if test "$PROBE" = true; then
+node -e 'require(process.cwd()+"/metro.config.js")'
   pnpm exec expo export --platform android --output-dir "$STAGE/bundle-probe"
   python3 - "$STAGE/bundle-probe" <<'PY'
 import os,sys
@@ -48,6 +47,7 @@ expected=os.environ['EXPO_PUBLIC_API_URL'].encode()
 assert any(expected in p.read_bytes() for p in Path(sys.argv[1]).rglob('*') if p.is_file()), 'fixture_probe_local_api_not_embedded'
 print('NATIVE_FIXTURE_PROBE_LOCAL_API_PASS')
 PY
+if test "$PROBE" = true; then
   echo 'NATIVE_FIXTURE_MODULE_CLOSURE_PASS probeOnly=true UI=false production=false'
   exit 0
 fi
