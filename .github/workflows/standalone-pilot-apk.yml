@@ -134,8 +134,12 @@ jobs:
           free -m
           ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "JAVA_RSS_KIB_AFTER", sum+0}'
 
-      - name: Require the canonical-initialized AVD for isolated fixture
-        run: test -f "${ANDROID_AVD_HOME:?}/test.avd/config.ini"
+      - name: Require the canonical-initialized AVD and four host CPUs for isolated fixture
+        run: |
+          test -f "${ANDROID_AVD_HOME:?}/test.avd/config.ini"
+          available_cpus="$(nproc)"
+          echo "NATIVE_HOST_CPUS $available_cpus"
+          test "$available_cpus" -ge 4
 
       - name: Render native support states and recovery with real local sessions
         uses: reactivecircus/android-emulator-runner@v2
@@ -144,6 +148,7 @@ jobs:
         with:
           avd-name: test
           force-avd-creation: false
+          cores: 4
           api-level: 35
           arch: x86_64
           profile: pixel_6

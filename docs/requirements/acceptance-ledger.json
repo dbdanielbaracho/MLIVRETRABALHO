@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
+      "sha": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
       "mode": "100644"
     },
     {
@@ -7154,6 +7154,46 @@
           }
         ],
         "validation": "YAML and first canonical/API35/arch/profile-preserved checks PASS. New own full CI/Android/renderer outcome/native22/visual review PENDING. No merge/postmerge/acceptance/activation/production."
+      },
+      "guestCPUCapacity": {
+        "at": "2026-10-26",
+        "baselineHead": "58b4ba625f25327a14cea5ad51e45cb0fbe8365e",
+        "baselineRun": 40342157002,
+        "foundation": 121639439707,
+        "android": 121639673928,
+        "mergePolicy": 121652550365,
+        "baselineConclusion": "failure",
+        "proof": "Both swiftshader_indirect and swiftshader selected the SAME GLES/Vulkan SwiftShader backend. No causal renderer fix. SystemUI startup ANR before login/zeroHTTP recurred; CPU pressureavg10=59.67, SurfaceFlinger54%/composer45%, total98% (90%kernel); guest memory pressure0. Build/localURL/canonical smoke/API cleanup PASS.",
+        "artifact": {
+          "id": 12660414693,
+          "size": 29924724,
+          "zipSHA256": "d48879327c1340ddf87dbd627addded047932202b1870c8473383a9d0cbdbaa6",
+          "pngSHA256": "e717b99c261fe8f312828cb60565e3add51ee87bee64b3510d1460f4586a021f",
+          "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+          "checked": "ZIP downloaded/hash verified; PNG/XML actual hashes verified; original SystemUI ANR image visually reviewed, not a positive Ajuda state."
+        },
+        "change": "Second isolated emulator gets four guest CPUs instead of action default two, guarded by nproc>=4 on SAME existing host; no larger runner/new cost/service/fallback. Action source confirms hw.cpu.ncore applied even to reused AVD. First canonical runner remains byte-for-byte unchanged. Same API35/x86_64/pixel_6/resolution/image/software backend/AVD/data/namespace/ANR fail-closed, no system dialog inputs/root/grants/security changes.",
+        "hypothesis": "Two CPU-bound compositor processes contended with startup tasks in two-core guest. Additional guest scheduling capacity is a candidate, NOT a proven fix. Host count insufficient fails before boot; no fallback allocation.",
+        "primary": [
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml",
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/src/emulator-manager.ts",
+          "https://developer.android.com/studio/run/managing-avds"
+        ],
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
+          "new": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc"
+        },
+        "validation": "YAML_CPU_CANONICAL_AND_NATIVE_GUARDS_PRESERVED_PASS local; own new full CI/Android/native22/visual QA pending. No merge/postmerge/acceptance/activation/production.",
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1",
+            "key": "sha",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
+            "new": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc"
+          }
+        ]
       }
     }
   }
