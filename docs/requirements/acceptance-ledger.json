@@ -5394,6 +5394,64 @@
       ],
       "scope": "0078 strengthens owner intent/case and assigned-operator case SELECT with active requester and explicit operator context. No ACL/role/grant/bootstrap/activation changes in migrations. Actual old0074 baseline then0078 fixed read-policy fixture in guarded schema.",
       "validation": "TypeScript syntax checked locally; PostgreSQL baseline reproduction/fixed proof and own full CI/Android pending. Disposable nonowner NOLOGIN NOBYPASS role/read ACLs/rows rolled back, app_runtime remains denied. NOT positive API runtime proof or rendered journey; draft, no acceptance."
+    },
+    "ownerRuntimeIncrement": {
+      "baseHead": "691e39e6ccfe921ffcbc801e076d6d9f6a3ec7c0",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0079_platform_support_owner_locks.sql",
+          "sha": "24990a334c412a4ce07fbeafabe2101d16c130bf",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "sha": "7f2b24a160d713f9d5373cb1e0e72613e3be9364",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-store.ts",
+          "sha": "09f2a5cc0eda31a0d97bbd2d38377f93c69f1bda",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "sha": "94d50b2b761192db3c10d479d1c4368a4edcd29d",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "c260fe6ada4217339292e996b94d7eebbf1032fd",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "old": "cde9f5193a838293fcc0aa0d9be4cd532e103ea6",
+          "new": "7f2b24a160d713f9d5373cb1e0e72613e3be9364"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-store.ts",
+          "old": "201a342cc39c081b49464a0783c4c0e108900254",
+          "new": "09f2a5cc0eda31a0d97bbd2d38377f93c69f1bda"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "2b74b80cc0883a652bccec04723a44d10717e6f1",
+          "new": "c260fe6ada4217339292e996b94d7eebbf1032fd"
+        }
+      ],
+      "decision": "Bounded SECURITY DEFINER owner-identity/intake lock functions, only boolean results, qualified relations and fixed pg_catalog search_path; PUBLIC/app_runtime execute revoked atomically. No persistent runtime role/grant/bootstrap/activation in migration. List uses nonlocking availability branch to preserve prior snapshot behavior; writes retain prior row locks.",
+      "references": [
+        "https://www.postgresql.org/docs/17/sql-createfunction.html",
+        "https://www.postgresql.org/docs/17/sql-select.html"
+      ],
+      "validation": "Own CI/Android/actual PostgreSQL reproduction and positive owner runtime proof PENDING. Fixture uses DatabaseService actual pool/transaction with disposable nonsuperuser NOBYPASS LOGIN and column ACLs only in guarded synthetic schema; no UPDATE identities/capability/operators. Lock contention, temp shadowing, RLS, replay, audit rollback and cleanup asserted. Not full restricted HTTP/operator/admin runtime proof or render."
     }
   }
 }

@@ -9,7 +9,7 @@ export class PlatformSupportOwnerStore extends PlatformSupportStore{
     FROM platform_support_cases WHERE owner_identity_id=$1 AND ($2::timestamptz IS NULL OR (created_at,id)<($2::timestamptz,$3::uuid)) ORDER BY created_at DESC,id DESC LIMIT $4`,[identityId,cursor?.[0]??null,cursor?.[1]??null,limit+1])).rows;
    const page=rows.slice(0,limit),last=page.at(-1);
    for(const row of page)await db.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,action) VALUES($1,$2,'read')",[row.id,identityId]);
-   const acceptingRequests=(await db.query(`SELECT EXISTS(SELECT 1 FROM platform_support_capability c WHERE c.singleton AND c.enabled AND EXISTS(SELECT 1 FROM platform_support_operators o JOIN identities i ON i.id=o.identity_id WHERE o.active AND i.deactivated_at IS NULL)) AS enabled`)).rows[0].enabled;
+   const acceptingRequests=(await db.query('SELECT platform_support_intake_available(false) AS enabled')).rows[0].enabled;
    return {items:page.map(({cursorAt,...row})=>row),nextCursor:rows.length>limit&&last?Buffer.from(JSON.stringify([last.cursorAt,last.id])).toString('base64url'):null,acceptingRequests};
   });
  }

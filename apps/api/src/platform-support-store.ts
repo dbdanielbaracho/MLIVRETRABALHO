@@ -6,15 +6,13 @@ export class PlatformSupportStore{
  constructor(private readonly database:Transactions){}
  protected owner<T>(identityId:string,work:(db:PoolClient)=>Promise<T>){return this.database.transaction(async db=>{
   await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[identityId]);
-  if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[identityId])).rows[0])throw Error('platform_support_identity_required');
+  if(!(await db.query('SELECT platform_support_lock_owner_identity() AS active')).rows[0]?.active)throw Error('platform_support_identity_required');
   return work(db);
  });}
  private async available(db:PoolClient){
-  const capability=(await db.query('SELECT enabled FROM platform_support_capability WHERE singleton=true FOR SHARE')).rows[0];
-  if(!capability?.enabled)throw Error('platform_support_unavailable');
-  // Lock actual active operators/identities against revocation or deactivation during intake.
-  const operators=await db.query('SELECT o.identity_id FROM platform_support_operators o JOIN identities i ON i.id=o.identity_id WHERE o.active AND i.deactivated_at IS NULL ORDER BY o.identity_id FOR SHARE OF o,i');
-  if(!operators.rows.length)throw Error('platform_support_unavailable');
+  // Definer function returns only availability and holds the existing capability/operator/identity locks.
+  // Runtime receives no UPDATE ACL on identities, operators or the global capability.
+  if(!(await db.query('SELECT platform_support_intake_available(true) AS enabled')).rows[0]?.enabled)throw Error('platform_support_unavailable');
  }
  async prepare(identityId:string,value:unknown){
   const input=platformSupportInput(value);if(!input)throw Error('platform_support_input_invalid');
