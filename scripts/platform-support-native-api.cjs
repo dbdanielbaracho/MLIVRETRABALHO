@@ -50,7 +50,7 @@ async function start(){
  try{
   for(const label of ['pro','company','admin','operator']){const email='native-'+label+'-'+stamp+'@example.test',company=label==='company',created=await request(application.origin,null,'POST','/v1/auth/signup',{email,password,accountType:company?'company':'professional',...(company?{workspaceName:'Native synthetic company'}:{})}),signed=await request(application.origin,null,'POST','/v1/auth/signin',{email,password});accounts[label]={id:created.id,email,password,token:signed.accessToken};}
   await db.query('INSERT INTO platform_support_administrators(identity_id,active) VALUES($1,true)',[accounts.admin.id]);await request(application.origin,accounts.admin,'POST','/v1/platform-support/admin/operators/'+accounts.operator.id,{active:true,expectedRevision:0});await db.query('UPDATE platform_support_capability SET enabled=false');
-  const traffic=[];
+  const traffic=[];fs.writeFileSync(trafficFile,'[]',{mode:0o600});
   server=http.createServer(async(req,res)=>{try{
    const url=new URL(req.url,'http://127.0.0.1');assert.ok(url.pathname.startsWith('/v1/'));assert.ok(['GET','POST','PUT','DELETE'].includes(req.method));let bytes=Buffer.alloc(0);for await(const part of req){bytes=Buffer.concat([bytes,part]);assert.ok(bytes.length<20000);}
    const mode=JSON.parse(fs.readFileSync(modeFile,'utf8')),isList=req.method==='GET'&&url.pathname==='/v1/me/platform-support',isSubmit=req.method==='POST'&&url.pathname==='/v1/me/platform-support';

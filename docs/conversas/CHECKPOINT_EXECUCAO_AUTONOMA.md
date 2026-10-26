@@ -20019,3 +20019,42 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "change": "Copy installed pnpm root/mobile node_modules preserving relative symlinks into isolated git-archive stage; use default Expo Metro config within stage. No dependency install, lockfile/mobile/canonical config/output edits. No network fallback or production navigation.",
   "validation": "bash -n PASS. Own full CI/Android/AAPT/native22 screenshots PENDING. render=false; merge/activation/acceptance=false."
 }
+
+
+### PR632 — URL local no bundle e autenticação nativa, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "ea1ab048d385e149a5c494d21ba6442d95625007",
+  "baselineRun": 40317850446,
+  "foundation": 121554842014,
+  "android": 121554998214,
+  "mergePolicy": 121563015586,
+  "conclusion": "failure",
+  "nativeBuild": true,
+  "nativeJourney": false,
+  "proof": "Original failure-unlinked-navigation PNG extracted from logs, SHA256 78c7a6fa75c08d7d4ed8556547b5d44f073348fe01670350956e794ae1c0cbdf verified, visually inspected: Ajuda renders session-changed/expired state. Native artifact12648936260 downloaded and ZIP SHA256 0feee44e14a18dc584453dd8c2c93585adbcfad4becb9b87d902accae08acf29 verified. Embedded Hermes bundle lacks expected local http://10.0.2.2:36627/v1 despite BUILD_INFO. No network configuration relaxation or successful production request claimed.",
+  "change": "Stage-only isolated Metro FileStore/cacheVersion keyed by local URL; Gradle --no-daemon. Probe and final APK assert exact local API bytes before UI installation. Fixture initializes sanitized traffic even at zero requests; driver waits actual observed signin201 plus departure from login instead of blindly navigating after2s. Failure traffic printed before logcat. No mobile business source/dependency/lockfile or canonical build edits.",
+  "sources": [
+    {
+      "path": "scripts/build-platform-support-native-fixture.sh",
+      "sha": "9c0d0cf79a0bae338b4056b5570bdebc2362e5da",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-api.cjs",
+      "sha": "825ce50682899a627195cc8ff72fc118baf92d96",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "661dc4153d0adf5bdf8895fef171dae77beabea2",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "primary": "https://docs.expo.dev/guides/environment-variables/ ; https://metrobundler.dev/docs/configuration/#cachestores",
+  "validation": "Bash/Node/Python syntax PASS; missing local URL reproduced against actual previous artifact. New own CI/full Android/native22 and visual review pending. Native failure screen only is NOT full render proof. Merge/acceptance/activation=false."
+}

@@ -85,7 +85,13 @@ def visible_ids(t):
     return list(dict.fromkeys(i for n in t.iter('node') if visible(n) for i in re.findall(r'(?<![a-f0-9-])[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?![a-f0-9-])',label(n))))
 def signin(kind):
     account=PRIVATE['accounts'][kind];assert account['email'].endswith('@example.test')
-    open_route('entrar');wait('E-mail');input_text('E-mail',account['email']);input_text('Senha',account['password']);hide_keyboard();tap('Entrar',True);time.sleep(2)
+    open_route('entrar');wait('E-mail');input_text('E-mail',account['email']);input_text('Senha',account['password']);hide_keyboard();before=len(traffic());tap('Entrar',True)
+    end=time.monotonic()+20
+    while time.monotonic()<end:
+        signed=[r for r in traffic()[before:] if r['method']=='POST' and r['route']=='/v1/auth/signin' and 'status' in r]
+        if signed and signed[-1]['status']==201 and not matching(tree(),'E-mail'):break
+        time.sleep(.5)
+    else:raise AssertionError('native_signin_not_confirmed')
     open_route('perfil');wait('sem vínculo com empresa');tap('sem vínculo com empresa');wait('Ajuda à plataforma')
 try:
     assert adb('shell','getprop','sys.boot_completed').strip()=='1'
@@ -152,8 +158,8 @@ except BaseException as error:
     print('PLATFORM_SUPPORT_NATIVE_RENDER_FAIL '+json.dumps({'stage':stage,'kind':type(error).__name__,'privateDetailsHidden':True}),flush=True)
     try:
         screenshot('failure-'+stage,True)
-        logs=adb('logcat','-d');(OUT/'native-logcat.txt').write_text(logs)
         rows=traffic();(OUT/'traffic.json').write_text(json.dumps(rows,indent=2));print('NATIVE_TRAFFIC_DIAGNOSTIC '+json.dumps(rows[-25:]),flush=True)
+        logs=adb('logcat','-d');(OUT/'native-logcat.txt').write_text(logs)
         for line in logs.splitlines():
             if re.search(r'ReactNativeJS|CLEARTEXT|SSLHandshakeException|FATAL EXCEPTION',line):print('NATIVE_LOG_DIAGNOSTIC '+line,flush=True)
     except BaseException:pass

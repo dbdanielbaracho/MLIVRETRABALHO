@@ -31,10 +31,23 @@ JS
 cd "$STAGE/apps/mobile"
 cat > metro.config.js <<'METRO'
 const {getDefaultConfig}=require('expo/metro-config');
-module.exports=getDefaultConfig(__dirname);
+const path=require('node:path');
+const {FileStore}=require('metro-cache');
+const config=getDefaultConfig(__dirname);
+// Do not reuse the canonical bundle's transformed environment literals.
+config.cacheStores=[new FileStore({root:path.join(__dirname,'.fixture-metro-cache')})];
+config.cacheVersion='support-fixture-'+process.env.EXPO_PUBLIC_API_URL;
+module.exports=config;
 METRO
 if test "$PROBE" = true; then
   pnpm exec expo export --platform android --output-dir "$STAGE/bundle-probe"
+  python3 - "$STAGE/bundle-probe" <<'PY'
+import os,sys
+from pathlib import Path
+expected=os.environ['EXPO_PUBLIC_API_URL'].encode()
+assert any(expected in p.read_bytes() for p in Path(sys.argv[1]).rglob('*') if p.is_file()), 'fixture_probe_local_api_not_embedded'
+print('NATIVE_FIXTURE_PROBE_LOCAL_API_PASS')
+PY
   echo 'NATIVE_FIXTURE_MODULE_CLOSURE_PASS probeOnly=true UI=false production=false'
   exit 0
 fi
@@ -55,9 +68,15 @@ from pathlib import Path
 p=Path('android/app/src/main/AndroidManifest.xml');s=p.read_text();s=s.replace('<application ', '<application android:networkSecurityConfig="@xml/platform_support_fixture_network" ',1);p.write_text(s)
 PY
 cd android
-./gradlew assembleRelease
+./gradlew --no-daemon assembleRelease
 APK=app/build/outputs/apk/release/app-release.apk
 unzip -l "$APK" | grep -Eq 'assets/(index\.android\.bundle|expo-root/.*\.js|.*\.bundle)'
+python3 - "$APK" <<'PY'
+import os,sys,zipfile
+with zipfile.ZipFile(sys.argv[1]) as z:
+    assert os.environ['EXPO_PUBLIC_API_URL'].encode() in z.read('assets/index.android.bundle'), 'fixture_local_api_not_embedded'
+print('NATIVE_FIXTURE_EMBEDDED_LOCAL_API_PASS')
+PY
 cp "$APK" "$OUT/SupportFixture.apk"
 cp app/src/main/AndroidManifest.xml "$OUT/FIXTURE_MANIFEST.xml"
 cp app/src/main/res/xml/platform_support_fixture_network.xml "$OUT/FIXTURE_NETWORK.xml"
