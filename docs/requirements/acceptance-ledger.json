@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
+      "sha": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
       "mode": "100644"
     },
     {
@@ -6769,6 +6769,36 @@
         "scope": "Only staging metro.config.js watches actual dependency node_modules targets and uses staged+actual nodeModulesPaths. Original mobile/Metro/lockfile/canonical APK unchanged; no permission/network/root fallback.",
         "primary": "https://metrobundler.dev/docs/configuration/#watchfolders",
         "validation": "Shell syntax PASS; own build/native render/full CI+Android PENDING."
+      },
+      "nativeDriverIntegration": {
+        "sources": [
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "9b6f3d83b484bcfbf983892b6c2bff201b66c58b",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "sha": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "a915dcbe772174bfb05c14b2bd89a42d0b1cfd01",
+            "new": "9b6f3d83b484bcfbf983892b6c2bff201b66c58b"
+          },
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
+            "new": "38c0b3d193f9bf6bd9e6da27189a414c98289a84"
+          }
+        ],
+        "scope": "Wire native fixture guard negative test explicitly into mandatory Android fixture preparation (default workspace test umbrella does not discover scripts/tests). Native driver supports accessible grouped IDs, scroll-up Back button, conditional IME dismissal based on normal dumpsys input_method rather than blind Back, and retains sanitized traffic/logcat on failure. No product UI/business/permissions changed.",
+        "validation": "Python syntax PASS; actual native UI and own full CI/Android still PENDING."
       }
     }
   }

@@ -21888,3 +21888,7 @@ Roteiro nativo ampliado para22capturas: preparada/indisponível/conflito/retryex
 
 ### PLATFORM_SUPPORT_NATIVE_METRO_VISIBILITY_FIX_2026_10_26
 e028c22/run40304549892 reproduziu falha real createBundleReleaseJsAndAssets: entryexpo-router emtargetpnpmfora do gitarchive nãoficavavisívelaoMetro. OcorreuantesdaUI; foundation/smokecanônico/cleanupAPIpassaram mas Androidinteiro/merge-policyfalharam, semrenderprovado. Fixsógera metro.config.js noSTAGE comwatchFolders dosnode_modulesreais+resolverpaths, semmobileoriginal/lockfile/guard/rede/permissões/root/fallback. PrimáriaMetro exigevisibilidade targets de symlinks inclusivebuildCI: https://metrobundler.dev/docs/configuration/#watchfolders . SintaxeShellPASS;novoCI/buildisolado/render/visualreviewPENDENTES, sememprestarverde/provaantecipada;história/pinsoldnewpreservados.
+
+
+### PLATFORM_SUPPORT_NATIVE_DRIVER_INTEGRATION_CANDIDATE_2026_10_26
+Testeguardfixture passa a serinvocadoexplicitamente na preparaçãoAndroid obrigatória; umbrellapnpmnão descobreautomaticamente scripts/tests, portanto nãoalegar guardnegativoexecutadosóporarquivoexistir. Driver lêUUIDtambémemgruposacessíveis/scrollupVoltar/dispensaIMEcondicionalpordumpsysinput_methodautorizadoemvezBackcego; preserva tráfico sanitizado/logcatemfalha. NenhumUIproduto/negócio/permissão/grant/rootmodificado. Sourcepinworkflowativo old/newreconciliado; sintaxePythonPASS, execuçãoreal/nativeUI/gatesdoNOVOSHApendentes. História/seisoriginais/565STOPpreservados, semmerge/aceite/ativação.

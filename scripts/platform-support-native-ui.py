@@ -39,13 +39,13 @@ def action(t,text):
             if n.attrib.get('clickable')=='true' and visible(n):return n
             n=parents.get(n)
     return None
-def tap(text,scroll=False):
+def tap(text,scroll=False,up=False):
     for _ in range(20 if scroll else 2):
         t=tree();n=action(t,text)
         if n is not None:
             assert n.attrib.get('enabled')!='false';x,y,r,b=bounds(n);adb('shell','input','tap',str((x+r)//2),str((y+b)//2));time.sleep(.4);return
         if not scroll:time.sleep(.5)
-        else:swipe()
+        else:swipe(up)
     raise AssertionError('native_action_missing')
 def swipe(up=False):
     size=adb('shell','wm','size');w,h=map(int,re.search(r'(\d+)x(\d+)',size).groups())
@@ -78,9 +78,14 @@ def command(name):subprocess.run(['node','scripts/platform-support-native-api.cj
 def fault(**kwargs):(ROOT/'fault.json').write_text(json.dumps(kwargs))
 def traffic():return json.loads((ROOT/'traffic.json').read_text())
 def submits():return sum(x['method']=='POST' and x['route']=='/v1/me/platform-support' for x in traffic())
+def hide_keyboard():
+    info=adb('shell','dumpsys','input_method')
+    if re.search(r'mInputShown=true|isInputViewShown=true|mIsInputViewShown=true',info):adb('shell','input','keyevent','4')
+def visible_ids(t):
+    return list(dict.fromkeys(i for n in t.iter('node') if visible(n) for i in re.findall(r'(?<![a-f0-9-])[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?![a-f0-9-])',label(n))))
 def signin(kind):
     account=PRIVATE['accounts'][kind];assert account['email'].endswith('@example.test')
-    open_route('entrar');wait('E-mail');input_text('E-mail',account['email']);input_text('Senha',account['password']);adb('shell','input','keyevent','4');tap('Entrar');time.sleep(2)
+    open_route('entrar');wait('E-mail');input_text('E-mail',account['email']);input_text('Senha',account['password']);hide_keyboard();tap('Entrar',True);time.sleep(2)
     open_route('perfil');wait('sem vínculo com empresa');tap('sem vínculo com empresa');wait('Ajuda à plataforma')
 try:
     assert adb('shell','getprop','sys.boot_completed').strip()=='1'
@@ -96,18 +101,18 @@ try:
     stage='loading-focus';fault(delayListOnce=True);tap('Atualizar solicitações',True);wait('Verificando a conta');screenshot('02-loading')
     open_route('perfil');wait('sem vínculo com empresa');tap('sem vínculo com empresa');wait('Atendimento da plataforma indisponível')
     stage='enabled-form';command('enable');tap('Atualizar solicitações',True);wait('Mensagem')
-    input_text('Mensagem para a plataforma','Native_first_request');adb('shell','input','keyevent','4');screenshot('03-form',True)
+    input_text('Mensagem para a plataforma','Native_first_request');hide_keyboard();screenshot('03-form',True)
     tap('Enviar à plataforma',True);wait('Solicitação confirmada');screenshot('04-confirmed')
     tap('Encerrar tentativa neste aparelho',True);wait('Tentativa encerrada neste aparelho');tap('Atualizar solicitações',True);wait('Seu histórico na plataforma',scroll=True)
     for _ in range(12):
-        t=tree();ids=[n.attrib.get('text','') for n in t.iter('node') if visible(n) and re.fullmatch(r'[a-f0-9-]{36}',n.attrib.get('text',''))]
+        t=tree();ids=visible_ids(t)
         if ids:tap(ids[0]);break
         swipe()
     wait('Detalhe da solicitação');wait('Native_first_request');screenshot('05-detail-empty-response')
     stage='authorized-response';command('reply');tap('Atualizar solicitações',True);wait('Seu histórico na plataforma',scroll=True)
     # Open the only persisted row by its visible native UUID.
     for _ in range(12):
-        t=tree();ids=[n.attrib.get('text','') for n in t.iter('node') if visible(n) and re.fullmatch(r'[a-f0-9-]{36}',n.attrib.get('text',''))]
+        t=tree();ids=visible_ids(t)
         if ids:tap(ids[0]);break
         swipe()
     wait('Native platform reply',scroll=True);screenshot('06-authorized-response',True)
@@ -117,16 +122,16 @@ try:
     assert submits()==before+1;time.sleep(3);assert submits()==before+1
     stage='durable-reopen';adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Solicitação confirmada');assert submits()==before+1;command('check-recovery');screenshot('09-durable-recovery')
     tap('Encerrar tentativa neste aparelho',True);wait('Atualizar solicitações');tap('Atualizar solicitações',True);wait('Seu histórico na plataforma',scroll=True)
-    stage='prepared-no-auto-retry';before_prepared=submits();input_text('Mensagem para a plataforma','Native_retry_request');adb('shell','input','keyevent','4');fault(rejectSubmitOnce=True);tap('Enviar à plataforma',True);wait('O atendimento da plataforma está indisponível');assert submits()==before_prepared+1;screenshot('16-unavailable-pending')
+    stage='prepared-no-auto-retry';before_prepared=submits();input_text('Mensagem para a plataforma','Native_retry_request');hide_keyboard();fault(rejectSubmitOnce=True);tap('Enviar à plataforma',True);wait('O atendimento da plataforma está indisponível');assert submits()==before_prepared+1;screenshot('16-unavailable-pending')
     tap('Atualizar solicitações',True);wait('Esta chave está preparada');assert submits()==before_prepared+1;screenshot('17-prepared')
-    input_text('Mensagem para a plataforma','_changed');adb('shell','input','keyevent','4');tap('Reenviar a mesma tentativa',True);wait('Resultado não confirmado');assert submits()==before_prepared+2;screenshot('18-conflict')
-    tap('Consultar resultado da tentativa',True);wait('Esta chave está preparada');input_text('Mensagem para a plataforma','Native_retry_request',replace=True);adb('shell','input','keyevent','4');tap('Reenviar a mesma tentativa',True);wait('Solicitação confirmada');assert submits()==before_prepared+3
+    input_text('Mensagem para a plataforma','_changed');hide_keyboard();tap('Reenviar a mesma tentativa',True);wait('Resultado não confirmado');assert submits()==before_prepared+2;screenshot('18-conflict')
+    tap('Consultar resultado da tentativa',True);wait('Esta chave está preparada');input_text('Mensagem para a plataforma','Native_retry_request',replace=True);hide_keyboard();tap('Reenviar a mesma tentativa',True);wait('Solicitação confirmada');assert submits()==before_prepared+3
     attempts=[x for x in traffic() if x['method']=='POST' and x['route']=='/v1/me/platform-support'][-3:];assert len({x['keyHash'] for x in attempts})==1 and [x['status'] for x in attempts]==[503,409,201];screenshot('19-explicit-retry-same-key')
     tap('Encerrar tentativa neste aparelho',True);wait('Tentativa encerrada neste aparelho');screenshot('20-cleared');tap('Atualizar solicitações',True);wait('Mensagem')
-    stage='expired-preparation';command('short-intent');input_text('Mensagem para a plataforma','Native_expiry_request');adb('shell','input','keyevent','4');fault(rejectSubmitOnce=True);tap('Enviar à plataforma',True);wait('O atendimento da plataforma está indisponível');time.sleep(13);tap('Atualizar solicitações',True);wait('A janela de recuperação expirou');command('check-expired');screenshot('21-expired');tap('Encerrar tentativa neste aparelho',True);wait('Tentativa encerrada neste aparelho');command('normal-intent');tap('Atualizar solicitações',True);wait('Mensagem')
+    stage='expired-preparation';command('short-intent');input_text('Mensagem para a plataforma','Native_expiry_request');hide_keyboard();fault(rejectSubmitOnce=True);tap('Enviar à plataforma',True);wait('O atendimento da plataforma está indisponível');time.sleep(13);tap('Atualizar solicitações',True);wait('A janela de recuperação expirou');command('check-expired');screenshot('21-expired');tap('Encerrar tentativa neste aparelho',True);wait('Tentativa encerrada neste aparelho');command('normal-intent');tap('Atualizar solicitações',True);wait('Mensagem')
     stage='resolved-minimized';command('resolve-minimize');tap('Atualizar solicitações',True);wait('Seu histórico na plataforma',scroll=True)
     for _ in range(12):
-        t=tree();ids=[n.attrib.get('text','') for n in t.iter('node') if visible(n) and re.fullmatch(r'[a-f0-9-]{36}',n.attrib.get('text',''))]
+        t=tree();ids=visible_ids(t)
         if ids:tap(ids[0]);break
         swipe()
     wait('Resolvida');wait('Conteúdo minimizado conforme a política de retenção');assert not matching(tree(),'Retirar esta solicitação');screenshot('22-resolved-minimized');tap('Atualizar solicitações',True);wait('Mensagem')
@@ -138,14 +143,19 @@ try:
     stage='large-font';adb('shell','settings','put','system','font_scale','1.3');open_route('ajuda-plataforma');wait('Ajuda à plataforma');screenshot('12-large-font');adb('shell','settings','put','system','font_scale','1.0')
     stage='session-expired';command('expire');open_route('ajuda-plataforma');wait('A sessão mudou ou expirou');assert not matching(tree(),'Native_recovery_request');screenshot('13-session-expired')
     stage='company-isolation';signin('company');wait('Nenhuma solicitação registrada nesta conta',scroll=True);assert not matching(tree(),'Native_first_request');screenshot('14-company-own-empty')
-    tap('Voltar');wait('Ajuda e suporte');tap('Ajuda e suporte',True);screenshot('15-company-legacy-preserved')
+    tap('Voltar',True,up=True);wait('Ajuda e suporte');tap('Ajuda e suporte',True);screenshot('15-company-legacy-preserved')
     fatal=adb('logcat','-d');assert not re.search(r'FATAL EXCEPTION|Fatal signal|ReactNativeJS.*(?:TypeError|ReferenceError|Invariant Violation)',fatal)
     (OUT/'native-logcat.txt').write_text(fatal);(OUT/'traffic.json').write_text(json.dumps(traffic(),indent=2))
     receipt={'states':states,'nativePackage':PACKAGE,'syntheticLocalAPI':PUBLIC['api'],'timeoutSinglePOSTAndRecovery':True,'preparedExplicitRetrySameKey':True,'acceleratedExpirySeconds':12,'companyAndUnlinked':True,'canonicalUntouched':True,'production':False,'metroRequired':False}
     (OUT/'NATIVE_RECEIPT.json').write_text(json.dumps(receipt,indent=2));print('PLATFORM_SUPPORT_NATIVE_RENDER_PASS '+json.dumps({'screenshots':len(states),'timeoutSinglePOSTAndRecovery':True,'native':True,'production':False}),flush=True)
 except BaseException as error:
     print('PLATFORM_SUPPORT_NATIVE_RENDER_FAIL '+json.dumps({'stage':stage,'kind':type(error).__name__,'privateDetailsHidden':True}),flush=True)
-    try:screenshot('failure-'+stage,True)
+    try:
+        screenshot('failure-'+stage,True)
+        logs=adb('logcat','-d');(OUT/'native-logcat.txt').write_text(logs)
+        rows=traffic();(OUT/'traffic.json').write_text(json.dumps(rows,indent=2));print('NATIVE_TRAFFIC_DIAGNOSTIC '+json.dumps(rows[-25:]),flush=True)
+        for line in logs.splitlines():
+            if re.search(r'ReactNativeJS|CLEARTEXT|SSLHandshakeException|FATAL EXCEPTION',line):print('NATIVE_LOG_DIAGNOSTIC '+line,flush=True)
     except BaseException:pass
     raise
 finally:
