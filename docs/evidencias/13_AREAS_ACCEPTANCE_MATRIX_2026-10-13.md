@@ -18503,3 +18503,38 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "validation": "Bash/node syntax, YAML/firstcanonical byteequal/guards preserved local PASS. NonCI/otherrepo launcher denied beforeSDK with explicitrefusal marker; own new fullCI/Android/native22/visualQA pending. Keep073UI/font candidate and d013partial21 proofs; no merge/postmerge/acceptance/activation/production."
 }
 ```
+
+
+### 2026-10-26 — PR632: metadados da revisão do SDK sem subprocesso de versão
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "e336961be72ab6004013a95112938155d7f40c95",
+  "baselineRun": 40386672148,
+  "foundation": 121796662263,
+  "android": 121796891091,
+  "mergePolicy": 121807868203,
+  "baselineConclusion": "failure",
+  "proof": "Foundation/owner80/op59/role31/dispatch40/AppModule/OpenAPI119/698/95 PASS; canonical smoke/build/fixtureURL/APIcleanup PASS. New startup terminated127 BEFORE emulator boot at optional emulator -version probe. No new screenshots or nativeproof; no evidence yet against no-Launcher-key hypothesis.",
+  "artifact": {
+    "id": 12682700252,
+    "size": 28937947,
+    "zipSHA256": "828d86d74df32258d10a4c7985d0ab03d00801e08be4abaf3db98dc46d56418e",
+    "diagnosticSHA256": "3ff97565dc43f47ef8751d5e1f25224e7f12a6283ebd43cd574071a26064e6e1",
+    "error": "qemu-system-x86_64: error while loading shared libraries: libpulse.so.0: cannot open shared object file: No such file or directory",
+    "checked": "ZIP fully downloaded/actual hash verified; EMULATOR_VERSION.txt actualbytes/hash reviewed. prebootdevices empty/image source.properties SHA98d57aac1a56bdff21e948a44332774d7f2127dc28fa413a85ad96bfb81cb7cb confirms same already-installedAPI35 image."
+  },
+  "change": "Replace ONLY version-reporting subprocess with required/strict Pkg.Revision metadata copy and SHA256 from SAME installed emulator/source.properties. No binary version fallback attempt, library installation, LD path override, root/grant/image swap or ignoring runtime loader errors. Actual emulator launch/accelon/nokeyboot/guards/firstcanonical/workflow/UI/backend unchanged; runtime failure still fails closed and retains emulator-host.log.",
+  "primary": [
+    "https://android.googlesource.com/platform/external/qemu/+/emu-master-dev/source.properties",
+    "https://github.com/google/android-emulator-container-scripts/blob/master/emu/templates/launch-emulator.sh"
+  ],
+  "source": {
+    "path": "scripts/run-platform-support-native-fixture.sh",
+    "old": "1d42f3dbbacd914396b31548afa54372733bf073",
+    "new": "f3cd418bccb19bd6f14485e92879ce81c886ac7f"
+  },
+  "validation": "Recorded version-probe failure reproduced from hash-verified artifact; Bash syntax/metadata-only delta with startup/guards preserved local PASS. New own full CI/Android/bootstrap/native22/font130/navigation/visualQA PENDING. No merge/postmerge/acceptance/activation/production."
+}
+```

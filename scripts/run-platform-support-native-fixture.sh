@@ -32,7 +32,10 @@ p=Path(sys.argv[1]);rows=p.read_text().splitlines()
 rows=[r for r in rows if not r.startswith('hw.cpu.ncore=')]
 p.write_text('\n'.join(rows+['hw.cpu.ncore=4'])+'\n')
 PY
-"$sdk_root/emulator/emulator" -version > artifacts/platform-support-native/EMULATOR_VERSION.txt 2>&1
+test -f "$sdk_root/emulator/source.properties"
+grep -Eq '^Pkg[.]Revision[[:space:]]*=[[:space:]]*[0-9]+([.][0-9]+)+[[:space:]]*$' "$sdk_root/emulator/source.properties"
+cp "$sdk_root/emulator/source.properties" artifacts/platform-support-native/EMULATOR_VERSION.txt
+sha256sum "$sdk_root/emulator/source.properties" >> artifacts/platform-support-native/EMULATOR_IMAGE_SHA256.txt
 "$sdk_root/emulator/emulator" -port 5554 -avd "$fixture_avd" -accel on -no-window -gpu swiftshader -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save > artifacts/platform-support-native/emulator-host.log 2>&1 &
 fixture_emulator_pid=$!
 close_fixture_emulator() {
