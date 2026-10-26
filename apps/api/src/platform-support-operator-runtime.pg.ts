@@ -76,6 +76,8 @@ export async function verifyPlatformSupportOperatorRuntime(setup:PoolClient,sche
   await setup.query(`DROP TRIGGER ${fault} ON platform_support_audit`);trigger=false;await setup.query(`DROP FUNCTION ${fault}()`);
   const resolved=await store.respond(actor,caseId,closing);assert.equal(resolved.resolvesCase,true);assert.deepEqual(await store.respond(actor,caseId,closing),resolved);
   await assert.rejects(store.respond(actor,caseId,{...reply,responseKey:randomUUID()}),/case_closed/);
+  assert.equal((await context(c=>c.query("UPDATE platform_support_cases SET status='reviewing',closed_at=NULL WHERE id=$1 RETURNING id",[caseId]))).rowCount,0);
+  await assert.rejects(context(c=>c.query('INSERT INTO platform_support_responses(request_key,case_id,operator_identity_id,body,resolves_case) VALUES($1,$2,$3,$4,false)',[randomUUID(),caseId,actor,'Denied closed-case response'])),denied);
   stage='revocation-and-shadowing';
   await setup.query('UPDATE platform_support_assignments SET revoked_at=now() WHERE case_id=$1',[caseId]);await assert.rejects(store.detail(actor,caseId),/not_found/);
   await context(async c=>{

@@ -41,7 +41,7 @@ END;
 $migration$;
 -- Column ACLs are configured separately; policies cannot grant relation privileges.
 CREATE POLICY platform_support_case_operator_update ON platform_support_cases FOR UPDATE
- USING(EXISTS(SELECT 1 FROM platform_support_assignments a JOIN platform_support_operators o ON o.identity_id=a.operator_identity_id
+ USING(status IN('open','reviewing') AND EXISTS(SELECT 1 FROM platform_support_assignments a JOIN platform_support_operators o ON o.identity_id=a.operator_identity_id
  JOIN identities i ON i.id=o.identity_id WHERE a.case_id=platform_support_cases.id
  AND a.operator_identity_id=NULLIF(current_setting('app.platform_support_identity',true),'')::uuid
  AND a.revoked_at IS NULL AND o.active AND i.deactivated_at IS NULL)

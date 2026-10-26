@@ -5703,7 +5703,37 @@
       ],
       "activation": false,
       "merge": false,
-      "areaAcceptance": false
+      "areaAcceptance": false,
+      "closedCaseWriteHardening": {
+        "supersededHead": "d84e7b72b5cb6aba7c76276ff6b0ec1d62152a94",
+        "reason": "Review before acceptance: UPDATE policy must also constrain old state to open/reviewing, so an assigned operator cannot reopen a closed case through direct SQL. Add actual direct-SQL UPDATEzero and INSERT42501 closed-case probes, while receipt replay remains allowed.",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+            "sha": "b170ba3f8ae824d16685a91f0491aeeeada5e069",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "sha": "25c21b86c188e265a13e2193f47e455b799ee5ef",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+            "old": "da6c2b8bd1f7e7f1acee36027423a58c7cd06025",
+            "new": "b170ba3f8ae824d16685a91f0491aeeeada5e069"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "old": "cab017a9c51f0e509e84078c8bee75eee71fc1c2",
+            "new": "25c21b86c188e265a13e2193f47e455b799ee5ef"
+          }
+        ]
+      }
     }
   }
 }
