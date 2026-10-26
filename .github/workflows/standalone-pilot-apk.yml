@@ -143,20 +143,9 @@ jobs:
           test "$available_cpus" -ge 4
 
       - name: Render native support states and recovery with real local sessions
-        uses: reactivecircus/android-emulator-runner@v2
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
-        with:
-          avd-name: platform-support-fixture
-          force-avd-creation: true
-          cores: 4
-          api-level: 35
-          arch: x86_64
-          profile: pixel_6
-          disable-animations: false
-          disable-linux-hw-accel: false
-          emulator-options: -no-window -gpu swiftshader -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
-          script: python3 scripts/platform-support-native-ui.py
+        run: bash scripts/run-platform-support-native-fixture.sh
 
       - name: Close local fixture and verify cleanup
         if: always()

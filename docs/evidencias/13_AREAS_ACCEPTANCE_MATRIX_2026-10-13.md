@@ -18453,3 +18453,53 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "validation": "Actual back handler regression original9/10PASS+1FAIL (history entry !=/perfil)→candidate10/10PASS. Font rerender test preserves descriptor/draft/boundidentity/noHTTP mutation (not native layout proof). Python syntax PASS. New own full CI/typecheck/Android22screens+visual QA PENDING. No merge/postmerge/acceptance/activation/production."
 }
 ```
+
+
+### 2026-10-26 — PR632: bootstrap sem tecla automática na fixture; no-focus ANR reproduzido
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "07336b6eb8dbb499341d253d386f8e1d3d57515d",
+  "baselineRun": 40381977560,
+  "foundation": 121780319489,
+  "android": 121780564093,
+  "mergePolicy": 121792277765,
+  "baselineConclusion": "failure",
+  "proof": "Foundation217/1251/534/3/11 fail0/OpenAPI119positive698responses95schemas/owner80operator59role31dispatch40/AppModule real PASS; canonical smoke/build/localURL/APIcleanupPASS. Native beforelogin/zeroHTTP blocked by Quickstep no-focused-window ANR. UI/font fixes NOT natively exercised this attempt.",
+  "artifact": {
+    "id": 12680700988,
+    "size": 29908810,
+    "zipSHA256": "47e12a70bb7a4dd1bbf242d7d61484b6ea4edd250b081e2381470c16602bfc7f",
+    "pngSHA256": "a06f414bbd0e5ffd186dc394e857a1ee4465c948b2e53d24df8c79cd2525c03e",
+    "xmlSHA256": "57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0",
+    "bootLogSHA256": "751698f7c42b5d07289f848deef2119a928c118e443531b183f5e94b2d62a9c0",
+    "checked": "ActualZIP/PNG/XML/bootlog hashes verified; originalQuickstep-ANR image visually reviewed; not positiveAjuda."
+  },
+  "observedSequence": "Third-party runner source automatically injects adb shell input keyevent82 immediately after sys.boot_completed. Own log:19:17:09.6417183Z key82→19:17:14.538 Quickstep ANR Application does not have a focused window. Official InputDispatcher docs identify key events without focused window as no-focus-ANR trigger, timeout5sec. Causal attribution is an inference to validate; no universal fix claimed.",
+  "change": "ONLY isolated fixture startup replaces second runner invocation with repo-owned guarded shell lifecycle. Same already-installed SDK/API35/default/x86_64/pixel_6/freshAVD/cores4/SwiftShader/display/NSC; no SDK/image download/alternative, key82/unlock/HOME/system input, root/grants/QMP/fallback. Explicit accel on, KVMexisting read/write required, no attached device accepted, absentAVD required. No-touch boot polling; original driver capturesboot/failsclosedANR/opensfixture then targetsownvisiblecontrols. Own emulatorPID TERM cleanup/finalreadonlylogcat. First canonical runner/smoke/upload unchanged.",
+  "primary": [
+    "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/src/emulator-manager.ts",
+    "https://developer.android.com/topic/performance/anrs/diagnose-and-fix-anrs",
+    "https://android.googlesource.com/platform/frameworks/native/+/2d2150edc2/services/inputflinger/docs/anr.md"
+  ],
+  "sources": [
+    {
+      "path": "scripts/run-platform-support-native-fixture.sh",
+      "old": null,
+      "new": "1d42f3dbbacd914396b31548afa54372733bf073"
+    },
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e",
+      "new": "f996d90b48a7deaa41a9cca0b117b013eaecbe69"
+    },
+    {
+      "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+      "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+      "new": "64710e24b80a8e2e5223739dfcca4e65b9754f05"
+    }
+  ],
+  "validation": "Bash/node syntax, YAML/firstcanonical byteequal/guards preserved local PASS. NonCI/otherrepo launcher denied beforeSDK with explicitrefusal marker; own new fullCI/Android/native22/visualQA pending. Keep073UI/font candidate and d013partial21 proofs; no merge/postmerge/acceptance/activation/production."
+}
+```
