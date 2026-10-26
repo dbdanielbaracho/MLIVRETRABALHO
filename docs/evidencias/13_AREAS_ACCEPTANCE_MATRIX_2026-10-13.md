@@ -18032,3 +18032,55 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "validation": "Original UI history regression:7/8 PASS,1 FAIL; candidate8/8 PASS. Recorded XML navigation-bar/signed-coordinate regression PASS; Python syntax PASS. New JSX/typecheck/full own CI/Android/22state journey/visual review PENDING. Four state captures plus failure previously reviewed, not full render proof.",
   "scope": "No package/dependency/lockfile/workflow/RLS/AuthService/pool/canonical build changes. System bars excluded using recorded XML resource bounds plus conservative viewport. Product change only stale-history invalidation and disabled visual state; no claim that physical/inset layouts or all Area1 are accepted. No merge/postmerge/activation/acceptance."
 }
+
+
+### PR632 — ANR do launcher e isolamento do AVD, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "994d02c6885463aba3af8f921d0b6e6377343225",
+  "baselineTree": "90cd2f66f97cb1697323f754af70249fda323d3f",
+  "baselineRun": 40329581916,
+  "foundation": 121595123156,
+  "android": 121595319439,
+  "mergePolicy": 121606058657,
+  "conclusion": "failure",
+  "proof": "Foundation/code regressions PASS; isolated build/embedded localURL/canonical smoke/APIcleanup PASS. Native attempt blocked BEFORE LOGIN by Android system modal Quickstep isn't responding; zero local HTTP traffic. Original system-dialog PNG772b738813abd17caa585c45d54c864448c95a55557f795cd39bfca869194268/XML57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0 and native artifact12654919766 ZIPb7fa9a45850cc000ad408afc62184bce279a3b5710298131d5838682b45075dc downloaded/hashverified/visually reviewed. This system image is not a positive Ajuda state; product UI fixes still lack runtime proof on994.",
+  "change": "Second native runner explicitly reuses canonical-initialized AVDtest (force-avd-creation=false, no wipe-data); require existing config path before runner. Fixture namespace must be absent before install, no uninstall/clear-data alternate path. Native driver fails closed on system ANR; diagnostic capture may read it but no dismissal, Wait/Close or input outside own package. First canonical emulator/action/KVM options remain unchanged.",
+  "primary": "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml ; https://github.com/ReactiveCircus/android-emulator-runner#caching-avd-snapshots",
+  "sources": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "sha": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "ac15d027462010e063003e076e8488cb85489ba4",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "pins": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+      "new": "98282c368e847aaf935ee869a1dcd7149de6e5c4"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "55468212ea2ad4cc42ddc4cb10341944979cc479",
+      "new": "ac15d027462010e063003e076e8488cb85489ba4"
+    }
+  ],
+  "sourcePinReconciliation": [
+    {
+      "at": "protectedInputs/1",
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+      "new": "98282c368e847aaf935ee869a1dcd7149de6e5c4"
+    }
+  ],
+  "validation": "Python syntax PASS; actual recorded ANR XML detection/normal frame negative PASS; YAML and first canonical runner unchanged assertions PASS. New own complete CI/Android/native22/visual review PENDING. No merge/postmerge/acceptance/operational activation or real credentials."
+}

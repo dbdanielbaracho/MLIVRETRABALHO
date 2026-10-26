@@ -16,13 +16,16 @@ def adb(*args,binary=False,timeout=20):
     return subprocess.check_output(ADB+list(args),timeout=timeout,text=not binary,stderr=subprocess.STDOUT)
 SCREEN_W,SCREEN_H=map(int,re.search(r'(\d+)x(\d+)',adb('shell','wm','size')).groups())
 APP_TOP,APP_BOTTOM=SCREEN_H*.04,SCREEN_H*.96
-def tree():
+def system_anr(t):
+    return any(n.attrib.get('resource-id')=='android:id/alertTitle' and re.search(r'isn.t responding',n.attrib.get('text',''),re.I) for n in t.iter('node'))
+def tree(allow_blocked=False):
     global APP_TOP,APP_BOTTOM
     adb('shell','uiautomator','dump','/data/local/tmp/mlivre-support-layout.xml')
     t=ET.fromstring(adb('exec-out','cat','/data/local/tmp/mlivre-support-layout.xml'))
     nav=[bounds(n)[1] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/navigationBarBackground']
     status=[bounds(n)[3] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/statusBarBackground']
     APP_TOP=max([SCREEN_H*.04]+status);APP_BOTTOM=min([SCREEN_H*.96]+nav)
+    if not allow_blocked and system_anr(t):raise AssertionError('system_anr_blocks_native_journey')
     return t
 def label(n):return n.attrib.get('text','')+' '+n.attrib.get('content-desc','')
 def bounds(n):
@@ -86,7 +89,7 @@ def open_route(route):
     adb('shell','am','start','-W','-a','android.intent.action.VIEW','-d','mlivre-support-fixture:///'+route,'-p',PACKAGE)
     time.sleep(.5)
 def screenshot(name,preview=True):
-    t=tree();xml=ET.tostring(t,encoding='utf-8');png=adb('exec-out','screencap','-p',binary=True)
+    t=tree(allow_blocked=True);xml=ET.tostring(t,encoding='utf-8');png=adb('exec-out','screencap','-p',binary=True)
     assert png.startswith(b'\x89PNG\r\n\x1a\n')
     (OUT/(name+'.png')).write_bytes(png);(OUT/(name+'.xml')).write_bytes(xml)
     meta={'name':name,'pngSHA256':hashlib.sha256(png).hexdigest(),'xmlSHA256':hashlib.sha256(xml).hexdigest(),'native':True,'synthetic':True}
@@ -115,7 +118,8 @@ def signin(kind):
     open_route('perfil');wait('sem vínculo com empresa');tap('sem vínculo com empresa');wait('Ajuda à plataforma')
 try:
     assert adb('shell','getprop','sys.boot_completed').strip()=='1'
-    adb('install','-r',str(OUT/'SupportFixture.apk'),timeout=120)
+    assert adb('shell','pm','list','packages',PACKAGE).strip()=='','fixture_package_must_be_absent'
+    adb('install',str(OUT/'SupportFixture.apk'),timeout=120)
     adb('logcat','-c');stage='unlinked-navigation';signin('pro')
     wait('Atendimento da plataforma indisponível');screenshot('01-disabled-empty',True)
     n=None

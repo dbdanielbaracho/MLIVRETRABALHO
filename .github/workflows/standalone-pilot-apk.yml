@@ -118,17 +118,22 @@ jobs:
       - name: Build separate local-only support fixture APK
         run: bash scripts/build-platform-support-native-fixture.sh
 
+      - name: Require the canonical-initialized AVD for isolated fixture
+        run: test -f "${ANDROID_AVD_HOME:?}/test.avd/config.ini"
+
       - name: Render native support states and recovery with real local sessions
         uses: reactivecircus/android-emulator-runner@v2
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
         with:
+          avd-name: test
+          force-avd-creation: false
           api-level: 35
           arch: x86_64
           profile: pixel_6
           disable-animations: false
           disable-linux-hw-accel: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save -wipe-data
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
           script: python3 scripts/platform-support-native-ui.py
 
       - name: Close local fixture and verify cleanup
