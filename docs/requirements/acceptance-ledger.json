@@ -6074,7 +6074,49 @@
       ],
       "activation": false,
       "merge": false,
-      "areaAcceptance": false
+      "areaAcceptance": false,
+      "operationScopeHardening": {
+        "supersededHead": "c70910fcf779aa498ca8ec992aa08db8c78580ee",
+        "scope": "0083 requires transaction-local server-selected role_management marker AND dedicated active administrator. Prevent administrative identity alone extending case metadata/role authority on another identity-scoped path. Marker alone never authorizes non-admin.",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0083_platform_support_role_context.sql",
+            "sha": "3b8c5cbf4d5832e62a6dded2cc0eda66a8d2c107",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-store.ts",
+            "sha": "d47a7c48f2bfa82fd5a2295be1374453d4f421b3",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "sha": "a9fdaf4bd713b9bcc3b112bae9776c366fe8f64f",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0083_platform_support_role_context.sql",
+            "old": null,
+            "new": "3b8c5cbf4d5832e62a6dded2cc0eda66a8d2c107"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-store.ts",
+            "old": "6d94137d7a1a461bb4386927bf18e78b81258ff9",
+            "new": "d47a7c48f2bfa82fd5a2295be1374453d4f421b3"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "old": "e4bb248af6c6c0f401db7d75502559d180fac944",
+            "new": "a9fdaf4bd713b9bcc3b112bae9776c366fe8f64f"
+          }
+        ],
+        "validation": "Fixture reproduces candidate0082 reading two foreign case IDs with admin identity but no operation context, then applies0083 and requires zero rows and denied role INSERT. Full role SQL/HTTP positives run only after0083; require actor and operation context cleared. Own full CI/Android pending."
+      }
     }
   }
 }

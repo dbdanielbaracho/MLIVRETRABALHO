@@ -7,7 +7,7 @@ export class PlatformSupportRoleStore{
  async change(actor:string,target:string,active:boolean,expectedRevision:number){
   if(!uuid(actor)||!uuid(target)||typeof active!=='boolean'||!Number.isSafeInteger(expectedRevision)||expectedRevision<0||expectedRevision>=2147483647)throw Error('platform_support_role_invalid');
   return this.database.transaction(async db=>{
-   await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
+   await db.query("SELECT set_config('app.platform_support_identity',$1,true),set_config('app.platform_support_role_management','true',true)",[actor]);
    if(!(await db.query('SELECT platform_support_lock_owner_identity() AS active')).rows[0]?.active)throw Error('platform_support_identity_required');
    if(!(await db.query('SELECT platform_support_lock_administrator() AS active')).rows[0]?.active||actor===target)throw Error('platform_support_dispatch_denied');
    // Lock the identity even before its first role row exists: concurrent grants serialize.
