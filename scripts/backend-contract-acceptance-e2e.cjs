@@ -37,7 +37,7 @@ async function main(){
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
  const db=new Client({connectionString:config.databaseUrl,connectionTimeoutMillis:5000});await db.connect();
  let supportApplication;
- const requestOrigin=path=>/^\/v1\/(me\/platform-support|platform-support)(?:\/|$)/.test(path)?supportApplication?.origin??config.origin:config.origin;
+ const requestOrigin=path=>/^\/v1\/(me\/platform-support|platform-support)(?:\/|$)/.test(path.split('?')[0])?supportApplication?.origin??config.origin:config.origin;
  let requests=0;const positives=new Map(),negatives=[],violations=[];
  const routeFor=(method,path)=>{
   const pathname=path.split('?')[0];const matched=catalog.routes.filter(r=>r.method===method&&new RegExp('^'+r.path.split('/').map(s=>s.startsWith(':')?'[^/]+':s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('/')+'$').test(pathname));
@@ -80,6 +80,7 @@ async function main(){
   requireLocalDatabasePeer((await db.query('SELECT current_database() name')).rows[0],db.connection.stream.remoteAddress);
   await require('../apps/api/dist/platform-support-store.pg.js').verifyPlatformSupportIntake(config);
   supportApplication=await require('../apps/api/dist/platform-support-application.pg.js').startPlatformSupportApplication(config);
+  for(const path of ['/v1/me/platform-support','/v1/me/platform-support?limit=1','/v1/platform-support/cases?limit=1'])assert.equal(requestOrigin(path),supportApplication.origin);
   const policiesBefore=await security();
   stage='public-and-identity';
   scalar(await call(null,'GET','/v1/health/ready'), 'database','ok');

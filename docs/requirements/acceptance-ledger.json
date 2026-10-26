@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+          "sha": "0856912b5af34a56e0a509aa4f3c896c7065e499",
           "mode": "100644"
         }
       ],
@@ -6559,6 +6559,79 @@
           }
         ],
         "validation": "Own full CI/actual AppModule PG/HTTP/Android PENDING for new bytes."
+      },
+      "paginationFixtureCorrection": {
+        "supersededHead": "7e8a0057b8e21660ac882a0d2d67812bbbf0e10d",
+        "failedRun": 40298829212,
+        "reason": "Real AppModule attestations and initial HTTP operations ran; first owner paginated GET used original unconfigured listener because fixture route regex saw '?' instead of slash/end. Local baseline reproduced; route matching now strips query only for origin selection, preserves complete URL/parser and query tests. Historical restricted fixture containers no longer own DatabaseService token; explicitly close owned pools after app.close rather than relying on removed token hook.",
+        "sources": [
+          {
+            "path": "scripts/backend-contract-acceptance-e2e.cjs",
+            "sha": "0856912b5af34a56e0a509aa4f3c896c7065e499",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+            "sha": "06b706b9911f67e0f514b1255c3b41246ea3c9cc",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+            "sha": "ce466c602966ba0502bb12cf78dc4a2203f7aeef",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "sha": "d6c56bd52a3b995a600c1f745e6eba8d1fb3e7ae",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "sha": "82a25af143fc6643f979f640cb6a46fcb4b62e24",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/backend-contract-acceptance-e2e.cjs",
+            "old": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+            "new": "0856912b5af34a56e0a509aa4f3c896c7065e499"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+            "old": "b65761b6266067aebc19c4751c20686b97b093fa",
+            "new": "06b706b9911f67e0f514b1255c3b41246ea3c9cc"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+            "old": "28a31c2508c3ccb17edc7d4013a024fceb52d34a",
+            "new": "ce466c602966ba0502bb12cf78dc4a2203f7aeef"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "old": "825d5e4774a26218a06901d5256177e24716a27f",
+            "new": "d6c56bd52a3b995a600c1f745e6eba8d1fb3e7ae"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "old": "ee9fca9131fc7605eeddf5c85d2bc2a7844995d5",
+            "new": "82a25af143fc6643f979f640cb6a46fcb4b62e24"
+          }
+        ],
+        "sourcePinReconciliation": [
+          {
+            "at": "requirements/47/tests/1",
+            "path": "scripts/backend-contract-acceptance-e2e.cjs",
+            "old": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+            "new": "0856912b5af34a56e0a509aa4f3c896c7065e499"
+          }
+        ],
+        "validation": "Local routing reproduction/syntax PASS; own complete CI/AppModule whole journey/Android PENDING."
       }
     }
   }

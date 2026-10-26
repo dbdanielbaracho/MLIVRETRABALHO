@@ -21871,3 +21871,7 @@ CI40297418833/3d2deb7 parou na igualdade estrita x-contract-source.controllerBlo
 
 ### PLATFORM_SUPPORT_POOL_AMBIGUOUS_TLS_REGRESSION_2026_10_26
 40298317282/2cebf8a falhouTS18046 no novo testeSSL (valorObject.entries inferido unknown); tipo explícitoRecord<string,string> corrige teste sem relaxar guard. Revisão local reproduziu aceitação ambígua sslmode=verify-full&sslmode=disable antes do Pool; rejeição de parâmetros duplicados adicionada/regressãoPASS, sem conexão remota/incidenteprodução alegado. NovoCI/PGHTTPAppModule/Android PENDENTES; prefixos/history/pinsoldnew preservados, semmerge/aceite/ativação/render.
+
+
+### PLATFORM_SUPPORT_APPLICATION_PAGINATION_FIXTURE_CORRECTION_2026_10_26
+40298829212/7e8a005 chegou a AppModule real/quatro LOGINs atestados/default503/401 e operações iniciais, mas GETownerpaginado foi ao listener principal sem credenciais: regex da fixture testava '?' contra slash/fim. Baseline local reproduzido; seleção de origem agora usa pathname sem query, preservando URL/parser/guard/contratos. Corrigido também fechamento explícito dos pools filhos nas quatro fixtures históricas após troca de tokenDI; antes dependia hook do DatabaseService removido do container. Código/credenciais reais/ACLs não relaxados. NovoCI/Android/jornada completa PENDENTES; prefixos/pinsoldnew/histórico intactos; semmerge/aceite/ativação/render.

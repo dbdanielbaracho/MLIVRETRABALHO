@@ -100,7 +100,7 @@ export async function verifyPlatformSupportOperatorHTTP(setup:PoolClient,schema:
   console.log('PLATFORM_SUPPORT_OPERATOR_HTTP_RESTRICTED_PG_PASS '+JSON.stringify({requests,actualHTTPControllerAndAuthService:true,realSignupSigninSessions:true,authPoolSeparate:true,storePoolActualRestrictedLogin:true,noSessionReadACL:true,threeOperatorRoutes:true,paginationMicroseconds:true,companiesAndRequesterDenied:true,foreignCaseAndForgedActorDenied:true,concurrentIdempotence:true,responseAndPageAuditRollback:true,resolveReplayAndConflict:true,revocationAndDeactivationDenied:true,anonymousExpiredSignoutRevokedMatrices401:true,rejectedNoWrites:true,contextCleared:true,adminRuntimeProof:false,operationalConfiguration:false,render:false,production:false}));
  }catch(e){console.error('PLATFORM_SUPPORT_OPERATOR_HTTP_RESTRICTED_DIAGNOSTIC '+JSON.stringify({stage,sqlstate:typeof(e as {code?:unknown})?.code==='string'?(e as {code:string}).code:null,assertion:e instanceof assert.AssertionError}));throw e;
  }finally{
-  if(app)await app.close();else if(db)await db.onModuleDestroy();
+  if(app)await app.close();if(db)await db.onModuleDestroy();
   if(auth)for(const a of accounts)await auth.revokeAll(a.id);
   if(trigger){await setup.query(`DROP TRIGGER IF EXISTS ${fault} ON platform_support_audit`);await setup.query(`DROP FUNCTION IF EXISTS ${fault}()`);}
   const ids=accounts.map(a=>a.id);

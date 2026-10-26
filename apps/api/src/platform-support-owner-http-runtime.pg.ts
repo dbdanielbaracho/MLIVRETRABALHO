@@ -130,7 +130,7 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   console.error('PLATFORM_SUPPORT_OWNER_HTTP_RESTRICTED_FAIL '+JSON.stringify({stage,sqlstate:/^[A-Z0-9]{5}$/.test(code)?code:null,assertion:code==='ERR_ASSERTION',rawErrorExported:false}));
   throw error;
  }finally{
-  if(app)await app.close();else if(restrictedDb)await restrictedDb.onModuleDestroy();
+  if(app)await app.close();if(restrictedDb)await restrictedDb.onModuleDestroy();
   try{
    if(auth)for(const account of accounts)await auth.revokeAll(account.id);
    if(trigger){await setup.query(`DROP TRIGGER IF EXISTS ${fault} ON platform_support_audit`);await setup.query(`DROP FUNCTION IF EXISTS ${fault}()`);}
