@@ -6799,6 +6799,39 @@
         ],
         "scope": "Wire native fixture guard negative test explicitly into mandatory Android fixture preparation (default workspace test umbrella does not discover scripts/tests). Native driver supports accessible grouped IDs, scroll-up Back button, conditional IME dismissal based on normal dumpsys input_method rather than blind Back, and retains sanitized traffic/logcat on failure. No product UI/business/permissions changed.",
         "validation": "Python syntax PASS; actual native UI and own full CI/Android still PENDING."
+      },
+      "workspaceDependencyVisibility": {
+        "failedHead": "546c3897c5db9698922d1eae703a23d3f1758004",
+        "failedRun": 40307101335,
+        "actualFailure": "Absolute expo-router entry became visible, but bare import expo-router from staged app/_layout.tsx remained unresolved. Actual mobile/node_modules directory itself is also a symlink target outside archive; explicitly include it in watchFolders/nodeModulesPaths, still only dependency directories.",
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "b0338b114caaf185346a619ce22fd44e39ad2191",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "ad2d53d8adb6d7fda055b09be0ca17ac22ca452f",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "old": "335ebd75b28071dfd1b25402a8589eefa79be7e5",
+            "new": "b0338b114caaf185346a619ce22fd44e39ad2191"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "9b6f3d83b484bcfbf983892b6c2bff201b66c58b",
+            "new": "ad2d53d8adb6d7fda055b09be0ca17ac22ca452f"
+          }
+        ],
+        "scope": "Dependency visibility only within isolated Metro config; canonical/root app config and lock unchanged. Complete conditional keyboard dismissal in recovery field as well. No UI/product defect or native rendered proof yet.",
+        "validation": "Local Shell/Python syntax PASS; new own full CI/Android/native UI PENDING."
       }
     }
   }

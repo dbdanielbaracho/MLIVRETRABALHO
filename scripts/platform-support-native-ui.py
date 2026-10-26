@@ -117,7 +117,7 @@ try:
         swipe()
     wait('Native platform reply',scroll=True);screenshot('06-authorized-response',True)
     stage='withdraw';tap('Retirar esta solicitação',True);wait('Retirada confirmada');screenshot('07-withdrawn')
-    tap('Atualizar solicitações',True);wait('Mensagem');input_text('Mensagem para a plataforma','Native_recovery_request');adb('shell','input','keyevent','4')
+    tap('Atualizar solicitações',True);wait('Mensagem');input_text('Mensagem para a plataforma','Native_recovery_request');hide_keyboard()
     stage='timeout-no-resend';before=submits();fault(delaySubmitOnce=True);tap('Enviar à plataforma',True);wait('Resultado não confirmado',timeout=30);screenshot('08-timeout-preserved',True)
     assert submits()==before+1;time.sleep(3);assert submits()==before+1
     stage='durable-reopen';adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Solicitação confirmada');assert submits()==before+1;command('check-recovery');screenshot('09-durable-recovery')

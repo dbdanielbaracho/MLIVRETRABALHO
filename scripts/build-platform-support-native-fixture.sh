@@ -27,8 +27,8 @@ const config=getDefaultConfig(__dirname);
 // Only the isolated checkout: Metro must see the real targets of pnpm symlinks.
 const source=process.env.MLIVRE_SUPPORT_SOURCE_ROOT;
 if(!source||!path.isAbsolute(source))throw Error('fixture_source_root_required');
-config.watchFolders=[...new Set([...(config.watchFolders||[]),path.join(source,'node_modules')])];
-config.resolver.nodeModulesPaths=[path.join(__dirname,'node_modules'),path.join(source,'node_modules')];
+config.watchFolders=[...new Set([...(config.watchFolders||[]),path.join(source,'node_modules'),path.join(source,'apps/mobile/node_modules')])];
+config.resolver.nodeModulesPaths=[path.join(__dirname,'node_modules'),path.join(source,'apps/mobile/node_modules'),path.join(source,'node_modules')];
 module.exports=config;
 METRO
 pnpm exec expo prebuild --platform android --clean

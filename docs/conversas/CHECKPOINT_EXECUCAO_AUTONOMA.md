@@ -19990,3 +19990,7 @@ e028c22/run40304549892 reproduziu falha real createBundleReleaseJsAndAssets: ent
 
 ### PLATFORM_SUPPORT_NATIVE_DRIVER_INTEGRATION_CANDIDATE_2026_10_26
 Testeguardfixture passa a serinvocadoexplicitamente na preparaçãoAndroid obrigatória; umbrellapnpmnão descobreautomaticamente scripts/tests, portanto nãoalegar guardnegativoexecutadosóporarquivoexistir. Driver lêUUIDtambémemgruposacessíveis/scrollupVoltar/dispensaIMEcondicionalpordumpsysinput_methodautorizadoemvezBackcego; preserva tráfico sanitizado/logcatemfalha. NenhumUIproduto/negócio/permissão/grant/rootmodificado. Sourcepinworkflowativo old/newreconciliado; sintaxePythonPASS, execuçãoreal/nativeUI/gatesdoNOVOSHApendentes. História/seisoriginais/565STOPpreservados, semmerge/aceite/ativação.
+
+
+### PLATFORM_SUPPORT_NATIVE_WORKSPACE_DEPENDENCY_VISIBILITY_2026_10_26
+546c389/run40307101335 reproduziusegundafalhaMetronantesUI: entryabsolutovisível, importbareexpo-router emapp/_layout.tsx nãoresolvido. Própriodiretóriomobile/node_modulesé targetexternodo symlink; watchFolders/nodeModulesPaths dafixture passama incluí-loexplicitamente alémdo rootnode_modules, apenasdependências. Canonical/mobileconfigoriginal/lockfile/permissões intactos. Drivercompleta dispensacondicionalIME nocamporecoverytambém. SintaxeShell/PythonPASS, novoCI/nativebuild/render/visualreviewPENDENTES;semreabrir565/emprestarverde/aceite/merge/ativação.
