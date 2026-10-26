@@ -8,14 +8,16 @@ export class PlatformSupportDispatchStore{
  async change(actor:string,caseId:string,target:string|null,expectedRevision:number){
   if(!uuid(actor)||!uuid(caseId)||(target!==null&&!uuid(target))||!Number.isSafeInteger(expectedRevision)||expectedRevision<0||expectedRevision>=2147483647)throw Error('platform_support_dispatch_invalid');
   return this.database.transaction(async db=>{
-   await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
+   await db.query("SELECT set_config('app.platform_support_identity',$1,true),set_config('app.platform_support_dispatch','true',true)",[actor]);
    if(!(await db.query('SELECT platform_support_lock_owner_identity() AS active')).rows[0]?.active)throw Error('platform_support_identity_required');
    if(!(await db.query('SELECT platform_support_lock_administrator() AS active')).rows[0]?.active)throw Error('platform_support_dispatch_denied');
    if(target!==null){
     if(actor===target)throw Error('platform_support_dispatch_denied');
-    if(!(await db.query('SELECT o.identity_id FROM platform_support_operators o JOIN identities i ON i.id=o.identity_id WHERE o.identity_id=$1 AND o.active AND i.deactivated_at IS NULL FOR SHARE OF o,i',[target])).rows[0])throw Error('platform_support_not_found');
+    if(!(await db.query('SELECT platform_support_lock_dispatch_operator($1) AS active',[target])).rows[0]?.active)throw Error('platform_support_not_found');
    }
-   const row=(await db.query('SELECT c.status,c.owner_identity_id AS owner FROM platform_support_cases c JOIN identities i ON i.id=c.owner_identity_id WHERE c.id=$1 AND i.deactivated_at IS NULL FOR UPDATE OF c FOR SHARE OF i',[caseId])).rows[0];
+   if((await db.query('SELECT id FROM platform_support_cases WHERE id=$1 AND owner_identity_id=$2',[caseId,actor])).rows[0])throw Error('platform_support_dispatch_denied');
+   if(!(await db.query('SELECT platform_support_lock_dispatch_case($1) AS active',[caseId])).rows[0]?.active)throw Error('platform_support_not_found');
+   const row=(await db.query('SELECT c.status,c.owner_identity_id AS owner FROM platform_support_cases c JOIN identities i ON i.id=c.owner_identity_id WHERE c.id=$1 AND i.deactivated_at IS NULL',[caseId])).rows[0];
    if(!row)throw Error('platform_support_not_found');
    if(row.owner===actor)throw Error('platform_support_dispatch_denied');
    const prior=(await db.query<Assignment>('SELECT operator_identity_id AS "operatorId",revision,revoked_at AS "revokedAt" FROM platform_support_assignments WHERE case_id=$1 FOR UPDATE',[caseId])).rows[0];

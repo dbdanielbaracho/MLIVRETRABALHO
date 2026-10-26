@@ -35,6 +35,7 @@ export async function verifyPlatformSupportRoleRuntime(setup:PoolClient,schema:s
  try{
   await setup.query(`CREATE ROLE ${login} LOGIN PASSWORD '${password}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS`);created=true;
   await setup.query(`GRANT USAGE ON SCHEMA ${schema} TO ${login}`);
+  await setup.query(`GRANT EXECUTE ON FUNCTION platform_support_dispatch_case_allowed(uuid,uuid,boolean) TO ${login}`);
   await setup.query(`GRANT SELECT(id,deactivated_at) ON identities TO ${login}`);
   await setup.query(`GRANT SELECT ON platform_support_operators TO ${login}`);
   await setup.query(`GRANT INSERT(identity_id,active,revision),UPDATE(active,revision) ON platform_support_operators TO ${login}`);

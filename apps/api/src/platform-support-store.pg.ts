@@ -1,3 +1,4 @@
+import {verifyPlatformSupportDispatchRuntime} from './platform-support-dispatch-runtime.pg';
 import {verifyPlatformSupportRoleRuntime} from './platform-support-role-runtime.pg';
 import {verifyPlatformSupportAdminLocks} from './platform-support-admin-locks.pg';
 import {verifyPlatformSupportOperatorRuntime} from './platform-support-operator-runtime.pg';
@@ -31,6 +32,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string;ori
   await verifyPlatformSupportReadPolicies(setup,schema);
   await setup.query(readFileSync('packages/db/migrations/0079_platform_support_owner_locks.sql','utf8'));
   await verifyPlatformSupportAdminLocks(setup,schema,config.databaseUrl);
+  await verifyPlatformSupportDispatchRuntime(setup,schema,config.databaseUrl,config.origin);
   await verifyPlatformSupportRoleRuntime(setup,schema,config.databaseUrl,config.origin);
   await verifyPlatformSupportOwnerRuntime(setup,schema,config.databaseUrl,config.origin);
   await verifyPlatformSupportOperatorRuntime(setup,schema,config.databaseUrl,config.origin);

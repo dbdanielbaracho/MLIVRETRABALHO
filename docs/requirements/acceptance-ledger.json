@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -6117,6 +6117,147 @@
         ],
         "validation": "Fixture reproduces candidate0082 reading two foreign case IDs with admin identity but no operation context, then applies0083 and requires zero rows and denied role INSERT. Full role SQL/HTTP positives run only after0083; require actor and operation context cleared. Own full CI/Android pending."
       }
+    },
+    "dispatchRestrictedIncrement": {
+      "baseHead": "f3d2142238f2a653c5532a154868c91f46780572",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0084_platform_support_dispatch_runtime.sql",
+          "sha": "2b5c92f5943bbbe808e9884fd0e6a9642b5a11a0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "sha": "f8a81b87ff6e52fc1794c4795edabb3f44144365",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "sha": "00587e3408e291dd9685fb6e52ca389f3afe44ba",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "496a6397014abc18eb3cc842aaa36506ee0f3dd7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "sha": "fb9d730340a85192332d2946ac0838fa1100f286",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
+          "sha": "24242ff4e699013982cbca61a1ef532df4e0fe95",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
+          "sha": "0aa66c49f735fbf582e09b9ad825651ec0efe583",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
+          "sha": "95591b89410dda6213bde52953cfa62448e1debf",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
+          "sha": "4061f333eb62c20ec991a2d720d6873df4db2b69",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
+          "sha": "487f983482b344434a9462d10ccf7bc24a1d3c3c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
+          "sha": "5f4465ac62c06c4cb313dadf24a7c0f260f183a6",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0084_platform_support_dispatch_runtime.sql",
+          "old": null,
+          "new": "2b5c92f5943bbbe808e9884fd0e6a9642b5a11a0"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "old": null,
+          "new": "f8a81b87ff6e52fc1794c4795edabb3f44144365"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "old": "aba68666f28089b48235bda3eff1a18ec4b06140",
+          "new": "00587e3408e291dd9685fb6e52ca389f3afe44ba"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "bd3cc7c39773cdaa15f258d4ea6ba0799a6cd19e",
+          "new": "496a6397014abc18eb3cc842aaa36506ee0f3dd7"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "old": "a9fdaf4bd713b9bcc3b112bae9776c366fe8f64f",
+          "new": "fb9d730340a85192332d2946ac0838fa1100f286"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        }
+      ],
+      "scope": "Dedicated transaction-local server dispatch scope, closed operator/case lock booleans and write-authorization boolean, RLS assignment insert/update and metadata reads, real SQL and session HTTP fixture; no operational pool configuration or render proof.",
+      "validation": "Local TS/CJS syntax PASS; actual baseline42501 before0084, SQL/HTTP CAS/replay/audit rollback/closed-case revoke/locks55P03/session/cleanup and own full CI/Android PENDING.",
+      "policyDependency": "Role restricted fixture receives EXECUTE of closed dispatch write-check boolean, which returns false without dispatch operation scope. Run role/owner/operator restricted proofs after final0084 policies.",
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false
     }
   }
 }
