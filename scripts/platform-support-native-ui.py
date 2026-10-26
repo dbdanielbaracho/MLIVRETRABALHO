@@ -14,38 +14,56 @@ serials=re.findall(r'^(emulator-\d+)\s+device$',devices,re.M);assert len(serials
 ADB=['adb','-s',serials[0]];stage='device';states=[]
 def adb(*args,binary=False,timeout=20):
     return subprocess.check_output(ADB+list(args),timeout=timeout,text=not binary,stderr=subprocess.STDOUT)
+SCREEN_W,SCREEN_H=map(int,re.search(r'(\d+)x(\d+)',adb('shell','wm','size')).groups())
+APP_TOP,APP_BOTTOM=SCREEN_H*.04,SCREEN_H*.96
 def tree():
+    global APP_TOP,APP_BOTTOM
     adb('shell','uiautomator','dump','/data/local/tmp/mlivre-support-layout.xml')
-    return ET.fromstring(adb('exec-out','cat','/data/local/tmp/mlivre-support-layout.xml'))
+    t=ET.fromstring(adb('exec-out','cat','/data/local/tmp/mlivre-support-layout.xml'))
+    nav=[bounds(n)[1] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/navigationBarBackground']
+    status=[bounds(n)[3] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/statusBarBackground']
+    APP_TOP=max([SCREEN_H*.04]+status);APP_BOTTOM=min([SCREEN_H*.96]+nav)
+    return t
 def label(n):return n.attrib.get('text','')+' '+n.attrib.get('content-desc','')
 def bounds(n):
-    nums=[int(x) for x in re.findall(r'\d+',n.attrib.get('bounds',''))]
+    nums=[int(x) for x in re.findall(r'-?\d+',n.attrib.get('bounds',''))]
     return nums if len(nums)==4 else [0,0,0,0]
 def visible(n):
-    x,y,r,b=bounds(n);return r>x and b>y and n.attrib.get('visible-to-user','true')!='false'
+    x,y,r,b=bounds(n);return r>x and b>y and x<SCREEN_W and r>0 and y<APP_BOTTOM and b>APP_TOP and n.attrib.get('visible-to-user','true')!='false'
+def safe_tap(n):
+    x,y,r,b=bounds(n);cx,cy=(x+r)//2,(y+b)//2
+    return n.attrib.get('package')==PACKAGE and 0<cx<SCREEN_W and APP_TOP<cy<APP_BOTTOM
 def matching(t,text):return [n for n in t.iter('node') if text in label(n) and visible(n)]
 def wait(text,timeout=35,scroll=False):
     end=time.monotonic()+timeout
     while time.monotonic()<end:
         t=tree()
         if matching(t,text):return t
-        if scroll:swipe()
+        targets=[n for n in t.iter('node') if text in label(n) and n.attrib.get('package')==PACKAGE]
+        if targets:
+            y=bounds(targets[0])[1]
+            if y<APP_TOP:swipe(True)
+            elif y>=APP_BOTTOM:swipe()
+        elif scroll:swipe()
         time.sleep(.5)
     raise AssertionError('expected_native_text_missing')
 def action(t,text):
     parents={child:parent for parent in t.iter() for child in parent}
     for n in matching(t,text):
         while n is not None:
-            if n.attrib.get('clickable')=='true' and visible(n):return n
+            if n.attrib.get('clickable')=='true' and visible(n) and n.attrib.get('package')==PACKAGE:return n
             n=parents.get(n)
     return None
 def tap(text,scroll=False,up=False):
     for _ in range(20 if scroll else 2):
         t=tree();n=action(t,text)
-        if n is not None:
+        if n is not None and safe_tap(n):
+            print('NATIVE_ACTION '+json.dumps({'text':text,'bounds':bounds(n),'package':PACKAGE}),flush=True)
             assert n.attrib.get('enabled')!='false';x,y,r,b=bounds(n);adb('shell','input','tap',str((x+r)//2),str((y+b)//2));time.sleep(.4);return
         if not scroll:time.sleep(.5)
-        else:swipe(up)
+        else:
+            low=next((node for node in matching(t,text) if node.attrib.get('package')==PACKAGE),None)
+            swipe(up or low is not None and bounds(low)[1]<APP_TOP)
     raise AssertionError('native_action_missing')
 def swipe(up=False):
     size=adb('shell','wm','size');w,h=map(int,re.search(r'(\d+)x(\d+)',size).groups())
@@ -53,14 +71,16 @@ def swipe(up=False):
 def input_text(accessible,value,replace=False):
     assert re.fullmatch(r'[A-Za-z0-9@._+-]+',value)
     for _ in range(12):
-        nodes=[n for n in tree().iter('node') if n.attrib.get('class')=='android.widget.EditText' and accessible in label(n) and visible(n)]
-        if nodes:
+        nodes=[n for n in tree().iter('node') if n.attrib.get('class')=='android.widget.EditText' and accessible in label(n) and n.attrib.get('package')==PACKAGE]
+        usable=[n for n in nodes if visible(n) and safe_tap(n)]
+        if usable:
+            nodes=usable
             x,y,r,b=bounds(nodes[0]);adb('shell','input','tap',str((x+r)//2),str((y+b)//2));adb('shell','input','keyevent','KEYCODE_MOVE_END')
             if replace:
                 old=nodes[0].attrib.get('text','');assert len(old)<100
                 if old:adb('shell','input','keyevent',*(['67']*len(old)))
             adb('shell','input','text',value);return
-        swipe()
+        swipe(bool(nodes and bounds(nodes[0])[1]<APP_TOP))
     raise AssertionError('native_input_missing')
 def open_route(route):
     adb('shell','am','start','-W','-a','android.intent.action.VIEW','-d','mlivre-support-fixture:///'+route,'-p',PACKAGE)

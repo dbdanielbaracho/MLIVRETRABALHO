@@ -20128,3 +20128,82 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "primary": "https://metrobundler.dev/docs/configuration/#cachestores",
   "validation": "Bash syntax PASS; new own complete CI/Android/22-state native journey/visual review PENDING. No merge/postmerge/acceptance/activation."
 }
+
+
+### PR632 — reprodução nativa e correção de histórico/gestos, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baseline": {
+    "sha": "6a8bb0e7c82d9ac7baa42587ac10e84e2efbff10",
+    "run": 40323306531,
+    "foundation": 121573482426,
+    "android": 121573671865,
+    "mergePolicy": 121584383347,
+    "nativeArtifact": 12651331751,
+    "nativeArtifactZIP": "76185440cc39234841264d2ba02c812bd90341e93c295dedfde67c7be1758740",
+    "pngs": [
+      [
+        "01-disabled-empty",
+        "2d0766a821bc06ae210bcbada0e6aac71a5b505488dbae875835d00a85e8a0e8"
+      ],
+      [
+        "02-loading",
+        "72139c85dd5f1a3648ffe4d1669707205509b577767d72deb87a359a1e38cd04"
+      ],
+      [
+        "03-form",
+        "4300078f32bfebd366dfb9f4e04a3268935b1b16f98b1e933b922ec653b34852"
+      ],
+      [
+        "04-confirmed",
+        "c0acb39f98b9e466f28ee1692ad76502f0c2cbefba10a8bfdec666639f63c071"
+      ],
+      [
+        "failure-enabled-form",
+        "a37978cb4eccb9a844d6a61ac288f60aa1377b3655771b5fe7a03a8b706f4791"
+      ]
+    ],
+    "observed": "Four real state captures plus launcher failure verified/visually reviewed. Local signin201, me200, intent201, submit201, recovery200 and refreshed page200. No detail GET before driver failure. Logcat LAUNCHER_TASKBAR_HOME_BUTTON_TAP at12:56:09; UI hierarchy viewport0..2400 includes navigation bar2274..2400 and unbounded row geometry. Driver selected clipped/offscreen node instead of scrolling into app viewport. Original confirmed screenshot also shows stale empty history after successful creation and disabled button visually identical to enabled state.",
+    "fix": "UI invalidates previously loaded page on confirmed write instead of fabricating row; disabled button distinct neutral style preserving disabled/accessibility guard. Native driver parses signed bounds, intersects app viewport, requires package, actual XML system-bar exclusion and central92% center before tap, scrolls actual target into view; normal bounded gestures only. No insets library/dependency/lockfile change or bypass/automatic resend."
+  },
+  "sources": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "sha": "c4eede305ec3867b3482d1156f8514de49c87c1f",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "sha": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "55468212ea2ad4cc42ddc4cb10341944979cc479",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "pins": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "old": "bf452cd2185c306406311b340b61a928fb0d7609",
+      "new": "c4eede305ec3867b3482d1156f8514de49c87c1f"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "old": "e6d3596720b93b9b8fa30637f10a66b51350cc2c",
+      "new": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "661dc4153d0adf5bdf8895fef171dae77beabea2",
+      "new": "55468212ea2ad4cc42ddc4cb10341944979cc479"
+    }
+  ],
+  "validation": "Original UI history regression:7/8 PASS,1 FAIL; candidate8/8 PASS. Recorded XML navigation-bar/signed-coordinate regression PASS; Python syntax PASS. New JSX/typecheck/full own CI/Android/22state journey/visual review PENDING. Four state captures plus failure previously reviewed, not full render proof.",
+  "scope": "No package/dependency/lockfile/workflow/RLS/AuthService/pool/canonical build changes. System bars excluded using recorded XML resource bounds plus conservative viewport. Product change only stale-history invalidation and disabled visual state; no claim that physical/inset layouts or all Area1 are accepted. No merge/postmerge/activation/acceptance."
+}

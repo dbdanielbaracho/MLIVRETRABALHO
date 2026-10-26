@@ -21,7 +21,7 @@ test('screen loads without profile/tenant and disabled capability blocks send wh
  const h=harness();await ready(h,false);h.edit('Keep draft');await h.render().send();assert.equal(h.calls.some(x=>x.init.method==='POST'),false);assert.equal(h.states[4],'Keep draft');
 });
 test('screen confirms only a matching ACK and clears message after persisted success',async()=>{
- const h=harness();await ready(h);h.edit('Private draft');h.handler((p,i)=>p.endsWith('/intent')?response(prepared,201):response(ack,201));await h.render().send();assert.equal(h.states[0].status,'confirmed');assert.equal(h.states[4],'');assert.equal(h.states[6],false);
+ const h=harness();await ready(h);h.edit('Private draft');h.handler((p,i)=>p.endsWith('/intent')?response(prepared,201):response(ack,201));await h.render().send();assert.equal(h.states[0].status,'confirmed');assert.equal(h.states[1],null,'confirmed write invalidates previously loaded history');assert.equal(h.states[4],'');assert.equal(h.states[6],false);
 });
 test('unknown result keeps draft, prevents another send and GET recovery confirms without automatic POST',async()=>{
  const h=harness();await ready(h);h.edit('Keep me');h.handler((p,i)=>p.endsWith('/intent')?response(prepared,201):Promise.reject(Error('lost')));await h.render().send();assert.equal(h.states[0].status,'unknown');assert.equal(h.states[4],'Keep me');const n=h.calls.filter(x=>x.init.method==='POST').length;await h.render().send();assert.equal(h.calls.filter(x=>x.init.method==='POST').length,n);h.handler(()=>response(ack));await h.render().load();assert.equal(h.states[0].status,'confirmed');assert.equal(h.calls.filter(x=>x.init.method==='POST').length,n);
