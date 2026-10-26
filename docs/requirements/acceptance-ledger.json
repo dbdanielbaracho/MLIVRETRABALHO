@@ -5759,7 +5759,26 @@
           "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
           "new": "44915535899555918dfd532b9493821d886290ee"
         }
-      ]
+      ],
+      "fixtureQueryStringCorrection": {
+        "failedHead": "1ca29040584c8ee63d40fc4d5436a4cfad45b563",
+        "failedRun": 40266421756,
+        "observed": "Baseline lock/INSERT42501/UPDATEzero, 55P03 contention, foreign/forged author RLS probes reached real PostgreSQL. Fixture then called list(actor,1,undefined), but shared query parser requires string limit. Local reproduction confirms numeric1 rejected and string1 accepted. Keep production parser, policies, guards unchanged; fix fixture limit to string1; add finer stage diagnostics. HTTP denied-session snapshots now compare full ordered case/response/audit JSON rather than counts.",
+        "sources": [
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "sha": "1641cd0eb09f6889fc56e1ccb19ca967997f751c",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+            "sha": "0dc4623ae3740cd0872618df93a9d1e6aea3f298",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ]
+      }
     }
   }
 }

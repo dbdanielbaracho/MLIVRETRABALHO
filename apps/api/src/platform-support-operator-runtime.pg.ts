@@ -60,8 +60,8 @@ export async function verifyPlatformSupportOperatorRuntime(setup:PoolClient,sche
   await assert.rejects(context(c=>c.query('INSERT INTO platform_support_responses(request_key,case_id,operator_identity_id,body,resolves_case) VALUES($1,$2,$3,$4,false)',[randomUUID(),caseId,other,'Denied forged author'])),denied);
   stage='actual-operator-store';const store=new PlatformSupportOperatorStore(db);
   assert.equal((await store.detail(actor,caseId)).id,caseId);await assert.rejects(store.detail(other,caseId),/not_found/);
-  assert.deepEqual((await store.list(actor,1,undefined)).items.map(r=>r.id),[caseId]);
-  const reply={responseKey:randomUUID(),body:'Synthetic restricted reply',resolve:false};
+  stage='operator-list-query-string';assert.deepEqual((await store.list(actor,'1',undefined)).items.map(r=>r.id),[caseId]);
+  stage='operator-response';const reply={responseKey:randomUUID(),body:'Synthetic restricted reply',resolve:false};
   const pair=await Promise.all([store.respond(actor,caseId,reply),store.respond(actor,caseId,reply)]);assert.deepEqual(pair[0],pair[1]);
   assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_responses WHERE case_id=$1',[caseId])).rows[0]?.n,1);
   assert.equal((await setup.query("SELECT count(*)::int n FROM platform_support_audit WHERE case_id=$1 AND action='responded'",[caseId])).rows[0]?.n,1);
@@ -86,11 +86,11 @@ export async function verifyPlatformSupportOperatorRuntime(setup:PoolClient,sche
    assert.equal((await c.query('SELECT platform_support_lock_assigned_case($1,true) active',[caseId])).rows[0].active,false);
   });
   await setup.query('UPDATE platform_support_assignments SET revoked_at=NULL WHERE case_id=$1',[caseId]);
-  await setup.query('UPDATE platform_support_operators SET active=false WHERE identity_id=$1',[actor]);await assert.rejects(store.list(actor,1,undefined),/not_found/);
+  await setup.query('UPDATE platform_support_operators SET active=false WHERE identity_id=$1',[actor]);await assert.rejects(store.list(actor,'1',undefined),/not_found/);
   await setup.query('UPDATE platform_support_operators SET active=true WHERE identity_id=$1',[actor]);
   await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[owner]);await assert.rejects(store.detail(actor,caseId),/not_found/);
   await setup.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[owner]);
-  await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[actor]);await assert.rejects(store.list(actor,1,undefined),/identity_required/);
+  await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[actor]);await assert.rejects(store.list(actor,'1',undefined),/identity_required/);
   await setup.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[actor]);
   assert.equal((await db.transaction(c=>c.query("SELECT NULLIF(current_setting('app.platform_support_identity',true),'') actor"))).rows[0]?.actor,null);
   console.log('PLATFORM_SUPPORT_OPERATOR_RUNTIME_PG_PASS '+JSON.stringify({actualDatabaseService:true,restrictedLoginNoSetRole:true,currentUserEqualsSessionUser:true,listDetailRespond:true,positiveReadWriteRLS:true,foreignAndForgedAuthorDenied:true,concurrentReplaySingleResponseAndAudit:true,auditFailureRollback:true,closedReplayOnly:true,revocationAndDeactivationDenied:true,locks55P03:true,boundedCaseLock:true,tempShadowingDenied:true,contextCleared:true,noIdentityRoleAssignmentCapabilityUpdateACL:true,adminRuntimeProof:false,operationalConfiguration:false,production:false}));

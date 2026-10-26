@@ -88,7 +88,7 @@ export async function verifyPlatformSupportOperatorHTTP(setup:PoolClient,schema:
   await setup.query('UPDATE platform_support_operators SET active=false WHERE identity_id=$1',[operator.id]);for(const [m,p,b]of matrix)await call(operator,m,p,b,404);await setup.query('UPDATE platform_support_operators SET active=true WHERE identity_id=$1',[operator.id]);
   await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[operator.id]);for(const [m,p,b]of matrix)await call(operator,m,p,b,401);await setup.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[operator.id]);
   stage='session-matrices';
-  const snapshot=async()=>JSON.stringify((await setup.query('SELECT (SELECT count(*) FROM platform_support_responses) responses,(SELECT count(*) FROM platform_support_audit) audits')).rows),before=await snapshot();
+  const snapshot=async()=>JSON.stringify((await setup.query("SELECT jsonb_build_object('cases',(SELECT jsonb_agg(to_jsonb(c) ORDER BY id) FROM platform_support_cases c),'responses',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM platform_support_responses r),'audits',(SELECT jsonb_agg(to_jsonb(a) ORDER BY id) FROM platform_support_audit a)) snapshot")).rows),before=await snapshot();
   for(const [m,p,b]of matrix)await call(null,m,p,b,401);
   const hash=createHash('sha256').update(operator.token).digest('hex');await authDb.query("UPDATE sessions SET created_at=now()-interval '2 days',expires_at=now()-interval '1 day' WHERE token_hash=$1",[hash]);for(const [m,p,b]of matrix)await call(operator,m,p,b,401);
   const signed=await authCall(null,'POST','/v1/auth/signin',{email:operator.email,password});operator.token=signed.accessToken;
