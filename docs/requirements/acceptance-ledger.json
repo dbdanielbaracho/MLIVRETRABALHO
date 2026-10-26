@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "528002354bcd760dd5998144608d0b2c6aaa2772",
+      "sha": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
       "mode": "100644"
     },
     {
@@ -6633,6 +6633,88 @@
         ],
         "validation": "Local routing reproduction/syntax PASS; own complete CI/AppModule whole journey/Android PENDING."
       }
+    },
+    "nativeRenderIncrement": {
+      "baseHead": "6bcb45049b3d02d70892fdc13afb96b4696ad39b",
+      "sources": [
+        {
+          "path": "scripts/platform-support-native-api.cjs",
+          "sha": "b6903beeb352f45793429dfc6bfd184acaf78e6c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "sha": "d03dc6bb030380c143b886035e79be660b1765ee",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/platform-support-native-ui.py",
+          "sha": "f76815658b77bb399c292718fb8b41ca775d6fcc",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "sha": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "sha": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "scripts/platform-support-native-api.cjs",
+          "old": null,
+          "new": "b6903beeb352f45793429dfc6bfd184acaf78e6c"
+        },
+        {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": null,
+          "new": "d03dc6bb030380c143b886035e79be660b1765ee"
+        },
+        {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": null,
+          "new": "f76815658b77bb399c292718fb8b41ca775d6fcc"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": null,
+          "new": "83448ccbeb01204f13dd891f070a434ea69c2f36"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "528002354bcd760dd5998144608d0b2c6aaa2772",
+          "new": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "protectedInputs/1",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "528002354bcd760dd5998144608d0b2c6aaa2772",
+          "new": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e"
+        }
+      ],
+      "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
+      "plannedJourney": "Unlinked Profile entry; disabled/empty/loading/focus; enabled form/confirmed/detail/authorized response/withdraw; response-loss timeout with one POST and force-stop durable recovery by GET; error hides private state; history pagination; large font; session revocation; company isolation and legacy help retained. Fifteen planned snapshots; no rendered proof until actual run and image review.",
+      "networkBoundary": "Separate Android package com.predibeacon.mlivretrabalho.supportfixture; only emulator host-loopback 10.0.2.2 cleartext, base denies cleartext/trusts only ephemeral fixture CA so production HTTPS is not trusted. No CA installed on emulator, no OS permission grant/root, no production functional request.",
+      "validation": "Local Node/Bash/Python syntax PASS. Guard negatives, actual isolated native build/15 states/render screenshots/CI/Android own SHA PENDING. No merge/postmerge/area acceptance/activation or production proof.",
+      "primarySources": [
+        "https://developer.android.com/tools/adb",
+        "https://developer.android.com/studio/run/emulator-networking",
+        "https://developer.android.com/privacy-and-security/security-config"
+      ],
+      "render": false,
+      "activation": false,
+      "production": false
     }
   }
 }

@@ -10,7 +10,21 @@ permissions:
 jobs:
   build-standalone-pilot-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 65
+    services:
+      support-postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mlivretrabalho_http
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d mlivretrabalho_http"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,3 +96,60 @@ jobs:
           path: artifacts/android-pilot/
           if-no-files-found: error
           retention-days: 14
+
+      # A second package/checkout/API/output, after preserving the canonical APK.
+      # Reuse the already verified KVM setup; no new root, grants or permission fallback.
+      - name: Prepare local API for isolated native support journey
+        env:
+          PAYMENT_WEBHOOK_SECRET: ci-payment-webhook-secret
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
+        run: |
+          pnpm --filter @mlivretrabalho/api build
+          pnpm --filter @mlivretrabalho/api migrate
+          node scripts/platform-support-native-api.cjs > /tmp/mlivre-support-native-api.log 2>&1 &
+          echo $! > /tmp/mlivre-support-native-api.pid
+          for i in $(seq 1 60); do
+            if test -f /tmp/mlivre-support-native/public.json; then break; fi
+            sleep 1
+          done
+          test -f /tmp/mlivre-support-native/public.json || { cat /tmp/mlivre-support-native-api.log; exit 1; }
+
+      - name: Build separate local-only support fixture APK
+        run: bash scripts/build-platform-support-native-fixture.sh
+
+      - name: Render native support states and recovery with real local sessions
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: false
+          disable-linux-hw-accel: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save -wipe-data
+          script: python3 scripts/platform-support-native-ui.py
+
+      - name: Close local fixture and verify cleanup
+        if: always()
+        run: |
+          if test -f /tmp/mlivre-support-native-api.pid; then
+            kill -TERM "$(cat /tmp/mlivre-support-native-api.pid)"
+            for i in $(seq 1 30); do
+              if grep -Fq NATIVE_API_CLEANUP_PASS /tmp/mlivre-support-native-api.log; then break; fi
+              sleep 1
+            done
+            grep -F NATIVE_API_CLEANUP_PASS /tmp/mlivre-support-native-api.log
+          fi
+
+      - name: Upload isolated native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MLivreTrabalho-support-native-fixture
+          path: |
+            artifacts/platform-support-native/
+            /tmp/mlivre-support-native-api.log
+          if-no-files-found: warn
+          retention-days: 14
+
