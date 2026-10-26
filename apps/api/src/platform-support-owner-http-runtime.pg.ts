@@ -42,8 +42,8 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   const who=(await restrictedDb.query('SELECT current_user actor,session_user login')).rows[0];assert.deepEqual(who,{actor:restrictedUrl.username,login:restrictedUrl.username});
   await assert.rejects(restrictedDb.query('SELECT token_hash FROM public.sessions'),(e:unknown)=>(e as {code:string}).code==='42501');
   const owner=await account('unlinked'),other=await account('foreign'),company=await account('company-a',true),companyB=await account('company-b',true);
-  assert.equal((await authDb.query('SELECT count(*)::int n FROM professional_profiles WHERE identity_id=$1',[owner.id])).rows[0].n,0);
-  assert.equal((await authDb.query('SELECT count(*)::int n FROM tenant_memberships WHERE identity_id=$1',[owner.id])).rows[0].n,0);
+  assert.equal((await authDb.query('SELECT count(*)::int n FROM professional_profiles WHERE identity_id=$1',[owner.id])).rows[0]?.n,0);
+  assert.equal((await authDb.query('SELECT count(*)::int n FROM tenant_memberships WHERE identity_id=$1',[owner.id])).rows[0]?.n,0);
   // Actual controller and actual AuthService. Only their database authorities are separated.
   class OwnerRuntimeHTTPFixture{}
   Module({controllers:[PlatformSupportController],providers:[{provide:DatabaseService,useValue:restrictedDb},{provide:AuthService,useValue:auth}]})(OwnerRuntimeHTTPFixture);
@@ -76,7 +76,7 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   await setup.query(`CREATE FUNCTION ${fault}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.actor_identity_id='${owner.id}'::uuid AND NEW.action='submitted' THEN RAISE EXCEPTION 'synthetic_owner_http_audit_fault'; END IF; RETURN NEW; END $$`);
   await setup.query(`CREATE TRIGGER ${fault} BEFORE INSERT ON platform_support_audit FOR EACH ROW EXECUTE FUNCTION ${fault}()`);trigger=true;
   await call(owner,'POST','',input,500,{'idempotency-key':pending.requestKey});
-  assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_cases WHERE id=$1',[pending.requestKey])).rows[0].n,0);
+  assert.equal((await setup.query('SELECT count(*)::int n FROM platform_support_cases WHERE id=$1',[pending.requestKey])).rows[0]?.n,0);
   assert.deepEqual(await call(owner,'GET','/recovery/'+pending.requestKey),{status:'prepared'});
   await setup.query(`DROP TRIGGER ${fault} ON platform_support_audit`);trigger=false;await setup.query(`DROP FUNCTION ${fault}()`);
   assert.equal((await call(owner,'POST','',input,201,{'idempotency-key':pending.requestKey})).id,pending.requestKey);
@@ -122,7 +122,7 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
    await setup.query('DELETE FROM platform_support_intents WHERE owner_identity_id=ANY($1::uuid[])',[ids]);
    await setup.query('DELETE FROM identities WHERE id=ANY($1::uuid[])',[ids]);
    await setup.query('UPDATE platform_support_capability SET enabled=$1',[initialCapability]);
-   if(authDb)assert.equal((await authDb.query('SELECT count(*)::int n FROM sessions WHERE identity_id=ANY($1::uuid[])',[ids])).rows[0].n,0);
+   if(authDb)assert.equal((await authDb.query('SELECT count(*)::int n FROM sessions WHERE identity_id=ANY($1::uuid[])',[ids])).rows[0]?.n,0);
   }finally{if(authDb)await authDb.onModuleDestroy();}
  }
  console.log('PLATFORM_SUPPORT_OWNER_HTTP_RESTRICTED_CLEANUP_PASS '+JSON.stringify({listenerAndPoolsClosed:true,actualSessionsRevoked:true,privateFixtureRowsRemoved:true,originalCapabilityRestored:true,syntheticPublicAccountsUntilDisposableDatabaseDestroyed:true,production:false}));
