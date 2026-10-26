@@ -149,7 +149,7 @@ jobs:
           profile: pixel_6
           disable-animations: false
           disable-linux-hw-accel: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
+          emulator-options: -no-window -gpu swiftshader -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
           script: python3 scripts/platform-support-native-ui.py
 
       - name: Close local fixture and verify cleanup

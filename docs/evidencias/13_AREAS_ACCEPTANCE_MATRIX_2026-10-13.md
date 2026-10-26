@@ -18136,3 +18136,44 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   ],
   "validation": "Python syntax and YAML/lifecycle ordering PASS. Original canonical build script/package/URL/artifact/first-runner/KVM controls preserved. Own full CI/Android/native22/visual review/ANR resource hypothesis PENDING. No merge/postmerge/acceptance/operational activation."
 }
+
+
+### PR632 — saturação gráfica reproduzida e renderer explícito, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "126340939acefbe53c847e056eea8e64a4ec42db",
+  "baselineRun": 40337832070,
+  "foundation": 121624072755,
+  "android": 121624293893,
+  "mergePolicy": 121636201651,
+  "baselineConclusion": "failure",
+  "proof": "Build/native localURL/canonical smoke/cleanup PASS; startup blocked before login, zero HTTP. Java RSS before second boot1548940KiB→0; guest memory pressureavg10=0 but CPU pressureavg10=56.67, SurfaceFlinger55% and composer45%, total98% with88%kernel. ANR com.android.systemui failed to complete startup. Emulator37.2.12.0/build16428233 still invoked deprecated swiftshader_indirect. This identifies graphics startup saturation; a renderer-flag causal fix is NOT proven yet.",
+  "artifact": {
+    "id": 12658594158,
+    "size": 30014664,
+    "zipSHA256": "403df9bb5c58235a6df8f53ad611775604ccd960a0e09c34bd3893429a79f3d6",
+    "pngSHA256": "5dbf173c0146f012c3afd9463caefcfb49f74a65ed370d7df7b4415848e25257",
+    "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+    "checked": "Downloaded ZIP/PNG/XML hashes verified and original SystemUI-ANR image visually reviewed; not an Ajuda positive state."
+  },
+  "change": "ONLY second isolated native runner changes explicit -gpu swiftshader_indirect to supported -gpu swiftshader. No automatic renderer sequence, image/API downgrade, Vulkan disable, root/grant/system-dialog input or security-guard relaxation. API35/x86_64/pixel_6, existing AVD/absent fixture namespace, first canonical runner/KVM/API URL/APK, Gradle cleanup and boot/ANR evidence guards unchanged.",
+  "primary": [
+    "https://developer.android.com/studio/run/emulator-acceleration",
+    "https://developer.android.com/studio/run/emulator-troubleshooting"
+  ],
+  "source": {
+    "path": ".github/workflows/standalone-pilot-apk.yml",
+    "old": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+    "new": "d2003f30a75530001ea1402bedee7cf75dc9c5d0"
+  },
+  "sourcePinReconciliation": [
+    {
+      "at": "protectedInputs/1",
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+      "new": "d2003f30a75530001ea1402bedee7cf75dc9c5d0"
+    }
+  ],
+  "validation": "YAML and first canonical/API35/arch/profile-preserved checks PASS. New own full CI/Android/renderer outcome/native22/visual review PENDING. No merge/postmerge/acceptance/activation/production."
+}
