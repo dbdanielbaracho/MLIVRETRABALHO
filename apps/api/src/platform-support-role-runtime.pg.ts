@@ -7,6 +7,7 @@ import {NestFactory} from '@nestjs/core';
 import {FastifyAdapter,type NestFastifyApplication} from '@nestjs/platform-fastify';
 import type {PoolClient} from 'pg';
 import {DatabaseService} from './database.service';
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {AuthService} from './auth.service';
 import {PlatformSupportRoleStore} from './platform-support-role-store';
 import {PlatformSupportAdminController} from './platform-support-admin.controller';
@@ -74,7 +75,7 @@ export async function verifyPlatformSupportRoleRuntime(setup:PoolClient,schema:s
   await setup.query(`CREATE FUNCTION ${fault}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.actor_identity_id='${admin.id}'::uuid AND NEW.action='operator_revoked' THEN RAISE EXCEPTION 'synthetic_role_runtime_audit_fault'; END IF; RETURN NEW; END $$`);await setup.query(`CREATE TRIGGER ${fault} BEFORE INSERT ON platform_support_audit FOR EACH ROW EXECUTE FUNCTION ${fault}()`);trigger=true;
   await assert.rejects(roles.change(admin.id,target.id,false,1),/synthetic_role_runtime_audit_fault/);assert.equal(await snapshot(),before);
   await setup.query(`DROP TRIGGER ${fault} ON platform_support_audit`);trigger=false;await setup.query(`DROP FUNCTION ${fault}()`);
-  stage='actual-controller';class RoleRuntimeHTTPFixture{}Module({controllers:[PlatformSupportAdminController],providers:[{provide:DatabaseService,useValue:runtime},{provide:AuthService,useValue:auth}]})(RoleRuntimeHTTPFixture);
+  stage='actual-controller';class RoleRuntimeHTTPFixture{}Module({controllers:[PlatformSupportAdminController],providers:[{provide:PlatformSupportDatabases,useValue:{forScope:()=>runtime}},{provide:AuthService,useValue:auth}]})(RoleRuntimeHTTPFixture);
   app=await NestFactory.create<NestFastifyApplication>(RoleRuntimeHTTPFixture,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});app.setGlobalPrefix('v1');await app.listen(0,'127.0.0.1');const addr=app.getHttpServer().address() as {address:string;port:number};assert.equal(addr.address,'127.0.0.1');
   const base='http://127.0.0.1:'+addr.port,path='/v1/platform-support/admin/operators/'+target.id,call=(actor:Account|null,body:unknown,status:number,headers:Record<string,string>={})=>request(base,actor,path,body,status,headers);
   stage='http-authorization';const pending={active:false,expectedRevision:1},forged={'x-identity-id':admin.id,'x-tenant-id':randomUUID()};
@@ -112,3 +113,4 @@ export async function verifyPlatformSupportRoleRuntime(setup:PoolClient,schema:s
  }
  console.log('PLATFORM_SUPPORT_ROLE_RUNTIME_CLEANUP_PASS '+JSON.stringify({listenerPoolsClosedSessionsRevoked:true,privateSyntheticRowsAndLoginACLsRemoved:true,publicSyntheticAccountsUntilDatabaseTeardown:true,noRealProvisioning:true}));
 }
+

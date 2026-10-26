@@ -1,3 +1,4 @@
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {PlatformSupportAdminController} from './platform-support-admin.controller';
 import {PlatformSupportOperatorController} from './platform-support-operator.controller';
 import {PlatformSupportController} from './platform-support.controller';
@@ -98,6 +99,7 @@ import { CancellationController } from './cancellation.controller';
     VerticalPacksController,
     CancellationController
   ],
-  providers: [DatabaseService, AuthService]
+  providers: [DatabaseService, AuthService, PlatformSupportDatabases]
 })
 export class AppModule {}
+

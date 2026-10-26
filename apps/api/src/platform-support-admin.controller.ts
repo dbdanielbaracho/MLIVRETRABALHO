@@ -1,15 +1,16 @@
-import {BadRequestException,Body,ConflictException,Controller,ForbiddenException,Headers,NotFoundException,Param,Post,UnauthorizedException} from '@nestjs/common';
+import {BadRequestException,Body,ConflictException,Controller,ForbiddenException,Headers,NotFoundException,Param,Post,ServiceUnavailableException,UnauthorizedException} from '@nestjs/common';
 import {AuthService} from './auth.service';
-import {DatabaseService} from './database.service';
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {PlatformSupportDispatchStore} from './platform-support-dispatch-store';
 import {PlatformSupportRoleStore} from './platform-support-role-store';
 @Controller('platform-support/admin')
 export class PlatformSupportAdminController{
  private readonly dispatch:PlatformSupportDispatchStore;private readonly roles:PlatformSupportRoleStore;
- constructor(db:DatabaseService,private readonly auth:AuthService){this.dispatch=new PlatformSupportDispatchStore(db);this.roles=new PlatformSupportRoleStore(db);}
+ constructor(databases:PlatformSupportDatabases,private readonly auth:AuthService){this.dispatch=new PlatformSupportDispatchStore(databases.forScope('dispatch'));this.roles=new PlatformSupportRoleStore(databases.forScope('role'));}
  private async invoke<T>(authorization:string|undefined,work:(id:string)=>Promise<T>){
   const identity=await this.auth.identityFromAuthorization(authorization);
   try{return await work(identity.id);}catch(e){const code=e instanceof Error?e.message:'';
+   if(code==='platform_support_unavailable')throw new ServiceUnavailableException(code);
    if(code==='platform_support_identity_required')throw new UnauthorizedException(code);
    if(code==='platform_support_dispatch_denied')throw new ForbiddenException(code);
    if(code==='platform_support_not_found')throw new NotFoundException(code);
@@ -23,3 +24,4 @@ export class PlatformSupportAdminController{
  @Post('cases/:id/assignment')
  assign(@Param('id')caseId:string,@Body()body:unknown,@Headers('authorization')a?:string){return this.invoke(a,id=>{const x=this.input(body,['targetOperatorId','expectedRevision']);return this.dispatch.change(id,caseId,x.targetOperatorId as string|null,x.expectedRevision as number);});}
 }
+

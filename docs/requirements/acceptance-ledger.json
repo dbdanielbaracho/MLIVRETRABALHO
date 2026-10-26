@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7",
+          "sha": "af102c44e2dbda9b03025fd7dff5568902cb1494",
           "mode": "100644"
         }
       ],
@@ -6311,6 +6311,166 @@
         "scope": "0085 replaces same closed boolean to authorize metadata without recursive RLS, requiring server dispatch context/admin/foreign active requester even on assignment SELECT and UPDATE USING. Write target non-null is enforced by table constraints; insert/update checks validate persisted operator. Owner/operator fixtures receive only EXECUTE of this closed boolean needed by final policies, no real ACLs.",
         "validation": "Actual fixture seeds separate synthetic assignment, observes candidate0084 SELECT with deactivated requester, applies0085 and requires zero rows, restores synthetic identity, then all SQL/HTTP positives run after0085. Role/owner/operator proofs run after final policies; own complete CI/Android pending."
       }
+    },
+    "applicationPoolIncrement": {
+      "baseHead": "2388da143c24f205fbad9f38b56fb9f113d32801",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-databases.ts",
+          "sha": "3db1882db7e8a7a4bf8ca7a1807d0b07f049732f",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-databases.test.ts",
+          "sha": "d564e41e9ed09182627b57579a9fe13a3f4613de",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-application.pg.ts",
+          "sha": "1dad12c6d3bf5216ed6023e34658ef5604b131ce",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "sha": "5414986734770892f897e7487d5e5c3c90f70cd0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support.controller.ts",
+          "sha": "c8b221a1cb8171832806214ed55c9b990bacd69c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin.controller.ts",
+          "sha": "e7235c798234ab7247e89c9e7b00fa563995f38d",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "sha": "6aab342793359daf8d52e3b2fc330b9c2f4c29eb",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "b65761b6266067aebc19c4751c20686b97b093fa",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "sha": "28a31c2508c3ccb17edc7d4013a024fceb52d34a",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "sha": "825d5e4774a26218a06901d5256177e24716a27f",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "sha": "ee9fca9131fc7605eeddf5c85d2bc2a7844995d5",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "sha": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-databases.ts",
+          "old": null,
+          "new": "3db1882db7e8a7a4bf8ca7a1807d0b07f049732f"
+        },
+        {
+          "path": "apps/api/src/platform-support-databases.test.ts",
+          "old": null,
+          "new": "d564e41e9ed09182627b57579a9fe13a3f4613de"
+        },
+        {
+          "path": "apps/api/src/platform-support-application.pg.ts",
+          "old": null,
+          "new": "1dad12c6d3bf5216ed6023e34658ef5604b131ce"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "old": "5b225214224b5b7b2906913c2d50f6f496ff88ed",
+          "new": "5414986734770892f897e7487d5e5c3c90f70cd0"
+        },
+        {
+          "path": "apps/api/src/platform-support.controller.ts",
+          "old": "4455553a343b67cca100404d5b349de540a732ca",
+          "new": "c8b221a1cb8171832806214ed55c9b990bacd69c"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin.controller.ts",
+          "old": "b4e1245f814aeb63ddfe41f825ca0ae123ed35fc",
+          "new": "e7235c798234ab7247e89c9e7b00fa563995f38d"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "old": "dc0964cd76fc35891808eb899a7e1a8c86b60d40",
+          "new": "6aab342793359daf8d52e3b2fc330b9c2f4c29eb"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "old": "9fa5eef7d64b5156fc7bb2680ef0e7ff03893cc4",
+          "new": "b65761b6266067aebc19c4751c20686b97b093fa"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "old": "0dc4623ae3740cd0872618df93a9d1e6aea3f298",
+          "new": "28a31c2508c3ccb17edc7d4013a024fceb52d34a"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "old": "fb9d730340a85192332d2946ac0838fa1100f286",
+          "new": "825d5e4774a26218a06901d5256177e24716a27f"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "old": "a97aca3cb0a990115c5aa2f75555a88c83241f82",
+          "new": "ee9fca9131fc7605eeddf5c85d2bc2a7844995d5"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7",
+          "new": "af102c44e2dbda9b03025fd7dff5568902cb1494"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7",
+          "new": "af102c44e2dbda9b03025fd7dff5568902cb1494"
+        }
+      ],
+      "scope": "Real AppModule composes PlatformSupportDatabases, with four explicit distinct logins for owner/operator/role/dispatch, separate unchanged AuthService authority. Missing/invalid configuration fails closed without DATABASE_URL fallback. Effective role flags, login equality, memberships, ownership, column/table ACLs, RLS and closed function privileges checked on each transaction. Fixed search_path and bounded Pool; transaction contexts reset locally, rollback/discard and shutdown.",
+      "fixture": "New guarded disposable public-schema fixture boots real AppModule without provider overrides using four synthetic LOGIN roles and real existing HTTP/auth/owner/operator/role/dispatch journeys. Excess UPDATE identity privilege must reject before callback, restore and verify contexts; default launched AppModule without credentials must return authenticated503/anonymous401. No migration/grant/provisioning outside fixture; privacy/retention authorities unchanged.",
+      "validation": "TS/CJS syntax PASS locally; actual AppModule PostgreSQL/HTTP proof and own full CI/Android PENDING. No rendered UI/real operational credential configuration certified.",
+      "primarySources": [
+        "https://www.postgresql.org/docs/17/ddl-rowsecurity.html",
+        "https://www.postgresql.org/docs/17/functions-info.html",
+        "https://node-postgres.com/apis/pool"
+      ],
+      "realCredentialProvisioning": false,
+      "render": false,
+      "merge": false,
+      "activation": false,
+      "areaAcceptance": false
     }
   }
 }

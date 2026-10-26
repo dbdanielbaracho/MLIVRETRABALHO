@@ -6,6 +6,7 @@ import {NestFactory} from '@nestjs/core';
 import {FastifyAdapter,type NestFastifyApplication} from '@nestjs/platform-fastify';
 import type {PoolClient} from 'pg';
 import {DatabaseService} from './database.service';
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {AuthService} from './auth.service';
 import {PlatformSupportController} from './platform-support.controller';
 type Account={id:string;email:string;token:string;tenant?:string};
@@ -50,7 +51,7 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   // Actual controller and actual AuthService. Only their database authorities are separated.
   stage='actual-controller-listener';
   class OwnerRuntimeHTTPFixture{}
-  Module({controllers:[PlatformSupportController],providers:[{provide:DatabaseService,useValue:restrictedDb},{provide:AuthService,useValue:auth}]})(OwnerRuntimeHTTPFixture);
+  Module({controllers:[PlatformSupportController],providers:[{provide:PlatformSupportDatabases,useValue:{forScope:()=>restrictedDb}},{provide:AuthService,useValue:auth}]})(OwnerRuntimeHTTPFixture);
   app=await NestFactory.create<NestFastifyApplication>(OwnerRuntimeHTTPFixture,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});
   app.setGlobalPrefix('v1');await app.listen(0,'127.0.0.1');
   const address=app.getHttpServer().address() as {address:string;port:number};assert.equal(address.address,'127.0.0.1');assert.ok(address.port>0);
@@ -144,3 +145,4 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
  }
  console.log('PLATFORM_SUPPORT_OWNER_HTTP_RESTRICTED_CLEANUP_PASS '+JSON.stringify({listenerAndPoolsClosed:true,actualSessionsRevoked:true,privateFixtureRowsRemoved:true,originalCapabilityRestored:true,syntheticPublicAccountsUntilDisposableDatabaseDestroyed:true,production:false}));
 }
+

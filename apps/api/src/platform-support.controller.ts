@@ -1,11 +1,11 @@
 import {BadRequestException,Body,ConflictException,Controller,Get,Headers,NotFoundException,Post,Param,Query,ServiceUnavailableException,UnauthorizedException} from '@nestjs/common';
 import {AuthService} from './auth.service';
-import {DatabaseService} from './database.service';
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {PlatformSupportOwnerStore} from './platform-support-owner-store';
 @Controller('me/platform-support')
 export class PlatformSupportController{
  private readonly store:PlatformSupportOwnerStore;
- constructor(db:DatabaseService,private readonly auth:AuthService){this.store=new PlatformSupportOwnerStore(db);}
+ constructor(databases:PlatformSupportDatabases,private readonly auth:AuthService){this.store=new PlatformSupportOwnerStore(databases.forScope('owner'));}
  private async invoke<T>(authorization:string|undefined,work:(id:string)=>Promise<T>){
   const identity=await this.auth.identityFromAuthorization(authorization);
   try{return await work(identity.id);}catch(error){
@@ -31,3 +31,4 @@ export class PlatformSupportController{
  @Post(':id/withdraw')
  withdraw(@Param('id')caseId:string,@Headers('authorization')a?:string){return this.invoke(a,id=>this.store.withdraw(id,caseId));}
 }
+

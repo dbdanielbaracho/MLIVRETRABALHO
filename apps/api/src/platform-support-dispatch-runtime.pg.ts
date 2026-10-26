@@ -7,6 +7,7 @@ import {NestFactory} from '@nestjs/core';
 import {FastifyAdapter,type NestFastifyApplication} from '@nestjs/platform-fastify';
 import type {PoolClient} from 'pg';
 import {DatabaseService} from './database.service';
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {AuthService} from './auth.service';
 import {PlatformSupportDispatchStore} from './platform-support-dispatch-store';
 import {PlatformSupportAdminController} from './platform-support-admin.controller';
@@ -50,7 +51,7 @@ export async function verifyPlatformSupportDispatchRuntime(setup:PoolClient,sche
   const snapshot=async()=>JSON.stringify((await setup.query("SELECT jsonb_build_object('assignments',(SELECT jsonb_agg(to_jsonb(a) ORDER BY case_id) FROM platform_support_assignments a),'audit',(SELECT jsonb_agg(to_jsonb(a) ORDER BY id) FROM platform_support_audit a),'cases',(SELECT jsonb_agg(to_jsonb(c) ORDER BY id) FROM platform_support_cases c)) snapshot")).rows);
   const before=await snapshot();await setup.query(`CREATE FUNCTION ${fault}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.actor_identity_id='${admin.id}'::uuid AND NEW.action='assigned' THEN RAISE EXCEPTION 'synthetic_dispatch_runtime_audit_fault'; END IF; RETURN NEW; END $$`);await setup.query(`CREATE TRIGGER ${fault} BEFORE INSERT ON platform_support_audit FOR EACH ROW EXECUTE FUNCTION ${fault}()`);trigger=true;
   await assert.rejects(store.change(admin.id,caseId,other.id,1),/synthetic_dispatch_runtime_audit_fault/);assert.equal(await snapshot(),before);
-  stage='http';class DispatchRuntimeHTTPFixture{}Module({controllers:[PlatformSupportAdminController],providers:[{provide:DatabaseService,useValue:runtime},{provide:AuthService,useValue:auth}]})(DispatchRuntimeHTTPFixture);app=await NestFactory.create<NestFastifyApplication>(DispatchRuntimeHTTPFixture,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});app.setGlobalPrefix('v1');await app.listen(0,'127.0.0.1');const addr=app.getHttpServer().address() as {address:string;port:number};assert.equal(addr.address,'127.0.0.1');const base='http://127.0.0.1:'+addr.port,path='/v1/platform-support/admin/cases/'+caseId+'/assignment',body={targetOperatorId:other.id,expectedRevision:1},call=(actor:Account|null,b:unknown,status:number,h:Record<string,string>={})=>request(base,actor,path,b,status,h);
+  stage='http';class DispatchRuntimeHTTPFixture{}Module({controllers:[PlatformSupportAdminController],providers:[{provide:PlatformSupportDatabases,useValue:{forScope:()=>runtime}},{provide:AuthService,useValue:auth}]})(DispatchRuntimeHTTPFixture);app=await NestFactory.create<NestFastifyApplication>(DispatchRuntimeHTTPFixture,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});app.setGlobalPrefix('v1');await app.listen(0,'127.0.0.1');const addr=app.getHttpServer().address() as {address:string;port:number};assert.equal(addr.address,'127.0.0.1');const base='http://127.0.0.1:'+addr.port,path='/v1/platform-support/admin/cases/'+caseId+'/assignment',body={targetOperatorId:other.id,expectedRevision:1},call=(actor:Account|null,b:unknown,status:number,h:Record<string,string>={})=>request(base,actor,path,b,status,h);
   for(const a of [op,owner,company,companyB])await call(a,body,403,{'x-identity-id':admin.id,'x-tenant-id':randomUUID()});await call(admin,{...body,actorIdentityId:op.id},400);await request(base,admin,'/v1/platform-support/admin/cases/'+ownCase+'/assignment',body,403);await call(admin,{...body,targetOperatorId:admin.id},403);
   await call(admin,body,500);assert.equal(await snapshot(),before);await setup.query(`DROP TRIGGER ${fault} ON platform_support_audit`);trigger=false;await setup.query(`DROP FUNCTION ${fault}()`);
   const changed=await Promise.all([call(admin,body,201),call(admin,body,201)]);assert.deepEqual(changed[0],changed[1]);assert.equal(changed[0].revision,2);assert.equal(changed[0].operatorId,other.id);
@@ -69,3 +70,4 @@ export async function verifyPlatformSupportDispatchRuntime(setup:PoolClient,sche
  }
  console.log('PLATFORM_SUPPORT_DISPATCH_RUNTIME_CLEANUP_PASS '+JSON.stringify({listenerPoolsAndSessionsClosed:true,loginACLsPrivateRowsRemoved:true,syntheticPublicAccountsUntilDatabaseTeardown:true,noRealProvisioning:true}));
 }
+

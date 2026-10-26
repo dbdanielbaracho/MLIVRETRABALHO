@@ -36,6 +36,8 @@ async function main(){
  assert.equal(process.env.PAYMENT_WEBHOOK_SECRET,'ci-payment-webhook-secret','Only the established synthetic CI webhook fixture is eligible');
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
  const db=new Client({connectionString:config.databaseUrl,connectionTimeoutMillis:5000});await db.connect();
+ let supportApplication;
+ const requestOrigin=path=>/^\/v1\/(me\/platform-support|platform-support)(?:\/|$)/.test(path)?supportApplication?.origin??config.origin:config.origin;
  let requests=0;const positives=new Map(),negatives=[],violations=[];
  const routeFor=(method,path)=>{
   const pathname=path.split('?')[0];const matched=catalog.routes.filter(r=>r.method===method&&new RegExp('^'+r.path.split('/').map(s=>s.startsWith(':')?'[^/]+':s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('/')+'$').test(pathname));
@@ -45,7 +47,7 @@ async function main(){
   const route=routeFor(method,path);requests++;lastContract={method,route:route.path,expected:status};
   const headers={...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'}),...extra};
   openapi.request(route,path,headers,body);
-  const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers,...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const response=await fetch(requestOrigin(path)+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers,...(body===undefined?{}:{body:JSON.stringify(body)})});
   let data;try{data=await response.json();}catch{throw Error('JSON_contract_'+route.method+'_'+route.path);}
   lastContract.actual=response.status;openapi.response(route,response.status,data);
   if(!(Array.isArray(status)?status.includes(response.status):response.status===status)){console.log('BACKEND_CONTRACT_STATUS_MISMATCH '+JSON.stringify({stage,method,route:route.path,actual:response.status,expected:status}));throw Error('HTTP_contract');}
@@ -54,7 +56,7 @@ async function main(){
  }
  async function negative(actor,method,path,body,status=400){
   const route=routeFor(method,path);requests++;lastContract={method,route:route.path,expected:status};
-  const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const response=await fetch(requestOrigin(path)+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
   const data=await response.json();lastContract.actual=response.status;openapi.response(route,response.status,data);const row={method,route:route.path,expected:status,actual:response.status};negatives.push(row);
   if(!(Array.isArray(status)?status.includes(response.status):response.status===status))violations.push(row);
   assert.ok(!JSON.stringify(data).includes('password_hash')&&!JSON.stringify(data).includes('token_hash'),'No stored credential in negative response');
@@ -77,6 +79,7 @@ async function main(){
  try{
   requireLocalDatabasePeer((await db.query('SELECT current_database() name')).rows[0],db.connection.stream.remoteAddress);
   await require('../apps/api/dist/platform-support-store.pg.js').verifyPlatformSupportIntake(config);
+  supportApplication=await require('../apps/api/dist/platform-support-application.pg.js').startPlatformSupportApplication(config);
   const policiesBefore=await security();
   stage='public-and-identity';
   scalar(await call(null,'GET','/v1/health/ready'), 'database','ok');
@@ -84,12 +87,18 @@ async function main(){
   for(const pack of packs){const detail=await call(null,'GET','/v1/vertical-packs/'+pack.id);scalar(detail,'id',pack.id);assert.deepEqual(detail.checklist,pack.checklist);assert.deepEqual(detail.defaultTeam,pack.defaultTeam);scalar(detail,'active',pack.active);}
   const roles=await call(null,'GET','/v1/taxonomy/roles');assert.ok(roles.length>=6);const role=roles.find(r=>r.role==='bartender');assert.ok(role?.id);
   const owner=await account('owner','company'),foreign=await account('foreign','company'),pro=await account('professional'),sub=await account('substitute'),admin=await account('admin'),retired=await account('retired');
+  // The separately launched default AppModule has no support credentials. Session authority runs first.
+  for(const [method,path,body]of [['GET','/v1/me/platform-support'],['GET','/v1/platform-support/cases'],['POST','/v1/platform-support/admin/operators/'+pro.id,{active:true,expectedRevision:0}],['POST','/v1/platform-support/admin/cases/'+pro.id+'/assignment',{targetOperatorId:sub.id,expectedRevision:0}]])for(const actor of [null,owner]){
+   requests++;const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?{authorization:'Bearer '+actor.token}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});const data=await response.json();assert.equal(response.status,actor?503:401);openapi.response(routeFor(method,path),response.status,data);assert.ok(!JSON.stringify(data).includes('postgresql:'));
+  }
+  console.log('PLATFORM_SUPPORT_DEFAULT_CONFIGURATION_CLOSED_HTTP_PASS '+JSON.stringify({authenticated503:true,anonymous401:true,sharedDatabaseURLNeverUsedForSupport:true,production:false}));
   scalar(await call(owner,'GET','/v1/me'),'id',owner.id);assert.ok(Array.isArray(await call(owner,'GET','/v1/me/support-contexts')));
   async function profile(actor,label){const p=await call(actor,'PUT','/v1/professional-profile',{displayName:'Backend '+label,homeCity:'São Paulo',primaryRole:'Bartender'});actor.professionalId=needId(p.id);scalar(await call(actor,'GET','/v1/professional-profile'),'id',p.id);const a=await call(actor,'POST','/v1/availability/mine',{startsAt:iso(1),endsAt:iso(300)});needId(a.id);has(await call(actor,'GET','/v1/availability/mine'),a.id);}
   await require('./platform-support-owner-acceptance-e2e.cjs')({db,call,negative,account,company:owner});
   await require('./platform-support-operator-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
   await require('./platform-support-admin-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
   await require('./platform-support-queue-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
+  await supportApplication.verify();
   await profile(pro,'professional');await profile(sub,'substitute');
   const savedPreferences=await require('./preferences-acceptance-e2e.cjs').preferencesJourney({db,call,negative,pro,sub,owner,role});
   const cap=await call(pro,'PUT','/v1/professional-capabilities/'+role.id,{skills:[],certifications:[],provenLevel:'entry'});scalar(cap,'roleId',role.id);has(await call(pro,'GET','/v1/professional-capabilities'),role.id,'roleId');
@@ -231,6 +240,7 @@ async function main(){
   assert.equal(violations.length,0,'Real HTTP contract violations require correction');
   openapi.finish(requests);
   console.log('BACKEND_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({registeredControllers:47,inventoriedRoutes:119,allRoutesPositive:true,actualHTTPPostgres:true,invalidInputAndAuth:true,allTenantHeaderRoutesDeniedForeignAndAnonymous:true,otherTenantAll27TablesUnchanged:true,policyCatalogUnchanged:true,confirmedCompletedLedgerAndReviews:true,humanReplacementAndCancellation:true,safetySupportAuditAndConversion:true,simulatedSignedWebhookOnly:true,providerKYCStillPending:true,requests,nativeUI:false,externalPentest:false,production:false}));
- }finally{await db.end();}
+ }finally{try{await supportApplication?.close();}finally{await db.end();}}
 }
 if(require.main===module){if(process.argv.includes('--inventory-only'))console.log(JSON.stringify(inventory()));else main().catch(()=>{console.error('BACKEND_INTERNAL_ACCEPTANCE_FAIL '+JSON.stringify({stage,lastContract,details:'contract_assertion; no response body, identity, token or raw error exported'}));process.exitCode=1;});}
+

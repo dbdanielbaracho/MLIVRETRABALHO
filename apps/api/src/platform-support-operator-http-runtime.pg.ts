@@ -6,6 +6,7 @@ import {NestFactory} from '@nestjs/core';
 import {FastifyAdapter,type NestFastifyApplication} from '@nestjs/platform-fastify';
 import type {PoolClient} from 'pg';
 import {DatabaseService} from './database.service';
+import {PlatformSupportDatabases} from './platform-support-databases';
 import {AuthService} from './auth.service';
 import {PlatformSupportOperatorController} from './platform-support-operator.controller';
 type Account={id:string;email:string;token:string;tenant?:string};
@@ -45,7 +46,7 @@ export async function verifyPlatformSupportOperatorHTTP(setup:PoolClient,schema:
    await setup.query('INSERT INTO platform_support_assignments(case_id,operator_identity_id) VALUES($1,$2)',[id,i===3?other.id:operator.id]);
   }
   class OperatorRuntimeHTTPFixture{}
-  Module({controllers:[PlatformSupportOperatorController],providers:[{provide:DatabaseService,useValue:db},{provide:AuthService,useValue:auth}]})(OperatorRuntimeHTTPFixture);
+  Module({controllers:[PlatformSupportOperatorController],providers:[{provide:PlatformSupportDatabases,useValue:{forScope:()=>db}},{provide:AuthService,useValue:auth}]})(OperatorRuntimeHTTPFixture);
   app=await NestFactory.create<NestFastifyApplication>(OperatorRuntimeHTTPFixture,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});app.setGlobalPrefix('v1');await app.listen(0,'127.0.0.1');
   const address=app.getHttpServer().address() as {address:string;port:number};assert.equal(address.address,'127.0.0.1');assert.ok(address.port>0);
   const base='http://127.0.0.1:'+address.port,path='/v1/platform-support/cases';
@@ -111,3 +112,4 @@ export async function verifyPlatformSupportOperatorHTTP(setup:PoolClient,schema:
  }
  console.log('PLATFORM_SUPPORT_OPERATOR_HTTP_RESTRICTED_CLEANUP_PASS '+JSON.stringify({listenerAndPoolsClosed:true,realSessionsRevoked:true,privateSyntheticRowsRemoved:true,publicFixtureAccountsUntilDatabaseTeardown:true,production:false}));
 }
+
