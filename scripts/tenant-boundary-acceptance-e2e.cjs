@@ -90,7 +90,7 @@ async function main(){
    const support=Object.hasOwn(supportLocks,f.proname);
    check(!f.public_execute&&f.owner!=='app_runtime'&&f.runtime_execute===callable.includes(f.proname),'least_privileged_definer_'+f.proname);
    if(support){
-    assert.deepEqual(f.proconfig,['search_path=pg_catalog'],'Support lock has only the trusted fixed search path');
+    assert.deepEqual(f.proconfig?.map(x=>x.replace(/\s/g,'')),['search_path=pg_catalog,pg_temp'],'Support lock has only the trusted fixed search path');
     check(f.result_type==='boolean'&&f.arguments===supportLocks[f.proname],'bounded_support_lock_signature_'+f.proname);
     check(f.definition.includes('public.identities')&&!/\b(?:INSERT|UPDATE|DELETE|EXECUTE|GRANT|ALTER|row_security)\b|SET\s+ROLE/i.test(f.definition),'bounded_support_lock_no_write_or_authority_change_'+f.proname);
     if(f.proname==='platform_support_intake_available')for(const relation of ['platform_support_capability','platform_support_operators','identities'])check(f.definition.includes('public.'+relation),'qualified_support_lock_relation_'+relation);

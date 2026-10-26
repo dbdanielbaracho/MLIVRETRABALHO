@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
           "mode": "100644"
         }
       ],
@@ -5489,6 +5489,73 @@
             "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
           }
         ]
+      },
+      "searchPathHardening": {
+        "previousHead": "81099d59c3c982b0ae51e721979f8e29564b497b",
+        "previousRun": 40257417700,
+        "reason": "PostgreSQL17 secure-definer guidance: explicitly put pg_temp last, qualify PLpgSQL internal types. Functions remain closed to PUBLIC/app_runtime. Exact inventory and actual fixture require normalized pg_catalog,pg_temp; no guard removed.",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0079_platform_support_owner_locks.sql",
+            "sha": "19ff304d3c4de4bc87f4f38b4654bba6e72f488d",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "sha": "a836dd145cca27eb33f2ae03a39d32671f00a86b",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0079_platform_support_owner_locks.sql",
+            "old": "24990a334c412a4ce07fbeafabe2101d16c130bf",
+            "new": "19ff304d3c4de4bc87f4f38b4654bba6e72f488d"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "old": "94d50b2b761192db3c10d479d1c4368a4edcd29d",
+            "new": "a836dd145cca27eb33f2ae03a39d32671f00a86b"
+          },
+          {
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "requirements/3/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "requirements/4/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "requirements/48/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "proofs/5/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          }
+        ],
+        "ownFullCIAndAndroidPending": true
       }
     }
   }

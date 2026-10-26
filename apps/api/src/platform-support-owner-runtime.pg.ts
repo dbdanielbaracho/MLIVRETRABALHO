@@ -27,7 +27,7 @@ export async function verifyPlatformSupportOwnerRuntime(setup:PoolClient,schema:
   const attrs=(await setup.query('SELECT rolsuper,rolbypassrls,rolcreaterole,rolcreatedb FROM pg_roles WHERE rolname=$1',[role])).rows[0];
   assert.deepEqual(attrs,{rolsuper:false,rolbypassrls:false,rolcreaterole:false,rolcreatedb:false});
   const functions=(await setup.query("SELECT p.prosecdef,p.proconfig,has_function_privilege('app_runtime',p.oid,'execute') AS tenant FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname=$1 AND p.proname IN('platform_support_lock_owner_identity','platform_support_intake_available') ORDER BY p.proname",[schema])).rows;
-  assert.equal(functions.length,2);assert.ok(functions.every(f=>f.prosecdef&&f.proconfig.includes('search_path=pg_catalog')&&!f.tenant));
+  assert.equal(functions.length,2);assert.ok(functions.every(f=>f.prosecdef&&f.proconfig.some((x:string)=>x.replace(/\s/g,'')==='search_path=pg_catalog,pg_temp')&&!f.tenant));
   // Use DatabaseService's actual Pool and transaction(), not a replacement transaction adapter.
   url.username=role;url.password=password;url.searchParams.set('options',`-c search_path=${schema},public -c statement_timeout=5000`);
   const prior=process.env.DATABASE_URL;

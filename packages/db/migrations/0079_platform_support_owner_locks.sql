@@ -6,8 +6,8 @@ DECLARE s name := current_schema();
 BEGIN
  EXECUTE format($ddl$
   CREATE FUNCTION %1$I.platform_support_lock_owner_identity() RETURNS boolean
-  LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $body$
-  DECLARE actor uuid := NULLIF(current_setting('app.platform_support_identity',true),'')::uuid;
+  LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $body$
+  DECLARE actor pg_catalog.uuid := NULLIF(current_setting('app.platform_support_identity',true),'')::pg_catalog.uuid;
   BEGIN
    IF actor IS NULL THEN RETURN false; END IF;
    PERFORM id FROM %1$I.identities WHERE id=actor AND deactivated_at IS NULL FOR SHARE;
@@ -17,8 +17,8 @@ BEGIN
  $ddl$,s);
  EXECUTE format($ddl$
   CREATE FUNCTION %1$I.platform_support_intake_available(lock_rows boolean) RETURNS boolean
-  LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $body$
-  DECLARE enabled_value boolean;
+  LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $body$
+  DECLARE enabled_value pg_catalog.bool;
   BEGIN
    IF NOT %1$I.platform_support_lock_owner_identity() THEN RETURN false; END IF;
    IF NOT coalesce(lock_rows,false) THEN
