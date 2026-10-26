@@ -8,11 +8,10 @@ export class PlatformSupportRoleStore{
   if(!uuid(actor)||!uuid(target)||typeof active!=='boolean'||!Number.isSafeInteger(expectedRevision)||expectedRevision<0||expectedRevision>=2147483647)throw Error('platform_support_role_invalid');
   return this.database.transaction(async db=>{
    await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
-   if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[actor])).rows[0])throw Error('platform_support_identity_required');
-   if(!(await db.query('SELECT identity_id FROM platform_support_administrators WHERE identity_id=$1 AND active FOR SHARE',[actor])).rows[0]||actor===target)throw Error('platform_support_dispatch_denied');
+   if(!(await db.query('SELECT platform_support_lock_owner_identity() AS active')).rows[0]?.active)throw Error('platform_support_identity_required');
+   if(!(await db.query('SELECT platform_support_lock_administrator() AS active')).rows[0]?.active||actor===target)throw Error('platform_support_dispatch_denied');
    // Lock the identity even before its first role row exists: concurrent grants serialize.
-   const person=(await db.query('SELECT deactivated_at FROM identities WHERE id=$1 FOR UPDATE',[target])).rows[0];
-   if(!person||(active&&person.deactivated_at!==null))throw Error('platform_support_not_found');
+   if(!(await db.query('SELECT platform_support_lock_role_target($1,$2) AS active',[target,active])).rows[0]?.active)throw Error('platform_support_not_found');
    const prior=(await db.query<Role>('SELECT identity_id AS "identityId",active,revision FROM platform_support_operators WHERE identity_id=$1 FOR UPDATE',[target])).rows[0];
    if(prior?.revision===expectedRevision+1&&prior.active===active)return prior;
    if((prior?.revision??0)!==expectedRevision)throw Error('platform_support_role_conflict');

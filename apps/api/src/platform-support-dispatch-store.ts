@@ -9,8 +9,8 @@ export class PlatformSupportDispatchStore{
   if(!uuid(actor)||!uuid(caseId)||(target!==null&&!uuid(target))||!Number.isSafeInteger(expectedRevision)||expectedRevision<0||expectedRevision>=2147483647)throw Error('platform_support_dispatch_invalid');
   return this.database.transaction(async db=>{
    await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
-   if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[actor])).rows[0])throw Error('platform_support_identity_required');
-   if(!(await db.query('SELECT identity_id FROM platform_support_administrators WHERE identity_id=$1 AND active FOR SHARE',[actor])).rows[0])throw Error('platform_support_dispatch_denied');
+   if(!(await db.query('SELECT platform_support_lock_owner_identity() AS active')).rows[0]?.active)throw Error('platform_support_identity_required');
+   if(!(await db.query('SELECT platform_support_lock_administrator() AS active')).rows[0]?.active)throw Error('platform_support_dispatch_denied');
    if(target!==null){
     if(actor===target)throw Error('platform_support_dispatch_denied');
     if(!(await db.query('SELECT o.identity_id FROM platform_support_operators o JOIN identities i ON i.id=o.identity_id WHERE o.identity_id=$1 AND o.active AND i.deactivated_at IS NULL FOR SHARE OF o,i',[target])).rows[0])throw Error('platform_support_not_found');

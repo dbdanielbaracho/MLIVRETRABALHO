@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "44915535899555918dfd532b9493821d886290ee",
+          "sha": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "44915535899555918dfd532b9493821d886290ee",
+          "sha": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "44915535899555918dfd532b9493821d886290ee",
+          "sha": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "44915535899555918dfd532b9493821d886290ee",
+          "sha": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
           "mode": "100644"
         }
       ],
@@ -5779,6 +5779,146 @@
           }
         ]
       }
+    },
+    "adminLockIncrement": {
+      "baseHead": "664ae489404b0c9b6dafa937cfc6407896e2c0d4",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0081_platform_support_admin_locks.sql",
+          "sha": "5275985365c3235723b7be4ea71c14c7125f2633",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin-locks.pg.ts",
+          "sha": "ea4e74f6710bb7d55ad8778e4f7b8eb9112db8b0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "sha": "d623146e09aee883ed6d6410d3159b7027a058bd",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "sha": "aba68666f28089b48235bda3eff1a18ec4b06140",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "669b5ee2dc2f166df9323e03879ed025477cfb45",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
+          "sha": "a737cd286fdb2a8f602aaacd04b6ed1b0fe7a14b",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
+          "sha": "2a2fb3b12ac7aaacd0ffc794be1d6f8f4e83f3f7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
+          "sha": "0f7b21d2075d627889346eec50aa3557f7cfaee8",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
+          "sha": "4426e9fe710c4f998570741c562f3fc8c7154be0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
+          "sha": "001ae84b7c5e425a118eb904caf7898f3437866c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
+          "sha": "3833a11f68766f817822ad45c6eaff8a65bb0bf0",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0081_platform_support_admin_locks.sql",
+          "old": null,
+          "new": "5275985365c3235723b7be4ea71c14c7125f2633"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin-locks.pg.ts",
+          "old": null,
+          "new": "ea4e74f6710bb7d55ad8778e4f7b8eb9112db8b0"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "old": "a63d3cea18bc5055e36e5de2de0bc8d05272b2bc",
+          "new": "d623146e09aee883ed6d6410d3159b7027a058bd"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "old": "d69aba807bf4827b362374956820f565e318489d",
+          "new": "aba68666f28089b48235bda3eff1a18ec4b06140"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "1fad45bb26b7ccde06cb10169a24be9dbf17bfe2",
+          "new": "669b5ee2dc2f166df9323e03879ed025477cfb45"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        }
+      ],
+      "scope": "Two closed boolean admin/target lock helpers, integrated into existing role/dispatch stores. No UPDATE identities/admin ACL needed in actual restricted DatabaseService fixture. Does not certify admin business writes, RLS policies, admin restricted HTTP, operational pool configuration or rendering.",
+      "validation": "Local TS/CJS syntax PASS; baseline42501 before0081, restricted login authority/locks55P03/target serialization/temp-shadow/rollback/cleanup and own full CI/Android PENDING.",
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false
     }
   }
 }
