@@ -1,12 +1,13 @@
 import {router,useFocusEffect} from 'expo-router';
 import {useCallback,useMemo,useRef,useState} from 'react';
-import {Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View} from 'react-native';
+import {Pressable,SafeAreaView,ScrollView,StyleSheet,Text,TextInput,View,useWindowDimensions} from 'react-native';
 import {authHeaders} from '../lib/session';
 import {apiUrl} from '../lib/api';
 import {platformIntentStore} from '../lib/platform-support-storage';
 import {createPlatformSupportFlow,platformCategories,platformInput,type PlatformResult,type PlatformPage,type PlatformCase} from '../lib/platform-support';
 const statusLabel:Record<string,string>={open:'Aberta',reviewing:'Em análise',resolved:'Resolvida',withdrawn:'Retirada',expired:'Expirada'};
 export default function AjudaPlataforma(){
+ const {fontScale}=useWindowDimensions();
  const [view,setView]=useState<PlatformResult|{status:'loading'}>({status:'loading'}),[page,setPage]=useState<PlatformPage|null>(null),[detail,setDetail]=useState<PlatformCase|null>(null);
  const [category,setCategory]=useState('other'),[description,setDescription]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const active=useRef(false),epoch=useRef(0),running=useRef(false),owner=useRef<string|null>(null);
@@ -38,8 +39,8 @@ export default function AjudaPlataforma(){
  const visible=['ready','detail','confirmed','prepared','withdrawn','cleared','expired'].includes(view.status)&&'identityId' in view&&owner.current===view.identityId;
  const editable=!busy&&(view.status==='ready'||view.status==='prepared');
  const sendDisabled=!editable||!platformInput(category,description)||(view.status==='ready'&&!page?.acceptingRequests);
- return <SafeAreaView style={s.screen}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
-  <Pressable accessibilityRole="button" onPress={()=>router.back()}><Text style={s.action}>Voltar</Text></Pressable>
+ return <SafeAreaView style={s.screen}><ScrollView key={fontScale} keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
+  <Pressable accessibilityRole="button" onPress={()=>router.replace('/perfil')}><Text style={s.action}>Voltar ao perfil</Text></Pressable>
   <Text style={s.title}>Ajuda à plataforma</Text>
   <Text style={s.text}>Para problemas do aplicativo, mesmo sem vínculo com empresa ou perfil profissional. Sua solicitação não é enviada à empresa.</Text>
   <Text style={s.text}>Não informe senhas, tokens ou documentos pessoais. Não é chat ao vivo e não há prazo de resposta prometido.</Text>
@@ -51,7 +52,7 @@ export default function AjudaPlataforma(){
   {view.status==='prepared'?<Text style={s.text}>Esta chave está preparada, mas o registro ainda não foi confirmado. Consulte novamente ou informe a mensagem original e escolha explicitamente reenviar a mesma tentativa. Conteúdo diferente será recusado pelo servidor.</Text>:null}
   {(view.status==='ready'||view.status==='prepared')?<View style={s.card}>
    {view.status==='ready'&&!page?.acceptingRequests?<Text style={s.text}>Atendimento da plataforma indisponível para novas solicitações. Você pode consultar seu histórico; o rascunho fica nesta tela.</Text>:null}
-   <Text style={s.heading}>Assunto</Text><View style={s.choices}>{platformCategories.map(([value,label])=><Pressable key={value} accessibilityRole="button" accessibilityState={{selected:category===value,disabled:!editable||view.status==='prepared'}} disabled={!editable||view.status==='prepared'} onPress={()=>setCategory(value)} style={[s.choice,category===value?s.selected:null]}><Text style={s.text}>{label}</Text></Pressable>)}</View>
+   <Text style={s.heading}>Assunto</Text><View style={s.choices}>{platformCategories.map(([value,label])=><Pressable key={value} accessibilityRole="button" accessibilityState={{selected:category===value,disabled:!editable||view.status==='prepared'}} disabled={!editable||view.status==='prepared'} onPress={()=>setCategory(value)} style={[s.choice,category===value?s.selected:null]}><Text style={[s.text,s.choiceLabel]}>{label}</Text></Pressable>)}</View>
    <Text style={s.heading}>Mensagem</Text><TextInput accessibilityLabel="Mensagem para a plataforma" multiline textAlignVertical="top" style={s.field} value={description} editable={editable} onChangeText={setDescription}/><Text style={s.text}>{Array.from(description.trim()).length}/4.000 caracteres</Text>
    <Pressable accessibilityRole="button" accessibilityState={{disabled:sendDisabled}} disabled={sendDisabled} style={[s.button,sendDisabled?s.buttonDisabled:null]} onPress={()=>void(view.status==='prepared'?retry():send())}><Text style={[s.buttonText,sendDisabled?s.buttonTextDisabled:null]}>{view.status==='prepared'?'Reenviar a mesma tentativa':'Enviar à plataforma'}</Text></Pressable>
   </View>:null}
@@ -68,4 +69,4 @@ export default function AjudaPlataforma(){
   {!busy?<Pressable accessibilityRole="button" onPress={()=>void act(()=>flow.load())}><Text style={s.action}>{pending?'Consultar resultado da tentativa':'Atualizar solicitações'}</Text></Pressable>:null}
  </ScrollView></SafeAreaView>;
 }
-const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,gap:16,paddingBottom:40},title:{fontSize:28,fontWeight:'900',color:'#111A35'},heading:{fontSize:17,fontWeight:'800',color:'#111A35'},text:{fontSize:15,lineHeight:23,color:'#53617A'},action:{fontSize:15,fontWeight:'700',color:'#651FFF',paddingVertical:10},card:{padding:16,gap:12,borderWidth:1,borderColor:'#E7EAF0',borderRadius:12},choices:{flexDirection:'row',flexWrap:'wrap',gap:8},choice:{padding:10,borderWidth:1,borderColor:'#E7EAF0',borderRadius:8},selected:{borderColor:'#651FFF',backgroundColor:'#F4EEFF'},field:{minHeight:140,borderWidth:1,borderColor:'#9AA3B4',borderRadius:10,padding:12,color:'#111A35'},button:{backgroundColor:'#651FFF',borderRadius:10,padding:14},buttonDisabled:{backgroundColor:'#E7EAF0'},buttonTextDisabled:{color:'#53617A'},buttonText:{color:'#FFF',fontWeight:'800',textAlign:'center'},response:{paddingVertical:12,borderTopWidth:1,borderColor:'#E7EAF0',gap:6}});
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:'#FFF'},content:{padding:20,gap:16,paddingBottom:40},title:{fontSize:28,fontWeight:'900',color:'#111A35'},heading:{fontSize:17,fontWeight:'800',color:'#111A35'},text:{fontSize:15,lineHeight:23,color:'#53617A'},action:{fontSize:15,fontWeight:'700',color:'#651FFF',paddingVertical:10},card:{padding:16,gap:12,borderWidth:1,borderColor:'#E7EAF0',borderRadius:12},choices:{flexDirection:'row',flexWrap:'wrap',gap:8},choiceLabel:{flexShrink:1},choice:{maxWidth:'100%',padding:10,borderWidth:1,borderColor:'#E7EAF0',borderRadius:8},selected:{borderColor:'#651FFF',backgroundColor:'#F4EEFF'},field:{minHeight:140,borderWidth:1,borderColor:'#9AA3B4',borderRadius:10,padding:12,color:'#111A35'},button:{backgroundColor:'#651FFF',borderRadius:10,padding:14},buttonDisabled:{backgroundColor:'#E7EAF0'},buttonTextDisabled:{color:'#53617A'},buttonText:{color:'#FFF',fontWeight:'800',textAlign:'center'},response:{paddingVertical:12,borderTopWidth:1,borderColor:'#E7EAF0',gap:6}});

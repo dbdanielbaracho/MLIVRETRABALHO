@@ -22280,3 +22280,205 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "validation": "FRESH_AVD_YAML_FIRST_RUNNER_AND_ALL_RUNTIME_GUARDS_PRESERVED_PASS local; ownnewfullCI/Android/native22/visualQA pending. No merge/postmerge/acceptance/activation/production."
 }
 ```
+
+
+### 2026-10-26 — PR632: 21 capturas nativas parciais; retorno e fonte em correção candidata
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "d013be57ded448a526a415c67d5c0a6c54c4d88b",
+  "baselineRun": 40376495515,
+  "foundation": 121760849284,
+  "android": 121761113273,
+  "mergePolicy": 121776878185,
+  "baselineConclusion": "failure",
+  "proof": "Fresh own AVD had zero boot ANR/IDMAP-small errors; native session journey reached21 numbered screenshots, failed on returning to company legacy support. Full Android/mergepolicy FAIL; do not certify current candidate using prior positives.",
+  "artifact": {
+    "id": 12678702064,
+    "size": 33044338,
+    "zipSHA256": "1d6922b6cfd4eb1ff7f6f43100f8cc15316f7cca764626c3c0ca1a9c773f9ac8",
+    "checked": "Downloaded ZIP digest verified. Actual bytes of all22PNG+XML files (21 numbered plusfailure) SHA256 verified against logs; ALL original images visually reviewed."
+  },
+  "screenshots": [
+    {
+      "name": "01-disabled-empty",
+      "pngSHA256": "3a134c603bc0952e97f08d3cf52f8a47cf066e8bcbc60aadd607c6d0044471bb",
+      "xmlSHA256": "075e3c4d7bd21a128a4d0418b6de4414c1445e8c4789497f4917a525c43d38ca",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "02-loading",
+      "pngSHA256": "72139c85dd5f1a3648ffe4d1669707205509b577767d72deb87a359a1e38cd04",
+      "xmlSHA256": "f61280672223012e10649e64730d0d255b0b593fa6924f47ae7f184d7d6cdd7a",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "03-form",
+      "pngSHA256": "4300078f32bfebd366dfb9f4e04a3268935b1b16f98b1e933b922ec653b34852",
+      "xmlSHA256": "2ecc587cd88be2b5cad65d6669e97c1d8564afde44680d577b28198937260e97",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "04-confirmed",
+      "pngSHA256": "c6e8168e2c05ae7d5dee0d0018a22ba512f6a33d3b38756210c5b48b39699bb2",
+      "xmlSHA256": "626ef199d8f342d915ab9131e1b7410cc086d71545cf68fe57b543f75ab14316",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "05-detail-empty-response",
+      "pngSHA256": "c5e8c46a311a24f510e78e9cc68f998d1c7d46f4da7fe0eb7d083bb78ff0f550",
+      "xmlSHA256": "a1bfcb6080570cdbb982e833a593239a294c78205d8c92ac9cd1f338abcbd6c2",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "06-authorized-response",
+      "pngSHA256": "52c6cd0f8a0176f3e1635958c41f447bf1d75ef69e0a6c2a0ce5d971d3bc4ff8",
+      "xmlSHA256": "be1a2b6ea2480379044a9dfdaadb1b2086d81b7f7e70a9fd534e979611dcd75e",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "07-withdrawn",
+      "pngSHA256": "a4add831e413a629fbc0013d2c41ba0a1c80b73aef8e1acbdacb68cbf2fb556b",
+      "xmlSHA256": "9943569babfa19e9307ad5830aeec32ea1b288cd41aa5354b18e3365c848ab1c",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "08-timeout-preserved",
+      "pngSHA256": "4980b5a00663feb4595ad59ecbacc8868ef39eb75032e606d91db7103d16a0a2",
+      "xmlSHA256": "f858f2d179eb4c761b126d4a02ee18517c5b224d993b0b633f00ac2679ecf329",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "09-durable-recovery",
+      "pngSHA256": "48b65931933edaf8a01842fb685447c4f01d24c1d84b0d9e6b9f0c21e149208b",
+      "xmlSHA256": "5c0d33ec3b87e7f80b1d069fb8a8a11f5432bec5cb9c63d224c78b5731df9bf6",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "16-unavailable-pending",
+      "pngSHA256": "3542125e39a81f3408e50b40f237ea9def52756673d79dbce88389ea1e72fbcd",
+      "xmlSHA256": "eabf7b56b89452a52891216449c91e7b329b4bf3a1e9b685f201590bf8c4c4e9",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "17-prepared",
+      "pngSHA256": "78a32f128fef49160c2dadee69d8523bff8eaa954a770b5dd599b28940b169a7",
+      "xmlSHA256": "f1e861ab59c436eeaa3cd122067382a23eaf552a0da7f7a71c4c2162b2e53b73",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "18-conflict",
+      "pngSHA256": "4980b5a00663feb4595ad59ecbacc8868ef39eb75032e606d91db7103d16a0a2",
+      "xmlSHA256": "f858f2d179eb4c761b126d4a02ee18517c5b224d993b0b633f00ac2679ecf329",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "19-explicit-retry-same-key",
+      "pngSHA256": "8783f8fcc007b345637664c1570f4e29a1733b9cd1e6760aabf4bbd519ea3477",
+      "xmlSHA256": "562ca55acafb04ee35f2a1409436f0163a84fe56154f70048dcbbdc4ff3af051",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "20-cleared",
+      "pngSHA256": "1a5921a304c2e13df5977ec63fe3ad5c1ee4a9f841d09614ee373b7c014806c9",
+      "xmlSHA256": "b56952c7f12ee5017e1396a7979cd545338a7941c9a08cc46a5483433c12023a",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "21-expired",
+      "pngSHA256": "a4fa9ddce380045f515a181d204a4f82e9159db8580b635e9cc154b6f5d0abfc",
+      "xmlSHA256": "87d2cee2aefd1661eda750a048dfadf9dde5cedc7fa28f54d88142d074455935",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "22-resolved-minimized",
+      "pngSHA256": "53ddeb7acce71650593f9e1783f18937d8303e88d43e37e5fe74d42abb2eb97d",
+      "xmlSHA256": "e4d352dfa2385127b1e55cc58dcbd1b71139d41758059cafa71b464a8518db0e",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "10-error-private-hidden",
+      "pngSHA256": "fb9ce2ad93b79fbe65b5805e716389ce8457547803936d3ad1027ace15bb0efe",
+      "xmlSHA256": "a41f9e84ef996b12c6c042107aef71bb18b736a9413e17b8e4f870708a5dc942",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "11-history-pagination",
+      "pngSHA256": "e138d4f8cf02c773867ff1b585f6e536d244c5a6441b59d83ce52ea9f48961d3",
+      "xmlSHA256": "f0d27507211debf229f0d49da3a6a1fb0a215ce0f90b36c28c93e97b36819d7b",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "12-large-font",
+      "pngSHA256": "f60f5fd03dac1c8431386cb43ae499a904e8443a96f4cbe27b013deebc3c5174",
+      "xmlSHA256": "a39b27d461b193438ce63da30ab020711b2ad8e92aa452ca37143477bdbeee8e",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "13-session-expired",
+      "pngSHA256": "f04086e318622a54e8c692bcb16e1a04b2777e31e76efc02e4535b8e9e95bdcb",
+      "xmlSHA256": "7bed920e209ded077580edbd701751234352e9be78b117195cd1352baceac0d9",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "14-company-own-empty",
+      "pngSHA256": "441978397f2c0b3bca6af33f6d3a3826c82e6e99637f519ba1eebcc257f564c6",
+      "xmlSHA256": "7f0f02f06f6ab1eba9c232c55b5b2e0669067df04e9642c098620f6178e49e36",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "failure-company-isolation",
+      "pngSHA256": "a04e29a8ab3d63e51cd17422702f2df6bdcf3dd0182ca9c998373dba3f4621e3",
+      "xmlSHA256": "7c5b82197aa11ad65a43877d5aec4cd034ec89425af84e9020d36277544996eb",
+      "native": true,
+      "synthetic": true
+    }
+  ],
+  "nativePartialProof": "Real HTTP93 requests/two native signins; detail/reply/withdraw, timeout18s realcommit/UI15s/singlePOST+GETdurablerecovery, prepared503/GET/noautoPOST/changed409/correct201samehash, release/expiry12slocalDB/resolve-minimization/errorhidden/pagination/session401/companyownempty observed. ReadOnly normalfont capture looked coherent; font130% capture showed clipped category labels, so not accepted accessible layout. Legacy-company route screenshot15 missing.",
+  "reproducedDefects": "Failure XML/PNG still Ajuda after generic router.back in deep-link/session/font sequence, not Perfil. 130% screenshot12 and company14 contain truncated categories; no claim of rootcause exact internal RN cache. These are real observed limitations.",
+  "change": "Explicit Voltar ao perfil handler router.replace('/perfil'); useWindowDimensions().fontScale keys ScrollView native subtree to remeasure on runtimefontchange, preserving screen-owned controlled state/flow; choice maxWidth100% plus shrinking/wrapping label, no font scaling cap. Native driver requires Perfil anchor then scrolls/taps existing company legacy entry. No fixture bypass/dependency/lockfile/backend/pool/RLS/workflow/canonical changes.",
+  "primary": [
+    "https://reactnative.dev/docs/0.81/usewindowdimensions"
+  ],
+  "sources": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "old": "c4eede305ec3867b3482d1156f8514de49c87c1f",
+      "new": "ef5319c23dd067a2e9b7bf04535d26c74cf50b77"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "old": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3",
+      "new": "41fe58948d8a4ef966cbfa3f881e712b7d25aad0"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "1c5570243fdbbbfdbdd7853c77259190b4600cec",
+      "new": "133f44fac889c3925769ffb2c03dd018b1260065"
+    }
+  ],
+  "validation": "Actual back handler regression original9/10PASS+1FAIL (history entry !=/perfil)→candidate10/10PASS. Font rerender test preserves descriptor/draft/boundidentity/noHTTP mutation (not native layout proof). Python syntax PASS. New own full CI/typecheck/Android22screens+visual QA PENDING. No merge/postmerge/acceptance/activation/production."
+}
+```

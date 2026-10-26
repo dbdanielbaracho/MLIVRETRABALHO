@@ -178,7 +178,7 @@ try:
     stage='large-font';adb('shell','settings','put','system','font_scale','1.3');open_route('ajuda-plataforma');wait('Ajuda à plataforma');screenshot('12-large-font');adb('shell','settings','put','system','font_scale','1.0')
     stage='session-expired';command('expire');open_route('ajuda-plataforma');wait('A sessão mudou ou expirou');assert not matching(tree(),'Native_recovery_request');screenshot('13-session-expired')
     stage='company-isolation';signin('company');wait('Nenhuma solicitação registrada nesta conta',scroll=True);assert not matching(tree(),'Native_first_request');screenshot('14-company-own-empty')
-    tap('Voltar',True,up=True);wait('Ajuda e suporte');tap('Ajuda e suporte',True);screenshot('15-company-legacy-preserved')
+    tap('Voltar ao perfil',True,up=True);wait('sem vínculo com empresa',scroll=True);wait('Ajuda e suporte',scroll=True);tap('Ajuda e suporte',True);screenshot('15-company-legacy-preserved')
     fatal=adb('logcat','-d');assert not re.search(r'FATAL EXCEPTION|Fatal signal|ReactNativeJS.*(?:TypeError|ReferenceError|Invariant Violation)',fatal)
     (OUT/'native-logcat.txt').write_text(fatal);(OUT/'traffic.json').write_text(json.dumps(traffic(),indent=2))
     receipt={'states':states,'nativePackage':PACKAGE,'syntheticLocalAPI':PUBLIC['api'],'timeoutSinglePOSTAndRecovery':True,'preparedExplicitRetrySameKey':True,'acceleratedExpirySeconds':12,'companyAndUnlinked':True,'canonicalUntouched':True,'production':False,'metroRequired':False}
