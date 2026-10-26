@@ -1,7 +1,7 @@
 import {verifyPlatformSupportOwnerRuntime} from './platform-support-owner-runtime.pg';
 import {verifyPlatformSupportReadPolicies} from './platform-support-read-rls.pg';
 import {verifyPlatformSupportDispatch} from './platform-support-dispatch-store.pg';
-// Disposable PostgreSQL fixture invoked only by the guarded CI journey; no HTTP surface.
+// Disposable SQL/store and loopback HTTP fixtures invoked only by the guarded CI journey.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
@@ -9,7 +9,7 @@ import {Pool} from 'pg';
 import {PlatformSupportStore} from './platform-support-store';
 import {verifyPlatformSupportPrivacy} from './platform-support-privacy.pg';
 import {verifyPlatformSupportOperator} from './platform-support-operator-store.pg';
-export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
+export async function verifyPlatformSupportIntake(config:{databaseUrl:string;origin:string}){
  const url=new URL(config.databaseUrl);
  assert.ok(['localhost','127.0.0.1','[::1]'].includes(url.hostname));assert.equal(url.pathname,'/mlivretrabalho_http');
  const pool=new Pool({connectionString:config.databaseUrl,max:4,connectionTimeoutMillis:5000}),schema='support_fixture_'+randomUUID().replaceAll('-','');
@@ -27,7 +27,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string}){
   await setup.query('INSERT INTO identities(id) VALUES($1),($2),($3)',[owner,foreign,operator]);
   await verifyPlatformSupportReadPolicies(setup,schema);
   await setup.query(readFileSync('packages/db/migrations/0079_platform_support_owner_locks.sql','utf8'));
-  await verifyPlatformSupportOwnerRuntime(setup,schema,config.databaseUrl);
+  await verifyPlatformSupportOwnerRuntime(setup,schema,config.databaseUrl,config.origin);
   const db={transaction:async<T>(work:(c:import('pg').PoolClient)=>Promise<T>)=>{const c=await pool.connect();try{await c.query('BEGIN');await c.query(`SET LOCAL search_path TO ${schema},public`);const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}};
   const store=new PlatformSupportStore(db),error=(message:string)=>(e:unknown)=>e instanceof Error&&e.message===message;
   await assert.rejects(store.prepare(owner,input),error('platform_support_unavailable'));

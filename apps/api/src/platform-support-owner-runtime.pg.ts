@@ -1,3 +1,4 @@
+import {verifyPlatformSupportOwnerHTTP} from './platform-support-owner-http-runtime.pg';
 import assert from 'node:assert/strict';
 import {randomUUID,randomBytes} from 'node:crypto';
 import type {PoolClient} from 'pg';
@@ -5,7 +6,7 @@ import {DatabaseService} from './database.service';
 import {PlatformSupportOwnerStore} from './platform-support-owner-store';
 // Guarded by the intake fixture: loopback peer, disposable database and UUID schema.
 // A real non-superuser LOGIN is confined to this disposable schema, closed and dropped in finally.
-export async function verifyPlatformSupportOwnerRuntime(setup:PoolClient,schema:string,databaseUrl:string){
+export async function verifyPlatformSupportOwnerRuntime(setup:PoolClient,schema:string,databaseUrl:string,origin:string){
  assert.match(schema,/^support_fixture_[a-f0-9]{32}$/);
  const url=new URL(databaseUrl);assert.ok(['localhost','127.0.0.1','[::1]'].includes(url.hostname));assert.equal(url.pathname,'/mlivretrabalho_http');
  const role='support_owner_runtime_'+randomUUID().replaceAll('-',''),password=randomBytes(24).toString('hex');
@@ -88,6 +89,7 @@ export async function verifyPlatformSupportOwnerRuntime(setup:PoolClient,schema:
   // Neither operation context nor rollback failure leaves an identity on the pooled connection.
   assert.equal((await db.transaction(c=>c.query("SELECT NULLIF(current_setting('app.platform_support_identity',true),'') AS actor"))).rows[0].actor,null);
   console.log('PLATFORM_SUPPORT_OWNER_RUNTIME_PG_PASS '+JSON.stringify({actualDatabaseServicePoolAndTransaction:true,nonSuperuserNonBypassLogin:true,noSetRoleFallback:true,ownerPrepareSubmitRecoverListDetailWithdraw:true,concurrentReplaySingleCase:true,rlsForeignUnfilteredReadDenied:true,auditFailureRollback:true,capabilityFalseHistoryOnly:true,deactivatedOwnerDenied:true,transactionContextCleared:true,noIdentityCapabilityOperatorUpdateACL:true,boundedLockFunctionsOnly:true,identityOperatorAndCapabilityLocksPreserved:true,tempShadowingDenied:true,httpRestrictedRuntimeProof:false,operatorAdminRestrictedRuntimeProof:false,operationalActivation:false,production:false}));
+  await verifyPlatformSupportOwnerHTTP(setup,schema,databaseUrl,url.toString(),origin,operator);
  }finally{
   if(runtime)await runtime.onModuleDestroy();
   if(triggerCreated){await setup.query(`DROP TRIGGER IF EXISTS ${fault} ON platform_support_audit`);await setup.query(`DROP FUNCTION IF EXISTS ${fault}()`);}

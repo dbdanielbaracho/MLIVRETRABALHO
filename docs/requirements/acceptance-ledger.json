@@ -5557,6 +5557,43 @@
         ],
         "ownFullCIAndAndroidPending": true
       }
+    },
+    "ownerHTTPRestrictedIncrement": {
+      "baseHead": "6734029c2c6734796313644b70a1f43092ebdee4",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "0b6cdae57d53a509109450c483013232009bcaea",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "sha": "a630e98e54b2deeae89e07dbe06760108fbccd23",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "97fd69522c8d3a40bf12f1e8c89e4e5eee90d028",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "old": "a836dd145cca27eb33f2ae03a39d32671f00a86b",
+          "new": "a630e98e54b2deeae89e07dbe06760108fbccd23"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "c260fe6ada4217339292e996b94d7eebbf1032fd",
+          "new": "97fd69522c8d3a40bf12f1e8c89e4e5eee90d028"
+        }
+      ],
+      "scope": "Actual loopback Nest/Fastify PlatformSupportController, actual AuthService with separate existing authentication authority, actual signup/signin session rows from current local API. Owner store DatabaseService uses the existing disposable restricted login and cannot read sessions. No production routing/pool/permissions, endpoint/schema/migration/mobile changes.",
+      "validation": "Three TypeScript sources syntax PASS locally. Own full CI/Android and actual HTTP/PostgreSQL proof PENDING. Assert all6routes, unlinked/no profile, two companies/foreign identity, forged owner/tenant, replay/recovery, replies, audit rollback, pagination, withdrawal, capability false, anonymous/signout/expiry/revocation matrix with no writes, store/auth deactivation. Close listener/pools, revoke sessions, remove private synthetic rows; global synthetic signup rows live only until CI database disposal. Operator/admin restricted runtime and visual proof remain pending."
     }
   }
 }
