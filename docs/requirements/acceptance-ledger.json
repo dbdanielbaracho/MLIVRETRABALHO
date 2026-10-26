@@ -6257,7 +6257,60 @@
       "policyDependency": "Role restricted fixture receives EXECUTE of closed dispatch write-check boolean, which returns false without dispatch operation scope. Run role/owner/operator restricted proofs after final0084 policies.",
       "activation": false,
       "merge": false,
-      "areaAcceptance": false
+      "areaAcceptance": false,
+      "readBoundaryHardening": {
+        "supersededHead": "e6f2e6d73393af55e858e53d8f6f5320903dd180",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0085_platform_support_dispatch_read_boundary.sql",
+            "sha": "e9a59b36977e456d148ad52c3bf34bdec872edc8",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "sha": "a97aca3cb0a990115c5aa2f75555a88c83241f82",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "sha": "f77356c6b7014d1db40d3a3cded4bfc7fd83a455",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "sha": "a4f9b3e7415fb34253f20a443bff8d17bba151fe",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0085_platform_support_dispatch_read_boundary.sql",
+            "old": null,
+            "new": "e9a59b36977e456d148ad52c3bf34bdec872edc8"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "old": "f8a81b87ff6e52fc1794c4795edabb3f44144365",
+            "new": "a97aca3cb0a990115c5aa2f75555a88c83241f82"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "old": "f9ab832f8136c1cf30c91a8f70e587b627e770d7",
+            "new": "f77356c6b7014d1db40d3a3cded4bfc7fd83a455"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "old": "f4dff2a68d1f0dce154360ba7932a2bfcb4d6914",
+            "new": "a4f9b3e7415fb34253f20a443bff8d17bba151fe"
+          }
+        ],
+        "scope": "0085 replaces same closed boolean to authorize metadata without recursive RLS, requiring server dispatch context/admin/foreign active requester even on assignment SELECT and UPDATE USING. Write target non-null is enforced by table constraints; insert/update checks validate persisted operator. Owner/operator fixtures receive only EXECUTE of this closed boolean needed by final policies, no real ACLs.",
+        "validation": "Actual fixture seeds separate synthetic assignment, observes candidate0084 SELECT with deactivated requester, applies0085 and requires zero rows, restores synthetic identity, then all SQL/HTTP positives run after0085. Role/owner/operator proofs run after final policies; own complete CI/Android pending."
+      }
     }
   }
 }
