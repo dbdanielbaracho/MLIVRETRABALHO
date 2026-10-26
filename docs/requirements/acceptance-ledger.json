@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
+      "sha": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e",
       "mode": "100644"
     },
     {
@@ -7192,6 +7192,45 @@
             "path": ".github/workflows/standalone-pilot-apk.yml",
             "old": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
             "new": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc"
+          }
+        ]
+      },
+      "freshAVDDataIsolation": {
+        "at": "2026-10-26",
+        "baselineHead": "51ca7ed2f14bc0f36437942668317088b92a51c4",
+        "baselineRun": 40372652856,
+        "foundation": 121747187052,
+        "android": 121747477851,
+        "mergePolicy": 121759145930,
+        "baselineConclusion": "failure",
+        "proof": "Host nproc4/action guestcores4 confirmed. CPU pressureavg10 fell59.67→21.95/total98%→67%, but SystemUI startup ANR before login/zeroHTTP recurred: allocation NOT sufficient fix. Canonical smoke/build/localURL/cleanup PASS; full Android/merge-policy FAIL.",
+        "newDiagnostic": "Full bootstrap has848 Idmap-too-small header-entry errors, including SystemUI/launcher overlays in /data/resource-cache. Inherited AVD-data contribution is a NEW hypothesis, not proven causality.",
+        "artifact": {
+          "id": 12674473452,
+          "size": 29972734,
+          "zipSHA256": "c8718b72c8d47d1c10e508f6548e8ed4b891468580f503934bf55485bdeadb8f",
+          "pngSHA256": "60f9104cc80710f2cd2a504d94c67f818ea2a6f7a66f854fe0f0959944cd72ce",
+          "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+          "bootLogSHA256": "2f1179f5ed298677141831b483cc00a2bcce0a6e8d935f3aecabd38c08941810",
+          "checked": "ZIP/PNG/XML/bootlog actual hashes verified; originalSystemUI-ANR screenshot visually reviewed, NOT positive Ajuda state."
+        },
+        "change": "Primary isolated fixture AVD named platform-support-fixture, force creation; both .avd/.ini required ABSENT first. No inherited canonical userdata/deletion/reset of existingAVD/retry/fallback/image/API downgrade/permission workaround. First canonical runner/upload unchanged; same system image/API35/x86_64/pixel_6/display/backend/cores4hostguard/NSC/namespaceabsence/ANRfailclosed. Syntheticfixture package only; mobile/business services untouched.",
+        "primary": [
+          "https://developer.android.com/studio/run/emulator-commandline",
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml"
+        ],
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
+          "new": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e"
+        },
+        "validation": "FRESH_AVD_YAML_FIRST_RUNNER_AND_ALL_RUNTIME_GUARDS_PRESERVED_PASS local; ownnewfullCI/Android/native22/visualQA pending. No merge/postmerge/acceptance/activation/production.",
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1/sha",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
+            "new": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e"
           }
         ]
       }
