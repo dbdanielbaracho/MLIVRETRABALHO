@@ -1,3 +1,4 @@
+import {verifyPlatformSupportOperatorRuntime} from './platform-support-operator-runtime.pg';
 import {verifyPlatformSupportOwnerRuntime} from './platform-support-owner-runtime.pg';
 import {verifyPlatformSupportReadPolicies} from './platform-support-read-rls.pg';
 import {verifyPlatformSupportDispatch} from './platform-support-dispatch-store.pg';
@@ -28,6 +29,7 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string;ori
   await verifyPlatformSupportReadPolicies(setup,schema);
   await setup.query(readFileSync('packages/db/migrations/0079_platform_support_owner_locks.sql','utf8'));
   await verifyPlatformSupportOwnerRuntime(setup,schema,config.databaseUrl,config.origin);
+  await verifyPlatformSupportOperatorRuntime(setup,schema,config.databaseUrl,config.origin);
   const db={transaction:async<T>(work:(c:import('pg').PoolClient)=>Promise<T>)=>{const c=await pool.connect();try{await c.query('BEGIN');await c.query(`SET LOCAL search_path TO ${schema},public`);const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}};
   const store=new PlatformSupportStore(db),error=(message:string)=>(e:unknown)=>e instanceof Error&&e.message===message;
   await assert.rejects(store.prepare(owner,input),error('platform_support_unavailable'));

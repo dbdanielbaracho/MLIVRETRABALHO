@@ -5621,6 +5621,89 @@
           "type": "blob"
         }
       }
+    },
+    "operatorRestrictedRuntimeIncrement": {
+      "baseHead": "f44ce553115e39b1ed7cf35b34b2c70714e8b1e5",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+          "sha": "da6c2b8bd1f7e7f1acee36027423a58c7cd06025",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-store.ts",
+          "sha": "2697a2197e619f6139fadae74f3f12a8a42c40af",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+          "sha": "cab017a9c51f0e509e84078c8bee75eee71fc1c2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "sha": "5fcf37c96f586c7746399f900d30f33a0dd672f4",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "1fad45bb26b7ccde06cb10169a24be9dbf17bfe2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "44915535899555918dfd532b9493821d886290ee",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+          "old": null,
+          "new": "da6c2b8bd1f7e7f1acee36027423a58c7cd06025"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-store.ts",
+          "old": "bc14e4f7864508f946f10d22c69caedce3a44240",
+          "new": "2697a2197e619f6139fadae74f3f12a8a42c40af"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+          "old": null,
+          "new": "cab017a9c51f0e509e84078c8bee75eee71fc1c2"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "old": null,
+          "new": "5fcf37c96f586c7746399f900d30f33a0dd672f4"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "97fd69522c8d3a40bf12f1e8c89e4e5eee90d028",
+          "new": "1fad45bb26b7ccde06cb10169a24be9dbf17bfe2"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        }
+      ],
+      "scope": "Operator SQL/store and actual HTTP restricted local fixture; closed boolean locks plus per-case state/response RLS policies. No identity/operator/assignment/capability UPDATE ACL; no app_runtime grants, no real provisioning or operational pool configuration.",
+      "validation": "Local syntax PASS. Actual baseline42501 and RLSzero reproduction before migration0080, positive SQL/HTTP/lock/audit/session/cleanup proofs and own full CI/Android PENDING. Admin restricted runtime and isolated full render remain pending.",
+      "primarySources": [
+        "https://www.postgresql.org/docs/17/sql-createfunction.html",
+        "https://www.postgresql.org/docs/17/sql-select.html",
+        "https://www.postgresql.org/docs/17/ddl-rowsecurity.html"
+      ],
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false
     }
   }
 }

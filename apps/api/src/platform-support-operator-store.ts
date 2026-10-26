@@ -11,19 +11,20 @@ export class PlatformSupportOperatorStore{
   return this.database.transaction(async db=>{
    await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[actor]);
    // Locks make role/identity/assignment revocation serialize with this operation.
-   if(!(await db.query('SELECT id FROM identities WHERE id=$1 AND deactivated_at IS NULL FOR SHARE',[actor])).rows[0])throw Error('platform_support_identity_required');
-   if(!(await db.query('SELECT identity_id FROM platform_support_operators WHERE identity_id=$1 AND active FOR SHARE',[actor])).rows[0])throw Error('platform_support_not_found');
+   if(!(await db.query('SELECT platform_support_lock_owner_identity() AS active')).rows[0]?.active)throw Error('platform_support_identity_required');
+   if(!(await db.query('SELECT platform_support_lock_operator() AS active')).rows[0]?.active)throw Error('platform_support_not_found');
    return work(db);
   });
  }
  private assigned<T>(actor:string,caseId:string,work:(db:PoolClient,row:AssignedCase)=>Promise<T>){
   if(!uuid(caseId))throw Error('platform_support_not_found');
   return this.operator(actor,async db=>{
+   if(!(await db.query('SELECT platform_support_lock_assigned_case($1,true) AS active',[caseId])).rows[0]?.active)throw Error('platform_support_not_found');
    const row=(await db.query<AssignedCase>(`SELECT c.id,c.category,c.description,c.status,c.created_at AS "createdAt",c.closed_at AS "closedAt"
     FROM platform_support_cases c JOIN platform_support_assignments a ON a.case_id=c.id
     JOIN identities requester ON requester.id=c.owner_identity_id
     WHERE c.id=$1 AND a.operator_identity_id=$2 AND a.revoked_at IS NULL AND requester.deactivated_at IS NULL
-    FOR UPDATE OF c FOR SHARE OF a,requester`,[caseId,actor])).rows[0];
+    `,[caseId,actor])).rows[0];
    if(!row)throw Error('platform_support_not_found');
    return work(db,row);
   });
@@ -35,7 +36,9 @@ export class PlatformSupportOperatorStore{
     FROM platform_support_cases c JOIN platform_support_assignments a ON a.case_id=c.id JOIN identities requester ON requester.id=c.owner_identity_id
     WHERE a.operator_identity_id=$1 AND a.revoked_at IS NULL AND requester.deactivated_at IS NULL
     AND ($2::timestamptz IS NULL OR (c.created_at,c.id)<($2::timestamptz,$3::uuid))
-    ORDER BY c.created_at DESC,c.id DESC LIMIT $4 FOR SHARE OF c,a,requester`,[actor,cursor?.[0]??null,cursor?.[1]??null,limit+1])).rows;
+    ORDER BY c.created_at DESC,c.id DESC LIMIT $4`,[actor,cursor?.[0]??null,cursor?.[1]??null,limit+1])).rows;
+   // Revalidate and lock every selected row before releasing any private page data.
+   for(const row of rows)if(!(await db.query('SELECT platform_support_lock_assigned_case($1,false) AS active',[row.id])).rows[0]?.active)throw Error('platform_support_not_found');
    const page=rows.slice(0,limit),last=page.at(-1);
    for(const row of page)await db.query("INSERT INTO platform_support_audit(case_id,actor_identity_id,action) VALUES($1,$2,'read')",[row.id,actor]);
    return {items:page.map(({cursorAt,...row})=>row),nextCursor:rows.length>limit&&last?Buffer.from(JSON.stringify([last.cursorAt,last.id])).toString('base64url'):null};

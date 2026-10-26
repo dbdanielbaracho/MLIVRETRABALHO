@@ -84,7 +84,7 @@ async function main(){
   }
   const callable=['active_marketplace_professional','active_marketplace_professional_identity','active_tenant_professional','active_tenant_professional_identity','confirm_marketplace_interest','list_company_members'];
   const triggerOnly=['refresh_marketplace_company_reputation','sync_marketplace_job_projection'];
-  const supportLocks={platform_support_lock_owner_identity:'',platform_support_intake_available:'boolean'};
+  const supportLocks={platform_support_lock_owner_identity:'',platform_support_intake_available:'boolean',platform_support_lock_operator:'',platform_support_lock_assigned_case:'uuid, boolean'};
   assert.deepEqual(beforeSecurity.privilegedFunctions.map(x=>x.proname),[...callable,...triggerOnly,...Object.keys(supportLocks)].sort(),'Every privileged project function must be explicitly audited');
   for(const f of beforeSecurity.privilegedFunctions){
    const support=Object.hasOwn(supportLocks,f.proname);
@@ -92,8 +92,11 @@ async function main(){
    if(support){
     assert.deepEqual(f.proconfig?.map(x=>x.replace(/\s/g,'')),['search_path=pg_catalog,pg_temp'],'Support lock has only the trusted fixed search path');
     check(f.result_type==='boolean'&&f.arguments===supportLocks[f.proname],'bounded_support_lock_signature_'+f.proname);
-    check(f.definition.includes('public.identities')&&!/\b(?:INSERT|UPDATE|DELETE|EXECUTE|GRANT|ALTER|row_security)\b|SET\s+ROLE/i.test(f.definition),'bounded_support_lock_no_write_or_authority_change_'+f.proname);
+    const lockOnly=f.proname==='platform_support_lock_assigned_case'?f.definition.replace(/\bFOR UPDATE OF c\b/g,''):f.definition;
+    check((f.definition.includes('public.identities')||f.proname==='platform_support_lock_operator'&&f.definition.includes('public.platform_support_lock_owner_identity()'))&&!/\b(?:INSERT|UPDATE|DELETE|EXECUTE|GRANT|ALTER|row_security)\b|SET\s+ROLE/i.test(lockOnly),'bounded_support_lock_no_write_or_authority_change_'+f.proname);
     if(f.proname==='platform_support_intake_available')for(const relation of ['platform_support_capability','platform_support_operators','identities'])check(f.definition.includes('public.'+relation),'qualified_support_lock_relation_'+relation);
+    if(f.proname==='platform_support_lock_assigned_case')for(const relation of ['platform_support_cases','platform_support_assignments','identities'])check(f.definition.includes('public.'+relation),'qualified_support_case_lock_'+relation);
+    if(f.proname==='platform_support_lock_operator')check(f.definition.includes('public.platform_support_operators'),'qualified_support_operator_lock');
    }else check(f.proconfig?.some(x=>x.replace(/\s/g,'')==='search_path=public,pg_temp'),'fixed_search_path_'+f.proname);
   }
   // Seed one valid row per TENANT table per company. This is not an API-positive
@@ -162,7 +165,7 @@ async function main(){
   stage='explicit-privileged-function-boundaries';
   // Even a forged platform identity/tenant context cannot execute the closed lock helpers.
   await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[pros[0].id]);
-  for(const expression of ['platform_support_lock_owner_identity()','platform_support_intake_available(true)','platform_support_intake_available(false)'])
+  for(const expression of ['platform_support_lock_owner_identity()','platform_support_intake_available(true)','platform_support_intake_available(false)','platform_support_lock_operator()','platform_support_lock_assigned_case(NULL::uuid,true)','platform_support_lock_assigned_case(NULL::uuid,false)'])
    check((await probe('SELECT public.'+expression)).code==='42501','tenant_cannot_execute_support_lock_'+expression);
 
   for(let i=0;i<2;i++){
