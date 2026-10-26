@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "sha": "44915535899555918dfd532b9493821d886290ee",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "sha": "44915535899555918dfd532b9493821d886290ee",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "sha": "44915535899555918dfd532b9493821d886290ee",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "sha": "44915535899555918dfd532b9493821d886290ee",
           "mode": "100644"
         }
       ],
@@ -5733,7 +5733,33 @@
             "new": "25c21b86c188e265a13e2193f47e455b799ee5ef"
           }
         ]
-      }
+      },
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        }
+      ]
     }
   }
 }
