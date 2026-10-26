@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
           "mode": "100644"
         }
       ],
@@ -5451,7 +5451,45 @@
         "https://www.postgresql.org/docs/17/sql-createfunction.html",
         "https://www.postgresql.org/docs/17/sql-select.html"
       ],
-      "validation": "Own CI/Android/actual PostgreSQL reproduction and positive owner runtime proof PENDING. Fixture uses DatabaseService actual pool/transaction with disposable nonsuperuser NOBYPASS LOGIN and column ACLs only in guarded synthetic schema; no UPDATE identities/capability/operators. Lock contention, temp shadowing, RLS, replay, audit rollback and cleanup asserted. Not full restricted HTTP/operator/admin runtime proof or render."
+      "validation": "Own CI/Android/actual PostgreSQL reproduction and positive owner runtime proof PENDING. Fixture uses DatabaseService actual pool/transaction with disposable nonsuperuser NOBYPASS LOGIN and column ACLs only in guarded synthetic schema; no UPDATE identities/capability/operators. Lock contention, temp shadowing, RLS, replay, audit rollback and cleanup asserted. Not full restricted HTTP/operator/admin runtime proof or render.",
+      "guardInventoryCorrection": {
+        "failedHead": "7afdca04d5c10cb65240aede143821d97309fac8",
+        "failedRun": 40256875359,
+        "stage": "explicit-whole-schema-scope-and-role",
+        "reason": "Hard privileged-function inventory correctly rejected the two newly introduced closed lock helpers. Register only those exact signatures; keep unknown-function and PUBLIC/app_runtime checks, add fixed-path/no-write-qualified-definition checks and actual tenant execution denials. No ACL relaxation or skipped gate.",
+        "source": {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "pins": [
+          {
+            "at": "requirements/3/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          },
+          {
+            "at": "requirements/4/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          },
+          {
+            "at": "requirements/48/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          },
+          {
+            "at": "proofs/5/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          }
+        ]
+      }
     }
   }
 }

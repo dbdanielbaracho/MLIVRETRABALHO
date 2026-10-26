@@ -72,7 +72,7 @@ async function main(){
    await call(pros[i],null,'/v1/professional-capabilities/hospitality.bartender','PUT',{skills:['bar_setup'],certifications:[],provenLevel:'entry',professionalId:pros[1-i].profile});
    owners[i].job=(await call(owners[i],owners[i].tenant,'/v1/company/jobs','POST',{title:'Boundary committed '+i,requiredRole:'Bartender',workCity:'São Paulo',startsAt:iso(72),endsAt:iso(80),payCents:1234},201)).id;
   }
-  const catalog=async()=>({tables:(await db.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relowner::regrole::text owner,c.relacl::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') ORDER BY c.relname")).rows,policies:(await db.query("SELECT * FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows,privilegedFunctions:(await db.query("SELECT p.proname,p.proowner::regrole::text owner,p.proconfig,pg_get_functiondef(p.oid) definition,has_function_privilege('app_runtime',p.oid,'EXECUTE') runtime_execute,EXISTS(SELECT 1 FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE a.grantee=0 AND a.privilege_type='EXECUTE') public_execute FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prosecdef ORDER BY p.proname")).rows});
+  const catalog=async()=>({tables:(await db.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relowner::regrole::text owner,c.relacl::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') ORDER BY c.relname")).rows,policies:(await db.query("SELECT * FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows,privilegedFunctions:(await db.query("SELECT p.proname,p.proowner::regrole::text owner,p.proconfig,p.prorettype::regtype::text result_type,oidvectortypes(p.proargtypes) arguments,pg_get_functiondef(p.oid) definition,has_function_privilege('app_runtime',p.oid,'EXECUTE') runtime_execute,EXISTS(SELECT 1 FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE a.grantee=0 AND a.privilege_type='EXECUTE') public_execute FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prosecdef ORDER BY p.proname")).rows});
   stage='explicit-whole-schema-scope-and-role';const beforeSecurity=await catalog();
   assert.deepEqual(beforeSecurity.tables.map(x=>x.relname),[...tenantTables,...Object.keys(otherScopes)].sort(),'Unclassified table is a hard failure');
   const role=(await db.query("SELECT rolsuper,rolbypassrls,rolcreatedb,rolcreaterole FROM pg_roles WHERE rolname='app_runtime'")).rows[0];check(role&&Object.values(role).every(x=>x===false),'runtime_nonprivileged_role');
@@ -84,8 +84,18 @@ async function main(){
   }
   const callable=['active_marketplace_professional','active_marketplace_professional_identity','active_tenant_professional','active_tenant_professional_identity','confirm_marketplace_interest','list_company_members'];
   const triggerOnly=['refresh_marketplace_company_reputation','sync_marketplace_job_projection'];
-  assert.deepEqual(beforeSecurity.privilegedFunctions.map(x=>x.proname),[...callable,...triggerOnly].sort(),'Every privileged project function must be explicitly audited');
-  for(const f of beforeSecurity.privilegedFunctions)check(!f.public_execute&&f.owner!=='app_runtime'&&f.runtime_execute===callable.includes(f.proname)&&f.proconfig?.some(x=>x.replace(/\s/g,'')==='search_path=public,pg_temp'),'least_privileged_definer_'+f.proname);
+  const supportLocks={platform_support_lock_owner_identity:'',platform_support_intake_available:'boolean'};
+  assert.deepEqual(beforeSecurity.privilegedFunctions.map(x=>x.proname),[...callable,...triggerOnly,...Object.keys(supportLocks)].sort(),'Every privileged project function must be explicitly audited');
+  for(const f of beforeSecurity.privilegedFunctions){
+   const support=Object.hasOwn(supportLocks,f.proname);
+   check(!f.public_execute&&f.owner!=='app_runtime'&&f.runtime_execute===callable.includes(f.proname),'least_privileged_definer_'+f.proname);
+   if(support){
+    assert.deepEqual(f.proconfig,['search_path=pg_catalog'],'Support lock has only the trusted fixed search path');
+    check(f.result_type==='boolean'&&f.arguments===supportLocks[f.proname],'bounded_support_lock_signature_'+f.proname);
+    check(f.definition.includes('public.identities')&&!/\b(?:INSERT|UPDATE|DELETE|EXECUTE|GRANT|ALTER|row_security)\b|SET\s+ROLE/i.test(f.definition),'bounded_support_lock_no_write_or_authority_change_'+f.proname);
+    if(f.proname==='platform_support_intake_available')for(const relation of ['platform_support_capability','platform_support_operators','identities'])check(f.definition.includes('public.'+relation),'qualified_support_lock_relation_'+relation);
+   }else check(f.proconfig?.some(x=>x.replace(/\s/g,'')==='search_path=public,pg_temp'),'fixed_search_path_'+f.proname);
+  }
   // Seed one valid row per TENANT table per company. This is not an API-positive
   // witness for these business states. Every seed/probe below is rolled back.
   stage='rollback-only-valid-fixture-graph';await db.query('BEGIN');transaction=true;
@@ -150,6 +160,11 @@ async function main(){
    }
   }
   stage='explicit-privileged-function-boundaries';
+  // Even a forged platform identity/tenant context cannot execute the closed lock helpers.
+  await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[pros[0].id]);
+  for(const expression of ['platform_support_lock_owner_identity()','platform_support_intake_available(true)','platform_support_intake_available(false)'])
+   check((await probe('SELECT public.'+expression)).code==='42501','tenant_cannot_execute_support_lock_'+expression);
+
   for(let i=0;i<2;i++){
    await db.query("SELECT set_config('app.tenant_id',$1,true)",[owners[i].tenant]);
    const ownJob=seedRows.company_jobs[i].id,foreignJob=seedRows.company_jobs[1-i].id;
@@ -171,7 +186,7 @@ async function main(){
    const values=name.startsWith('active_marketplace')||name==='confirm_marketplace_interest'?[seedRows.company_jobs[0].id,pros[0].profile]:name.startsWith('active_tenant')?[pros[0].profile]:[];
    check((await probe('SELECT * FROM '+name+'('+values.map((_,i)=>'$'+(i+1)).join(',')+')',values)).code==='P0001','missing_context_definer_denied_'+name);
   }
-  console.log('TENANT_BOUNDARY_PRIVILEGED_FUNCTIONS_PASS '+JSON.stringify({functions:beforeSecurity.privilegedFunctions.map(f=>({name:f.proname,publicExecute:f.public_execute,runtimeExecute:f.runtime_execute,fixedSearchPath:true,definitionSHA256:createHash('sha256').update(f.definition).digest('hex')})),ownAndForeignBothDirections:true,missingContextDenied:true,confirmationWritesRolledBack:true}));
+  console.log('TENANT_BOUNDARY_PRIVILEGED_FUNCTIONS_PASS '+JSON.stringify({functions:beforeSecurity.privilegedFunctions.map(f=>({name:f.proname,publicExecute:f.public_execute,runtimeExecute:f.runtime_execute,fixedSearchPath:true,definitionSHA256:createHash('sha256').update(f.definition).digest('hex')})),ownAndForeignBothDirections:true,missingContextDenied:true,confirmationWritesRolledBack:true,platformSupportLocksExplicitlyInventoriedAndTenantDenied:true}));
   for(const table of tenantTables)check((await db.query('SELECT 1 FROM public.'+table)).rowCount===0,'missing_context_deny_'+table);
   await db.query("SELECT set_config('app.tenant_id','not-a-uuid',true)");
   for(const table of tenantTables)check((await probe('SELECT 1 FROM public.'+table)).code==='22P02','invalid_context_deny_'+table);
