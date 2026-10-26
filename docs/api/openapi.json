@@ -5958,7 +5958,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       },
       "post": {
         "operationId": "post__v1_me_platform_support",
@@ -6009,7 +6010,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/me/platform-support/intent": {
@@ -6052,7 +6054,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/me/platform-support/recovery/{key}": {
@@ -6095,7 +6098,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/me/platform-support/{id}": {
@@ -6138,7 +6142,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/me/platform-support/{id}/withdraw": {
@@ -6181,7 +6186,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/platform-support/cases/{id}": {
@@ -6224,7 +6230,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/platform-support/cases/{id}/responses": {
@@ -6277,7 +6284,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/platform-support/admin/operators/{id}": {
@@ -6330,7 +6338,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/platform-support/admin/cases/{id}/assignment": {
@@ -6383,7 +6392,8 @@
               }
             }
           }
-        }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     },
     "/v1/platform-support/cases": {
@@ -6435,7 +6445,7 @@
             }
           }
         },
-        "description": "Assigned cases for the active session-bound operator; active requester and current unrevoked assignment required on every page. All case statuses, including closed history, remain visible while assigned. Default20/max100, descending PostgreSQL microseconds/UUID cursor. No descriptions, responses or identity metadata in page. No snapshot guarantee across assignment changes; every page reauthorizes. Intake capability does not block authorized historical reads."
+        "description": "Assigned cases for the active session-bound operator; active requester and current unrevoked assignment required on every page. All case statuses, including closed history, remain visible while assigned. Default20/max100, descending PostgreSQL microseconds/UUID cursor. No descriptions, responses or identity metadata in page. No snapshot guarantee across assignment changes; every page reauthorizes. Intake capability does not block authorized historical reads. Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
       }
     }
   },
@@ -9609,9 +9619,9 @@
       "work-assignments.controller.ts": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
       "work-graph.controller.ts": "5bed24a5999a66290a3eb058b09d70948e8c17f6",
       "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
-      "platform-support.controller.ts": "4455553a343b67cca100404d5b349de540a732ca",
-      "platform-support-operator.controller.ts": "dc0964cd76fc35891808eb899a7e1a8c86b60d40",
-      "platform-support-admin.controller.ts": "b4e1245f814aeb63ddfe41f825ca0ae123ed35fc"
+      "platform-support.controller.ts": "c8b221a1cb8171832806214ed55c9b990bacd69c",
+      "platform-support-operator.controller.ts": "6aab342793359daf8d52e3b2fc330b9c2f4c29eb",
+      "platform-support-admin.controller.ts": "e7235c798234ab7247e89c9e7b00fa563995f38d"
     }
   }
 }

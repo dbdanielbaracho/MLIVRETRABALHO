@@ -20,9 +20,11 @@ export const supportPermissions:Record<SupportScope,{tables:Record<string,Rights
 export function supportConfiguration(env:NodeJS.ProcessEnv):Record<SupportScope,string>|null{
  try{
   const base=new URL(env.DATABASE_URL??'');
+  if(!['postgres:','postgresql:'].includes(base.protocol)||!base.username)return null;
   const urls=supportScopes.map(scope=>new URL(env[supportEnvironment(scope)]??''));
   for(const url of urls){
-   if(!['postgres:','postgresql:'].includes(url.protocol)||!url.username||!url.password||url.hash||url.pathname==='/'||url.searchParams.has('options'))return null;
+   if(!['postgres:','postgresql:'].includes(url.protocol)||!url.username||!url.password||url.hash||url.pathname==='/'||[...url.searchParams.keys()].some(key=>key!=='sslmode'))return null;
+   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.searchParams.get('sslmode')!=='verify-full')return null;
    // Same database, separate login for every business authority and for authentication.
    if(url.hostname!==base.hostname||(url.port||'5432')!==(base.port||'5432')||url.pathname!==base.pathname||decodeURIComponent(url.username)===decodeURIComponent(base.username))return null;
   }
@@ -38,21 +40,22 @@ export class PlatformSupportDatabases implements OnModuleDestroy{
  forScope(scope:SupportScope):SupportTransactions{return {transaction:<T>(work:(client:PoolClient)=>Promise<T>)=>this.transaction(scope,work)};}
  private async attest(client:PoolClient,scope:SupportScope,connection:string){
   const url=new URL(connection),expected=decodeURIComponent(url.username),rights=supportPermissions[scope];
-  const row=(await client.query(`SELECT current_user::text actor,session_user::text login,current_database() database,r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolinherit,r.rolreplication,
+  const row=(await client.query(`SELECT current_user::text actor,session_user::text login,current_database() database,r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolinherit,r.rolreplication,r.rolcanlogin,
    EXISTS(SELECT 1 FROM pg_catalog.pg_auth_members WHERE member=r.oid) memberships,
    has_schema_privilege(current_user,'public','CREATE') schema_create,
-   EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relowner=r.oid) owns
+   EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relowner=r.oid) OR EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proowner=r.oid) owns
    FROM pg_catalog.pg_roles r WHERE r.rolname=current_user`)).rows[0];
-  if(!row||row.actor!==expected||row.login!==expected||row.database!==decodeURIComponent(url.pathname.slice(1))||['rolsuper','rolbypassrls','rolcreaterole','rolcreatedb','rolinherit','rolreplication','memberships','schema_create','owns'].some(k=>row[k]))throw Error('platform_support_unavailable');
+  if(!row||!row.rolcanlogin||row.actor!==expected||row.login!==expected||row.database!==decodeURIComponent(url.pathname.slice(1))||['rolsuper','rolbypassrls','rolcreaterole','rolcreatedb','rolinherit','rolreplication','memberships','schema_create','owns'].some(k=>row[k]))throw Error('platform_support_unavailable');
   const columns=(await client.query(`SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid
    CROSS JOIN (VALUES('SELECT'),('INSERT'),('UPDATE')) p(privilege)
-   WHERE n.nspname='public' AND c.relkind IN('r','p') AND a.attnum>0 AND NOT a.attisdropped
+   WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND a.attnum>0 AND NOT a.attisdropped
    AND has_column_privilege(current_user,c.oid,a.attnum,p.privilege) IS DISTINCT FROM
    COALESCE(($1::jsonb->c.relname->p.privilege)='"*"'::jsonb OR ($1::jsonb->c.relname->p.privilege)?a.attname,false)) mismatch`,[JSON.stringify(rights.tables)])).rows[0];
   if(columns?.mismatch)throw Error('platform_support_unavailable');
-  const unsafe=(await client.query(`SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') AND has_table_privilege(current_user,c.oid,'DELETE,TRUNCATE,REFERENCES,TRIGGER')) unsafe,
+  const unsafe=(await client.query(`SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND has_table_privilege(current_user,c.oid,'DELETE,TRUNCATE,REFERENCES,TRIGGER')) unsafe,
    EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname LIKE 'platform_support_%' AND c.relkind='r' AND (NOT c.relrowsecurity OR NOT c.relforcerowsecurity)) rls_unsafe`)).rows[0];
-  if(unsafe?.unsafe||unsafe?.rls_unsafe)throw Error('platform_support_unavailable');
+  const sequences=(await client.query("SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='S' AND has_sequence_privilege(current_user,c.oid,'USAGE,SELECT,UPDATE')) unsafe")).rows[0];
+  if(sequences?.unsafe||unsafe?.unsafe||unsafe?.rls_unsafe)throw Error('platform_support_unavailable');
   const functions=(await client.query(`SELECT p.oid::regprocedure::text signature,has_function_privilege(current_user,p.oid,'EXECUTE') allowed,p.prosecdef definer FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND (p.prosecdef OR p.proname LIKE 'platform_support_%')`)).rows;
   for(const f of functions)if(f.allowed&&!rights.functions.includes(f.signature.replace(/^public\./,'')))throw Error('platform_support_unavailable');
   if(rights.functions.some(signature=>!functions.some(f=>f.signature.replace(/^public\./,'')===signature&&f.allowed&&f.definer)))throw Error('platform_support_unavailable');

@@ -15,7 +15,7 @@ export async function startPlatformSupportApplication(config:{databaseUrl:string
  assert.equal(origin.protocol,'http:');assert.ok(['localhost','127.0.0.1'].includes(origin.hostname));assert.ok(origin.port);
  const pool=new Pool({connectionString:config.databaseUrl,max:1,connectionTimeoutMillis:5000}),setup=await pool.connect();
  const created:string[]=[],logins={} as Record<SupportScope,string>,environment:Record<string,string>={},stamp=randomUUID().replaceAll('-','');
- let app:NestFastifyApplication|undefined,closed=false;
+ let app:NestFastifyApplication|undefined,closed=false,stage='local-guard';
  const unavailable=(e:unknown)=>e instanceof Error&&e.message==='platform_support_unavailable';
  async function close(){
   if(closed)return;closed=true;
@@ -28,6 +28,7 @@ export async function startPlatformSupportApplication(config:{databaseUrl:string
   const peer=(setup as unknown as {connection:{stream:{remoteAddress?:string}}}).connection.stream.remoteAddress;
   assert.ok(peer&&['127.0.0.1','::1','::ffff:127.0.0.1'].includes(peer));assert.equal((await setup.query('SELECT current_database() name')).rows[0]?.name,'mlivretrabalho_http');
   for(const scope of supportScopes){
+   stage='provision-fixture-'+scope;
    const login='support_app_'+scope+'_'+stamp,password=randomBytes(24).toString('hex');logins[scope]=login;
    await setup.query(`CREATE ROLE ${login} LOGIN PASSWORD '${password}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS`);created.push(login);
    await setup.query(`GRANT USAGE ON SCHEMA public TO ${login}`);
@@ -39,14 +40,14 @@ export async function startPlatformSupportApplication(config:{databaseUrl:string
   const keys=['DATABASE_URL',...supportScopes.map(supportEnvironment)],saved=Object.fromEntries(keys.map(k=>[k,process.env[k]]));
   try{
    Object.assign(process.env,environment,{DATABASE_URL:config.databaseUrl});
-   app=await NestFactory.create<NestFastifyApplication>(AppModule,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});
+   stage='AppModule-bootstrap';app=await NestFactory.create<NestFastifyApplication>(AppModule,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});
   }finally{for(const key of keys){if(saved[key]===undefined)delete process.env[key];else process.env[key]=saved[key];}}
   app.setGlobalPrefix('v1');await app.listen(0,'127.0.0.1');
   const address=app.getHttpServer().address() as {address:string;port:number};assert.equal(address.address,'127.0.0.1');
   const databases=app.get(PlatformSupportDatabases),auth=app.get(DatabaseService);
   const authActor=(await auth.query('SELECT current_user actor')).rows[0]?.actor;assert.ok(!created.includes(authActor));
   for(const scope of supportScopes){
-   const db=databases.forScope(scope);
+   stage='attest-'+scope;const db=databases.forScope(scope);
    const identity=await db.transaction(async c=>(await c.query('SELECT current_user actor,session_user login')).rows[0]);
    assert.deepEqual(identity,{actor:logins[scope],login:logins[scope]});
    await assert.rejects(db.transaction(c=>c.query('SELECT token_hash FROM public.sessions')),(e:unknown)=>(e as {code:string}).code==='42501');
@@ -62,5 +63,5 @@ export async function startPlatformSupportApplication(config:{databaseUrl:string
    }
    console.log('PLATFORM_SUPPORT_APPLICATION_POOL_COMPOSITION_PG_PASS '+JSON.stringify({actualAppModuleNoProviderOverride:true,actualAuthServiceSessionsOnSeparateOriginalPool:true,fourDistinctRestrictedLogins:true,ownerOperatorRoleDispatchHTTP:true,effectivePrivilegeCheckBeforeEveryTransaction:true,excessACLRejectedBeforeCallback:true,noSessionReadOrIdentityUpdate:true,noSharedCredentialFallback:true,noSetRole:true,transactionContextsCleared:true,configurationCodeAdopted:true,realCredentialProvisioning:false,render:false,production:false}));
   }};
- }catch(error){await close();throw error;}
+ }catch(error){const code=(error as {code?:unknown})?.code;console.error('PLATFORM_SUPPORT_APPLICATION_FIXTURE_FAIL '+JSON.stringify({stage,sqlstate:typeof code==='string'&&/^[A-Z0-9]{5}$/.test(code)?code:null,privateDataExported:false}));await close();throw error;}
 }

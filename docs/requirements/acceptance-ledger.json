@@ -6470,7 +6470,63 @@
       "render": false,
       "merge": false,
       "activation": false,
-      "areaAcceptance": false
+      "areaAcceptance": false,
+      "contractReconciliation": {
+        "supersededHead": "3d2deb7896f450d58e1d9a062be1c8837a307f71",
+        "failedRun": 40297418833,
+        "reason": "Strict x-contract-source.controllerBlobs equality caught three changed controller blobs before any intake/composition HTTP fixture. Reconciled OpenAPI controller pins and reviewed all119 operations with same request/success/error schemas, strict guard unchanged. Added bounded configuration unavailable description, no new endpoints.",
+        "sources": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "sha": "d3e69c75053b75bd13f0c730a549f9e08ad5da30",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "sha": "659cab07bd864803b5db9ada2343ca0735ad67ee",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "docs/api/openapi.json",
+            "sha": "c9b69117585065ebb136d82e760e99997995f3f5",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-application.pg.ts",
+            "sha": "da7e8a96f2edc5843d6159434ae8afb303828ddb",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "old": "3db1882db7e8a7a4bf8ca7a1807d0b07f049732f",
+            "new": "d3e69c75053b75bd13f0c730a549f9e08ad5da30"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "old": "d564e41e9ed09182627b57579a9fe13a3f4613de",
+            "new": "659cab07bd864803b5db9ada2343ca0735ad67ee"
+          },
+          {
+            "path": "docs/api/openapi.json",
+            "old": "d397417b69d4c65ccad4106b9f971d5f8a89db5d",
+            "new": "c9b69117585065ebb136d82e760e99997995f3f5"
+          },
+          {
+            "path": "apps/api/src/platform-support-application.pg.ts",
+            "old": "1dad12c6d3bf5216ed6023e34658ef5604b131ce",
+            "new": "da7e8a96f2edc5843d6159434ae8afb303828ddb"
+          }
+        ],
+        "sourcePinReconciliation": [],
+        "hardening": "Require explicit auth username, accept only sslmode query option and remote verify-full; reject NOLOGIN/function ownership, excess view/materialized/foreign table or sequence authority too. Exact positive/negative configuration tests. No credentials deployed, no network database access outside fixtures.",
+        "validation": "Local syntax/OpenAPI119 static review PASS; own actual PG/HTTP/CI/Android still PENDING."
+      }
     }
   }
 }
