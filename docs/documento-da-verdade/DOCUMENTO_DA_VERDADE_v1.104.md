@@ -20046,3 +20046,24 @@ Testeguardfixture passa a serinvocadoexplicitamente na preparaçãoAndroid obrig
 
 ### PLATFORM_SUPPORT_NATIVE_BUNDLE_CLOSURE_GATE_2026_10_26
 Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe nafoundationlogoapósExportAndroidexistente, para feedback de dependênciasantesdaprovacompleta. Modo explícitocompilaçãosó/APIURLlocalporta1,nãorequisitaAPI/nãogeraAPK/nãolêartefatocanônico/temporárioremovido; nãocontascomorender. Buildnativo/jornada22capturas permanecemobrigatóriosnomesmojobAndroid comordem/permissões/aplicabilidadepreservadas. SourcepinCIativo old/newreconciliado. BashsyntaxPASS;moduleclosure/CI/Android/render/visualreviewdoNOVOSHApendentes,semmerge/aceite/ativação.
+
+
+### PR632 — isolamento de recursos Android, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "c79c1e42e8d7920eabfec9df31f7ac3283f5a03a",
+  "baselineRun": 40311198287,
+  "baselineFoundation": 121532522691,
+  "baselineAndroid": 121532669904,
+  "baselineMergePolicy": 121538095319,
+  "baselineConclusion": "failure",
+  "reproduction": "Module closure probe passed, canonical smoke/API cleanup passed, isolated assembleRelease failed at mergeReleaseResources for external pnpm assets. Zero native UI captures.",
+  "source": {
+    "path": "scripts/build-platform-support-native-fixture.sh",
+    "old": "bbef78a6858e82f526d23c35406c498dff39a8b4",
+    "new": "56847414d8ae8986ef59bf7ec5382f0247b7caf8"
+  },
+  "change": "Copy installed pnpm root/mobile node_modules preserving relative symlinks into isolated git-archive stage; use default Expo Metro config within stage. No dependency install, lockfile/mobile/canonical config/output edits. No network fallback or production navigation.",
+  "validation": "bash -n PASS. Own full CI/Android/AAPT/native22 screenshots PENDING. render=false; merge/activation/acceptance=false."
+}

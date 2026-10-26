@@ -9,8 +9,10 @@ STAGE="$(mktemp -d /tmp/mlivre-support-build.XXXXXX)"
 trap 'rm -rf "$STAGE"' EXIT
 # A separate checkout overlay: never overwrite canonical mobile config/output.
 git archive HEAD | tar -x -C "$STAGE"
-ln -s "$ROOT/node_modules" "$STAGE/node_modules"
-ln -s "$ROOT/apps/mobile/node_modules" "$STAGE/apps/mobile/node_modules"
+# Preserve pnpm's relative dependency layout inside this checkout. External
+# symlink targets become absolute resource names and fail Android AAPT.
+cp -a "$ROOT/node_modules" "$STAGE/node_modules"
+cp -a "$ROOT/apps/mobile/node_modules" "$STAGE/apps/mobile/node_modules"
 test "$#" -le 1
 if test "${1:-}" = --bundle-probe; then
   PROBE=true
@@ -27,17 +29,9 @@ node - "$STAGE" <<'JS'
 const fs=require('node:fs'),p=process.argv[2]+'/apps/mobile/app.json',x=JSON.parse(fs.readFileSync(p));x.expo.name='MLivreTrabalho Support Fixture';x.expo.slug='mlivre-support-fixture';x.expo.scheme='mlivre-support-fixture';x.expo.android.package='com.predibeacon.mlivretrabalho.supportfixture';fs.writeFileSync(p,JSON.stringify(x,null,2));
 JS
 cd "$STAGE/apps/mobile"
-export MLIVRE_SUPPORT_SOURCE_ROOT="$ROOT"
 cat > metro.config.js <<'METRO'
-const path=require('node:path');
 const {getDefaultConfig}=require('expo/metro-config');
-const config=getDefaultConfig(__dirname);
-// Only the isolated checkout: Metro must see the real targets of pnpm symlinks.
-const source=process.env.MLIVRE_SUPPORT_SOURCE_ROOT;
-if(!source||!path.isAbsolute(source))throw Error('fixture_source_root_required');
-config.watchFolders=[...new Set([...(config.watchFolders||[]),path.join(source,'node_modules'),path.join(source,'apps/mobile/node_modules')])];
-config.resolver.nodeModulesPaths=[path.join(__dirname,'node_modules'),path.join(source,'apps/mobile/node_modules'),path.join(source,'node_modules')];
-module.exports=config;
+module.exports=getDefaultConfig(__dirname);
 METRO
 if test "$PROBE" = true; then
   pnpm exec expo export --platform android --output-dir "$STAGE/bundle-probe"

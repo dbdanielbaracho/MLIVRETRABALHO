@@ -6876,6 +6876,23 @@
         ],
         "scope": "After actual Metro failures before UI, run the identical staged Metro setup as --bundle-probe in foundation immediately after existing Android export. Explicit compilation-only local URL port1, no network/API execution or canonical APK prerequisite; temporary bundle removed. Full native build/UI remains mandatory in Android job, unchanged ordering/permissions/applicability. No render claim from bundle probe.",
         "validation": "Bash syntax PASS; module closure/own full CI/Android/native22 snapshots PENDING."
+      },
+      "stagedDependencyCopy": {
+        "at": "2026-10-26",
+        "baselineHead": "c79c1e42e8d7920eabfec9df31f7ac3283f5a03a",
+        "baselineRun": 40311198287,
+        "baselineFoundation": 121532522691,
+        "baselineAndroid": 121532669904,
+        "baselineMergePolicy": 121538095319,
+        "baselineConclusion": "failure",
+        "reproduction": "Module closure probe passed, canonical smoke/API cleanup passed, isolated assembleRelease failed at mergeReleaseResources for external pnpm assets. Zero native UI captures.",
+        "source": {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": "bbef78a6858e82f526d23c35406c498dff39a8b4",
+          "new": "56847414d8ae8986ef59bf7ec5382f0247b7caf8"
+        },
+        "change": "Copy installed pnpm root/mobile node_modules preserving relative symlinks into isolated git-archive stage; use default Expo Metro config within stage. No dependency install, lockfile/mobile/canonical config/output edits. No network fallback or production navigation.",
+        "validation": "bash -n PASS. Own full CI/Android/AAPT/native22 screenshots PENDING. render=false; merge/activation/acceptance=false."
       }
     }
   }
