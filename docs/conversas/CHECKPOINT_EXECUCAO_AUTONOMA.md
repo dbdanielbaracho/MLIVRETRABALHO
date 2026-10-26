@@ -20665,3 +20665,36 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
   "validation": "Recorded version-probe failure reproduced from hash-verified artifact; Bash syntax/metadata-only delta with startup/guards preserved local PASS. New own full CI/Android/bootstrap/native22/font130/navigation/visualQA PENDING. No merge/postmerge/acceptance/activation/production."
 }
 ```
+
+
+### PR632 — isolated font fixture lifecycle / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "e205a5877f024df7226af141b170f75b490e0542",
+  "baselineRun": 40390756155,
+  "conclusion": "failure",
+  "foundation": 121810803161,
+  "android": 121811060286,
+  "mergePolicy": 121823203882,
+  "artifact": {
+    "id": 12684904333,
+    "size": 33570124,
+    "zipSHA256": "d18b5bba063f9390105d13f845ee06841f6803701694cc9ead43d4082fc25ab1",
+    "verification": "ZIP and all22 PNG/XML hashes checked against log metadata. Originals12-large-font,14-company-own-empty,failure-company-isolation visually reviewed;21 numbered captures, missing15legacy. No complete render acceptance."
+  },
+  "observed": "Repo-owned no-Launcher-key boot reached real native journey, no prelogin ANR blocker. Font130% glyphs clipped; after reset1.0 company screen still enlarged. Back action recorded bounds53,53,1028,159, but terminal XML remains scrolledAjuda identical14, notPerfil. Existing router.replace code remains unchanged. Hot adb font change lifecycle/stale native geometry is a hypothesis, not proven internal RN cause.",
+  "change": "Fixture only: after setting/reading130% force-stop OWN package and reopen normally; screenshot actual launch-time130%; after setting/reading100% force-stop OWN and reopen. Session/SecureStore retained, no clear/uninstall/injection or font cap. No claim of in-place hotfont accessibility. Existing ANR/NSC/package/coordinates/realHTTP guards unchanged.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "133f44fac889c3925769ffb2c03dd018b1260065",
+    "new": "0df050e6522a700c57037d45acff5ccb315fa698"
+  },
+  "validation": "COLD_FONT_LIFECYCLE_SYNTAX_ORDER_SCOPE_RESTORE_PASS locally. New ownCI/Android22/font130%visual/navigation pending. No merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12684607121,
+    "zipSHA256": "956c98c2b31bcb2e0a23eb34a0f769d348b43fa243a95c14309b954273e19182",
+    "apkSHA256": "7e9c7ccbd2c2187790317e228a5b2ca85f036de92c715bc656a403d0bee8dc16",
+    "verification": "Actual ZIP/APK hashes verified; canonical bundle productionURL present, localfixtureURL absent. No functional production navigation."
+  }
+}

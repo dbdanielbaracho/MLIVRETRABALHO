@@ -175,7 +175,15 @@ try:
     stage='pagination';command('seed-history');tap('Atualizar solicitações',True);wait('Seu histórico na plataforma',scroll=True);tap('Carregar mais solicitações',True);time.sleep(1);assert any(x['cursor'] for x in traffic())
     for _ in range(10):swipe()
     screenshot('11-history-pagination')
-    stage='large-font';adb('shell','settings','put','system','font_scale','1.3');open_route('ajuda-plataforma');wait('Ajuda à plataforma');screenshot('12-large-font');adb('shell','settings','put','system','font_scale','1.0')
+    # Font settings changed through adb do not supply the normal Settings/activity lifecycle.
+    # Start only our package cold at each scale; retain its real session and SecureStore.
+    # This proves launch-time accessibility layout, not an in-place hot-font transition.
+    stage='large-font';adb('shell','settings','put','system','font_scale','1.3')
+    assert adb('shell','settings','get','system','font_scale').strip()=='1.3'
+    adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Ajuda à plataforma');screenshot('12-large-font')
+    adb('shell','settings','put','system','font_scale','1.0')
+    assert adb('shell','settings','get','system','font_scale').strip()=='1.0'
+    adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Ajuda à plataforma')
     stage='session-expired';command('expire');open_route('ajuda-plataforma');wait('A sessão mudou ou expirou');assert not matching(tree(),'Native_recovery_request');screenshot('13-session-expired')
     stage='company-isolation';signin('company');wait('Nenhuma solicitação registrada nesta conta',scroll=True);assert not matching(tree(),'Native_first_request');screenshot('14-company-own-empty')
     tap('Voltar ao perfil',True,up=True);wait('sem vínculo com empresa',scroll=True);wait('Ajuda e suporte',scroll=True);tap('Ajuda e suporte',True);screenshot('15-company-legacy-preserved')
