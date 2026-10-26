@@ -5608,6 +5608,18 @@
           "old": "0b6cdae57d53a509109450c483013232009bcaea",
           "new": "0324238ab9793ae6aaf8056769068d7520f3322b"
         }
+      },
+      "sessionExpiryFixtureCorrection": {
+        "failedHead": "a6f45c6b308cbb7766f6828ab9521668d6c581cb",
+        "failedRun": 40261459639,
+        "observed": "PostgreSQL sessions_expiry_after_creation_check rejected a freshly-created session with expiry now-1second. Actual HTTP journey had reached synthetic audit fault and session-expiry phase; no HTTP_PASS emitted.",
+        "correction": "Use created_at now-2days and expires_at now-1day, so expired session obeys chronology constraint. Keep auth/constraint/guards unchanged; add stage+SQLSTATE-only fixture diagnostics without raw identities/tokens/error.",
+        "source": {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "9fa5eef7d64b5156fc7bb2680ef0e7ff03893cc4",
+          "mode": "100644",
+          "type": "blob"
+        }
       }
     }
   }

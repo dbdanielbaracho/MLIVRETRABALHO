@@ -19,6 +19,7 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
  authUrl.searchParams.set('options','-c search_path=public -c statement_timeout=5000');
  const accounts:Account[]=[],stamp=randomUUID(),password='OwnerHTTPFixture123!',input={category:'other',description:'Synthetic private HTTP request'};
  const fault='owner_http_fault_'+randomUUID().replaceAll('-','');
+ let stage='configuration';
  let authDb:DatabaseService|undefined,restrictedDb:DatabaseService|undefined,auth:AuthService|undefined,app:NestFastifyApplication|undefined,trigger=false,requests=0;
  const initialCapability=(await setup.query('SELECT enabled FROM platform_support_capability WHERE singleton')).rows[0].enabled;
  function database(url:string){const prior=process.env.DATABASE_URL;try{process.env.DATABASE_URL=url;return new DatabaseService();}finally{if(prior===undefined)delete process.env.DATABASE_URL;else process.env.DATABASE_URL=prior;}}
@@ -38,13 +39,16 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   if(!company)assert.equal(signed.memberships.length,0);return value;
  }
  try{
+  stage='database-authorities';
   authDb=database(authUrl.toString());auth=new AuthService(authDb);restrictedDb=database(restrictedUrl.toString());
   const who=(await restrictedDb.query('SELECT current_user actor,session_user login')).rows[0];assert.deepEqual(who,{actor:restrictedUrl.username,login:restrictedUrl.username});
   await assert.rejects(restrictedDb.query('SELECT token_hash FROM public.sessions'),(e:unknown)=>(e as {code:string}).code==='42501');
+  stage='real-signup-and-signin';
   const owner=await account('unlinked'),other=await account('foreign'),company=await account('company-a',true),companyB=await account('company-b',true);
   assert.equal((await authDb.query('SELECT count(*)::int n FROM professional_profiles WHERE identity_id=$1',[owner.id])).rows[0]?.n,0);
   assert.equal((await authDb.query('SELECT count(*)::int n FROM tenant_memberships WHERE identity_id=$1',[owner.id])).rows[0]?.n,0);
   // Actual controller and actual AuthService. Only their database authorities are separated.
+  stage='actual-controller-listener';
   class OwnerRuntimeHTTPFixture{}
   Module({controllers:[PlatformSupportController],providers:[{provide:DatabaseService,useValue:restrictedDb},{provide:AuthService,useValue:auth}]})(OwnerRuntimeHTTPFixture);
   app=await NestFactory.create<NestFastifyApplication>(OwnerRuntimeHTTPFixture,new FastifyAdapter({logger:false}),{logger:false,abortOnError:false});
@@ -56,10 +60,12 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   await setup.query('UPDATE platform_support_capability SET enabled=true');
   assert.equal((await call(owner,'GET','',undefined,200,foreignHeader)).acceptingRequests,true);
   await call(owner,'POST','/intent',{...input,ownerIdentityId:other.id},400,foreignHeader);
+  stage='owner-intent-and-replay';
   const prepared=await call(owner,'POST','/intent',input,201,foreignHeader);assert.ok(prepared.requestKey);
   assert.deepEqual(await call(owner,'GET','/recovery/'+prepared.requestKey),{status:'prepared'});
   const [one,two]=await Promise.all([call(owner,'POST','',input,201,{'idempotency-key':prepared.requestKey,...foreignHeader}),call(owner,'POST','',input,201,{'idempotency-key':prepared.requestKey})]);assert.deepEqual(one,two);assert.equal(one.id,prepared.requestKey);
   assert.equal((await call(owner,'GET','/recovery/'+prepared.requestKey)).id,one.id);
+  stage='foreign-and-company-isolation';
   for(const actor of [other,company,companyB]){
    assert.deepEqual((await call(actor,'GET')).items,[]);
    await call(actor,'GET','/'+one.id,undefined,404);
@@ -72,6 +78,7 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   await setup.query('INSERT INTO platform_support_responses(case_id,operator_identity_id,body) VALUES($1,$2,$3)',[one.id,operator,'Synthetic reply visible only to requester']);
   const detail=await call(owner,'GET','/'+one.id);assert.equal(detail.description,input.description);assert.equal(detail.responses[0].body,'Synthetic reply visible only to requester');
   for(const id of [operator,other.id,company.id,companyB.id])assert.ok(!JSON.stringify(detail).includes(id));
+  stage='audit-failure-rollback';
   const pending=await call(owner,'POST','/intent',input,201);
   await setup.query(`CREATE FUNCTION ${fault}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.actor_identity_id='${owner.id}'::uuid AND NEW.action='submitted' THEN RAISE EXCEPTION 'synthetic_owner_http_audit_fault'; END IF; RETURN NEW; END $$`);
   await setup.query(`CREATE TRIGGER ${fault} BEFORE INSERT ON platform_support_audit FOR EACH ROW EXECUTE FUNCTION ${fault}()`);trigger=true;
@@ -81,14 +88,17 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   await setup.query(`DROP TRIGGER ${fault} ON platform_support_audit`);trigger=false;await setup.query(`DROP FUNCTION ${fault}()`);
   assert.equal((await call(owner,'POST','',input,201,{'idempotency-key':pending.requestKey})).id,pending.requestKey);
   const third=await call(owner,'POST','/intent',input,201);await call(owner,'POST','',input,201,{'idempotency-key':third.requestKey});
+  stage='restricted-pagination';
   const seen:string[]=[];let cursor:string|null=null;
   for(let i=0;i<8;i++){const page=await call(owner,'GET','?limit=1'+(cursor?'&cursor='+encodeURIComponent(cursor):''));seen.push(...page.items.map((r:any)=>r.id));cursor=page.nextCursor;if(!cursor)break;}
   const expected=(await setup.query('SELECT id FROM platform_support_cases WHERE owner_identity_id=$1 ORDER BY created_at DESC,id DESC',[owner.id])).rows.map(r=>r.id);assert.deepEqual(seen,expected);assert.equal(seen.length,3);
   const withdrawn=await call(owner,'POST','/'+one.id+'/withdraw',undefined,201);assert.equal(withdrawn.status,'withdrawn');assert.deepEqual(await call(owner,'POST','/'+one.id+'/withdraw',undefined,201),withdrawn);
+  stage='capability-false-history';
   const disabled=await call(owner,'POST','/intent',input,201);await setup.query('UPDATE platform_support_capability SET enabled=false');
   assert.equal((await call(owner,'GET')).acceptingRequests,false);
   await call(owner,'POST','/intent',input,503);await call(owner,'POST','',input,503,{'idempotency-key':disabled.requestKey});
   assert.deepEqual(await call(owner,'GET','/recovery/'+disabled.requestKey),{status:'prepared'});assert.equal((await call(owner,'GET','/'+one.id)).id,one.id);
+  stage='six-route-session-matrix';
   const matrix:[string,string,unknown,Record<string,string>][]=[
    ['GET','',undefined,foreignHeader],['POST','/intent',input,foreignHeader],['POST','',input,{'idempotency-key':disabled.requestKey}],
    ['GET','/recovery/'+disabled.requestKey,undefined,foreignHeader],['GET','/'+one.id,undefined,foreignHeader],['POST','/'+one.id+'/withdraw',undefined,foreignHeader]
@@ -102,15 +112,22 @@ export async function verifyPlatformSupportOwnerHTTP(setup:PoolClient,schema:str
   const old=owner.token,newSession=await authCall(null,'POST','/v1/auth/signin',{email:owner.email,password});owner.token=newSession.accessToken;
   await call({...owner,token:old},'GET','',undefined,401);assert.equal((await call(owner,'GET')).items.length,3);
   const afterRefresh=await snapshot();
+  stage='session-expiry-with-valid-chronology';
   const tokenHash=createHash('sha256').update(owner.token).digest('hex');
-  await authDb.query("UPDATE sessions SET expires_at=now()-interval '1 second' WHERE token_hash=$1",[tokenHash]);
+  await authDb.query("UPDATE sessions SET created_at=now()-interval '2 days',expires_at=now()-interval '1 day' WHERE token_hash=$1",[tokenHash]);
   for(const [method,suffix,body,headers]of matrix)await call(owner,method,suffix,body,401,headers);
+  stage='auth-and-store-deactivation';
   const fresh=await authCall(null,'POST','/v1/auth/signin',{email:owner.email,password});owner.token=fresh.accessToken;
   await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[owner.id]);await call(owner,'GET','',undefined,401);await setup.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[owner.id]);
   await authDb.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[owner.id]);await call(owner,'GET','',undefined,401);await authDb.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[owner.id]);
+  stage='all-session-revocation';
   await auth!.revokeAll(owner.id);for(const [method,suffix,body,headers]of matrix)await call(owner,method,suffix,body,401,headers);
   assert.equal(await snapshot(),afterRefresh);
   console.log('PLATFORM_SUPPORT_OWNER_HTTP_RESTRICTED_PG_PASS '+JSON.stringify({actualLoopbackNestFastifyHTTP:true,actualControllerAndAuthService:true,realSignupSigninAndSessionRows:true,authPoolSeparateFromRestrictedStore:true,restrictedPoolCannotReadSessions:true,currentUserEqualsNonprivilegedLogin:true,unlinkedWithoutProfile:true,allSixRoutesExercised:true,twoCompaniesAndForeignOwnerIsolated:true,forgedIdentityAndTenantDenied:true,companyOwnRequestAllowed:true,concurrentReplayRecovery:true,authorizedRepliesNoOperatorIdentity:true,auditFailureRollback:true,cursorPagination:true,withdrawReplay:true,capabilityFalseHistoryNoNewWrite:true,anonymousSignoutExpiredRevokedAllSixDenied:true,oldTokenCannotUseNewSession:true,storeAndAuthDeactivationDenied:true,rejectedCallsNoWrites:true,operatorAdminRestrictedRuntimeProof:false,operationalConfiguration:false,nativeUI:false,production:false,requests}));
+ }catch(error){
+  const code=error&&typeof error==='object'&&'code' in error?String(error.code):'';
+  console.error('PLATFORM_SUPPORT_OWNER_HTTP_RESTRICTED_FAIL '+JSON.stringify({stage,sqlstate:/^[A-Z0-9]{5}$/.test(code)?code:null,assertion:code==='ERR_ASSERTION',rawErrorExported:false}));
+  throw error;
  }finally{
   if(app)await app.close();else if(restrictedDb)await restrictedDb.onModuleDestroy();
   try{
