@@ -19,6 +19,18 @@ node - "$STAGE" <<'JS'
 const fs=require('node:fs'),p=process.argv[2]+'/apps/mobile/app.json',x=JSON.parse(fs.readFileSync(p));x.expo.name='MLivreTrabalho Support Fixture';x.expo.slug='mlivre-support-fixture';x.expo.scheme='mlivre-support-fixture';x.expo.android.package='com.predibeacon.mlivretrabalho.supportfixture';fs.writeFileSync(p,JSON.stringify(x,null,2));
 JS
 cd "$STAGE/apps/mobile"
+export MLIVRE_SUPPORT_SOURCE_ROOT="$ROOT"
+cat > metro.config.js <<'METRO'
+const path=require('node:path');
+const {getDefaultConfig}=require('expo/metro-config');
+const config=getDefaultConfig(__dirname);
+// Only the isolated checkout: Metro must see the real targets of pnpm symlinks.
+const source=process.env.MLIVRE_SUPPORT_SOURCE_ROOT;
+if(!source||!path.isAbsolute(source))throw Error('fixture_source_root_required');
+config.watchFolders=[...new Set([...(config.watchFolders||[]),path.join(source,'node_modules')])];
+config.resolver.nodeModulesPaths=[path.join(__dirname,'node_modules'),path.join(source,'node_modules')];
+module.exports=config;
+METRO
 pnpm exec expo prebuild --platform android --clean
 mkdir -p android/app/src/main/res/xml android/app/src/main/res/raw
 # The fixture trusts only its ephemeral CA; external production HTTPS is not trusted.

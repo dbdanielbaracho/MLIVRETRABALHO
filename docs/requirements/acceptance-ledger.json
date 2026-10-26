@@ -6746,6 +6746,29 @@
         "scope": "Expand planned native coverage to prepared/unavailable/conflict/explicit retry same-key/cleared/expired/resolved minimized (22 snapshots). Proxy503 leaves actual DB intent prepared; retries use real API payload conflict and correct commit; traffic key hashes prove one explicit identity key. Expiry accelerated only by disposable database default12seconds, restored24hours on normal path and cleanup; no device clock/root/storage injection or fake ACK. Resolved case uses actual admin/operator API then synthetic minimization only for UI-null state. Native control lookup scrolls to history and reads disabled semantics without clicking.",
         "visualEvidence": "Original PNG/XML per state; hashes plus base64 chunks bounded16k for later byte-verified image inspection, no generated images or JSX/hooks/render inference.",
         "validation": "Local Node/Python syntax PASS; actual expanded native UI/CI own SHA PENDING. Prior e028c22 run still in progress and not evidence for new bytes."
+      },
+      "metroVisibilityFix": {
+        "failedHead": "e028c220c3747ec57abb54f3c8e64a9fdb6d2b5e",
+        "failedRun": 40304549892,
+        "actualFailure": "Fixture createBundleReleaseJsAndAssets could not resolve actual expo-router entry outside git-archive root through pnpm symlink; occurred before UI. Foundation/canonical smoke/localAPIcleanup passed but whole Android/merge-policy failed. No rendered proof.",
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "335ebd75b28071dfd1b25402a8589eefa79be7e5",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "old": "d03dc6bb030380c143b886035e79be660b1765ee",
+            "new": "335ebd75b28071dfd1b25402a8589eefa79be7e5"
+          }
+        ],
+        "scope": "Only staging metro.config.js watches actual dependency node_modules targets and uses staged+actual nodeModulesPaths. Original mobile/Metro/lockfile/canonical APK unchanged; no permission/network/root fallback.",
+        "primary": "https://metrobundler.dev/docs/configuration/#watchfolders",
+        "validation": "Shell syntax PASS; own build/native render/full CI+Android PENDING."
       }
     }
   }
