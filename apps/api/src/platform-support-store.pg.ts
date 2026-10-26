@@ -1,3 +1,4 @@
+import {verifyPlatformSupportRoleRuntime} from './platform-support-role-runtime.pg';
 import {verifyPlatformSupportAdminLocks} from './platform-support-admin-locks.pg';
 import {verifyPlatformSupportOperatorRuntime} from './platform-support-operator-runtime.pg';
 import {verifyPlatformSupportOwnerRuntime} from './platform-support-owner-runtime.pg';
@@ -29,9 +30,10 @@ export async function verifyPlatformSupportIntake(config:{databaseUrl:string;ori
   await setup.query('INSERT INTO identities(id) VALUES($1),($2),($3)',[owner,foreign,operator]);
   await verifyPlatformSupportReadPolicies(setup,schema);
   await setup.query(readFileSync('packages/db/migrations/0079_platform_support_owner_locks.sql','utf8'));
+  await verifyPlatformSupportAdminLocks(setup,schema,config.databaseUrl);
+  await verifyPlatformSupportRoleRuntime(setup,schema,config.databaseUrl,config.origin);
   await verifyPlatformSupportOwnerRuntime(setup,schema,config.databaseUrl,config.origin);
   await verifyPlatformSupportOperatorRuntime(setup,schema,config.databaseUrl,config.origin);
-  await verifyPlatformSupportAdminLocks(setup,schema,config.databaseUrl);
   const db={transaction:async<T>(work:(c:import('pg').PoolClient)=>Promise<T>)=>{const c=await pool.connect();try{await c.query('BEGIN');await c.query(`SET LOCAL search_path TO ${schema},public`);const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}};
   const store=new PlatformSupportStore(db),error=(message:string)=>(e:unknown)=>e instanceof Error&&e.message===message;
   await assert.rejects(store.prepare(owner,input),error('platform_support_unavailable'));

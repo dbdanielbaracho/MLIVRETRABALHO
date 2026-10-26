@@ -21,7 +21,7 @@ export async function verifyPlatformSupportOwnerRuntime(setup:PoolClient,schema:
   await setup.query(`GRANT INSERT(request_key,owner_identity_id,payload_hash),UPDATE(submitted_at) ON platform_support_intents TO ${role}`);
   await setup.query(`GRANT INSERT(id,owner_identity_id,category,description),UPDATE(status,closed_at,updated_at) ON platform_support_cases TO ${role}`);
   await setup.query(`GRANT INSERT(case_id,actor_identity_id,action) ON platform_support_audit TO ${role}`);
-  await setup.query(`GRANT EXECUTE ON FUNCTION platform_support_lock_owner_identity(),platform_support_intake_available(boolean) TO ${role}`);
+  await setup.query(`GRANT EXECUTE ON FUNCTION platform_support_lock_administrator(),platform_support_lock_owner_identity(),platform_support_intake_available(boolean) TO ${role}`);
   await setup.query('INSERT INTO identities(id) VALUES($1),($2),($3)',[owner,other,operator]);
   await setup.query('INSERT INTO platform_support_operators(identity_id,active) VALUES($1,true)',[operator]);
   await setup.query('UPDATE platform_support_capability SET enabled=true');

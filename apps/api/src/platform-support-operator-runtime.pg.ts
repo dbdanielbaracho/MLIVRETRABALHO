@@ -15,6 +15,7 @@ export async function verifyPlatformSupportOperatorRuntime(setup:PoolClient,sche
  try{
   await setup.query(`CREATE ROLE ${role} LOGIN PASSWORD '${password}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS`);created=true;
   await setup.query(`GRANT USAGE ON SCHEMA ${schema} TO ${role}`);
+  await setup.query(`GRANT EXECUTE ON FUNCTION platform_support_lock_administrator() TO ${role}`);
   await setup.query(`GRANT SELECT(id,deactivated_at) ON identities TO ${role}`);
   await setup.query(`GRANT SELECT ON platform_support_cases,platform_support_operators,platform_support_assignments,platform_support_responses TO ${role}`);
   await setup.query(`GRANT UPDATE(status,closed_at,updated_at) ON platform_support_cases TO ${role}`);
@@ -40,7 +41,7 @@ export async function verifyPlatformSupportOperatorRuntime(setup:PoolClient,sche
   assert.equal((await context(c=>c.query("UPDATE platform_support_cases SET status='reviewing' WHERE id=$1 RETURNING id",[caseId]))).rowCount,0);
   console.log('PLATFORM_SUPPORT_OPERATOR_RUNTIME_BASELINE_REPRODUCED '+JSON.stringify({actualRestrictedLogin:true,identityRoleAssignmentLocks42501:true,responseInsert42501:true,caseUpdateRLSZero:true,beforeMigration0080:true}));
   await setup.query(readFileSync('packages/db/migrations/0080_platform_support_operator_runtime.sql','utf8'));
-  await setup.query(`GRANT EXECUTE ON FUNCTION platform_support_lock_owner_identity(),platform_support_lock_operator(),platform_support_lock_assigned_case(uuid,boolean) TO ${role}`);
+  await setup.query(`GRANT EXECUTE ON FUNCTION platform_support_lock_administrator(),platform_support_lock_owner_identity(),platform_support_lock_operator(),platform_support_lock_assigned_case(uuid,boolean) TO ${role}`);
   for(const sql of ['UPDATE identities SET deactivated_at=NULL','UPDATE platform_support_operators SET active=true','UPDATE platform_support_assignments SET revoked_at=NULL','UPDATE platform_support_capability SET enabled=true','SELECT * FROM platform_support_administrators','SELECT * FROM public.sessions','SELECT * FROM platform_support_audit','UPDATE platform_support_cases SET owner_identity_id=owner_identity_id','DELETE FROM platform_support_responses'])await assert.rejects(db.transaction(c=>c.query(sql)),denied);
   stage='bounded-locks';await setup.query("SET lock_timeout='100ms'");
   try{await context(async c=>{
