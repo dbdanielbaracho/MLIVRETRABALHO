@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PlatformSupportDatabases,supportConfiguration,supportEnvironment,supportScopes} from './platform-support-databases';
-const env=()=>Object.fromEntries([['DATABASE_URL','postgresql://authentication:secret@127.0.0.1:5432/local'],...supportScopes.map(scope=>[supportEnvironment(scope),'postgresql://'+scope+':secret@127.0.0.1:5432/local'])]);
+const env=():Record<string,string>=>Object.fromEntries([['DATABASE_URL','postgresql://authentication:secret@127.0.0.1:5432/local'],...supportScopes.map(scope=>[supportEnvironment(scope),'postgresql://'+scope+':secret@127.0.0.1:5432/local'])]);
 test('four explicit distinct credentials on the auth database; no shared fallback',()=>{
  assert.ok(supportConfiguration(env()));
  for(const key of ['DATABASE_URL',...supportScopes.map(supportEnvironment)]){const x=env();delete x[key];assert.equal(supportConfiguration(x),null);}
@@ -16,5 +16,5 @@ test('missing configuration rejects all work without a connection, and never inc
 
 test('remote credentials require certificate verification and cannot override connection/search path',()=>{
  const remote=Object.fromEntries(Object.entries(env()).map(([k,v])=>[k,v.replace('127.0.0.1','db.example.test')+'?sslmode=verify-full']));assert.ok(supportConfiguration(remote));
- for(const suffix of ['', '?sslmode=disable','?sslmode=require','?sslmode=verify-full&user=authentication','?sslmode=verify-full&host=elsewhere'])assert.equal(supportConfiguration({...remote,PLATFORM_SUPPORT_OWNER_DATABASE_URL:'postgresql://owner:secret@db.example.test:5432/local'+suffix}),null);
+ for(const suffix of ['', '?sslmode=verify-full&sslmode=disable','?sslmode=disable','?sslmode=require','?sslmode=verify-full&user=authentication','?sslmode=verify-full&host=elsewhere'])assert.equal(supportConfiguration({...remote,PLATFORM_SUPPORT_OWNER_DATABASE_URL:'postgresql://owner:secret@db.example.test:5432/local'+suffix}),null);
 });

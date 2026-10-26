@@ -6526,6 +6526,39 @@
         "sourcePinReconciliation": [],
         "hardening": "Require explicit auth username, accept only sslmode query option and remote verify-full; reject NOLOGIN/function ownership, excess view/materialized/foreign table or sequence authority too. Exact positive/negative configuration tests. No credentials deployed, no network database access outside fixtures.",
         "validation": "Local syntax/OpenAPI119 static review PASS; own actual PG/HTTP/CI/Android still PENDING."
+      },
+      "ambiguousTLSRegression": {
+        "supersededHead": "2cebf8a5b936dd465a32af2158d1bdc6703105b0",
+        "failedRun": 40298317282,
+        "compileFailure": "TS18046 in new test Object.entries env value inferred unknown; explicit Record<string,string> fixes fixture typing, no production guard weakened.",
+        "reproduced": "Local pure configuration test accepted sslmode=verify-full&sslmode=disable before correction. Reject duplicate query parameters before Pool; local regression PASS. No remote connection or production incident.",
+        "sources": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "sha": "9eac8ede064f04f783326c6d2b97d281330aa0c2",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "sha": "70b6482c83423a984cfd2769a5b661ca0a64023a",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "old": "d3e69c75053b75bd13f0c730a549f9e08ad5da30",
+            "new": "9eac8ede064f04f783326c6d2b97d281330aa0c2"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "old": "659cab07bd864803b5db9ada2343ca0735ad67ee",
+            "new": "70b6482c83423a984cfd2769a5b661ca0a64023a"
+          }
+        ],
+        "validation": "Own full CI/actual AppModule PG/HTTP/Android PENDING for new bytes."
       }
     }
   }

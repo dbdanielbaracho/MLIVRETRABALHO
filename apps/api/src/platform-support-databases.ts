@@ -23,7 +23,7 @@ export function supportConfiguration(env:NodeJS.ProcessEnv):Record<SupportScope,
   if(!['postgres:','postgresql:'].includes(base.protocol)||!base.username)return null;
   const urls=supportScopes.map(scope=>new URL(env[supportEnvironment(scope)]??''));
   for(const url of urls){
-   if(!['postgres:','postgresql:'].includes(url.protocol)||!url.username||!url.password||url.hash||url.pathname==='/'||[...url.searchParams.keys()].some(key=>key!=='sslmode'))return null;
+   if(!['postgres:','postgresql:'].includes(url.protocol)||!url.username||!url.password||url.hash||url.pathname==='/'||[...url.searchParams.keys()].length>1||[...url.searchParams.keys()].some(key=>key!=='sslmode'))return null;
    if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)&&url.searchParams.get('sslmode')!=='verify-full')return null;
    // Same database, separate login for every business authority and for authentication.
    if(url.hostname!==base.hostname||(url.port||'5432')!==(base.port||'5432')||url.pathname!==base.pathname||decodeURIComponent(url.username)===decodeURIComponent(base.username))return null;

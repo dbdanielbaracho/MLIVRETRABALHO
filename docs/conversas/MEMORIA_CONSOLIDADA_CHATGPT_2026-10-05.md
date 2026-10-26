@@ -21867,3 +21867,7 @@ SintaxeTS/CJS localPASS; PG/HTTP/CI completo/Android próprios PENDENTES neste p
 
 ### PLATFORM_SUPPORT_POOL_CONTRACT_RECONCILIATION_2026_10_26
 CI40297418833/3d2deb7 parou na igualdade estrita x-contract-source.controllerBlobs antes da jornada: três controllers alterados exigiam revisão dos hashes OpenAPI. Reconciliado mantendo igualdade/guards/schemas/119 operações; não é prova PG/HTTP da composição ainda. Revisão endurece configuração: usernameauth explícito, apenasparâmetrosslmode/TLSverify-full remoto, NOLOGIN/functionowner e privilégios extras em views/materializadas/foreign/sequence negados. Fixture sódiagnósticostage/SQLSTATE sem dadosprivados. PrimáriaSSL https://node-postgres.com/features/ssl . Sintaxe/OpenAPIlocalPASS; gates do novoSHA PENDENTES, sememprestarverdeanterior. Prefixos/pinsoldnew/histórico preservados; semmerge/aceite/ativação/render/configuraçãoreal.
+
+
+### PLATFORM_SUPPORT_POOL_AMBIGUOUS_TLS_REGRESSION_2026_10_26
+40298317282/2cebf8a falhouTS18046 no novo testeSSL (valorObject.entries inferido unknown); tipo explícitoRecord<string,string> corrige teste sem relaxar guard. Revisão local reproduziu aceitação ambígua sslmode=verify-full&sslmode=disable antes do Pool; rejeição de parâmetros duplicados adicionada/regressãoPASS, sem conexão remota/incidenteprodução alegado. NovoCI/PGHTTPAppModule/Android PENDENTES; prefixos/history/pinsoldnew preservados, semmerge/aceite/ativação/render.
