@@ -1,6 +1,6 @@
 import {router,useFocusEffect} from 'expo-router';
 import {useCallback,useMemo,useRef,useState} from 'react';
-import {Platform,Pressable,StatusBar,ScrollView,StyleSheet,Text,TextInput,View,useWindowDimensions} from 'react-native';
+import {Platform,Pressable,SafeAreaView,StatusBar,ScrollView,StyleSheet,Text,TextInput,View,useWindowDimensions} from 'react-native';
 import {authHeaders} from '../lib/session';
 import {apiUrl} from '../lib/api';
 import {platformIntentStore} from '../lib/platform-support-storage';
