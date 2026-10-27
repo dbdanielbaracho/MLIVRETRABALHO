@@ -1,7 +1,6 @@
 import {router,useFocusEffect} from 'expo-router';
 import {useCallback,useMemo,useRef,useState} from 'react';
 import {Platform,Pressable,StatusBar,ScrollView,StyleSheet,Text,TextInput,View,useWindowDimensions} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {authHeaders} from '../lib/session';
 import {apiUrl} from '../lib/api';
 import {platformIntentStore} from '../lib/platform-support-storage';
@@ -40,7 +39,7 @@ export default function AjudaPlataforma(){
  const visible=['ready','detail','confirmed','prepared','withdrawn','cleared','expired'].includes(view.status)&&'identityId' in view&&owner.current===view.identityId;
  const editable=!busy&&(view.status==='ready'||view.status==='prepared');
  const sendDisabled=!editable||!platformInput(category,description)||(view.status==='ready'&&!page?.acceptingRequests);
- return <SafeAreaView edges={['bottom']} style={s.screen}><ScrollView key={fontScale} keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
+ return <SafeAreaView style={s.screen}><ScrollView key={fontScale} keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
   <Pressable accessibilityRole="button" onPress={()=>router.replace('/perfil')}><Text style={s.action}>Voltar ao perfil</Text></Pressable>
   <Text style={s.title}>Ajuda à plataforma</Text>
   <Text style={s.text}>Para problemas do aplicativo, mesmo sem vínculo com empresa ou perfil profissional. Sua solicitação não é enviada à empresa.</Text>
