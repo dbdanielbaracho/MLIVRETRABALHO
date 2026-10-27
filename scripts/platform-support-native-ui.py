@@ -184,7 +184,13 @@ try:
     adb('shell','settings','put','system','font_scale','1.0')
     assert adb('shell','settings','get','system','font_scale').strip()=='1.0'
     adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Ajuda à plataforma')
-    stage='session-expired';command('expire');open_route('ajuda-plataforma');wait('A sessão mudou ou expirou');assert not matching(tree(),'Native_recovery_request');screenshot('13-session-expired')
+    stage='session-expired';before_expiry=len(traffic());before_expiry_posts=submits();command('expire')
+    # Reopening an already-focused deep link is not a focus transition or a refresh.
+    # Use the real visible refresh action and require a new authenticated API rejection.
+    tap('Atualizar solicitações',True);wait('A sessão mudou ou expirou')
+    assert any(x['method']=='GET' and x['route']=='/v1/me' and x.get('status')==401 for x in traffic()[before_expiry:])
+    assert submits()==before_expiry_posts
+    assert not matching(tree(),'Native_recovery_request');screenshot('13-session-expired')
     stage='company-isolation';signin('company');wait('Nenhuma solicitação registrada nesta conta',scroll=True);assert not matching(tree(),'Native_first_request');screenshot('14-company-own-empty')
     tap('Voltar ao perfil',True,up=True);wait('sem vínculo com empresa',scroll=True);wait('Ajuda e suporte',scroll=True);tap('Ajuda e suporte',True);screenshot('15-company-legacy-preserved')
     fatal=adb('logcat','-d');assert not re.search(r'FATAL EXCEPTION|Fatal signal|ReactNativeJS.*(?:TypeError|ReferenceError|Invariant Violation)',fatal)

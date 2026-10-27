@@ -20634,3 +20634,45 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
     "verification": "Actual ZIP/APK hashes verified; canonical bundle productionURL present, localfixtureURL absent. No functional production navigation."
   }
 }
+
+
+### PR632 — explicit session refresh in native fixture / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "22f5743866e8466fb5e841d93d8b76f7f7cb4fe7",
+  "baselineRun": 40422350952,
+  "baselineConclusion": "failure",
+  "foundation": 121919590987,
+  "android": 121919765022,
+  "mergePolicy": 121928668772,
+  "artifact": {
+    "id": 12698049958,
+    "size": 33494469,
+    "zipSHA256": "e1145da6e27d73b2322c78707753853c65ecd4569164ad36355c6d4e9833b2a9",
+    "checked": "ActualZIP and all20PNG/XML hashes verified against logs (19 numbered plusfailure). Originals12-large-font/failure-session-expired visually reviewed; other18 NOT visually reviewed this increment."
+  },
+  "fontResult": {
+    "pngSHA256": "efb20ae0a6ba376956685dfea376eb5f91af4906c55c80baa8307ae5a0a65ed1",
+    "xmlSHA256": "b658390563f22ad9747fb0c27a2b727135489f08ecb4830d8d73e9003767c32d",
+    "observed": "Launch-time130% original screenshot shows complete paragraphs/category labels, unlike preceding stale foreground-font capture. Limited to current viewport/launch lifecycle, not all scroll content or hot-font live behavior."
+  },
+  "failure": {
+    "pngSHA256": "a14ba7e527fceba1b597c383386b77054260ee8b7fd41882284c26694e2806c3",
+    "xmlSHA256": "c4fdeb6a5cba704d899d449cd53800cd4fa60c1eb9b32f65c9a1c33e2d0af422",
+    "observed": "Session-expired stage: last realAPI GET/me and history200 at00:13:11.014/11.551Z, expire command00:13:13.677Z, then same-route deep link produces NO newHTTP throughfailure00:13:49Z. This is not backend acceptance of expired token; no authenticated request was made. Screenshot stillready form. No currentcompany/legacy/back proof."
+  },
+  "change": "Fixture only: invoke visible Atualizar solicitações after synthetic expiration, require new GET/me401 since boundary and unchanged POSTsubmitcount. Existing API/AuthService/session guards unmodified. Reopening alreadyfocused deep link does not certify focus transition; no route/business fix invented.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "0df050e6522a700c57037d45acff5ccb315fa698",
+    "new": "738b0191c4d8b84f76dee71b0e8c518d836a83f1"
+  },
+  "validation": "BASELINE_NO_REQUEST_AFTER_EXPIRY_REPRODUCED / EXPLICIT_REFRESH_401_NO_POST_GUARDS_SYNTAX_PASS local; own newCI/Android22/alloriginalvisualQA/back/legacy pending. No merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12699261203,
+    "size": 28932888,
+    "zipSHA256": "d63ba099d54a808df21efb263b63b12fcc5fbdc102ef161e9dd343098ffb2caf",
+    "verification": "GitHub artifact metadata only this increment; no production functional navigation."
+  }
+}
