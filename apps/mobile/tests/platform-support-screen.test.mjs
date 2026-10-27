@@ -60,6 +60,8 @@ test('Android help header clears the recorded Pixel6 camera cutout without chang
  const overlaps=(p)=>p.x>=cutout.left&&p.x<cutout.right&&p.y>=cutout.top&&p.y<cutout.bottom;
  assert.equal(overlaps(baseline),true);
  const android=evaluate('android',128/density);
+ assert.equal(android.content.paddingBottom,96,'Android scroll reserve keeps the final control clear of the system navigation area');
+ assert.equal(evaluate('ios',128/density).content.paddingBottom,40,'iOS spacing remains unchanged');
  assert.equal(overlaps({x:baseline.x,y:baseline.y+(android.screen.paddingTop??0)*density}),false);
  assert.equal(evaluate('ios',128/density).screen.paddingTop??0,0);
  assert.equal(evaluate('android',undefined).screen.paddingTop??0,0);
