@@ -248,6 +248,11 @@ try:
     (OUT/'NATIVE_RECEIPT.json').write_text(json.dumps(receipt,indent=2));print('PLATFORM_SUPPORT_NATIVE_RENDER_PASS '+json.dumps({'screenshots':len(states),'timeoutSinglePOSTAndRecovery':True,'native':True,'production':False}),flush=True)
 except BaseException as error:
     print('PLATFORM_SUPPORT_NATIVE_RENDER_FAIL '+json.dumps({'stage':stage,'kind':type(error).__name__,'privateDetailsHidden':True}),flush=True)
+    if stage=='device':
+        # Bootstrap has not installed the app; do not make a second device/UI probe.
+        # Preserve the original failure and its exact captured output, then fail closed.
+        print('NATIVE_PRE_UI_FAILURE_NO_FOLLOWUP_PROBE '+json.dumps({'stage':stage,'retry':False,'primaryFailurePreserved':True}),flush=True)
+        raise
     try:
         screenshot('failure-'+stage,True)
         rows=traffic();(OUT/'traffic.json').write_text(json.dumps(rows,indent=2));print('NATIVE_TRAFFIC_DIAGNOSTIC '+json.dumps(rows[-25:]),flush=True)

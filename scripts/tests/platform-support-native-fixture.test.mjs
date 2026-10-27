@@ -40,3 +40,15 @@ test('font 130 native fixture records a second screen only after scrolling the s
  assert.ok(stage.indexOf("scroll_fully_into_view('Enviar à plataforma')")<stage.indexOf("screenshot('12-large-font-submit-visible'"));
  assert.ok(!helper.includes("'input','tap'"),'visibility proof must not change native tap coordinates');
 });
+
+test('pre-install native failure preserves the first cause without a second UI/device probe',()=>{
+ const ui=readFileSync(new URL('../platform-support-native-ui.py',import.meta.url),'utf8');
+ const handler=ui.slice(ui.indexOf('except BaseException as error:'),ui.indexOf('finally:'));
+ const deviceGuard=handler.indexOf("if stage=='device':");
+ const screenshotProbe=handler.indexOf("screenshot('failure-'+stage,True)");
+ const bareRaise=handler.indexOf("        raise",deviceGuard);
+ assert.ok(deviceGuard>=0&&deviceGuard<screenshotProbe);
+ assert.ok(bareRaise>deviceGuard&&bareRaise<screenshotProbe);
+ assert.match(handler,/NATIVE_PRE_UI_FAILURE_NO_FOLLOWUP_PROBE/);
+ assert.match(handler,/primaryFailurePreserved':True/);
+});
