@@ -21146,3 +21146,42 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
     "verification": "GitHub artifact metadata only this increment; no production functional navigation."
   }
 }
+
+
+### PR632 — native return evidence/fresh hierarchy / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "69a9bd4f20a73378b7dbbcefc78bd9069a0cedd0",
+  "baselineRun": 40428248143,
+  "baselineConclusion": "failure",
+  "foundation": 121939316171,
+  "android": 121939390532,
+  "mergePolicy": 121949457621,
+  "artifact": {
+    "id": 12701274553,
+    "size": 33702507,
+    "zipSHA256": "2324664e59bbf173994bef9f15053499ac697a3e9efc5358e56021e6b4cc3ecd",
+    "checked": "ZIP plus all22PNG/XML actualhashes verified;21 numbered screenshots+1failure. Originals13-session-expired/14-company-own-empty visually reviewed this increment; not complete visualQA."
+  },
+  "sessionProof": "Real native refresh produced GET/me401 and session-expired UI, no automaticPOST (assertions executed). New companysignin/list ownempty reached. Total95HTTP. Font130% screenshothash efb20ae0a6ba376956685dfea376eb5f91af4906c55c80baa8307ae5a0a65ed1 equals hashverified preceding launch-time image; not hotfontproof.",
+  "failure": {
+    "stage": "company-isolation",
+    "pngSHA256": "31ebc539f8a1c871818ba217c9d3bd759baaf0bf5bb1dea71041cef2463ea03e",
+    "xmlSHA256": "a6cc69705ed3ffd509f9b213a5c75fdb171ef415904de4357868c44eebe32429",
+    "observed": "Top return control action reported[53,53,1028,159], center540,106. Following wait fails, terminalPNG+XML byteidentical14-ownempty scrolledAjuda. Current source router.replace unchanged. No currentPerfil/legacy15 proof. Exact cause unknown; not another speculative navigation/product fix."
+  },
+  "change": "Fixture diagnosis/stronger evidence only: each UI dump has unique monotonically numbered path and requires successful dumped-to matchingpath before reading. Reject stale-file/idleerror possibility; no claim it caused baseline. Capture originalPNG and SAME fresh XML immediatelybefore Voltar input, plus read-only dumpsys window displays geometry. No touch alternative/retry/systeminput/bypass/guard relaxation. Own control tap coordinates unchanged. Diagnostic image named separately, not counted as positive22state.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "738b0191c4d8b84f76dee71b0e8c518d836a83f1",
+    "new": "0054f74297fe580201fa41db06b98ac18b2bd283"
+  },
+  "validation": "RETURN_NO_EFFECT_BASELINE_REPRODUCED / UNIQUE_HIERARCHY_REJECTS_ERROR_AND_WRONG_PATH / PREINPUT_CAPTURE_SYNTAX_PASS local. New ownCI/Android/current22/visualQA pending. No merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12701725671,
+    "size": 28932881,
+    "zipSHA256": "735875d90d8221210a7413033a7d67157fda6a5e4647428071476abe808e92cd",
+    "verification": "GitHubmetadata/logs only this increment; canonical no functional production navigation."
+  }
+}

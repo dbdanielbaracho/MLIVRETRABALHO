@@ -16,12 +16,17 @@ def adb(*args,binary=False,timeout=20):
     return subprocess.check_output(ADB+list(args),timeout=timeout,text=not binary,stderr=subprocess.STDOUT)
 SCREEN_W,SCREEN_H=map(int,re.search(r'(\d+)x(\d+)',adb('shell','wm','size')).groups())
 APP_TOP,APP_BOTTOM=SCREEN_H*.04,SCREEN_H*.96
+layout_sequence=0
 def system_anr(t):
     return any(n.attrib.get('resource-id')=='android:id/alertTitle' and re.search(r'isn.t responding',n.attrib.get('text',''),re.I) for n in t.iter('node'))
 def tree(allow_blocked=False):
-    global APP_TOP,APP_BOTTOM
-    adb('shell','uiautomator','dump','/data/local/tmp/mlivre-support-layout.xml')
-    t=ET.fromstring(adb('exec-out','cat','/data/local/tmp/mlivre-support-layout.xml'))
+    global APP_TOP,APP_BOTTOM,layout_sequence
+    layout_sequence+=1
+    layout_path='/data/local/tmp/mlivre-support-layout-'+str(layout_sequence)+'.xml'
+    dump=adb('shell','uiautomator','dump',layout_path)
+    # Never reuse a previous hierarchy when uiautomator returns an idle/dump error.
+    assert 'dumped to' in dump.lower() and layout_path in dump,'fresh_native_hierarchy_not_confirmed'
+    t=ET.fromstring(adb('exec-out','cat',layout_path))
     nav=[bounds(n)[1] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/navigationBarBackground']
     status=[bounds(n)[3] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/statusBarBackground']
     APP_TOP=max([SCREEN_H*.04]+status);APP_BOTTOM=min([SCREEN_H*.96]+nav)
@@ -62,7 +67,16 @@ def tap(text,scroll=False,up=False):
         t=tree();n=action(t,text)
         if n is not None and safe_tap(n):
             print('NATIVE_ACTION '+json.dumps({'text':text,'bounds':bounds(n),'package':PACKAGE}),flush=True)
-            assert n.attrib.get('enabled')!='false';x,y,r,b=bounds(n);adb('shell','input','tap',str((x+r)//2),str((y+b)//2));time.sleep(.4);return
+            assert n.attrib.get('enabled')!='false'
+            if text=='Voltar ao perfil':
+                # Read-only diagnosis before input; no alternate touch or system action.
+                screenshot('diagnostic-before-profile-return',hierarchy=t)
+                geometry=adb('shell','dumpsys','window','displays')
+                (OUT/'before-profile-return-window-displays.txt').write_text(geometry)
+                for line in geometry.splitlines():
+                    if re.search(r'cutout|insets|DisplayFrames|rotation',line,re.I):
+                        print('NATIVE_RETURN_WINDOW_GEOMETRY '+line[:1600],flush=True)
+            x,y,r,b=bounds(n);adb('shell','input','tap',str((x+r)//2),str((y+b)//2));time.sleep(.4);return
         if not scroll:time.sleep(.5)
         else:
             low=next((node for node in matching(t,text) if node.attrib.get('package')==PACKAGE),None)
@@ -88,8 +102,8 @@ def input_text(accessible,value,replace=False):
 def open_route(route):
     adb('shell','am','start','-W','-a','android.intent.action.VIEW','-d','mlivre-support-fixture:///'+route,'-p',PACKAGE)
     time.sleep(.5)
-def screenshot(name,preview=True):
-    t=tree(allow_blocked=True);xml=ET.tostring(t,encoding='utf-8');png=adb('exec-out','screencap','-p',binary=True)
+def screenshot(name,preview=True,hierarchy=None):
+    t=hierarchy if hierarchy is not None else tree(allow_blocked=True);xml=ET.tostring(t,encoding='utf-8');png=adb('exec-out','screencap','-p',binary=True)
     assert png.startswith(b'\x89PNG\r\n\x1a\n')
     (OUT/(name+'.png')).write_bytes(png);(OUT/(name+'.xml')).write_bytes(xml)
     meta={'name':name,'pngSHA256':hashlib.sha256(png).hexdigest(),'xmlSHA256':hashlib.sha256(xml).hexdigest(),'native':True,'synthetic':True}
