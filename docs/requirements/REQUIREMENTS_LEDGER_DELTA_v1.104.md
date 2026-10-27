@@ -20748,3 +20748,50 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
     "verification": "GitHubmetadata only, canonical smoke/build/fixtureURLpassed logs; no functional production navigation."
   }
 }
+
+
+### PR632 — Android help top inset / 2026-10-27 (candidate)
+
+{
+  "at": "2026-10-27",
+  "baselineHead": "abe6fb3dcba7c74505a9e05b02731693fe887b35",
+  "baselineRun": 40440499698,
+  "conclusion": "failure",
+  "foundation": 121979436552,
+  "android": 121979516354,
+  "mergePolicy": 121987594400,
+  "artifact": {
+    "id": 12706364305,
+    "size": 33800427,
+    "zipSHA256": "37bbf9b97355d8286f73fe630d14359973570ae5b7579e6f9cf805e5f7a8d7ee",
+    "checked": "ZIP and all23PNG/XML actualhashes verified against metadata (21 numbered+preinput diagnostic+failure). Originalpreinput image visually reviewed this increment; not fullvisualQA."
+  },
+  "diagnostic": {
+    "pngSHA256": "9b37b6260eb4a44ab2fb4ef611bd47754694e7ca9715c157121cf112a23dc3c0",
+    "xmlSHA256": "687b8f5058d4cabf98b27d8a70205dd5819004ec7d7b3e6c36f17f9c4f5450d5",
+    "observed": "Fresh hierarchy passed, ownbutton[53,53,1028,159] center540,106. Immediatelybeforeinput windowdisplays mDisplayCutout boundingRect492,0,610,128, safeinsettop128, density2.625. Center is geometrically INSIDEactualcamera exclusion, not a speculative staleXML verdict. Preinput image shows top control, laterreturn stillfails. No UIrouter handler change inferred; physical causality to validate with candidate currentnativejourney."
+  },
+  "change": "Ajuda screen only: Android root paddingTop uses built-in StatusBar.currentHeight (includes notch perprimaryRN), iOSpadding0/nativeSafeAreaViewkept. No hardcoded128/devicegeometry/coordinatealternatives, fontcap, newdependency/lockfile/systemUI/root/permission. Candidate moves actualbuttonlayout below Android topinset; router.replace/session/flow unchanged. Driver/boot/freshXML/coordinates/NSC/canonicalworkflow untouched.",
+  "sources": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "old": "ef5319c23dd067a2e9b7bf04535d26c74cf50b77",
+      "new": "72460b6ee428760fc9cf3c69663752716c283efb"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "old": "41fe58948d8a4ef966cbfa3f881e712b7d25aad0",
+      "new": "4971334ea1df6bf30d26c4ff718d2b41fbdd1bd2"
+    }
+  ],
+  "primary": [
+    "https://reactnative.dev/docs/statusbar#currentheight"
+  ],
+  "validation": "Actual-source style+recordedcutout geometry regression baseline10PASS1FAIL→candidate11PASS0FAIL. Tests modellayoutoffset from runtimeheight, NOT native touch/render proof. Current ownCI/typecheck/Android22/fullvisualQA/back/legacy PENDING. No genericall-device/insets/physicalphone claim, no merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12706580681,
+    "size": 28932888,
+    "zipSHA256": "7a8ab6acefe0eb04a6b5fcf8bf961ab28e477df341f182b39406f98cc3db1205",
+    "verification": "GitHubmetadata only, no functionalproductionnavigation."
+  }
+}

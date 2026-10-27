@@ -49,3 +49,18 @@ test('return to profile is deterministic after deep links and session switches',
 test('font scale re-render preserves bound identity, draft and pending descriptor without resending',async()=>{
  const h=harness();await ready(h);h.edit('Preserve draft');h.handler((p,i)=>p.endsWith('/intent')?response(prepared,201):Promise.reject(Error('lost')));await h.render().send();const stored=[...h.storage.entries()],calls=h.calls.length;h.scale(1.3);assert.equal(h.states[4],'Preserve draft');assert.equal(h.states[0].status,'unknown');assert.deepEqual([...h.storage.entries()],stored);assert.equal(h.calls.length,calls);h.scale(1);assert.equal(h.states[0].identityId,a);
 });
+
+test('Android help header clears the recorded Pixel6 camera cutout without changing touch coordinates',()=>{
+ const source=fs.readFileSync(new URL('../app/ajuda-plataforma.tsx',import.meta.url),'utf8');
+ const styles=source.match(/const s=StyleSheet.create\(([\s\S]*?)\);/)[1];
+ const evaluate=(os,height)=>new Function('Platform','StatusBar','return ('+styles+');')({OS:os},{currentHeight:height});
+ // Actual pre-input window dump: density2.625, cutoutRect(492,0,610,128).
+ // Baseline own return button center(540,106) intersects that cutout.
+ const cutout={left:492,top:0,right:610,bottom:128},baseline={x:540,y:106},density=2.625;
+ const overlaps=(p)=>p.x>=cutout.left&&p.x<cutout.right&&p.y>=cutout.top&&p.y<cutout.bottom;
+ assert.equal(overlaps(baseline),true);
+ const android=evaluate('android',128/density);
+ assert.equal(overlaps({x:baseline.x,y:baseline.y+(android.screen.paddingTop??0)*density}),false);
+ assert.equal(evaluate('ios',128/density).screen.paddingTop??0,0);
+ assert.equal(evaluate('android',undefined).screen.paddingTop??0,0);
+});
