@@ -29,3 +29,14 @@ test('UIAutomator dump failure retains exact output and fails closed',()=>{
  assert.equal(meta.returncode,255);assert.equal(meta.retry,false);assert.equal(meta.staleHierarchyRead,false);
  assert.equal(meta.outputSHA256,createHash('sha256').update(raw).digest('hex'));
 });
+
+test('font 130 native fixture records a second screen only after scrolling the submit control above Android navigation',()=>{
+ const ui=readFileSync(new URL('../platform-support-native-ui.py',import.meta.url),'utf8');
+ const helper=ui.slice(ui.indexOf('def scroll_fully_into_view('),ui.indexOf('def input_text('));
+ assert.match(helper,/y>=APP_TOP and b<=APP_BOTTOM/);
+ assert.match(helper,/swipe\(y<APP_TOP\)/);
+ const stage=ui.slice(ui.indexOf("stage='large-font'"),ui.indexOf("settings','put','system','font_scale','1.0'",ui.indexOf("stage='large-font'")));
+ assert.ok(stage.indexOf("screenshot('12-large-font')")<stage.indexOf("scroll_fully_into_view('Enviar à plataforma')"));
+ assert.ok(stage.indexOf("scroll_fully_into_view('Enviar à plataforma')")<stage.indexOf("screenshot('12-large-font-submit-visible'"));
+ assert.ok(!helper.includes("'input','tap'"),'visibility proof must not change native tap coordinates');
+});

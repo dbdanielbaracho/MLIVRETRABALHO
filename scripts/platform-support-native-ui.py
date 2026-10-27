@@ -93,6 +93,21 @@ def tap(text,scroll=False,up=False):
 def swipe(up=False):
     size=adb('shell','wm','size');w,h=map(int,re.search(r'(\d+)x(\d+)',size).groups())
     adb('shell','input','swipe',str(w//2),str(int(h*(.25 if up else .8))),str(w//2),str(int(h*(.8 if up else .28))),'350');time.sleep(.3)
+def scroll_fully_into_view(text,max_swipes=16):
+    initial=None
+    for _ in range(max_swipes+1):
+        t=tree()
+        candidates=[n for n in t.iter('node') if text in label(n) and n.attrib.get('package')==PACKAGE]
+        assert candidates,'font_scale_submit_control_missing'
+        n=next((candidate for candidate in candidates if candidate.attrib.get('clickable')=='true'),candidates[0])
+        x,y,r,b=bounds(n)
+        if initial is None:initial=[x,y,r,b]
+        if y>=APP_TOP and b<=APP_BOTTOM:
+            print('NATIVE_FONT_SCROLL_VISIBILITY '+json.dumps({'label':text,'initialBounds':initial,'finalBounds':[x,y,r,b],'appTop':APP_TOP,'appBottom':APP_BOTTOM,'fontScale':adb('shell','settings','get','system','font_scale').strip()}),flush=True)
+            return t
+        swipe(y<APP_TOP)
+    raise AssertionError('font_scale_submit_control_not_fully_visible_after_scroll')
+
 def input_text(accessible,value,replace=False):
     assert re.fullmatch(r'[A-Za-z0-9@._+-]+',value)
     for _ in range(12):
@@ -213,6 +228,8 @@ try:
     stage='large-font';adb('shell','settings','put','system','font_scale','1.3')
     assert adb('shell','settings','get','system','font_scale').strip()=='1.3'
     adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Ajuda à plataforma');screenshot('12-large-font')
+    font_submit_tree=scroll_fully_into_view('Enviar à plataforma')
+    screenshot('12-large-font-submit-visible',hierarchy=font_submit_tree)
     adb('shell','settings','put','system','font_scale','1.0')
     assert adb('shell','settings','get','system','font_scale').strip()=='1.0'
     adb('shell','am','force-stop',PACKAGE);open_route('ajuda-plataforma');wait('Ajuda à plataforma')
