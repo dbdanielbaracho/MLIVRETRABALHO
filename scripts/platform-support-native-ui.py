@@ -132,7 +132,17 @@ def signin(kind):
     open_route('perfil');wait('sem vínculo com empresa');tap('sem vínculo com empresa');wait('Ajuda à plataforma')
 try:
     assert adb('shell','getprop','sys.boot_completed').strip()=='1'
-    boot_log=adb('logcat','-d');(OUT/'emulator-bootstrap-logcat.txt').write_text(boot_log)
+    try:
+        boot_log=adb('logcat','-d')
+    except subprocess.CalledProcessError as error:
+        # Before installation/authentication: preserve the exact failed read response.
+        # No retry, alternative log source, ignored exit, or permission change.
+        output=error.output or ''
+        if isinstance(output,bytes):output=output.decode('utf-8',errors='replace')
+        (OUT/'emulator-bootstrap-read-failure.txt').write_text(output)
+        print('NATIVE_BOOTSTRAP_READ_FAILURE '+json.dumps({'command':'logcat -d','returncode':error.returncode,'outputSHA256':hashlib.sha256(output.encode()).hexdigest(),'outputBytes':len(output.encode()),'responseArtifact':'emulator-bootstrap-read-failure.txt','retry':False}),flush=True)
+        raise
+    (OUT/'emulator-bootstrap-logcat.txt').write_text(boot_log)
     boot_rows=boot_log.splitlines()
     for i,line in enumerate(boot_rows):
         if re.search(r'ANR in |am_anr|Input dispatching timed out',line):

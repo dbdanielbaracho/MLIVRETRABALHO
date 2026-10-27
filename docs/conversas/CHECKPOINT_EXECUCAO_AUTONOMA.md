@@ -20779,3 +20779,36 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
     "verification": "GitHubmetadata/logs only this increment; canonical no functional production navigation."
   }
 }
+
+
+### PR632 — retain failed initial native log read / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "85ba9216e998af7d81bfee6afa10e3aad09022eb",
+  "baselineRun": 40434814076,
+  "conclusion": "failure",
+  "foundation": 121960852938,
+  "android": 121960922952,
+  "mergePolicy": 121967864428,
+  "artifact": {
+    "id": 12703534259,
+    "size": 29270638,
+    "zipSHA256": "2daed930559be7a8d24859296fc44a962a5aa3cc64a8b11e8aedc91d313b87b1",
+    "checked": "DownloadedZIP actualSHA256 verified. Elevenentries, zeroPNG/XMLjourneycaptures; read emulator-host.log/final-logcat. Not renderedAjuda proof."
+  },
+  "observed": "Read-only boot marker02:11:11.505Z then initial preinstall adb -s emulator-5554 logcat -d returned255 at02:11:11.777Z. CalledProcessError retained command/exit in traceback but exact stdout+stderr discarded by existing generic failure path; final cleanup logcat file exists. SDKhost bootcomplete31679ms. No cause asserted, no proof against return geometry diagnostic (never reached), no nativeUI/currentHTTP. APIcleanupPASS.",
+  "change": "Only wrap initial pre-install logcat read: on CalledProcessError retain exact combinedresponse in emulator-bootstrap-read-failure.txt, emit command/exit/outputSHA256/bytecount metadata, then bare raise preserving originalfailure. No retry/wait/fallback/alternative log source/ignore failure/library/root/grant/device or runner change. Normal successful read unchanged; freshXML/pre-returndiagnostics retained.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "0054f74297fe580201fa41db06b98ac18b2bd283",
+    "new": "5f76f609d610fb9255c0037d4b9a2df6f052cf91"
+  },
+  "validation": "Controlled failure255 fixture proves rawresponse retained and exception reraised; successfixture proves existingbootlog unchanged. BOOT_READ_ERROR_OUTPUT_RETAINED_AND_RERAISED_PASS / SUCCESS_LOG_UNCHANGED_PASS / syntaxPASS. These local tests are not actual emulator proof. New ownCI/Android/native22/visualQA pending; no merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12703962215,
+    "size": 28932868,
+    "zipSHA256": "0e4c92ce517efe2efa6426cd3c798175cc15c8c5ac414a20a2d38f0d0e5369ee",
+    "verification": "GitHubmetadata only, canonical smoke/build/fixtureURLpassed logs; no functional production navigation."
+  }
+}
