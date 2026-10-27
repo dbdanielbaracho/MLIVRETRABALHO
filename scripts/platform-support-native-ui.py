@@ -16,6 +16,8 @@ def adb(*args,binary=False,timeout=20):
     return subprocess.check_output(ADB+list(args),timeout=timeout,text=not binary,stderr=subprocess.STDOUT)
 SCREEN_W,SCREEN_H=map(int,re.search(r'(\d+)x(\d+)',adb('shell','wm','size')).groups())
 APP_TOP,APP_BOTTOM=SCREEN_H*.04,SCREEN_H*.96
+from platform_support_native_dump import record_dump_failure
+
 layout_sequence=0
 def system_anr(t):
     return any(n.attrib.get('resource-id')=='android:id/alertTitle' and re.search(r'isn.t responding',n.attrib.get('text',''),re.I) for n in t.iter('node'))
@@ -23,9 +25,15 @@ def tree(allow_blocked=False):
     global APP_TOP,APP_BOTTOM,layout_sequence
     layout_sequence+=1
     layout_path='/data/local/tmp/mlivre-support-layout-'+str(layout_sequence)+'.xml'
-    dump=adb('shell','uiautomator','dump',layout_path)
+    try:
+        dump=adb('shell','uiautomator','dump',layout_path)
+    except subprocess.CalledProcessError as error:
+        record_dump_failure(error.output or '',layout_path,OUT,error.returncode)
+        raise
     # Never reuse a previous hierarchy when uiautomator returns an idle/dump error.
-    assert 'dumped to' in dump.lower() and layout_path in dump,'fresh_native_hierarchy_not_confirmed'
+    if 'dumped to' not in dump.lower() or layout_path not in dump:
+        record_dump_failure(dump,layout_path,OUT,0)
+        raise AssertionError('fresh_native_hierarchy_not_confirmed')
     t=ET.fromstring(adb('exec-out','cat',layout_path))
     nav=[bounds(n)[1] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/navigationBarBackground']
     status=[bounds(n)[3] for n in t.iter('node') if n.attrib.get('resource-id')=='android:id/statusBarBackground']
