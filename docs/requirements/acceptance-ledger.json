@@ -6657,7 +6657,7 @@
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
-          "sha": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+          "sha": "dfce805f973fd5f26fca629f26312f4c06892c66",
           "mode": "100644",
           "type": "blob"
         },
@@ -6712,6 +6712,12 @@
           "path": "scripts/run-platform-support-native-fixture.sh",
           "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
           "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+          "new": "dfce805f973fd5f26fca629f26312f4c06892c66"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7720,6 +7726,22 @@
           }
         ],
         "validation": "Complete artifact and logs verified; named preflight diagnostics committed. New own full CI pending; no same-SHA rerun or borrowed checks, no ADB/UI result, no merge/post-merge/acceptance/activation."
+      },
+      "namedPreflightExpectationRegression": {
+        "at": "2026-10-28",
+        "baselineHead": "550b7bf6e951e3cf77f6a899ffb402c7a195fe56",
+        "baselineRun": 40758448438,
+        "conclusion": "failure",
+        "observed": "Foundation, android_scope, and canonical Android passed. Native job failed in Prepare local API because its test still expected the old generic refusal string; the launcher now returns the new named ci_environment refusal. No AVD/ADB/UI step ran.",
+        "change": "Update only the existing launcher scope regression to assert the two named refusal labels; all fail-closed behavior and guards remain unchanged.",
+        "sources": [
+          {
+            "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+            "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+            "new": "dfce805f973fd5f26fca629f26312f4c06892c66"
+          }
+        ],
+        "validation": "New own CI required after this source-pin reconciliation; no same-SHA rerun or borrowed checks; no AVD/ADB/UI result."
       }
     },
     "runnerIsolationGradleCleanup": {
