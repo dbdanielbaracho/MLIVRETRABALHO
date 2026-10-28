@@ -6666,6 +6666,11 @@
           "sha": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
           "mode": "100644",
           "type": "blob"
+        },
+        {
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
+          "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
         }
       ],
       "pins": [
@@ -6701,6 +6706,12 @@
           "path": ".github/workflows/standalone-pilot-apk.yml",
           "old": "528002354bcd760dd5998144608d0b2c6aaa2772",
           "new": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
+          "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7683,6 +7694,32 @@
           "zipSHA256": "7a8ab6acefe0eb04a6b5fcf8bf961ab28e477df341f182b39406f98cc3db1205",
           "verification": "GitHubmetadata only, no functionalproductionnavigation."
         }
+      },
+      "nativeFixtureSilentPreflight": {
+        "at": "2026-10-28",
+        "baselineHead": "698e6180b8426c14d5ae409d2b000bc5d497dfd7",
+        "baselineRun": 40749311170,
+        "conclusion": "failure",
+        "foundationJob": 123031406921,
+        "androidScopeJob": 123031406497,
+        "canonicalAndroidJob": 123031592779,
+        "nativeFixtureJob": 123037000518,
+        "artifact": {
+          "id": 12845605102,
+          "size": 28937058,
+          "zipSHA256": "d10dfe97afef08ba8623be41229814151cb6326df819e38aed58feaa8df1db62",
+          "checked": "Complete ZIP downloaded; byte size and SHA-256 match GitHub metadata; six entries and ZIP integrity pass. Fixture APK/build metadata and API log only; no preboot device list, emulator image record/host log/final logcat, hierarchy, or PNG captures. Local API cleanup pass."
+        },
+        "observed": "Foundation, android_scope, canonical APK/device smoke, API preparation, separate fixture APK build, ANDROID_AVD_HOME creation/guards all passed. Native launcher process exited 1 immediately, before its first output or artifacts/platform-support-native directory. The artifact therefore cannot identify which silent preflight predicate failed; no AVD, emulator boot, ADB, or UI command ran.",
+        "change": "Make each existing launcher preflight predicate emit a named NATIVE_PREFLIGHT_FAIL and tee output into artifacts/platform-support-native/native-preflight.log; also emit explicit SDK/AVD/KVM/CPU/device-empty pass markers. Preserve all prior fail-closed checks and the same SDK/image, empty-device policy, ADB behavior and UI driver. No chmod/sudo/root, alternate SDK discovery, retry, stale hierarchy or guard relaxation.",
+        "sources": [
+          {
+            "path": "scripts/run-platform-support-native-fixture.sh",
+            "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
+            "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
+          }
+        ],
+        "validation": "Complete artifact and logs verified; named preflight diagnostics committed. New own full CI pending; no same-SHA rerun or borrowed checks, no ADB/UI result, no merge/post-merge/acceptance/activation."
       }
     },
     "runnerIsolationGradleCleanup": {
