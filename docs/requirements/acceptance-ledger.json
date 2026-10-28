@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "c531f633e25e777d7f1c041644319a2eca4244c8",
+      "sha": "61a7f1ff9c23afbbef1d86b38f3b18ece946795e",
       "mode": "100644"
     },
     {
@@ -7724,6 +7724,20 @@
           "new": "c531f633e25e777d7f1c041644319a2eca4244c8"
         },
         "validation": "New own full CI pending; no emulator/UI result, same-SHA rerun, merge, post-merge, acceptance, or activation."
+      },
+      "avdHomePreflightPlanningFailure": {
+        "at": "2026-10-28",
+        "baselineHead": "4e9321fd2ad0520a4e0ded8a86d2f805317e9e52",
+        "baselineRun": 40749203033,
+        "conclusion": "failure",
+        "observed": "GitHub Actions reports a completed failure immediately after push and exposes zero workflow jobs. No runner steps or emulator/ADB/UI command executed. The run offers no job log/explicit validation message; attributing this to runner.temp in job-level env is an inference.",
+        "change": "Remove the job-level runner.temp expression. A dedicated step now verifies RUNNER_TEMP/mlivre-support-avd is absent, creates it, and exports ANDROID_AVD_HOME through GITHUB_ENV for all subsequent steps. The next guard verifies the exact path, existing empty directory, absent fixture AVD/INI, and nproc>=4.",
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "c531f633e25e777d7f1c041644319a2eca4244c8",
+          "new": "61a7f1ff9c23afbbef1d86b38f3b18ece946795e"
+        },
+        "validation": "Workflow expression removed; own full CI pending. No same-SHA rerun, no AVD/UI conclusion, no merge/post-merge/acceptance/activation."
       }
     }
   }

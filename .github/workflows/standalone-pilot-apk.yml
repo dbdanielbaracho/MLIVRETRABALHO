@@ -94,8 +94,6 @@ jobs:
   native-support-fixture:
     needs: build-standalone-pilot-apk
     runs-on: ubuntu-latest
-    env:
-      ANDROID_AVD_HOME: ${{ runner.temp }}/mlivre-support-avd
     timeout-minutes: 65
     services:
       support-postgres:
@@ -153,11 +151,20 @@ jobs:
       - name: Build separate local-only support fixture APK
         run: bash scripts/build-platform-support-native-fixture.sh
 
+      - name: Create dedicated empty AVD namespace
+        run: |
+          avd_root="$RUNNER_TEMP/mlivre-support-avd"
+          test ! -e "$avd_root"
+          mkdir -p "$avd_root"
+          printf 'ANDROID_AVD_HOME=%s\n' "$avd_root" >> "$GITHUB_ENV"
+          echo "NATIVE_AVD_HOME_READY $avd_root"
+
       - name: Require a fresh isolated AVD namespace and four host CPUs
         run: |
           avd_root="${ANDROID_AVD_HOME:?ANDROID_AVD_HOME must be set}"
-          test ! -e "$avd_root"
-          mkdir -p "$avd_root"
+          test "$avd_root" = "$RUNNER_TEMP/mlivre-support-avd"
+          test -d "$avd_root"
+          test -z "$(find "$avd_root" -mindepth 1 -maxdepth 1 -print -quit)"
           test ! -e "$avd_root/platform-support-fixture.avd"
           test ! -e "$avd_root/platform-support-fixture.ini"
           available_cpus="$(nproc)"
