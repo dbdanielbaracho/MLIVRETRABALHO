@@ -12,9 +12,13 @@ test('native fixture refuses non-CI, other repository, remote and non-disposable
  }
 });
 
-test('native emulator launcher refuses non-CI and another repository before SDK or device access',()=>{
- for(const patch of [{CI:'false',GITHUB_REPOSITORY:'dbdanielbaracho/MLIVRETRABALHO'},{CI:'true',GITHUB_REPOSITORY:'other/repository'}]){
-  const r=spawnSync('bash',['scripts/run-platform-support-native-fixture.sh'],{env:{...process.env,...patch},encoding:'utf8',timeout:3000});assert.equal(r.status,1);assert.equal(r.stdout,'');assert.equal(r.stderr.trim(),'NATIVE_EMULATOR_REFUSED scope=ci-repository');
+test('native emulator launcher reports named scope refusals before SDK or device access',()=>{
+ const cases=[
+  {patch:{CI:'false',GITHUB_REPOSITORY:'dbdanielbaracho/MLIVRETRABALHO'},diagnostic:'NATIVE_PREFLIGHT_FAIL check=ci_environment'},
+  {patch:{CI:'true',GITHUB_REPOSITORY:'other/repository'},diagnostic:'NATIVE_PREFLIGHT_FAIL check=repository_scope'}
+ ];
+ for(const {patch,diagnostic} of cases){
+  const r=spawnSync('bash',['scripts/run-platform-support-native-fixture.sh'],{env:{...process.env,...patch},encoding:'utf8',timeout:3000});assert.equal(r.status,1);assert.equal(r.stdout,'');assert.equal(r.stderr.trim(),diagnostic);
  }
 });
 
