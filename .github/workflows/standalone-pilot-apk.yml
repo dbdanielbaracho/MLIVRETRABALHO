@@ -11,20 +11,6 @@ jobs:
   build-standalone-pilot-apk:
     runs-on: ubuntu-latest
     timeout-minutes: 65
-    services:
-      support-postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: mlivretrabalho_http
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres -d mlivretrabalho_http"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -105,8 +91,47 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      # A second package/checkout/API/output, after preserving the canonical APK.
-      # Reuse the already verified KVM setup; no new root, grants or permission fallback.
+  native-support-fixture:
+    needs: build-standalone-pilot-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    services:
+      support-postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mlivretrabalho_http
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d mlivretrabalho_http"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.15.1 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download the validated canonical APK from the preceding job
+        uses: actions/download-artifact@v4
+        with:
+          name: MLivreTrabalho-standalone-apk
+          path: artifacts/android-pilot
       - name: Prepare local API for isolated native support journey
         env:
           PAYMENT_WEBHOOK_SECRET: ci-payment-webhook-secret
