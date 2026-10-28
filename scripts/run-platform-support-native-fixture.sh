@@ -57,7 +57,7 @@ from pathlib import Path
 import sys
 p=Path(sys.argv[1]);rows=p.read_text().splitlines()
 rows=[r for r in rows if not r.startswith('hw.cpu.ncore=')]
-p.write_text('\\n'.join(rows+['hw.cpu.ncore=4'])+'\\n')
+p.write_text('\n'.join(rows+['hw.cpu.ncore=4'])+'\n')
 PY
 if ! test -f "$sdk_root/emulator/source.properties"; then fail "emulator_source_properties_missing"; fi
 if ! grep -Eq '^Pkg[.]Revision[[:space:]]*=[[:space:]]*[0-9]+([.][0-9]+)+[[:space:]]*$' "$sdk_root/emulator/source.properties"; then fail "emulator_revision_metadata_invalid"; fi
@@ -77,7 +77,7 @@ trap close_fixture_emulator EXIT
 booted=false
 for attempt in $(seq 1 180); do
   kill -0 "$fixture_emulator_pid"
-  if test "$("$sdk_root/platform-tools/adb" -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\\r')" = 1; then booted=true; break; fi
+  if test "$("$sdk_root/platform-tools/adb" -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1; then booted=true; break; fi
   sleep 2
 done
 if test "$booted" != true; then fail "emulator_boot_timeout_or_process_exit"; fi
