@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "fa381f872d4e792e2494351e78b983ec740a4b06",
+      "sha": "c531f633e25e777d7f1c041644319a2eca4244c8",
       "mode": "100644"
     },
     {
@@ -7704,7 +7704,27 @@
           "new": "fa381f872d4e792e2494351e78b983ec740a4b06"
         }
       ],
-      "validation": "New own CI pending; no native emulator boot or UI occurred in the failed run."
+      "validation": "New own CI pending; no native emulator boot or UI occurred in the failed run.",
+      "avdHomePreflight": {
+        "at": "2026-10-28",
+        "baselineHead": "380ceb0596015f72a8d756388ae4e601151ad3eb",
+        "baselineRun": 40738644262,
+        "conclusion": "failure",
+        "actualFailure": "Foundation and android_scope passed; canonical APK/device smoke passed; local API and fixture APK build passed. Native preflight stopped before AVD creation/boot because ANDROID_AVD_HOME was unset in the separate workflow step (/home/runner/...sh: line 1: ANDROID_AVD_HOME: parameter null or not set). No emulator, ADB, or UI command ran.",
+        "artifact": {
+          "id": 12840021850,
+          "size": 28937010,
+          "zipSHA256": "0d9b7256a62c5bee990b3bf69fae30f4a05c981c7ec5003f35b01cebf4c41de8",
+          "checked": "Complete ZIP downloaded; bytes/hash match GitHub metadata; ZIP integrity passes; six entries and no PNG/UI hierarchy/logcat/emulator-host evidence. XMLs are fixture manifest/network config. API cleanup passed."
+        },
+        "change": "Set job-wide ANDROID_AVD_HOME to a dedicated runner.temp path shared by preflight and repo-owned launcher. Preflight requires the directory absent before creating it, then retains absent fixture .avd/.ini checks and nproc>=4. SDK/image, device-empty guard, KVM, ADB fail-closed behavior and canonical runner unchanged.",
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "fa381f872d4e792e2494351e78b983ec740a4b06",
+          "new": "c531f633e25e777d7f1c041644319a2eca4244c8"
+        },
+        "validation": "New own full CI pending; no emulator/UI result, same-SHA rerun, merge, post-merge, acceptance, or activation."
+      }
     }
   }
 }
