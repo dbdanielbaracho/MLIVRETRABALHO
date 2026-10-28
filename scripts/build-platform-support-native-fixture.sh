@@ -6,7 +6,19 @@ ROOT="$(pwd)"
 OUT="$ROOT/artifacts/platform-support-native"
 mkdir -p "$OUT"
 STAGE="$(mktemp -d /tmp/mlivre-support-build.XXXXXX)"
-trap 'rm -rf "$STAGE"' EXIT
+cleanup_stage() {
+  local exit_status=$?
+  trap - EXIT
+  if test -x "$STAGE/apps/mobile/android/gradlew"; then
+    if ! (cd "$STAGE/apps/mobile/android" && ./gradlew --stop); then
+      echo 'NATIVE_FIXTURE_GRADLE_STOP_FAIL' >&2
+      exit_status=1
+    fi
+  fi
+  rm -rf "$STAGE"
+  exit "$exit_status"
+}
+trap cleanup_stage EXIT
 # A separate checkout overlay: never overwrite canonical mobile config/output.
 git archive HEAD | tar -x -C "$STAGE"
 # Preserve pnpm's relative dependency layout inside this checkout. External

@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "56b7e43e37e1e270dd35d81456c58b852fb31e93",
+      "sha": "fa381f872d4e792e2494351e78b983ec740a4b06",
       "mode": "100644"
     },
     {
@@ -7684,6 +7684,27 @@
           "verification": "GitHubmetadata only, no functionalproductionnavigation."
         }
       }
+    },
+    "runnerIsolationGradleCleanup": {
+      "at": "2026-10-28",
+      "baselineHead": "4125822b61c7f24402345521282bbb5f6b7ea96b",
+      "baselineRun": 40728669477,
+      "conclusion": "failure",
+      "actualFailure": "Foundation, android_scope, canonical APK/device smoke, local API, and isolated fixture APK build passed. Fresh native runner failed immediately in the separate Gradle-stop workflow step because apps/mobile/android did not exist in that clean checkout; the fixture prebuild and Gradle daemon ran in a temporary git-archive stage that the build script removed before the workflow stop step.",
+      "change": "Fixture build now stops its own Gradle daemon in the temporary Android project during EXIT cleanup, preserving the original exit code and failing closed if daemon stop fails; workflow removes the invalid root-project Gradle-stop step. No ADB retry/image/SDK/grant/guard changes.",
+      "sources": [
+        {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": "e5c65caa9d734f99d030248ce38b7558dcbea933",
+          "new": "0034d2b1c73b6e7e9c2d294e5b322e22f301458f"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "56b7e43e37e1e270dd35d81456c58b852fb31e93",
+          "new": "fa381f872d4e792e2494351e78b983ec740a4b06"
+        }
+      ],
+      "validation": "New own CI pending; no native emulator boot or UI occurred in the failed run."
     }
   }
 }

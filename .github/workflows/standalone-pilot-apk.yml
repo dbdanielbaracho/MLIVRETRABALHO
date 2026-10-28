@@ -151,14 +151,6 @@ jobs:
       - name: Build separate local-only support fixture APK
         run: bash scripts/build-platform-support-native-fixture.sh
 
-      - name: Release build-only Gradle daemons before native runtime
-        run: |
-          free -m
-          ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "JAVA_RSS_KIB_BEFORE", sum+0}'
-          (cd apps/mobile/android && ./gradlew --stop)
-          free -m
-          ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "JAVA_RSS_KIB_AFTER", sum+0}'
-
       - name: Require a fresh isolated AVD namespace and four host CPUs
         run: |
           test ! -e "${ANDROID_AVD_HOME:?}/platform-support-fixture.avd"
