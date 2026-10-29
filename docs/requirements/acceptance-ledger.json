@@ -5308,7 +5308,7 @@
           "path": "apps/mobile/tests/platform-support.test.mjs",
           "mode": "100644",
           "type": "blob",
-          "sha": "300df77d2cb976d86f084173a378674cc8a32c5b"
+          "sha": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb"
         },
         {
           "path": "apps/mobile/tests/platform-support-screen.test.mjs",
@@ -5341,10 +5341,16 @@
           "path": "apps/mobile/app/perfil.tsx",
           "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
           "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        },
+        {
+          "at": "platformSupportCandidate.mobileUIIncrement.sources/3",
+          "path": "apps/mobile/tests/platform-support.test.mjs",
+          "old": "300df77d2cb976d86f084173a378674cc8a32c5b",
+          "new": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb"
         }
       ],
       "scope": "Standalone platform help screen and unconditional Profile entry, existing company support preserved. Identity-bound minimal encrypted descriptor, no message/token persistence, strict ACK/recoveryGET/no automatic POST; explicit same-key retry after prepared. 15s covers auth/storage/transport/JSON; stale/blur/cancel ignored. Queue/detail/withdraw states. No real activation or acceptance; rendered/runtimeRLS proof pending.",
-      "validation": "18 local parser/flow/real pre-JSX handler tests pass, not native/render evidence. Own fullCI/Android pending.",
+      "validation": "22 local parser/flow/real pre-JSX handler tests selected by the existing suite; own full CI/Android required on the resulting head.",
       "typecheckCorrection": {
         "failedHead": "a9b644d9a7a485a24fcd85e2cc86814a9944ed02",
         "failedRun": 40246000154,
@@ -5361,6 +5367,12 @@
             "new": "e6d3596720b93b9b8fa30637f10a66b51350cc2c"
           }
         ]
+      },
+      "durableMetadataIsolation": {
+        "at": "2026-10-28",
+        "change": "Regression rejects malformed or cross-identity durable recovery metadata before any /me/platform-support request; the private slot is neither reassigned nor silently erased.",
+        "scope": "Mobile parser/flow test only; no React/RN source, dependency, lockfile, API, database, external service, operator, tenant, or production change.",
+        "validation": "Own CI required on the resulting ledger head; no Android UI claim."
       }
     },
     "readRLSIncrement": {
