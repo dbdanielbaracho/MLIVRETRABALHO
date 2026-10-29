@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "76fcde13dcf96d2483d4a722daf9bce2b4b606f5",
+      "sha": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+      "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
       "mode": "100644"
     },
     {

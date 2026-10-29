@@ -37,3 +37,10 @@ test('missing app PID fails even though the pipe also contains tee',t=>{const f=
 test('diagnostics-only after upstream boot failure records unavailable ADB and never proves smoke',t=>{const f=fixture(t,'unavailable'),r=f.run(['--diagnostics-only']);assert.equal(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(f.manifest(),/adb-devices_exit=1/);assert.match(f.manifest(),/logcat_exit=1/);});
 test('later diagnostics fallback preserves evidence already captured before teardown',t=>{const f=fixture(t,'monkey');assert.equal(f.run().status,7);const first=f.manifest(),log=readFileSync(join(f.diagnostics,'logcat.txt'),'utf8');assert.equal(f.run(['--diagnostics-only']).status,0);assert.equal(f.manifest(),first);assert.equal(readFileSync(join(f.diagnostics,'logcat.txt'),'utf8'),log);});
 test('hung diagnostic command is bounded and its timeout is recorded without success claim',t=>{const f=fixture(t,'hung'),start=Date.now(),r=f.run(['--diagnostics-only']);assert.equal(r.status,0);assert.match(f.manifest(),/adb-devices_exit=124/);assert.ok(Date.now()-start<12000);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);});
+
+test('KVM preflight failure skips all later ADB smoke diagnostics',()=>{
+ const source=readFileSync(resolve('.github/workflows/standalone-pilot-apk.yml'),'utf8');
+ assert.match(source,/- name: Verify KVM for the Android emulator\s+id: verify_kvm\s+run:/);
+ assert.match(source,/- name: Collect early smoke failure diagnostics\s+if: \$\{\{ failure\(\) && steps\.verify_kvm\.outcome == 'success' \}\}/);
+ assert.match(source,/- name: Upload crash log on failure\s+if: \$\{\{ failure\(\) && steps\.verify_kvm\.outcome == 'success' \}\}/);
+});

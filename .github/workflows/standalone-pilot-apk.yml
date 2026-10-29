@@ -48,6 +48,7 @@ jobs:
           ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "CANONICAL_JAVA_RSS_KIB_AFTER", sum+0}'
 
       - name: Verify KVM for the Android emulator
+        id: verify_kvm
         run: |
           test -c /dev/kvm
           stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
@@ -67,10 +68,10 @@ jobs:
           script: bash scripts/android-standalone-smoke.sh
 
       - name: Collect early smoke failure diagnostics
-        if: failure()
+        if: ${{ failure() && steps.verify_kvm.outcome == 'success' }}
         run: bash scripts/android-standalone-smoke.sh --diagnostics-only
       - name: Upload crash log on failure
-        if: failure()
+        if: ${{ failure() && steps.verify_kvm.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: MLivreTrabalho-device-smoke-logs
