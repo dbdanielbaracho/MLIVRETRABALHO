@@ -39,6 +39,12 @@ test('new identity cannot send the previous identity draft, access its slot or a
  h.handler(()=>response({items:[],nextCursor:null,acceptingRequests:true}));await h.flow.load();h.handler(responses);assert.equal((await h.flow.send('other',input.description)).status,'confirmed');assert.ok(h.map.has(b));assert.equal(h.map.has(a),false);
  let release;h.handler(()=>new Promise(r=>{release=r;}));const pending=h.flow.detail(key);await new Promise(r=>setImmediate(r));h.identity(a);release(response({...ack,updatedAt:ack.createdAt,description:'Secret',closedAt:null,responses:[]}));assert.equal((await pending).status,'stale');
 });
+test('corrupted or cross-identity durable metadata fails closed before support data is requested',async()=>{
+ for(const raw of ['{"version":',JSON.stringify({version:1,identityId:b,requestKey:key,category:'other',expiresAt:'2099-01-01T00:00:00.000Z'})]){
+  const h=harness({storage:new Map([[a,raw]])});const result=await h.flow.load();assert.equal(result.status,'error');
+  assert.equal(h.calls.filter(x=>x.path.startsWith('/me/platform-support')).length,0);assert.equal(h.map.get(a),raw,'invalid private metadata is not silently reassigned or erased');
+ }
+});
 test('storage failure blocks submit, uncertain reads do not erase pending descriptor',async()=>{
  const h=harness();await ready(h);h.fail();h.handler(responses);assert.equal((await h.flow.send('other',input.description)).status,'unknown');assert.equal(h.calls.some(x=>x.path==='/me/platform-support'&&x.init.method==='POST'),false);
 });
