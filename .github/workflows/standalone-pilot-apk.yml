@@ -50,9 +50,7 @@ jobs:
       - name: Enable and verify KVM for the Android emulator
         run: |
           test -c /dev/kvm
-          # Apply the same access mode directly to the existing ephemeral device;
-          # don't depend on asynchronous udev events or a daemon reload.
-          sudo chmod a+rw /dev/kvm
+          # The runner must provide KVM access already; never change device permissions here.
           stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
           test -r /dev/kvm || { echo 'KVM_NOT_READABLE'; exit 1; }
           test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
