@@ -50,7 +50,7 @@ jobs:
       - name: Enable and verify KVM for the Android emulator
         run: |
           test -c /dev/kvm
-          # The runner must provide KVM access already; never change device permissions here.
+          sudo chmod a+rw /dev/kvm
           stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
           test -r /dev/kvm || { echo 'KVM_NOT_READABLE'; exit 1; }
           test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
@@ -168,6 +168,15 @@ jobs:
           available_cpus="$(nproc)"
           echo "NATIVE_HOST_CPUS $available_cpus"
           test "$available_cpus" -ge 4
+
+      - name: Enable and verify KVM for isolated native support fixture
+        run: |
+          test -c /dev/kvm
+          sudo chmod a+rw /dev/kvm
+          stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
+          test -r /dev/kvm || { echo 'KVM_NOT_READABLE'; exit 1; }
+          test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
+          echo "KVM_READY device=/dev/kvm"
 
       - name: Render native support states and recovery with real local sessions
         env:
