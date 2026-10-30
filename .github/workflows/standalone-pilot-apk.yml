@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-standalone-pilot-apk:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 65
     steps:
       - name: Checkout
@@ -91,7 +91,7 @@ jobs:
 
   native-support-fixture:
     needs: build-standalone-pilot-apk
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 65
     services:
       support-postgres:

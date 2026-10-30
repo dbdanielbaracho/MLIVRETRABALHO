@@ -44,3 +44,12 @@ test('KVM preflight failure skips all later ADB smoke diagnostics',()=>{
  assert.match(source,/- name: Collect early smoke failure diagnostics\s+if: \$\{\{ failure\(\) && steps\.verify_kvm\.outcome == 'success' \}\}/);
  assert.match(source,/- name: Upload crash log on failure\s+if: \$\{\{ failure\(\) && steps\.verify_kvm\.outcome == 'success' \}\}/);
 });
+
+test('Android emulator jobs pin the hosted image with readable KVM and keep the strict guard',()=>{
+ const source=readFileSync(resolve('.github/workflows/standalone-pilot-apk.yml'),'utf8');
+ assert.match(source,/  build-standalone-pilot-apk:\n    runs-on: ubuntu-24\.04/);
+ assert.match(source,/  native-support-fixture:\n    needs: build-standalone-pilot-apk\n    runs-on: ubuntu-24\.04/);
+ assert.match(source,/test -r \/dev\/kvm/);
+ assert.match(source,/test -w \/dev\/kvm/);
+ assert.doesNotMatch(source,/sudo chmod|usermod/);
+});

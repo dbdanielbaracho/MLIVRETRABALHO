@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
+          "sha": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
+          "sha": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
+      "sha": "65102ba434cdf3b400a7859f174adb0cd01e17a3",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
+      "sha": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
       "mode": "100644"
     },
     {
@@ -7810,6 +7810,36 @@
         },
         "validation": "Workflow expression removed; own full CI pending. No same-SHA rerun, no AVD/UI conclusion, no merge/post-merge/acceptance/activation."
       }
+    },
+    "kvmHostedImagePin": {
+      "at": "2026-10-30",
+      "baselineHead": "488e55fbdcc80a1e329b9e5fc135abf7f5916d4d",
+      "baselineRun": 40934624117,
+      "conclusion": "failure",
+      "observed": "Own Android job on ubuntu-latest resolved to Ubuntu 26.04. /dev/kvm existed with KVM_PERMISSIONS 660 root kvm; test -r failed KVM_NOT_READABLE before ADB/UI. Foundation and android_scope passed; canonical APK built; merge-policy failed by dependency; no native fixture/artifact.",
+      "change": "Pin both build-standalone-pilot-apk and native-support-fixture to ubuntu-24.04. This GitHub-hosted image was observed in a distinct historical run to expose KVM_PERMISSIONS 666 root kvm and pass the unchanged read/write guard; that run is diagnostic evidence only, not validation for this candidate. Keep test -r/test -w fail-closed; make no permission changes, no sudo/chmod/grants, no external runner.",
+      "sources": [
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
+          "new": "65102ba434cdf3b400a7859f174adb0cd01e17a3"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "fb24b38098ec03357372b7c87516deea91458e3a",
+          "new": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5"
+        }
+      ],
+      "evidence": {
+        "failingRun": 40934624117,
+        "failingRunnerImage": "ubuntu-26.04",
+        "failingDevice": "KVM_PERMISSIONS 660 root kvm; KVM_NOT_READABLE",
+        "diagnosticRun": 40266760847,
+        "diagnosticHead": "664ae489404b0c9b6dafa937cfc6407896e2c0d4",
+        "diagnosticRunnerImage": "ubuntu-24.04",
+        "diagnosticDevice": "KVM_PERMISSIONS 666 root kvm; KVM_READY device=/dev/kvm"
+      },
+      "validation": "Local candidate text assertions pass: both jobs pinned ubuntu-24.04, strict KVM read/write guards remain, and no sudo/chmod/usermod permission mutation is present. Full own CI on new SHA pending; no same-SHA rerun, no borrowed green, no merge/post-merge/acceptance/activation/production."
     }
   }
 }
