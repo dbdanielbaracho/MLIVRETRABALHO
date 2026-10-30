@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "01669da976a773082f1862baea01c46e525501e3",
+          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "01669da976a773082f1862baea01c46e525501e3",
+          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "aaf32bed05093056651945b7235674345d241ce6",
+      "sha": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "01669da976a773082f1862baea01c46e525501e3",
+      "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
       "mode": "100644"
     },
     {
@@ -7875,6 +7875,27 @@
         },
         "validation": "Next own SHA CI pending; failed SHA not rerun; no borrowed green."
       }
+    },
+    "kvmPermissionChangeReverted": {
+      "at": "2026-10-30",
+      "baselineHead": "8727a762ef901e1f08884f0299b2848f46ccb2c6",
+      "currentRun": 40981660402,
+      "currentRunStatus": "in_progress",
+      "reason": "The current task explicitly prohibits sudo/chmod/grants/bypass. The ephemeral chmod step is therefore removed from the branch; no permission alteration is part of the candidate.",
+      "change": "Restore the pre-change fail-closed Android workflow and regression test. No runner permission change, retry, or alternate runner. The currently active run was created from the prior workflow snapshot; the available GitHub connector has no cancel action and the browser is signed out, so it may require cancellation in GitHub before its preparation step.",
+      "sources": [
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "aaf32bed05093056651945b7235674345d241ce6",
+          "new": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "01669da976a773082f1862baea01c46e525501e3",
+          "new": "fb24b38098ec03357372b7c87516deea91458e3a"
+        }
+      ],
+      "validation": "New SHA CI required. Based on run40934624117, the retained read/write guard on ubuntu-latest fails KVM_NOT_READABLE before ADB when device is 660 root:kvm. If reproduced, stop and request runner authorization; no same-SHA rerun, merge, acceptance, or activation."
     }
   }
 }
