@@ -51,7 +51,7 @@ test('Android emulator jobs pin the hosted image with readable KVM and keep the 
  assert.match(source,/  native-support-fixture:\n    needs: build-standalone-pilot-apk\n    runs-on: ubuntu-24\.04/);
  assert.match(source,/test -r \/dev\/kvm/);
  assert.match(source,/test -w \/dev\/kvm/);
- assert.doesNotMatch(source,/sudo chmod|usermod/);
+ assert.equal(source.split('sudo chmod o+rw /dev/kvm').length-1,2);
 });
 
 test('ephemeral hosted Android jobs prepare KVM access and retain the fail-closed guard',()=>{

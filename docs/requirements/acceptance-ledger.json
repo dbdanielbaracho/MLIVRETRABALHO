@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "d0e5fef424c04afa529f1964da611b194d7898cc",
+          "sha": "01669da976a773082f1862baea01c46e525501e3",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "d0e5fef424c04afa529f1964da611b194d7898cc",
+          "sha": "01669da976a773082f1862baea01c46e525501e3",
           "mode": "100644"
         }
       ],
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "d0e5fef424c04afa529f1964da611b194d7898cc",
+      "sha": "01669da976a773082f1862baea01c46e525501e3",
       "mode": "100644"
     },
     {
@@ -7861,7 +7861,20 @@
           "new": "d0e5fef424c04afa529f1964da611b194d7898cc"
         }
       ],
-      "validation": "Static regression checks pass for prep-before-guard in both Android jobs and unchanged fail-closed read/write checks. Own full CI on the new SHA pending; no same-SHA rerun or borrowed green. PR remains draft; no merge/acceptance/activation."
+      "validation": "Static regression checks pass for prep-before-guard in both Android jobs and unchanged fail-closed read/write checks. Own full CI on the new SHA pending; no same-SHA rerun or borrowed green. PR remains draft; no merge/acceptance/activation.",
+      "testCorrection": {
+        "baselineHead": "f85c231607236e634b70789736361225ef152fb7",
+        "baselineRun": 40981492891,
+        "conclusion": "failure",
+        "observed": "The added regression test retained the prior commit's assertion forbidding sudo chmod. Android stopped at the test step before APK build/KVM/ADB/UI; this was a test expectation failure, not evidence about KVM preparation.",
+        "change": "Replace the obsolete prohibition assertion with a literal count requiring exactly two `sudo chmod o+rw /dev/kvm` commands; the second assertion still checks both jobs' strict read/write guards.",
+        "source": {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "d0e5fef424c04afa529f1964da611b194d7898cc",
+          "new": "01669da976a773082f1862baea01c46e525501e3"
+        },
+        "validation": "Next own SHA CI pending; failed SHA not rerun; no borrowed green."
+      }
     }
   }
 }
