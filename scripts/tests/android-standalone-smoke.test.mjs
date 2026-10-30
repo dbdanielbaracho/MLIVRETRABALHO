@@ -53,3 +53,22 @@ test('Android emulator jobs pin the hosted image with readable KVM and keep the 
  assert.match(source,/test -w \/dev\/kvm/);
  assert.doesNotMatch(source,/sudo chmod|usermod/);
 });
+
+test('ephemeral hosted Android jobs prepare KVM access and retain the fail-closed guard',()=>{
+ const source=readFileSync(resolve('.github/workflows/standalone-pilot-apk.yml'),'utf8');
+ const prepName='      - name: Prepare ephemeral GitHub-hosted KVM access';
+ const verifyName='      - name: Verify KVM';
+ const canonicalStart=source.indexOf('  build-standalone-pilot-apk:');
+ const fixtureStart=source.indexOf('  native-support-fixture:');
+ assert.ok(canonicalStart>=0&&fixtureStart>canonicalStart);
+ const canonical=source.slice(canonicalStart,fixtureStart);
+ const fixture=source.slice(fixtureStart);
+ for(const block of [canonical,fixture]){
+  const prep=block.indexOf(prepName),verify=block.indexOf(verifyName);
+  assert.ok(prep>=0&&verify>prep);
+  const guard=block.slice(verify);
+  assert.ok(guard.includes('test -r /dev/kvm'));
+  assert.ok(guard.includes('test -w /dev/kvm'));
+ }
+ assert.equal(source.split('sudo chmod o+rw /dev/kvm').length-1,2);
+});

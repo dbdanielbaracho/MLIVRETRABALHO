@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
+          "sha": "d0e5fef424c04afa529f1964da611b194d7898cc",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
+          "sha": "d0e5fef424c04afa529f1964da611b194d7898cc",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "65102ba434cdf3b400a7859f174adb0cd01e17a3",
+      "sha": "aaf32bed05093056651945b7235674345d241ce6",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
+      "sha": "d0e5fef424c04afa529f1964da611b194d7898cc",
       "mode": "100644"
     },
     {
@@ -7840,6 +7840,28 @@
         "diagnosticDevice": "KVM_PERMISSIONS 666 root kvm; KVM_READY device=/dev/kvm"
       },
       "validation": "Local candidate text assertions pass: both jobs pinned ubuntu-24.04, strict KVM read/write guards remain, and no sudo/chmod/usermod permission mutation is present. Full own CI on new SHA pending; no same-SHA rerun, no borrowed green, no merge/post-merge/acceptance/activation/production."
+    },
+    "kvmEphemeralPermissionPrep": {
+      "at": "2026-10-30",
+      "baselineHead": "bb3893532d9fdb80b9f5e705dde991a6fe9cc3d0",
+      "baselineRun": 40980456684,
+      "conclusion": "failure",
+      "observed": "Pinned ubuntu-24.04 hosted runner exposed /dev/kvm as mode 660 root kvm; the unchanged test -r guard returned KVM_NOT_READABLE before ADB. Foundation/android_scope passed; Android and dependent merge-policy failed; no emulator/UI/artifact.",
+      "change": "Both Android jobs make /dev/kvm readable/writable for the duration of their ephemeral GitHub-hosted job before running the same mandatory test -r and test -w guard. No external runner required; no production/device access. Hosted VM is discarded after the job.",
+      "permissionsEffect": "sudo chmod o+rw /dev/kvm adds other-user read/write only on the isolated hosted VM for this job.",
+      "sources": [
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "65102ba434cdf3b400a7859f174adb0cd01e17a3",
+          "new": "aaf32bed05093056651945b7235674345d241ce6"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
+          "new": "d0e5fef424c04afa529f1964da611b194d7898cc"
+        }
+      ],
+      "validation": "Static regression checks pass for prep-before-guard in both Android jobs and unchanged fail-closed read/write checks. Own full CI on the new SHA pending; no same-SHA rerun or borrowed green. PR remains draft; no merge/acceptance/activation."
     }
   }
 }

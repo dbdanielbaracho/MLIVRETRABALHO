@@ -47,6 +47,11 @@ jobs:
           free -m
           ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "CANONICAL_JAVA_RSS_KIB_AFTER", sum+0}'
 
+      - name: Prepare ephemeral GitHub-hosted KVM access
+        run: |
+          test -c /dev/kvm
+          sudo chmod o+rw /dev/kvm
+
       - name: Verify KVM for the Android emulator
         id: verify_kvm
         run: |
@@ -168,6 +173,11 @@ jobs:
           available_cpus="$(nproc)"
           echo "NATIVE_HOST_CPUS $available_cpus"
           test "$available_cpus" -ge 4
+
+      - name: Prepare ephemeral GitHub-hosted KVM access
+        run: |
+          test -c /dev/kvm
+          sudo chmod o+rw /dev/kvm
 
       - name: Verify KVM for isolated native support fixture
         run: |
