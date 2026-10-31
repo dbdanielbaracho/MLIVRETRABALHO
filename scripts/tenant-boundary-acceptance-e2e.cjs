@@ -10,6 +10,7 @@ const tenantTables=['assignment_cancellations','company_jobs','company_member_in
 // Explicit exceptions to TENANT, per ADR-MT-001 and the introducing migrations.
 // These are not assigned an artificial tenant: authentication/identity APIs enforce their owner.
 const otherScopes={
+ platform_support_administrators:'PLATFORM',platform_support_capability:'PLATFORM',platform_support_operators:'PLATFORM',platform_support_intents:'PROFESSIONAL_OWNED',platform_support_cases:'PROFESSIONAL_OWNED',platform_support_assignments:'PLATFORM',platform_support_responses:'PLATFORM',platform_support_audit:'PLATFORM',
  tenants:'PLATFORM',identities:'PLATFORM',sessions:'PLATFORM',auth_signin_limits:'PLATFORM',terms_acceptances:'PLATFORM',taxonomy_roles:'PLATFORM',schema_migrations:'PLATFORM',
  privacy_legal_holds:'PLATFORM',privacy_requests:'PLATFORM',privacy_retention_runs:'PLATFORM',privacy_legal_hold_reviews:'PLATFORM',
  professional_profiles:'PROFESSIONAL_OWNED',professional_preferences:'PROFESSIONAL_OWNED',professional_capabilities:'PROFESSIONAL_OWNED',professional_availability_network:'PROFESSIONAL_OWNED',
@@ -37,7 +38,7 @@ function inventory(){
  const registered=module.match(/controllers:\s*\[([^\]]+)\]/s)?.[1].match(/\w+Controller/g);
  assert.deepEqual([...controllers].sort(),[...registered].sort(),'Every registered controller must be inventoried');
  check(new Set(routes.map(r=>r.method+' '+r.path)).size===routes.length,'unique_routes');
- check(controllers.length===44&&routes.length===108&&routes.filter(r=>r.tenantHeader).length===74,'review_scope_drift_requires_explicit_reconciliation');
+ check(controllers.length===47&&routes.length===119&&routes.filter(r=>r.tenantHeader).length===74,'review_scope_drift_requires_explicit_reconciliation');
  return{controllers,routes,sources};
 }
 async function main(){
@@ -71,7 +72,7 @@ async function main(){
    await call(pros[i],null,'/v1/professional-capabilities/hospitality.bartender','PUT',{skills:['bar_setup'],certifications:[],provenLevel:'entry',professionalId:pros[1-i].profile});
    owners[i].job=(await call(owners[i],owners[i].tenant,'/v1/company/jobs','POST',{title:'Boundary committed '+i,requiredRole:'Bartender',workCity:'São Paulo',startsAt:iso(72),endsAt:iso(80),payCents:1234},201)).id;
   }
-  const catalog=async()=>({tables:(await db.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relowner::regrole::text owner,c.relacl::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') ORDER BY c.relname")).rows,policies:(await db.query("SELECT * FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows,privilegedFunctions:(await db.query("SELECT p.proname,p.proowner::regrole::text owner,p.proconfig,pg_get_functiondef(p.oid) definition,has_function_privilege('app_runtime',p.oid,'EXECUTE') runtime_execute,EXISTS(SELECT 1 FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE a.grantee=0 AND a.privilege_type='EXECUTE') public_execute FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prosecdef ORDER BY p.proname")).rows});
+  const catalog=async()=>({tables:(await db.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,c.relowner::regrole::text owner,c.relacl::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p') ORDER BY c.relname")).rows,policies:(await db.query("SELECT * FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows,privilegedFunctions:(await db.query("SELECT p.proname,p.proowner::regrole::text owner,p.proconfig,p.prorettype::regtype::text result_type,oidvectortypes(p.proargtypes) arguments,pg_get_functiondef(p.oid) definition,has_function_privilege('app_runtime',p.oid,'EXECUTE') runtime_execute,EXISTS(SELECT 1 FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a WHERE a.grantee=0 AND a.privilege_type='EXECUTE') public_execute FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prosecdef ORDER BY p.proname")).rows});
   stage='explicit-whole-schema-scope-and-role';const beforeSecurity=await catalog();
   assert.deepEqual(beforeSecurity.tables.map(x=>x.relname),[...tenantTables,...Object.keys(otherScopes)].sort(),'Unclassified table is a hard failure');
   const role=(await db.query("SELECT rolsuper,rolbypassrls,rolcreatedb,rolcreaterole FROM pg_roles WHERE rolname='app_runtime'")).rows[0];check(role&&Object.values(role).every(x=>x===false),'runtime_nonprivileged_role');
@@ -83,8 +84,25 @@ async function main(){
   }
   const callable=['active_marketplace_professional','active_marketplace_professional_identity','active_tenant_professional','active_tenant_professional_identity','confirm_marketplace_interest','list_company_members'];
   const triggerOnly=['refresh_marketplace_company_reputation','sync_marketplace_job_projection'];
-  assert.deepEqual(beforeSecurity.privilegedFunctions.map(x=>x.proname),[...callable,...triggerOnly].sort(),'Every privileged project function must be explicitly audited');
-  for(const f of beforeSecurity.privilegedFunctions)check(!f.public_execute&&f.owner!=='app_runtime'&&f.runtime_execute===callable.includes(f.proname)&&f.proconfig?.some(x=>x.replace(/\s/g,'')==='search_path=public,pg_temp'),'least_privileged_definer_'+f.proname);
+  const supportLocks={platform_support_lock_owner_identity:'',platform_support_intake_available:'boolean',platform_support_lock_operator:'',platform_support_lock_assigned_case:'uuid, boolean',platform_support_lock_administrator:'',platform_support_lock_role_target:'uuid, boolean',platform_support_lock_role_cases:'uuid',platform_support_lock_dispatch_operator:'uuid',platform_support_lock_dispatch_case:'uuid',platform_support_dispatch_case_allowed:'uuid, uuid, boolean'};
+  assert.deepEqual(beforeSecurity.privilegedFunctions.map(x=>x.proname),[...callable,...triggerOnly,...Object.keys(supportLocks)].sort(),'Every privileged project function must be explicitly audited');
+  for(const f of beforeSecurity.privilegedFunctions){
+   const support=Object.hasOwn(supportLocks,f.proname);
+   check(!f.public_execute&&f.owner!=='app_runtime'&&f.runtime_execute===callable.includes(f.proname),'least_privileged_definer_'+f.proname);
+   if(support){
+    assert.deepEqual(f.proconfig?.map(x=>x.replace(/\s/g,'')),['search_path=pg_catalog,pg_temp'],'Support lock has only the trusted fixed search path');
+    check(f.result_type==='boolean'&&f.arguments===supportLocks[f.proname],'bounded_support_lock_signature_'+f.proname);
+    const lockOnly=['platform_support_lock_assigned_case','platform_support_lock_role_cases','platform_support_lock_dispatch_case'].includes(f.proname)?f.definition.replace(/\bFOR UPDATE OF c\b/g,''):f.proname==='platform_support_lock_role_target'?f.definition.replace(/\bFOR UPDATE OF i\b/g,''):f.definition;
+    check((f.definition.includes('public.identities')||f.proname==='platform_support_lock_role_cases'&&f.definition.includes('public.platform_support_lock_role_target(target,false)')||['platform_support_lock_operator','platform_support_lock_administrator'].includes(f.proname)&&f.definition.includes('public.platform_support_lock_owner_identity()'))&&!/\b(?:INSERT|UPDATE|DELETE|EXECUTE|GRANT|ALTER|row_security)\b|SET\s+ROLE/i.test(lockOnly),'bounded_support_lock_no_write_or_authority_change_'+f.proname);
+    if(f.proname==='platform_support_intake_available')for(const relation of ['platform_support_capability','platform_support_operators','identities'])check(f.definition.includes('public.'+relation),'qualified_support_lock_relation_'+relation);
+    if(f.proname==='platform_support_lock_assigned_case')for(const relation of ['platform_support_cases','platform_support_assignments','identities'])check(f.definition.includes('public.'+relation),'qualified_support_case_lock_'+relation);
+    if(f.proname==='platform_support_lock_operator')check(f.definition.includes('public.platform_support_operators'),'qualified_support_operator_lock');
+    if(f.proname==='platform_support_lock_administrator')check(f.definition.includes('public.platform_support_administrators'),'qualified_support_admin_lock');
+    if(f.proname==='platform_support_lock_role_target')check(f.definition.includes('public.platform_support_lock_administrator()'),'role_target_requires_admin_lock');
+    if(f.proname==='platform_support_lock_role_cases')for(const relation of ['platform_support_cases','platform_support_assignments'])check(f.definition.includes('public.'+relation),'qualified_role_case_lock_'+relation);
+    if(f.proname.startsWith('platform_support_lock_dispatch_'))check(f.definition.includes('public.platform_support_lock_administrator()'),'dispatch_lock_requires_admin');
+   }else check(f.proconfig?.some(x=>x.replace(/\s/g,'')==='search_path=public,pg_temp'),'fixed_search_path_'+f.proname);
+  }
   // Seed one valid row per TENANT table per company. This is not an API-positive
   // witness for these business states. Every seed/probe below is rolled back.
   stage='rollback-only-valid-fixture-graph';await db.query('BEGIN');transaction=true;
@@ -149,6 +167,11 @@ async function main(){
    }
   }
   stage='explicit-privileged-function-boundaries';
+  // Even a forged platform identity/tenant context cannot execute the closed lock helpers.
+  await db.query("SELECT set_config('app.platform_support_identity',$1,true)",[pros[0].id]);
+  for(const expression of ['platform_support_lock_owner_identity()','platform_support_intake_available(true)','platform_support_intake_available(false)','platform_support_lock_role_cases(NULL::uuid)','platform_support_dispatch_case_allowed(NULL::uuid,NULL::uuid,false)','platform_support_lock_dispatch_operator(NULL::uuid)','platform_support_lock_dispatch_case(NULL::uuid)','platform_support_lock_administrator()','platform_support_lock_role_target(NULL::uuid,true)','platform_support_lock_role_target(NULL::uuid,false)','platform_support_lock_operator()','platform_support_lock_assigned_case(NULL::uuid,true)','platform_support_lock_assigned_case(NULL::uuid,false)'])
+   check((await probe('SELECT public.'+expression)).code==='42501','tenant_cannot_execute_support_lock_'+expression);
+
   for(let i=0;i<2;i++){
    await db.query("SELECT set_config('app.tenant_id',$1,true)",[owners[i].tenant]);
    const ownJob=seedRows.company_jobs[i].id,foreignJob=seedRows.company_jobs[1-i].id;
@@ -170,7 +193,7 @@ async function main(){
    const values=name.startsWith('active_marketplace')||name==='confirm_marketplace_interest'?[seedRows.company_jobs[0].id,pros[0].profile]:name.startsWith('active_tenant')?[pros[0].profile]:[];
    check((await probe('SELECT * FROM '+name+'('+values.map((_,i)=>'$'+(i+1)).join(',')+')',values)).code==='P0001','missing_context_definer_denied_'+name);
   }
-  console.log('TENANT_BOUNDARY_PRIVILEGED_FUNCTIONS_PASS '+JSON.stringify({functions:beforeSecurity.privilegedFunctions.map(f=>({name:f.proname,publicExecute:f.public_execute,runtimeExecute:f.runtime_execute,fixedSearchPath:true,definitionSHA256:createHash('sha256').update(f.definition).digest('hex')})),ownAndForeignBothDirections:true,missingContextDenied:true,confirmationWritesRolledBack:true}));
+  console.log('TENANT_BOUNDARY_PRIVILEGED_FUNCTIONS_PASS '+JSON.stringify({functions:beforeSecurity.privilegedFunctions.map(f=>({name:f.proname,publicExecute:f.public_execute,runtimeExecute:f.runtime_execute,fixedSearchPath:true,definitionSHA256:createHash('sha256').update(f.definition).digest('hex')})),ownAndForeignBothDirections:true,missingContextDenied:true,confirmationWritesRolledBack:true,platformSupportLocksExplicitlyInventoriedAndTenantDenied:true}));
   for(const table of tenantTables)check((await db.query('SELECT 1 FROM public.'+table)).rowCount===0,'missing_context_deny_'+table);
   await db.query("SELECT set_config('app.tenant_id','not-a-uuid',true)");
   for(const table of tenantTables)check((await probe('SELECT 1 FROM public.'+table)).code==='22P02','invalid_context_deny_'+table);
@@ -245,7 +268,7 @@ async function main(){
   for(const token of tokens)await call({token},null,'/v1/auth/signout','POST',{},201);tokens.clear();
   console.log('TENANT_BOUNDARY_ENDPOINTS_PASS '+JSON.stringify({registeredControllers:routeInventory.controllers.length,inventoriedRoutes:routeInventory.routes.length,tenantHeaderRoutes:denied/2,negativeHTTPRequests:denied,controllerSourceGitBlobs:routeInventory.sources,actualDatabaseServicePoolSize:1,commitAndRollbackReuse:true,identityAPIsRemainOperational:true,requests}));
   console.log('TENANT_BOUNDARY_RUNTIME_ACL_OBSERVED '+JSON.stringify({violations}));check(violations.length===0,'runtime_permissions_exceed_declared_scope');
-  console.log('TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({tenantTables:27,tableScopes:otherScopes,all108RoutesInventoried:true,all74TenantHeaderRoutesDeniedForeignAndAnonymous:true,globalAndIdentityRuntimeLeastPrivilege:true,realPostgreSQL:true,externalPentest:false,nativeUI:false,production:false}));
+  console.log('TENANT_BOUNDARY_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({tenantTables:27,tableScopes:otherScopes,all119RoutesInventoried:true,all74TenantHeaderRoutesDeniedForeignAndAnonymous:true,globalAndIdentityRuntimeLeastPrivilege:true,realPostgreSQL:true,externalPentest:false,nativeUI:false,production:false}));
  }finally{
   if(transaction)await db.query('ROLLBACK');
   for(const token of tokens)await fetch(config.origin+'/v1/auth/signout',{method:'POST',redirect:'error',signal:AbortSignal.timeout(15000),headers:{authorization:'Bearer '+token}}).catch(()=>{});

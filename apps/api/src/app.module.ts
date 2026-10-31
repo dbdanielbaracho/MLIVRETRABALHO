@@ -1,3 +1,7 @@
+import {PlatformSupportDatabases} from './platform-support-databases';
+import {PlatformSupportAdminController} from './platform-support-admin.controller';
+import {PlatformSupportOperatorController} from './platform-support-operator.controller';
+import {PlatformSupportController} from './platform-support.controller';
 import { Module } from '@nestjs/common';
 import { HealthController } from './health.controller';
 import { JobsController } from './jobs.controller';
@@ -47,6 +51,9 @@ import { CancellationController } from './cancellation.controller';
 
 @Module({
   controllers: [
+    PlatformSupportController,
+    PlatformSupportAdminController,
+    PlatformSupportOperatorController,
     HealthController,
     JobsController,
     AuthController,
@@ -92,6 +99,7 @@ import { CancellationController } from './cancellation.controller';
     VerticalPacksController,
     CancellationController
   ],
-  providers: [DatabaseService, AuthService]
+  providers: [DatabaseService, AuthService, PlatformSupportDatabases]
 })
 export class AppModule {}
+

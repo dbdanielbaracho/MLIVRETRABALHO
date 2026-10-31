@@ -27,7 +27,7 @@ function inventory(){
  }
  const module=readFileSync('apps/api/src/app.module.ts','utf8'),registered=module.match(/controllers:\s*\[([^\]]+)\]/s)?.[1].match(/\w+Controller/g);
  assert.deepEqual([...controllers].sort(),[...registered].sort(),'Registered controller inventory drift');
- assert.equal(controllers.length,44);assert.equal(routes.length,108);assert.equal(new Set(routes.map(r=>r.method+' '+r.path)).size,108);
+ assert.equal(controllers.length,47);assert.equal(routes.length,119);assert.equal(new Set(routes.map(r=>r.method+' '+r.path)).size,119);
  return {controllers,routes,sources};
 }
 module.exports={inventory};
@@ -36,6 +36,8 @@ async function main(){
  assert.equal(process.env.PAYMENT_WEBHOOK_SECRET,'ci-payment-webhook-secret','Only the established synthetic CI webhook fixture is eligible');
  const {Client}=createRequire(resolve('apps/api/package.json'))('pg');
  const db=new Client({connectionString:config.databaseUrl,connectionTimeoutMillis:5000});await db.connect();
+ let supportApplication;
+ const requestOrigin=path=>/^\/v1\/(me\/platform-support|platform-support)(?:\/|$)/.test(path.split('?')[0])?supportApplication?.origin??config.origin:config.origin;
  let requests=0;const positives=new Map(),negatives=[],violations=[];
  const routeFor=(method,path)=>{
   const pathname=path.split('?')[0];const matched=catalog.routes.filter(r=>r.method===method&&new RegExp('^'+r.path.split('/').map(s=>s.startsWith(':')?'[^/]+':s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('/')+'$').test(pathname));
@@ -45,7 +47,7 @@ async function main(){
   const route=routeFor(method,path);requests++;lastContract={method,route:route.path,expected:status};
   const headers={...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'}),...extra};
   openapi.request(route,path,headers,body);
-  const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers,...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const response=await fetch(requestOrigin(path)+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers,...(body===undefined?{}:{body:JSON.stringify(body)})});
   let data;try{data=await response.json();}catch{throw Error('JSON_contract_'+route.method+'_'+route.path);}
   lastContract.actual=response.status;openapi.response(route,response.status,data);
   if(!(Array.isArray(status)?status.includes(response.status):response.status===status)){console.log('BACKEND_CONTRACT_STATUS_MISMATCH '+JSON.stringify({stage,method,route:route.path,actual:response.status,expected:status}));throw Error('HTTP_contract');}
@@ -54,7 +56,7 @@ async function main(){
  }
  async function negative(actor,method,path,body,status=400){
   const route=routeFor(method,path);requests++;lastContract={method,route:route.path,expected:status};
-  const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const response=await fetch(requestOrigin(path)+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?.token?{authorization:'Bearer '+actor.token}:{}),...(actor?.tenant?{'x-tenant-id':actor.tenant}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
   const data=await response.json();lastContract.actual=response.status;openapi.response(route,response.status,data);const row={method,route:route.path,expected:status,actual:response.status};negatives.push(row);
   if(!(Array.isArray(status)?status.includes(response.status):response.status===status))violations.push(row);
   assert.ok(!JSON.stringify(data).includes('password_hash')&&!JSON.stringify(data).includes('token_hash'),'No stored credential in negative response');
@@ -76,6 +78,9 @@ async function main(){
  const security=async()=>(await db.query("SELECT tablename,policyname,roles,cmd,qual,with_check FROM pg_policies WHERE schemaname='public' ORDER BY tablename,policyname")).rows;
  try{
   requireLocalDatabasePeer((await db.query('SELECT current_database() name')).rows[0],db.connection.stream.remoteAddress);
+  await require('../apps/api/dist/platform-support-store.pg.js').verifyPlatformSupportIntake(config);
+  supportApplication=await require('../apps/api/dist/platform-support-application.pg.js').startPlatformSupportApplication(config);
+  for(const path of ['/v1/me/platform-support','/v1/me/platform-support?limit=1','/v1/platform-support/cases?limit=1'])assert.equal(requestOrigin(path),supportApplication.origin);
   const policiesBefore=await security();
   stage='public-and-identity';
   scalar(await call(null,'GET','/v1/health/ready'), 'database','ok');
@@ -83,8 +88,18 @@ async function main(){
   for(const pack of packs){const detail=await call(null,'GET','/v1/vertical-packs/'+pack.id);scalar(detail,'id',pack.id);assert.deepEqual(detail.checklist,pack.checklist);assert.deepEqual(detail.defaultTeam,pack.defaultTeam);scalar(detail,'active',pack.active);}
   const roles=await call(null,'GET','/v1/taxonomy/roles');assert.ok(roles.length>=6);const role=roles.find(r=>r.role==='bartender');assert.ok(role?.id);
   const owner=await account('owner','company'),foreign=await account('foreign','company'),pro=await account('professional'),sub=await account('substitute'),admin=await account('admin'),retired=await account('retired');
+  // The separately launched default AppModule has no support credentials. Session authority runs first.
+  for(const [method,path,body]of [['GET','/v1/me/platform-support'],['GET','/v1/platform-support/cases'],['POST','/v1/platform-support/admin/operators/'+pro.id,{active:true,expectedRevision:0}],['POST','/v1/platform-support/admin/cases/'+pro.id+'/assignment',{targetOperatorId:sub.id,expectedRevision:0}]])for(const actor of [null,owner]){
+   requests++;const response=await fetch(config.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(15000),headers:{...(actor?{authorization:'Bearer '+actor.token}:{}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});const data=await response.json();assert.equal(response.status,actor?503:401);openapi.response(routeFor(method,path),response.status,data);assert.ok(!JSON.stringify(data).includes('postgresql:'));
+  }
+  console.log('PLATFORM_SUPPORT_DEFAULT_CONFIGURATION_CLOSED_HTTP_PASS '+JSON.stringify({authenticated503:true,anonymous401:true,sharedDatabaseURLNeverUsedForSupport:true,production:false}));
   scalar(await call(owner,'GET','/v1/me'),'id',owner.id);assert.ok(Array.isArray(await call(owner,'GET','/v1/me/support-contexts')));
   async function profile(actor,label){const p=await call(actor,'PUT','/v1/professional-profile',{displayName:'Backend '+label,homeCity:'São Paulo',primaryRole:'Bartender'});actor.professionalId=needId(p.id);scalar(await call(actor,'GET','/v1/professional-profile'),'id',p.id);const a=await call(actor,'POST','/v1/availability/mine',{startsAt:iso(1),endsAt:iso(300)});needId(a.id);has(await call(actor,'GET','/v1/availability/mine'),a.id);}
+  await require('./platform-support-owner-acceptance-e2e.cjs')({db,call,negative,account,company:owner});
+  await require('./platform-support-operator-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
+  await require('./platform-support-admin-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
+  await require('./platform-support-queue-acceptance-e2e.cjs')({db,call,negative,account,company:owner,foreign});
+  await supportApplication.verify();
   await profile(pro,'professional');await profile(sub,'substitute');
   const savedPreferences=await require('./preferences-acceptance-e2e.cjs').preferencesJourney({db,call,negative,pro,sub,owner,role});
   const cap=await call(pro,'PUT','/v1/professional-capabilities/'+role.id,{skills:[],certifications:[],provenLevel:'entry'});scalar(cap,'roleId',role.id);has(await call(pro,'GET','/v1/professional-capabilities'),role.id,'roleId');
@@ -153,11 +168,23 @@ async function main(){
   console.log('OPENAPI_RECONCILIATION_ABSENT_EARNING_PASS '+JSON.stringify({rows:withoutEarning.length,payableIsNull:true,earningStatusIsNull:true,onlySimulatedArithmeticUsesZero:true}));
   const reconciled=reconciliationRows.find(r=>r.assignmentId===assignment);scalar(reconciled,'capturedCents',2345);scalar(reconciled,'payableCents',2345);scalar(reconciled.simulatedSplit,'platformRemainderCents',0);
   const request=await call(pro,'POST','/v1/privacy/requests',{requestType:'correction',details:'Owned correction'});needId(request.requestId);has(await call(pro,'GET','/v1/privacy/requests'),request.requestId);
+  // Synthetic private cases seed only the guarded disposable HTTP database; capability stays false.
+  const supportExportOwn=randomUUID(),supportExportForeign=randomUUID();
+  for(const [caseId,identityId]of [[supportExportOwn,pro.id],[supportExportForeign,sub.id]]){
+   await db.query("INSERT INTO platform_support_intents(request_key,owner_identity_id,payload_hash,submitted_at) VALUES($1,$2,$3,now())",[caseId,identityId,'a'.repeat(64)]);
+   await db.query("INSERT INTO platform_support_cases(id,owner_identity_id,category,description) VALUES($1,$2,'other','Synthetic export request')",[caseId,identityId]);
+   await db.query("INSERT INTO platform_support_responses(case_id,operator_identity_id,body) VALUES($1,$2,'Synthetic export response')",[caseId,admin.id]);
+  }
   const exported=await call(pro,'GET','/v1/privacy/export');assert.ok(exported.identity);scalar(exported.identity,'id',pro.id);assert.deepEqual(exported.preferences,savedPreferences);
+  assert.equal(exported.platformSupport.length,1);scalar(exported.platformSupport[0],'id',supportExportOwn);scalar(exported.platformSupport[0],'description','Synthetic export request');scalar(exported.platformSupport[0].responses[0],'body','Synthetic export response');
+  assert.ok(!JSON.stringify(exported.platformSupport).includes(supportExportForeign));assert.ok(!JSON.stringify(exported.platformSupport).includes(admin.id));
+  assert.deepEqual((await call(owner,'GET','/v1/privacy/export')).platformSupport,[]);
+  assert.equal((await db.query("SELECT enabled FROM platform_support_capability WHERE singleton=true")).rows[0].enabled,false);
+  console.log('PLATFORM_SUPPORT_PRIVACY_EXPORT_HTTP_PG_PASS '+JSON.stringify({actualHTTPPostgres:true,ownedCasesAndResponses:true,foreignOwnerAndCompanyExcluded:true,operatorIdentityRedacted:true,capabilityRemainsDisabled:true,production:false}));
   scalar(await call(retired,'POST','/v1/privacy/deactivate',undefined,200),'deactivated',true);await negative(retired,'GET','/v1/me/preferences',undefined,401);
   scalar(await call(pro,'DELETE','/v1/professional-capabilities/'+role.id),'ok',true);assert.ok(!(await call(pro,'GET','/v1/professional-capabilities')).some(r=>r.roleId===role.id));
   stage='complete-positive-contract-catalog';
-  const missing=catalog.routes.filter(r=>!positives.has(r.method+' '+r.path));console.log('BACKEND_POSITIVE_CONTRACT_CATALOG '+JSON.stringify({controllers:catalog.controllers.length,registeredRoutes:catalog.routes.length,observedPositiveRoutes:positives.size,missing:missing.map(r=>r.method+' '+r.path)}));assert.equal(missing.length,1,'Only final signout is deferred until denial checks');assert.equal(missing[0].path,'/v1/auth/signout');
+  const missing=catalog.routes.filter(r=>!positives.has(r.method+' '+r.path));console.log('BACKEND_POSITIVE_CONTRACT_CATALOG '+JSON.stringify({controllers:catalog.controllers.length,registeredRoutes:catalog.routes.length,observedPositiveRoutes:positives.size,missing:missing.map(r=>r.method+' '+r.path)}));assert.equal(missing.length,0,'All registered routes including the fixture-session signout have positive requests');
   stage='invalid-input-and-permission-contracts';
   const ownBefore=await snapshot(owner.tenant);
   const invalid=[
@@ -189,7 +216,7 @@ async function main(){
    'SupportController':{status:'resolved',note:'fixture'},'IntegrityController':{decision:'unsubstantiated',note:'fixture'},
    'CareerConversionController':{decision:'accepted'},'CancellationController':{reason:'fixture'}
   };
-  for(const r of catalog.routes.filter(r=>r.path.includes(':')&&!['ProfessionalCapabilitiesController','VerticalPacksController','TalentPoolsController'].includes(r.controller))){
+  for(const r of catalog.routes.filter(r=>r.path.includes(':')&&!['ProfessionalCapabilitiesController','VerticalPacksController','TalentPoolsController','PlatformSupportController','PlatformSupportOperatorController'].includes(r.controller))){
    const path=r.path.replace(/:[^/]+/g,'not-a-uuid');const actor=r.path.endsWith('/company-rating')||['JobsController','CareerConversionController','WorkAssignmentsController','NotificationsController','CancellationController'].includes(r.controller)?pro:owner;
    // company/conversions has no path parameter; professional respond is identity-owned.
    await negative(actor,r.method,path,r.method==='GET'||r.method==='DELETE'?undefined:validBodies[r.controller]??{});
@@ -209,11 +236,12 @@ async function main(){
   for(const [method,path,body]of [['GET','/v1/company/members'],['GET','/v1/company/payment-events'],['GET','/v1/company/safety-cases'],['POST','/v1/verification/business/request'],['POST','/v1/company/integrity/cases',{assignmentId:assignment,kind:'other',evidence:'fixture'}]])await negative(pro,method,path,body,403);
   assert.deepEqual(await snapshot(owner.tenant),ownBefore,'Rejected commands must not change owned tenant rows');assert.deepEqual(await snapshot(foreign.tenant),foreignBefore,'Other tenant rows must remain byte-equivalent');assert.deepEqual(await security(),policiesBefore,'No security policy changes');
   scalar(await call(pro,'POST','/v1/auth/signout'),'ok',true);await negative(pro,'GET','/v1/me',undefined,401);await negative(retired,'GET','/v1/me',undefined,401);
-  assert.equal(positives.size,108);
-  console.log('BACKEND_CONTRACT_COVERAGE_OBSERVED '+JSON.stringify({controllers:44,routes:108,positiveRoutes:positives.size,negativeCases:negatives.length,requests,violations,routeContracts:catalog.routes.map(r=>({method:r.method,path:r.path,positiveRequests:positives.get(r.method+' '+r.path)})),controllerGitBlobs:catalog.sources}));
+  assert.equal(positives.size,119);
+  console.log('BACKEND_CONTRACT_COVERAGE_OBSERVED '+JSON.stringify({controllers:47,routes:119,positiveRoutes:positives.size,negativeCases:negatives.length,requests,violations,routeContracts:catalog.routes.map(r=>({method:r.method,path:r.path,positiveRequests:positives.get(r.method+' '+r.path)})),controllerGitBlobs:catalog.sources}));
   assert.equal(violations.length,0,'Real HTTP contract violations require correction');
   openapi.finish(requests);
-  console.log('BACKEND_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({registeredControllers:44,inventoriedRoutes:108,allRoutesPositive:true,actualHTTPPostgres:true,invalidInputAndAuth:true,allTenantHeaderRoutesDeniedForeignAndAnonymous:true,otherTenantAll27TablesUnchanged:true,policyCatalogUnchanged:true,confirmedCompletedLedgerAndReviews:true,humanReplacementAndCancellation:true,safetySupportAuditAndConversion:true,simulatedSignedWebhookOnly:true,providerKYCStillPending:true,requests,nativeUI:false,externalPentest:false,production:false}));
- }finally{await db.end();}
+  console.log('BACKEND_INTERNAL_ACCEPTANCE_HTTP_PG_PASS '+JSON.stringify({registeredControllers:47,inventoriedRoutes:119,allRoutesPositive:true,actualHTTPPostgres:true,invalidInputAndAuth:true,allTenantHeaderRoutesDeniedForeignAndAnonymous:true,otherTenantAll27TablesUnchanged:true,policyCatalogUnchanged:true,confirmedCompletedLedgerAndReviews:true,humanReplacementAndCancellation:true,safetySupportAuditAndConversion:true,simulatedSignedWebhookOnly:true,providerKYCStillPending:true,requests,nativeUI:false,externalPentest:false,production:false}));
+ }finally{try{await supportApplication?.close();}finally{await db.end();}}
 }
 if(require.main===module){if(process.argv.includes('--inventory-only'))console.log(JSON.stringify(inventory()));else main().catch(()=>{console.error('BACKEND_INTERNAL_ACCEPTANCE_FAIL '+JSON.stringify({stage,lastContract,details:'contract_assertion; no response body, identity, token or raw error exported'}));process.exitCode=1;});}
+

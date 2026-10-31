@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import type {PoolClient} from 'pg';
+import {PlatformSupportDispatchStore} from './platform-support-dispatch-store';
+import {PlatformSupportOperatorStore} from './platform-support-operator-store';
+import type {PlatformSupportStore} from './platform-support-store';
+export async function verifyPlatformSupportDispatch(setup:PoolClient,db:{transaction<T>(work:(c:PoolClient)=>Promise<T>):Promise<T>},store:PlatformSupportStore,owner:string,foreign:string,operator:string){
+ const admin=randomUUID();await setup.query('INSERT INTO identities(id) VALUES($1)',[admin]);
+ await setup.query('UPDATE identities SET deactivated_at=NULL');await setup.query('UPDATE platform_support_operators SET active=true');await setup.query('UPDATE platform_support_capability SET enabled=true');
+ const input={category:'other',description:'Synthetic dispatch case'},intent=await store.prepare(owner,input),id=(await store.submit(owner,intent.requestKey,input)).id;
+ const dispatch=new PlatformSupportDispatchStore(db),ops=new PlatformSupportOperatorStore(db);
+ for(const actor of [owner,foreign,operator,admin])await assert.rejects(dispatch.change(actor,id,operator,0),/dispatch_denied/);
+ await setup.query('INSERT INTO platform_support_administrators(identity_id,active) VALUES($1,true)',[admin]);
+ const [one,two]=await Promise.all([dispatch.change(admin,id,operator,0),dispatch.change(admin,id,operator,0)]);assert.deepEqual(one,two);assert.equal(one.revision,1);
+ assert.equal((await ops.detail(operator,id)).id,id);
+ const audit=(await setup.query("SELECT actor_identity_id,subject_identity_id FROM platform_support_audit WHERE case_id=$1 AND action='assigned'",[id])).rows;assert.deepEqual(audit,[{actor_identity_id:admin,subject_identity_id:operator}]);
+ await assert.rejects(dispatch.change(admin,id,null,0),/assignment_conflict/);
+ await setup.query("CREATE FUNCTION dispatch_fault() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action='revoked' THEN RAISE EXCEPTION 'synthetic_dispatch_audit_fault'; END IF; RETURN NEW; END $$");
+ await setup.query('CREATE TRIGGER dispatch_fault BEFORE INSERT ON platform_support_audit FOR EACH ROW EXECUTE FUNCTION dispatch_fault()');
+ await assert.rejects(dispatch.change(admin,id,null,1));assert.equal((await ops.detail(operator,id)).id,id);
+ await setup.query('DROP TRIGGER dispatch_fault ON platform_support_audit');
+ const revoked=await dispatch.change(admin,id,null,1);assert.equal(revoked.revision,2);assert.ok(revoked.revokedAt);assert.deepEqual(await dispatch.change(admin,id,null,1),revoked);
+ await assert.rejects(ops.detail(operator,id),/not_found/);await assert.rejects(ops.respond(operator,id,{responseKey:randomUUID(),body:'Denied',resolve:false}),/not_found/);
+ await assert.rejects(dispatch.change(admin,id,operator,0),/assignment_conflict/);
+ assert.equal((await dispatch.change(admin,id,operator,2)).revision,3);
+ await setup.query('UPDATE platform_support_administrators SET active=false WHERE identity_id=$1',[admin]);await assert.rejects(dispatch.change(admin,id,null,3),/dispatch_denied/);
+ await setup.query('UPDATE platform_support_administrators SET active=true WHERE identity_id=$1',[admin]);await setup.query('UPDATE identities SET deactivated_at=now() WHERE id=$1',[admin]);await assert.rejects(dispatch.change(admin,id,null,3),/identity_required/);
+ await setup.query('UPDATE identities SET deactivated_at=NULL WHERE id=$1',[admin]);await assert.rejects(dispatch.change(admin,id,admin,3),/dispatch_denied/);
+ await setup.query('UPDATE platform_support_operators SET active=false WHERE identity_id=$1',[operator]);await assert.rejects(dispatch.change(admin,id,operator,3),/not_found/);
+ await setup.query('UPDATE platform_support_operators SET active=true WHERE identity_id=$1',[operator]);
+ await setup.query('UPDATE platform_support_administrators SET active=false');await setup.query('UPDATE platform_support_capability SET enabled=false');
+ console.log('PLATFORM_SUPPORT_DISPATCH_PG_PASS '+JSON.stringify({actualPostgreSQL:true,isolatedSchema:true,dedicatedAdministratorRequired:true,operatorNotAdministrator:true,revisionConcurrencyAndReplay:true,staleRevocationDenied:true,actorAndSubjectAudit:true,auditFailureRollback:true,revocationBlocksOperator:true,inactiveAdministratorDenied:true,http:false,operatorRoleProvisioning:false,positiveRuntimeRLSProof:false,operationalActivation:false,production:false}));
+}

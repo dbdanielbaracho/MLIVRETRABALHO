@@ -29,7 +29,7 @@ if(x.professionalProfile?.displayName!=="Privacy Export Test")throw new Error("p
 const raw=JSON.stringify(x);
 for(const forbidden of ["password_hash","passwordHash","accessToken","token_hash","tokenHash","operatorNote","evidenceRef","handledBy"]){if(raw.includes(forbidden))throw new Error(`forbidden secret/operator field: ${forbidden}`)}
 for(const key of ["memberships","assignments","earnings","verifications","notifications","authoredMessages","ratingsReceived","ratingsAuthored","trustEvents","safetyReports","safetyRelated","appeals","privacyRequests"]){if(!Array.isArray(x[key]))throw new Error(`export collection missing: ${key}`)}
-if(x.notice?.redaction!=="third-party free-text is omitted unless authored by the authenticated identity")throw new Error("redaction contract missing");
+if(x.notice?.redaction!=="third-party free-text is omitted unless authored by the authenticated identity or an authorized platform response to their own request")throw new Error("redaction contract missing");
 const current=x.privacyRequests.find(r=>r.id===x.requestId);
 if(!current||current.requestType!=="access"||current.status!=="completed")throw new Error("completed access request missing from export audit");
 ' "$EXPORT" "$EMAIL"

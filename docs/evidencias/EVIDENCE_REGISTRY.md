@@ -20207,3 +20207,1061 @@ Ajuda à plataforma tem contrato decidido na #624 (conta ativa sem vínculo, cam
 Estado vigente de main antes deste candidato:8b09570b94dad64d9be07efcabfb9e7997c44616;11 áreas aceitas internamente [2,3,4,5,6,7,8,9,10,12,13]; pendentes [1,11]. Nenhum aceite adicional neste apêndice, nenhum aceite de produção. O acceptance-ledger.json mantém a auditoria histórica e registra explicitamente a reconciliação old/new dos pins afetados por este pacote; recibos históricos não atestam os novos bytes.
 
 PR565 permanece draft/parado após Permission denied de39990903710, sem alternativa de leitura, root/grants/fallback/relaxamento de guard ou repetição do mesmo SHA. Workflows, lockfile, React19.1.4/RN0.81.6 e guardas de navegador não foram alterados. Proteção administrativa deve ser lida no GitHub atual; a configuração efetiva da main foi verificada após intervenção autorizada do usuário e não volta a ser tratada como ausente por checkpoint antigo. Issues externas #215/#219/#220/#224/#228 permanecem separadas. Sem produção, custos, PSP/dinheiro real ou pentest.
+
+## PLATFORM_SUPPORT_INTAKE_CANDIDATE_2026_10_25
+
+Base755a41e8defc574dcd5fbaa20024ce1a07630213; contrato/delegação da issue624 mantidos. Candidato funcional de persistência de Ajuda à plataforma, ainda NÃO exposto por controller/API/UI: migração0074 separa capability, operadores, preparações, casos, atribuições, respostas e auditoria, sem tenant global, novos grants, operador real ou ativação. Capability inicia false e exige operador ativo com identidade ativa para preparar/submeter caso novo. Preparação durável guarda apenas digest; submissão bloqueia a preparação por owner, rejeita payload divergente/expiração e grava caso+auditoria+recibo atomicamente. Recuperação própria não retransmite. Expiração da janela24h retorna terminal, sem recriar.
+
+RLS forçado e revogação de ACLs PUBLIC/app_runtime nas sete tabelas. Contexto de identidade do servidor e políticas owner/atribuição preparam a fronteira; métodos públicos de operador NÃO existem ainda, nem decisão de operação real. A fixture PostgreSQL é restrita ao banco CI local mlivretrabalho_http, cria schema efêmero próprio com identidades sintéticas e aplica a migração exata, testa concorrência/rollback/negação, depois remove somente seu schema. Não é jornada HTTP nova, autenticação integrada ou prova visual.
+
+Preparação local:2 testes reais do normalizador/digest passaram. Fixture PostgreSQL, compilação, suíte completa e Android canônico próprios PENDENTES neste ponto. Inventário público permanece108operações: nenhuma API fictícia foi adicionada ao OpenAPI. Gates existentes não foram relaxados; reconciliação explícita old/new dos dois scripts afetados no ledger, preservando recibos/candidatos anteriores e contadores datados.
+
+Manter este candidato em DRAFT até completar API/autoridade por caso, atribuição/revogação auditadas, exportação/retenção/expurgo, paginação e tela/recuperação conforme624, além de gates próprios e pós-merge. Não integrar só esta fundação com dados de suporte sem a vertical de privacidade completa. Não anunciar atendimento disponível. Estado atual continua11áreas aceitas, pendentes1/11; sem aceite novo ou produção. Preferências631 resolvida; não prolongar branch integrada.565 permanece parada pela negativa de permissão, sem alternativa/root/grants/bypass. Issues externas215/219/220/224/228 separadas.
+
+## PLATFORM_SUPPORT_PRIVACY_INCREMENT_2026_10_25
+
+Continuação funcional do PR632 sobre HEAD39beb2f198a951ec22b050afb601c149cf3799ea/main755a41e, preservando os prefixos completos e recibos anteriores. Exportação /privacy/export passa a incluir somente casos e respostas próprios, sem identidade do operador, atribuições ou auditoria interna; leitura auditada na mesma transação, identidade ativa revalidada. Contrato JSON/OpenAPI revisado sem inventar rotas: continuam108operações. Capability de atendimento continua false; fixtures não atribuem papel real nem ativam fila.
+
+Manutenção de privacidade existente incorpora limpeza transacional sem alterar autorização, lock ou períodos legados: encerrados90dias têm textos minimizados; sem atividade180dias tornam-se expired com evento explícito (não resolved); textos de identidade desativada30dias são minimizados; digest/preparação expira24h e replay de chave expurgada nunca recria caso. Hold de solicitante ou autor de resposta preserva o caso; auditoria sem conteúdo365dias respeita holds do caso/ator. Decisão delegada de minimização complementar: identificadores mínimos de caso/atribuição/resposta são removidos após365dias do encerramento quando não há auditoria recente/retida; evitar metadados privados sem prazo. Não é prazo legal. Dry-run não altera dados; apply integra a transação/recibo de manutenção já existente.
+
+Fixture PostgreSQL efêmera ampliada mede conteúdo antes/depois, limites30/90/180/365dias, expiração24h, hold/release por solicitante e autor, exportação isolada, erro de auditoria com rollback e ausência de recriação por chave antiga. Jornada HTTP existente valida exportação própria/negação de exposição à empresa e identidade do operador oculta, sem operador real. Nesta preparação: análise sintática/stripTypeScriptTypes, consistência OpenAPI108 e smoke local de dry-run/identidade passaram; PostgreSQL/HTTP completos e CI/Android do novo SHA PENDENTES. Verde do HEAD39beb não atesta bytes deste incremento. Pins old/new do script alterado reconciliados mantendo manifests históricos.
+
+PR632 continua DRAFT: faltam API de Ajuda/operador por caso, atribuição/revogação auditadas, paginação, tela/recuperação e provas integradas finais, revisão de autoridade/RLS em runtime e gates próprios/pós-merge. Não integrar fundação incompleta, anunciar atendimento, aceitar1/11 ou produção. Permanecem11áreas aceitas internamente/pendentes1 e11;565PermissionSTOP e215/219/220/224/228 externas preservadas.
+
+## PLATFORM_SUPPORT_OPERATOR_CANDIDATE_2026_10_25
+
+Continuação funcional do PR632 após6e92e54, preservando história: serviço interno de consulta/resposta exige identidade ativa, operador ativo em tabela dedicada, atribuição vigente ao caso e solicitante ativo. Bloqueios transacionais serializam a operação com revogação/desativação. Resposta simples e decisão explícita de resolução têm recibo durável por caso/chave; repetir o mesmo payload não duplica resposta/evento e divergência conflita. Chaves de casos distintos são independentes, evitando consulta à existência de chave global. Resposta+estado+auditoria atômicos; caso encerrado não recebe nova resposta. Migração0075 acrescenta recibo e índice, sem roles/grants/ativação.
+
+Fixture PostgreSQL no schema efêmero já guardado exercita operadores sintéticos atribuídos/não atribuídos/revogados, desativação do solicitante, replay concorrente, conflito, fechamento explícito e erro de auditoria com rollback. Preparação local: transform/sintaxe TypeScript passou; PostgreSQL completo e CI/Android do SHA próprio PENDENTES. Prova é de serviço interno, não HTTP nem RLS positivo em runtime restrito. Autoridade administrativa real de atribuição/revogação ainda precisa implementação e prova; fixture não concede papel real. Faltam controller/API/sessão, paginação, tela/recuperação e integração final: manter632DRAFT, sem merge/pós-merge/aceite/atendimento. Os verdes anteriores pertencem aos seus SHAs.11áreas aceitas internamente,1/11pendentes;565PermissionSTOP e externas preservados.
+
+## PLATFORM_SUPPORT_OWNER_API_CANDIDATE_2026_10_25
+
+Continuação funcional do PR632 sobre41d7c89/main755a41e: seis rotas /me/platform-support autenticadas pela sessão para listagem, preparação, submissão, recuperação, detalhe e retirada próprios. Nenhum owner/tenant do cliente confere autoridade. Listagem20 padrão/máximo100, cursor estável criado no PostgreSQL com seis casas de microssegundos e desempateUUID; descrições/respostas ficam no detalhe próprio. Leitura/retirada auditadas transacionalmente, retirada repetida não duplica evento, janela24h de recuperação não limita consulta do protocolo próprio. Intake indisponível retorna503; erro de sessão401; foreign/missing404 indistinguíveis; conflito/expiração/caso encerrado409. Capability false permanece padrão; não foi provisionado operador real nem ativada fila. Aviso de exportação harmonizado para permitir respostas autorizadas ao próprio pedido, mantendo outros textos de terceiros ocultos.
+
+OpenAPI revisado com seis operações reais registradas:45controllers/114operações, schemas/pins do controller atuais. Fixtures HTTP/PostgreSQL guardadas acrescentadas: conta sem perfil/vínculo, indisponibilidade, concorrência, recuperação, conflito, sessão revogada, empresa/foreign negados, resposta própria sem ID do operador, retirada/rollback e paginação com timestamps distintos apenas em microssegundos. Fixture positiva habilita capability/operador sintéticos só no banco CI descartável e restaura false ao final. Fonte/pins old-new reconciliados preservando histórico; não emprestar verdes anteriores. Preparação local de sintaxe/contrato e rejeição de input passou; CI/HTTPPG/Android do próprio SHA PENDENTES nesta preparação.
+
+PR632 continuaDRAFT sem merge/pós-merge/aceite/ativação. Faltam API de operador/sessão, autoridade administrativa auditada de atribuição-revogação, tela/recuperação e provas finais RLS/runtime/visual.11aceitas internamente,1/11pendentes;565PermissionSTOP e externas215/219/220/224/228 preservados.
+
+
+## PLATFORM_SUPPORT_OPERATOR_HTTP_CANDIDATE_2026_10_25
+
+Continuação funcional do mesmo PR632 sobre2055b468/main755a41e: GET /platform-support/cases/:id e POST /platform-support/cases/:id/responses ligam o serviço existente à sessão autenticada. Identidade do operador vem exclusivamente de AuthService; a transação revalida identidade/papel ativos, atribuição vigente ao caso e solicitante ativo. Membership/owner/admin de empresa não confere autoridade. Corpo estrito, recibo por caso/chave, texto simples, resolução explícita, conflito409, ausência/negação404 e sessão401. Consulta/resposta auditadas atomicamente; resposta não expõe IDs de solicitante/operador. Nenhum grant, papel real, atribuição real ou ativação é feito por este incremento.
+
+Jornada HTTP/PostgreSQL preparada no percurso local guardado existente: duas empresas/solicitante/não atribuído negados, papel/atribuição revogados, identidades desativadas e signout negados; resposta concorrente idempotente, conflito, resolução/replay fechado e erro sintético de auditoria com rollback. Operadores e atribuições são setup sintético de fixture, não uma API administrativa entregue. OpenAPI46controllers/116operações e90schemas; pins old/new dos dois scripts reconciliados sem alterar contadores/recibos históricos. Fonte primária consultada em25/10/2026: OWASP Authorization Cheat Sheet (https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), negar por padrão, verificar autoridade por recurso em cada requisição e menor privilégio; escolhas de endpoints/recibo são contrato local delegado. Preparação local passou sintaxe e consistência; CI/HTTPPG/Android do próprio novo SHA ainda PENDENTES nesta preparação. Recibos terminais serão lidos/registrados nos originais PR632/issue624, sem emprestar verdes anteriores.
+
+Manter632DRAFT, sem merge/pós-merge/ativação/aceite. Próximos: autoridade administrativa auditada de atribuição/revogação, fila paginada de operador, tela/recuperação e prova final RLS/runtime/render. Capability permanece false fora de fixtures CI; ausência de operador real não bloqueia implementação.11áreas aceitas internamente,1/11pendentes;631 integrada, proteção622 resolvida,565PermissionSTOP e externas215/219/220/224/228 preservados. Prefixos integrais destes seis originais mantidos.
+
+
+## PLATFORM_SUPPORT_DISPATCH_INTERNAL_CANDIDATE_2026_10_25
+
+Continuação funcional do PR632 sobree99b680/main755a41e: serviço administrativo interno de atribuição/revogação exige identidade ativa e papel dedicado platform_support_administrators ativo. A tabela nasce vazia/inativa, com RLS forçado e ACL negada a PUBLIC/app_runtime; sem concessão real ou herança de empresa/LGPD/banco. Não há novo endpoint/CLI, bootstrap ou provisionamento de operador neste incremento. Operador ativo e identidade ativa exigidos para atribuir; autoatribuição e administração de pedido próprio negadas. Revisão CAS por caso bloqueia comandos obsoletos, replay da próxima revisão/estado exatos não duplica eventos. Caso é bloqueado junto de atribuição; evento grava ator e operador afetado sem conteúdo, atomicamente com a alteração. Expurgo365dias e hold passam a considerar também o sujeito da auditoria, sem alterar períodos legados; exportação própria continua sem esses IDs.
+
+Fixture PostgreSQL guardada no mesmo schema CI efêmero testa autoridade dedicada, não atribuído/operador sem autoridade, concorrência/replay, revisão obsoleta, falha na auditoria com rollback, revogação impedindo consulta/resposta e administrador desativado/revogado. Fixture de privacidade mede hold/release do sujeito e preservação/remoção da metadata do caso. Migração0076 não cria roles/grants de banco nem usuários reais. OpenAPI continua46controllers/116operações/90schemas. Preparação local de transformação TypeScript passou; PostgreSQL/CI/Android do novo SHA PENDENTES. Recibos terminais nos originais PR632/issue624 após leitura real; nenhum verde anterior atesta novos bytes.
+
+Permanece DRAFT sem merge/pós-merge/ativação/aceite. Ainda faltam concessão/revogação auditadas do papel de operador, entrada administrativa autenticada para este serviço, fila paginada do operador, tela/recuperação e provas finais RLS/runtime/render. Autoridade administrativa interna não equivale a endpoint entregue nem bootstrap real autorizado. Decisão delegada de separar administração explícita e CAS segue OWASP Authorization Cheat Sheet consultado em25/10/2026 (https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), menor privilégio e negação por padrão; sem inferir prazos legais.11aceitas internamente/1e11pendentes,631resolvida,622resolvida,565PermissionSTOP e externas215/219/220/224/228 preservados. Prefixos integrais dos seis originais mantidos.
+
+
+## PLATFORM_SUPPORT_ADMIN_API_CANDIDATE_2026_10_25
+
+Continuação funcional do mesmo PR632 sobre5d642c9/main755a41e: POST /platform-support/admin/operators/:id concede/revoga papel lógico de operador e POST /platform-support/admin/cases/:id/assignment liga a autoridade de atribuição/revogação existente à sessão. Administrador ativo em tabela própria é revalidado transacionalmente; nenhuma herança de empresa/LGPD/banco e nenhuma auto-concessão. Inputs estritos/expectedRevision CAS, actor exclusivamente da sessão. Migração0077 adiciona revisão do papel e eventos operator_granted/operator_revoked à auditoria mínima existente, sem databaseGRANT/role/bootstrap/ativação. Revogar papel invalida todas as atribuições vigentes com revisão e eventos atômicos; regrantar não restaura acesso aos casos. Falha de auditoria reverte papel e atribuições. Auditoria usa ator/sujeito já cobertos por retenção/hold; exportação própria mantém IDs administrativos ocultos.
+
+Jornada HTTP/PostgreSQL guardada preparada com administrador/operador sintéticos, duas empresas negadas, auto-concessão/ator forjado negados, grant concorrente/replay, CAS obsoleto, revogação/regrant sem ressuscitar casos, rollback por erro de auditoria e administrador revogado/desativado/signout. Apenas uma linha de bootstrap sintética no CI; nenhuma pessoa ou acesso real provisionado. OpenAPI47controllers/118operações/94schemas e pins old/new reconciliados preservando histórico. Preparação local de sintaxe/transform passou; CI/HTTPPG/Android do novo SHA PENDENTES; recibos terminais nos originais PR632/issue624 após verificação real. Fonte primária OWASP Authorization Cheat Sheet consultada em25/10/2026 (https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html): menor privilégio e autorização por recurso/operação; escolhas de CAS/rotas são contrato delegado local.
+
+DRAFT sem merge/pós-merge/ativação/aceite. Próximos: fila paginada do operador, tela/recuperação e provas finais RLS/runtime/render. Prova positiva em runtime restrito continua pendente, não inferida destes testes com caminho existente de identidade. Capability false, nenhum administrador ou operador real.11aceitas internamente/1e11pendentes;631resolvida/622resolvida/565PermissionSTOP e externas215/219/220/224/228 preservados. Prefixos integrais dos seis originais mantidos.
+
+
+## PLATFORM_SUPPORT_OPERATOR_QUEUE_CANDIDATE_2026_10_25
+
+Continuação funcional do mesmo PR632 sobre6b8fd58/main755a41e: GET /platform-support/cases lista apenas casos com atribuição vigente ao operador ativo da sessão e solicitante ativo, revalidando por página. Inclui estados encerrados enquanto houver atribuição, para histórico autorizado; não promete snapshot após mudanças de atribuição.20itens padrão/máximo100, cursor PostgreSQL6casas de microssegundos/UUID em ordem decrescente. Retorna apenas id/categoria/status/datas, sem descrição/respostas/identidades. Leitura auditada na mesma transação; locks de caso/atribuição/solicitante serializam revogação/desativação. Capability de intake não bloqueia consulta de histórico autorizado. Parser de página compartilhado com owner sem mudar suas regras; limites/chaves inválidos400, não operador404, sessão inválida401. Sem novo controller/migração/role/grant/ativação.
+
+Fixture HTTP/PostgreSQL guardada preparada:22casos com microssegundos e empates exatos/UUID,20padrão/100máximo, paginação sem perdas/duplicatas, dois operadores/duas empresas, caso sem atribuição oculto, corpo/identidades ocultos, falha de auditoria na segunda linha revertendo página inteira, revogação entre páginas, solicitante desativado, papel revogado/regranted sem ressuscitar e signout negado. Admin/roles/casos preparados pelas APIs já existentes com único bootstrap administrativo sintético; capability false restaurada. OpenAPI47controllers/119operações/95schemas e pins old/new reconciliados sem alterar histórico. Preparação local de transform/sintaxe passou; CI/HTTPPG/Android do SHA próprio ainda PENDENTES, recibos terminais nos originais PR632/issue624 após leitura real.
+
+DRAFT sem merge/pós-merge/ativação/aceite. Próximos: tela/recuperação da Ajuda e provas finais RLS/runtime/render. Não voltar a implementar APIs owner/operador/admin/fila já entregues. Prova positiva de RLS restrita continua pendente; jornadas no caminho atual de identidade não substituem essa prova.11aceitas internamente/1e11pendentes;631resolvida/622resolvida/565PermissionSTOP e externas215/219/220/224/228 preservados. Prefixos integrais dos seis originais mantidos.
+
+
+## PLATFORM_SUPPORT_MOBILE_CANDIDATE_2026_10_25
+
+Continuação funcional do PR632 sobre224340d/main755a41e: rota própria /ajuda-plataforma com entrada no Perfil independente do estado do perfil/vínculo e preservando GeneralSupport/SupportHistory de empresa. Qualquer conta autenticada ativa usa ownerAPI existente, sem tenant header/perfil obrigatório. Formulário categoria+mensagem, orientação de minimização/sem SLA, indisponibilidade que bloqueia novos envios, histórico paginado, detalhe/respostas e retirada com ACK estrito. Tela mantém rascunho em erro recuperável da mesma conta e limpa ao trocar identidade; operações são vinculadas à identidade API/me previamente carregada, nunca enviando rascunho anterior à conta nova.
+
+Recuperação durável guarda no SecureStore somente identidade/chave/categoria/validade, sem mensagem/token/tenant. Barreira write/readback antes de POST; ACK precisa chave/categoria/status/data válidos. Foco/retorno fazem GET, sem reenviar automaticamente; retry explícito só após GETprepared e usa mesma chave/hash validado no servidor. Tentativa não confirmada impede criar outra chave; liberar descriptor exige confirmação ou GETterminal expirado+detalhe ausente. Dados privados ficam ocultos durante carga/erro/resultado incerto, sem aplicar resposta tardia. Prazo15s cobre credencial/armazenamento/transporte/JSON; blur/cancel invalida operações antigas e refoco imediato mantém exclusão de gravação concorrente.
+
+18testes locais passaram (parsers/fluxo/handlers reais pré-JSX): confirmação, perda de resposta, armazenamento falho, GET de recuperação entre instâncias, explicit retry/conflito, sessão trocada sem POST, timeout auth/transporte/JSON e lateACK, capability false, refoco e descriptor expirado. Não são prova de layout renderizado/nativeUI. Sem dependência/lockfile/backend/migração/workflow alterados, React19.1.4/RN0.81.6 preservados; OpenAPI47/119/95 continua. Pins old/new reconciliados sem alterar histórico. CI/Android do próprio SHA ainda PENDENTES nesta preparação; recibo terminal será registrado nos originais PR632/issue624 após leitura real.
+
+Manter632DRAFT sem merge/pós-merge/ativação/aceite. Restam prova renderizada integral desta tela/estados/navegação e prova final RLS/runtime restrito, além de revisão da vertical e gates integrais próprios/POSTliteral. Hooks/abertura do APK não substituem render.11aceitas internamente/1e11pendentes;631/622resolvidas/565PermissionSTOP e externas215/219/220/224/228 preservados. Nenhuma pessoa/admin/operador real provisionado, capability false. Prefixos integrais dos seis originais mantidos.
+
+
+## PLATFORM_SUPPORT_READ_RLS_CANDIDATE_2026_10_25
+
+Mesmo PR632DRAFT; base candidata46032a2/main755a41e. Revisão encontrou políticas0074 de solicitante/caso sem teste de solicitante ativo; HTTP já valida isso. Migração0078 exige solicitante ativo nas políticas owner de intenções/casos e leitura do operador atribuído, com identidade do operador explícita. Respostas herdam o isolamento do caso. Nenhum role/ACL/grant/bootstrap/ativação alterado pela migração; app_runtime continua negado.
+
+Fixture real PostgreSQL no schema efêmero já guardado: primeiro reproduz leitura de caso/resposta/intenção por solicitante desativado e de caso/resposta pelo operador atribuído com políticas0074 originais, em transação revertida; depois aplica0078 e exige ocultação, positivos owner/operador, negativos outra identidade/contexto ausente, revogação/desativação. Papel efêmero NOLOGIN/NOSUPERUSER/NOBYPASSRLS não dono, ACLs somente SELECT no schema sintético, sem auditoria/escrita; tudo (role/ACLs/linhas) revertido e ausência verificada. Não concede app_runtime nem pessoa real. Sintaxe TypeScript local PASS; reproduçãoPG/prova corrigida e CI/Android próprios PENDENTES até recibo real PR632/issue624. Não alegar reprodução executada antes do log.
+
+Esta prova é de políticas SQL de leitura, NÃO da API em runtime restrito: DatabaseService.transaction ainda usa caminho atual. Render integral/layout/estados/navegação isolado também pendente. PR632DRAFT sem merge/pós-merge/aceite/ativação;11áreas internas/1e11pendentes.565PermissionSTOP,631/622resolvidas e externas215/219/220/224/228 preservados. Prefixos integrais dos seis originais e pins históricos mantidos; Android canônico/gates/mobile/React19.1.4/RN0.81.6/lockfile preservados.
+
+
+## PLATFORM_SUPPORT_OWNER_RUNTIME_CANDIDATE_2026_10_25
+
+Mesmo632DRAFT sobre691e39e/main755a41e. Próximo incremento material: percurso owner do store em conexão efetivamente restrita pelo Pool/transaction reais de DatabaseService. PostgreSQL exige UPDATE para SELECT FOR SHARE; não conceder atualização de identidades/capability/operadores para satisfazer o lock. Migração0079 introduz duas funções limitadas a locks/verificações e retorno booleano, SECURITY DEFINER com search_path=pg_catalog, tabelas qualificadas pelo schema fixado na migração e EXECUTE revogado de PUBLIC/app_runtime na mesma transação. Sem role/grant/ativação reais na migração; contratos da API/tenant e políticas0078 preservados. Owner utiliza helpers; listagem lê disponibilidade sem locks globais novos, preparo/submissão mantêm locks prévios. Referências primárias consultadas: https://www.postgresql.org/docs/17/sql-createfunction.html e https://www.postgresql.org/docs/17/sql-select.html (25/10/2026).
+
+Fixture PostgreSQL guardada pelo loopback/peer/database/schemaefêmero: login de banco aleatório apenas CI sintético, NOSUPERUSER/NOBYPASSRLS/NOCREATEROLE/NOCREATEDB, sem herdar app_runtime, ACLs por coluna para escritas owner, sem UPDATE em identidades/capability/operadores nem leitura de auditoria/admin. Usa Pool/transaction reais, current_user=session_user do login restrito; sem SET ROLE para elevar/fallback. Primeiro exige42501 no lock direto de identidade, depois testa helpers e preparo/envio/recuperação/lista/detalhe/retirada próprios, replay concorrente, RLS em SELECT sem filtro owner, falha de auditoria com rollback, capability false/histórico, desativação, limpeza de contexto. Locks devem bloquear revogação/desativação concorrente; nomes temporários não podem sombrear relações qualificadas. Finalmente fecha pool, remove dados/ACLs/login sintéticos e verifica ausência; não provisiona operador/admin real. SintaxeTS local PASS; CI/Android e reprodução/provaPG próprios PENDENTES até recibo PR632/issue624.
+
+Não é prova completa de HTTP/session/runtime restrito do operador/admin nem render. Não declarar aceite1/11 ou encerrar632. ManterDRAFT sem merge/pós-merge/ativação;11internas/1e11pendentes;565STOP absoluto e externas215/219/220/224/228 separados. Não tocar APKprodução para jornada funcional; render futuro isolado. Preservar React19.1.4/RN0.81.6/lockfile/gates canônicos e prefixos integrais dos seis originais; ledger acrescenta pinsold/new sem apagar história.
+
+
+## PLATFORM_SUPPORT_OWNER_HTTP_RESTRICTED_CANDIDATE_2026_10_25
+
+Continuação real do632DRAFT sobre6734029/main755a41e. Fixture nova liga PlatformSupportController e AuthService REAIS por HTTP Nest/Fastify em listener127.0.0.1:portaefêmera. Signup/signin reais vêm da API local atual, AuthService consulta suas sessões reais pela autoridade de autenticação existente separada. Storeowner usa Pool/transaction de DatabaseService em loginPGCI restrito já criado pelo percurso anterior; exige que esse login não leia sessions. Não substitui autenticação por mocks, não troca poolglobal operacional, não concede app_runtime nem cria papel/operador real. Nenhuma rota de produção/migração/schema/contrato/mobile/dependência/lockfile alterada.
+
+Assertivas candidatas: seisrotasowner; conta sem perfil/vínculo; duas empresas e terceiro negados404; empresa pode pedir ajuda própria, tenant/identidade forjados não redirecionam; replayconcorrente+GETrecuperação; respostas autorizadas sem identidade de operador; falha de auditoria500 reverte submissão e mantém prepared; paginação/retirada repetível; capability false conserva histórico sem intake; matrizes401 anônimo/signout/expiração/revogação em todas6rotas, sessão nova não ressuscita token antigo, desativação separada em auth/store. Snapshots antes/depois das chamadas rejeitadas; leituras legítimas têm seu próprio baseline auditado. Listener/pools fechados, sessões revogadas e dadosprivados sintéticos removidos; contas globais@example.test de signup permanecem só no DB efêmero CI até descarte, como demais jornadas. SintaxeTS localPASS; provaHTTP/PG e CI/Android próprios PENDENTES até recibos PR632/issue624.
+
+Esta prova completa somente o recorte ownerHTTP em fixture local restrita, não configuração operacional, operador/admin restritos ou render/layout/navegação integral.632continuaDRAFT sem merge/pós-merge/aceite/ativação;11áreas internas/1e11pendentes.565PermissionSTOP e externas215/219/220/224/228 preservados. Seis originais mantêm prefixos integrais e histórico; ledger adiciona pinsold/new sem alterar aceites/contadores. Não repetir a tela/APIs/filas existentes nem navegar funcionalmente no APKcanônico com URLprodução para alegar render.
+
+
+## PLATFORM_SUPPORT_OPERATOR_RESTRICTED_CANDIDATE_2026_10_26
+
+Mesmo PR632DRAFT, base do incremento f44ce553115e39b1ed7cf35b34b2c70714e8b1e5/main755a41e. Prova ownerSQL/HTTP anterior concluída conforme recibos terminais PR632/issue624; não reabre lacunas já entregues. Candidato implementa caminho operador restrito: migração0080 adiciona dois helpers booleanos fechados de locks (identidade/papel e caso atribuído com solicitante ativo), SECURITY DEFINER/search_path=pg_catalog,pg_temp/relações e tipos qualificados, sem DML, role/grants/bootstrap/ativação. EXECUTE PUBLIC/app_runtime revogado na mesma transação. Políticas por caso para UPDATE de estado e INSERT de resposta exigem papel/atribuição/solicitante ativos e autor da sessão. Store operador mantém contratos de fila/detalhe/resposta; fila revalida e bloqueia todos os itens selecionados antes de liberar página/auditorias. Nenhum UPDATE de identidades/capability/operadores/atribuições concedido ao login de runtime.
+
+Fixture guardada antes de0080 reproduz negativa42501 nos locks legados e INSERT de resposta e zero linhas no UPDATE RLS; depois aplica correção no schema CI efêmero e usa DatabaseService/Pool/transaction reais sob LOGIN NOSUPERUSER/NOBYPASS/NOCREATEROLE/NOCREATEDB/NOINHERIT, current_user=session_user, semSETROLE/fallback. Assertivas candidatas: fila/detalhe/resposta, RLS sem filtro proprietário, terceiro/autor forjado, replayconcorrente, rollback resposta+estado+auditoria, locks55P03 em ator/solicitante/papel/atribuição/caso, caso estrangeiro não bloqueado, temp-shadowing/revogação/desativação/contextolimpo e cleanup LOGIN/ACLs/dados. Novo listener Nest/Fastify loopback com controller operador e AuthService reais, signup/signin/sessões pela API local; authpool separado e store restrito sem SELECTsessions. Trêsrotas, duas empresas/solicitante/outrooperador negados, paginaçãoµs, rollback de resposta e segunda auditoria da página, resolve/replay/conflito e matrizes401 anon/expired/signout/revoked. Contas globais@example.test só até descarte doDBCI; papéis/atribuições positivos são sintéticos, não operação real.
+
+Inventário privilegiado nominal atualizado para exatas quatro assinaturas de locks; desconhecidas continuam falhando. Apenas cláusula literal FOR UPDATE OF c do helper de lock é distinguida de DML no inventário; outras escritas/alterações de autoridade continuam negadas. App_runtime é testado42501 mesmo com contexto forjado. Fontes primárias consultadas em26/10: PostgreSQL17 CREATE FUNCTION, SELECT e Row Security Policies (https://www.postgresql.org/docs/17/sql-createfunction.html ; https://www.postgresql.org/docs/17/sql-select.html ; https://www.postgresql.org/docs/17/ddl-rowsecurity.html).
+
+SintaxeTS/CJS localPASS; provas PostgreSQL/HTTP, regressões/CI completo/Android do novo SHA PENDENTES. Esta mudança não certifica admin restrito, configuração/pool operacional ou render/layout/navegação integral.632DRAFT sem merge/pós-merge/aceite/ativação, capabilityfalse, nenhuma pessoa/role real provisionada.11aceitas internas/1e11pendentes,565PermissionSTOP e externas preservados. Prefixos integrais dos seis originais/histórico mantidos; pinsold/new no ledger. Sem alteração mobile/workflow/deps/lockfile.
+
+
+## PLATFORM_SUPPORT_ADMIN_LOCK_CANDIDATE_2026_10_26
+
+Mesmo632DRAFT, base do incremento664ae489404b0c9b6dafa937cfc6407896e2c0d4/main755a41e. OwnerSQL/HTTP80 e operadorSQL/HTTP59 já provados conforme recibos terminais PR632/issue624; não repetir.0081 introduz dois helpers booleanos fechados: autoridade administrativa dedicada ativa com lock ator/papel, e identidade alvo com lock exclusivo mesmo antes do primeiro papel operador. Sem UPDATEACL de identidades/admin para satisfazer locks; sem herança de empresa/operador/LGPD/banco. Alvo próprio/ausente/null e concessão a desativado negados; lock para revogar desativado permitido somente por admin ativo. SECURITY DEFINER/search_pathpg_catalog,pg_temp/tipos/relações qualificados, sem DML/role/grants/ativação; EXECUTEPUBLIC/app_runtime revogado atomicamente. RoleStore/DispatchStore existentes usam autoridade; RoleStore usa alvo limitado. Demais locks e escritas de negócio ainda não estão provados em runtime administrativo restrito.
+
+Fixture guardada no mesmo DB/schema CI efêmero reproduz42501 nos SELECTs legados antes de0081. Pool/transaction de DatabaseService reais em LOGIN NOSUPERUSER/NOBYPASS/NOCREATEROLE/NOCREATEDB/NOINHERIT/current_user=session_user, semSETROLE/fallback/pooloperacionaltrocado. Assertivas candidatas: admin explícito ativo, operador comum não é admin, nenhum contexto negado, alvo anterior ao primeiro papel, locks55P03 de ator/admin/alvo e duas conexões concorrentes serializadas, identidade não relacionada não bloqueada, revogação/desativação/temp-shadowing negados, rollback libera locks/contextolimpo. Sem escrita de negócio/auditoria ou provisionamento real; cleanup login/ACLs/linhas e pool. Inventário nominal passa a seis assinaturas fechadas, desconhecidas continuam falhando; cláusulas literais FOR UPDATE OF c/i são só locks, DML/autoridade continuam proibidos. Quatro pins ativos do guard reconciliados com old/new sem apagar históricos.
+
+Sintaxe localPASS, provasPG e CI/Android próprios PENDENTES. Escopo apenas autoridade/locks administrativos; NÃO prova completa de gestão/atribuição/escrita/RLS/HTTP restritos, configuração operacional nem render. Essas são próximas ações materiais na mesma branch. Sem merge/pós-merge/aceite/ativação, nenhuma pessoa real;11aceitas internas/1e11pendentes;565STOP e externas preservados. Seis originais preservam prefixos integrais. Mobile/workflow/deps/lockfile e autenticação/pool operacional preservados.
+
+
+## PLATFORM_SUPPORT_ROLE_RESTRICTED_CANDIDATE_2026_10_26
+
+Mesmo632DRAFT, basee9be0cf/main755a41e.0081 autoridade/locks jáprovados;0082 acrescenta RLS de gestão de papel/metadata de caso/revogação de atribuições e helperbooleano fechado platform_support_lock_role_cases(uuid), qualificado/search_pathpg_catalog,pg_temp/semDML/role/grants/ativação, EXECUTEPUBLIC/app_runtime revogadoatomico. RoleStore usa helper para bloquear casos do alvo antes da revogação, sem UPDATEACL de casos/identidades/admin. Fixture restrita recebe só colunas de papel e revogação de atribuição, INSERTaudit e SELECTidcaso, nunca corpo/respostas/sessões/auditoria/admin. Políticas não concedem ACL; inventário exato sete assinaturas fechadas e tenant42501 mantidos. Fontes primáriasPostgreSQL17 Row Security Policies/CREATE FUNCTION consultadas26/10; links noledger.
+
+Nova fixtureSQL/HTTP guardada: baselineINSERTpapel42501antes0082, DatabaseService/Pool/transaction LOGINCI NOSUPERUSER/NOBYPASS/NOCREATEROLE/NOCREATEDB/NOINHERIT/current_user=session_user/semSETROLE; AuthService/controller reais em listener127.0.0.1 efêmero, signup/signin/sessões reais/authpool separado, sem troca de pool operacional. Assertivas candidatas: grantconcorrente/replay/CAS, nãoadmin/autoconcessão/atorforjado negados, revogação atômica de DUAS atribuições, regrant não ressuscita, falhas de auditoria SQL eHTTP revertem papel+ambas atribuições+audits, duas empresas/operador comum negados, adminrevogado/desativado/authdesativado/anon/expired/signout/revoked negados com snapshotJSONintegral sem writes; cleanup listener/pools/sessões/linhas/LOGIN/ACLs. Papéis/admins positivos somente setup sintético; contasglobais@example.test só até descarteDBCI.
+
+Provas owner/operador executam DEPOIS da0082 final. Seus logins CI recebem apenas EXECUTE do checkbooleano admin fechado, dependência das políticas, que não expõe linha nem herda autoridade; PUBLIC/app_runtime continuam negados, nenhuma ACLreal/poolconfig alterados. Não se testa só política anterior para alegar regressão final. Prefixos integrais dos seis originais e pinsoldnew preservados, quatro pinsativos reconciliados. SintaxeTS/CJS localPASS; PG/HTTP/CI/Android próprios PENDENTES. Não certifica dispatch administrativo restrito, configuração operacional ou render/layout/navegação; próximos passos materiais. Semmerge/POST/aceite/ativação/operadorreal;11internas/1e11pendentes;565STOP/externas preservados. Semmobile/workflow/deps/lockfile/AuthService/DatabaseServiceoperacionalalterados.
+
+
+### ROLE_OPERATION_SCOPE_HARDENING_2026_10_26
+Revisão antes de aceite: identidade administrativa por si só não deve ampliar políticas em outro percurso por identidade.0083 exige app.platform_support_role_management=true local da transação, selecionado somente no RoleStore servidor, E admin dedicado ativo. Marcador isolado não autoriza operador/empresa. Fixture reproduz política candidata0082 lendo dois ids estrangeiros sem contexto de operação, aplica0083 e exige zero ids/INSERTpapel42501; todos positivos SQL/HTTP agora correm somente após0083, com identidade e contexto limpos. Sem exposição/ativação de produção alegada. Pinsoldnew noledger, prefixos completos preservados. CI/Android próprios do novo SHA pendentes, sem emprestar verdesc70910f.
+
+
+## PLATFORM_SUPPORT_DISPATCH_RESTRICTED_CANDIDATE_2026_10_26
+
+Mesmo632DRAFT, basef3d2142/main755a41e; gestãoPAPEL31/owner80/operador59 e0081 jáprovados conforme comentários originais, não repetir como lacunas.0084 acrescenta locksbooleanos fechados de operador alvo/caso+solicitante e verificadorbooleano de escrita por caso; SECURITYDEFINER/search_pathpg_catalog,pg_temp/tiposrelaçõesqualificados/semDML/roles/grants/ativação, EXECUTEPUBLIC/app_runtime revogadoatomico. DispatchStore seleciona contexto app.platform_support_dispatch=true noSERVER/TRANSAÇÃO, E revalidaadmin dedicadoativo, semUPDATEidentidades/papéis/casos/admin/capability. Preserva403 para caso próprio/autovínculo, CAS/replay/estado/auditoria existentes. RLS tem metadata de caso/operador/atribuição e INSERT/UPDATE por autoridade/casoativo/nãopróprio/alvoativo; revogação permitida em encerrado. Verificador qualificado evita dependência circular caso↔atribuição nas políticas. Inventário nominal passa a dez assinaturas fechadas, desconhecidas/tenant42501 continuam falhando; quatro pins ativos reconciliados old/new.
+
+Fixture SQL/HTTP guardada nova: baseline42501 real de lockalvo/INSERTantes0084; DatabaseService/Pool/transaction LOGINCI NOSUPERUSER/NOBYPASS/NOCREATEROLE/NOCREATEDB/NOINHERIT/current_user=session_user/semSETROLE; AuthService/controller/sessões reais em listener127.0.0.1efêmero/authpoolseparado. Assertivas candidatas: contextoausente/nonadmin/caso próprio/selfassignment/atorauditforjado negados, locks55P03 operador/solicitante/papel/caso, atribuição/reassociação concorrente com CAS/replay, falha de auditoria SQL/HTTP reverte atribuição e eventos, revogação repetível/encerradoneganovovínculoaceitarevogação, alvo inativo/desativado/solicitantedesativado/adminrevogado/sessõesanonexpiredsignoutrevoked negados com snapshotsJSONintegrais, contextolimpo e cleanup. Corpo/sessões/auditoria/admin não legíveis no login; só metadata e colunas de atribuição necessárias. Nenhum operador/admin real; capabilityfalse.
+
+Provas role31/owner80/operador59 executam DEPOIS das políticas finais0084. Fixture de papel recebe só EXECUTE do booleano fechado de escrita dispatch (nega sem contexto), dependência RLS, sem outras ACLs novas. Ordem sintética de aplicação para testemunhas baseline é explicitamente local; conjunto final de migrações/políticas é o mesmo do runner. Sem alterar pool/configuração operacional. SintaxeTS/CJS localPASS; PG/HTTP/CI/Android próprios PENDENTES. Não certifica configuraçãooperacional/render/layout/navegação, próximas ações materiais. Seis originais preservam prefixos/histórico/pinsoldnew; semmobile/workflows/deps/lockfile/AuthService/DatabaseServiceoperacionalalterados. Semmerge/POST/aceite/ativação;11internas/1e11pendentes;565STOP/externaspreservados.
+
+
+### DISPATCH_READ_BOUNDARY_HARDENING_2026_10_26
+Revisão candidata antes de aceite: SELECT direto de metadata da atribuição também deve negar solicitante desativado, além da API que já nega. Fixture sem produção observa0084 com atribuição sintética/solicitante desativado, aplica0085 e exige zero linhas; todos positivos correm depois0085.0085 mantém booleano fechado/semDML/search_pathfixo, agora usado também em SELECT/UPDATEUSING, com contextoSERVER+adminativo+caso deoutrosolicitanteativo, sem recursãoRLS. LoginsCI owner/operador recebem sóEXECUTE do booleano fechado (nega semcontexto), sem tabelaadmin/UPDATEidentidades/app_runtime grants; suas provas correm depois das políticas finais. Prefixos integrais/história/pinsoldnew preservados; CI/Android do novoSHA PENDENTES; sememprestarverdee6f2e6d. Nenhuma exposição/incidente deproduçãoalegado.
+
+
+### PLATFORM_SUPPORT_APPLICATION_POOLS_CANDIDATE_2026_10_26
+Continuação material do mesmo PR632DRAFT sobre2388da1, sem refazer owner80/operador59/role31/dispatch40. AppModule passa a compor PlatformSupportDatabases, quatro credenciais distintas explícitas owner/operator/role/dispatch, separadas da autoridade AuthService/sessões preservada. Sem configuração completa válida, falha fechada503 depois da sessão401; sem fallbackDATABASE_URL/SETROLE/grants/bootstrap/ativação. Antes de cada transação: current_user=session_user/login esperado, flags restritas/sem memberships/dono/schemaCREATE, ACLs efetivas por coluna/tabela, RLS e funções fechadas; search_path fixo pg_catalog,public,pg_temp/contextos locais limpos, rollback/discard/shutdown. Não concede UPDATEidentidades para locks.
+Fixture local guardada cria somente quatro LOGINCI/ACLs efêmeros noDBmlivretrabalho_http, instancia AppModule real sem override de controllers/providers/AuthService e executa jornadas HTTP existentes da vertical pelo listener127.0.0.1efêmero; poolauth original separado. Configuração ausente no listener principal deve503/401; excesso de ACL UPDATEidentidade deve negar antes do callback, depois revoga/valida contexto. Remove logins/ACLs ao fim. Fixtures restritas anteriores adaptam apenas tokenDI, preservando autoridade/casos/provas. Privacidade/exportação/CLI de retenção preservam suas autoridades existentes; sem alterar poolglobal/AuthService/DatabaseService.
+SintaxeTS/CJS localPASS; PG/HTTP/CI completo/Android próprios PENDENTES neste preparo. Render integral isolado/layout/estados/navegação e provisionamento/configuração reais NÃO alegados. APKcanônico produção não navegado;565STOP e externas preservados. Seis originais/prefixos integrais/história/pinsoldnew preservados; ledger histórico datado não é contador atual. Semmerge/POST/aceite/ativação,11internas/1e11pendentes. Primárias consultadas: PostgreSQL17 RowSecurity https://www.postgresql.org/docs/17/ddl-rowsecurity.html ; funções de privilégios https://www.postgresql.org/docs/17/functions-info.html ; pg.Pool https://node-postgres.com/apis/pool .
+
+
+### PLATFORM_SUPPORT_POOL_CONTRACT_RECONCILIATION_2026_10_26
+CI40297418833/3d2deb7 parou na igualdade estrita x-contract-source.controllerBlobs antes da jornada: três controllers alterados exigiam revisão dos hashes OpenAPI. Reconciliado mantendo igualdade/guards/schemas/119 operações; não é prova PG/HTTP da composição ainda. Revisão endurece configuração: usernameauth explícito, apenasparâmetrosslmode/TLSverify-full remoto, NOLOGIN/functionowner e privilégios extras em views/materializadas/foreign/sequence negados. Fixture sódiagnósticostage/SQLSTATE sem dadosprivados. PrimáriaSSL https://node-postgres.com/features/ssl . Sintaxe/OpenAPIlocalPASS; gates do novoSHA PENDENTES, sememprestarverdeanterior. Prefixos/pinsoldnew/histórico preservados; semmerge/aceite/ativação/render/configuraçãoreal.
+
+
+### PLATFORM_SUPPORT_POOL_AMBIGUOUS_TLS_REGRESSION_2026_10_26
+40298317282/2cebf8a falhouTS18046 no novo testeSSL (valorObject.entries inferido unknown); tipo explícitoRecord<string,string> corrige teste sem relaxar guard. Revisão local reproduziu aceitação ambígua sslmode=verify-full&sslmode=disable antes do Pool; rejeição de parâmetros duplicados adicionada/regressãoPASS, sem conexão remota/incidenteprodução alegado. NovoCI/PGHTTPAppModule/Android PENDENTES; prefixos/history/pinsoldnew preservados, semmerge/aceite/ativação/render.
+
+
+### PLATFORM_SUPPORT_APPLICATION_PAGINATION_FIXTURE_CORRECTION_2026_10_26
+40298829212/7e8a005 chegou a AppModule real/quatro LOGINs atestados/default503/401 e operações iniciais, mas GETownerpaginado foi ao listener principal sem credenciais: regex da fixture testava '?' contra slash/fim. Baseline local reproduzido; seleção de origem agora usa pathname sem query, preservando URL/parser/guard/contratos. Corrigido também fechamento explícito dos pools filhos nas quatro fixtures históricas após troca de tokenDI; antes dependia hook do DatabaseService removido do container. Código/credenciais reais/ACLs não relaxados. NovoCI/Android/jornada completa PENDENTES; prefixos/pinsoldnew/histórico intactos; semmerge/aceite/ativação/render.
+
+
+### PLATFORM_SUPPORT_ISOLATED_NATIVE_RENDER_CANDIDATE_2026_10_26
+ComposiçãoAppModule/quatro pools6bcb450 jáprovada, semreimplementar. Próxima prova material: APKfixture de pacotecom.predibeacon.mlivretrabalho.supportfixture em gitarchive isolado/API AppModule real local/identidades@example.test/fourLOGINCI. Canonicalscript/URLprodução/pacote/artifactsandroid-pilot intactos, hashantes/depois; APIfixture localproxy apenasfalhasdeterminísticas, controlesadb/uiautomator/capturasPNG/XML originais. NetworkSecurityConfig sópermiteHTTP10.0.2.2, base confiaapenasCAefêmeradafixture/nãoHTTPSprodução; nenhumaCAinstalada/grant/root/565import/fallback.Mesmo jobAndroidreutilizável adiciona preparaçãoPGlocal/buildisolado/jornada/cleanup/artifactpróprio após uploadcanônico; KVMexistente reutilizado semnovocomandoprivilegiado. Timeout45→65min para segundobuild/jornada.
+Plano de15capturas: Perfilsemvínculo/indisponível/vazio/carga/foco/formulário/confirmação/detalhe/respostaautorizada/retirada/timeoutPOSTúnico/force-stopGETrecuperação/errosemestadoprivado/paginação/fonte130%/sessãoexpirada/empresa própria/ajudalegadapreservada. Descrições são roteiro candidato, NÃO prova; sódeclararrender após execução/capturas reais/revisãovisual. SintaxeNode/Bash/PythonlocalPASS; CI/Android/buildfixture/render/negativosguardPENDENTES. Semmerge/POST/aceite/ativação/provisionamentoreal,11internas/1e11pendentes;565STOP/externaspreservados. Workflowpinreconciliadoold/newsemalterarhistórico. Primárias: https://developer.android.com/tools/adb ; https://developer.android.com/studio/run/emulator-networking ; https://developer.android.com/privacy-and-security/security-config .
+
+
+### PLATFORM_SUPPORT_NATIVE_RECOVERY_COVERAGE_CANDIDATE_2026_10_26
+Roteiro nativo ampliado para22capturas: preparada/indisponível/conflito/retryexplícitomesmachave/limpa/expirada/resolvida+minimizada. Proxy503 local deixaintentrealpreparado, conflito409/retry201 vêm APIreal ehashdechaveemtráfegoprovaresmo protocolo; semPOSTauto. Expiração aceleradasomenteDEFAULT12segundos noDBdescartável, restaurado24hemcommand/cleanup; semmudançarelógio/aplicação/SecureStore/root/grants/ACKfalso. Resolução viaAPIadmin/operadorrealemfixture, nulificaçãoSQLsintéticasópararenderdeminimização jácontratada. XMLcontrolebuscacomscroll/semclicardesabilitado; PNGsoriginais/hasheschunksbase6416k permitemrevisãovisualbyteaverificada. SintaxeNode/PythonPASS; runanterior e028c22 nãoaprovanovosbytes, novoCI/Android/render/visualreviewPENDENTES;semmerge/aceite/ativação.
+
+
+### PLATFORM_SUPPORT_NATIVE_METRO_VISIBILITY_FIX_2026_10_26
+e028c22/run40304549892 reproduziu falha real createBundleReleaseJsAndAssets: entryexpo-router emtargetpnpmfora do gitarchive nãoficavavisívelaoMetro. OcorreuantesdaUI; foundation/smokecanônico/cleanupAPIpassaram mas Androidinteiro/merge-policyfalharam, semrenderprovado. Fixsógera metro.config.js noSTAGE comwatchFolders dosnode_modulesreais+resolverpaths, semmobileoriginal/lockfile/guard/rede/permissões/root/fallback. PrimáriaMetro exigevisibilidade targets de symlinks inclusivebuildCI: https://metrobundler.dev/docs/configuration/#watchfolders . SintaxeShellPASS;novoCI/buildisolado/render/visualreviewPENDENTES, sememprestarverde/provaantecipada;história/pinsoldnewpreservados.
+
+
+### PLATFORM_SUPPORT_NATIVE_DRIVER_INTEGRATION_CANDIDATE_2026_10_26
+Testeguardfixture passa a serinvocadoexplicitamente na preparaçãoAndroid obrigatória; umbrellapnpmnão descobreautomaticamente scripts/tests, portanto nãoalegar guardnegativoexecutadosóporarquivoexistir. Driver lêUUIDtambémemgruposacessíveis/scrollupVoltar/dispensaIMEcondicionalpordumpsysinput_methodautorizadoemvezBackcego; preserva tráfico sanitizado/logcatemfalha. NenhumUIproduto/negócio/permissão/grant/rootmodificado. Sourcepinworkflowativo old/newreconciliado; sintaxePythonPASS, execuçãoreal/nativeUI/gatesdoNOVOSHApendentes. História/seisoriginais/565STOPpreservados, semmerge/aceite/ativação.
+
+
+### PLATFORM_SUPPORT_NATIVE_WORKSPACE_DEPENDENCY_VISIBILITY_2026_10_26
+546c389/run40307101335 reproduziusegundafalhaMetronantesUI: entryabsolutovisível, importbareexpo-router emapp/_layout.tsx nãoresolvido. Própriodiretóriomobile/node_modulesé targetexternodo symlink; watchFolders/nodeModulesPaths dafixture passama incluí-loexplicitamente alémdo rootnode_modules, apenasdependências. Canonical/mobileconfigoriginal/lockfile/permissões intactos. Drivercompleta dispensacondicionalIME nocamporecoverytambém. SintaxeShell/PythonPASS, novoCI/nativebuild/render/visualreviewPENDENTES;semreabrir565/emprestarverde/aceite/merge/ativação.
+
+
+### PLATFORM_SUPPORT_NATIVE_BUNDLE_CLOSURE_GATE_2026_10_26
+Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe nafoundationlogoapósExportAndroidexistente, para feedback de dependênciasantesdaprovacompleta. Modo explícitocompilaçãosó/APIURLlocalporta1,nãorequisitaAPI/nãogeraAPK/nãolêartefatocanônico/temporárioremovido; nãocontascomorender. Buildnativo/jornada22capturas permanecemobrigatóriosnomesmojobAndroid comordem/permissões/aplicabilidadepreservadas. SourcepinCIativo old/newreconciliado. BashsyntaxPASS;moduleclosure/CI/Android/render/visualreviewdoNOVOSHApendentes,semmerge/aceite/ativação.
+
+
+### PR632 — isolamento de recursos Android, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "c79c1e42e8d7920eabfec9df31f7ac3283f5a03a",
+  "baselineRun": 40311198287,
+  "baselineFoundation": 121532522691,
+  "baselineAndroid": 121532669904,
+  "baselineMergePolicy": 121538095319,
+  "baselineConclusion": "failure",
+  "reproduction": "Module closure probe passed, canonical smoke/API cleanup passed, isolated assembleRelease failed at mergeReleaseResources for external pnpm assets. Zero native UI captures.",
+  "source": {
+    "path": "scripts/build-platform-support-native-fixture.sh",
+    "old": "bbef78a6858e82f526d23c35406c498dff39a8b4",
+    "new": "56847414d8ae8986ef59bf7ec5382f0247b7caf8"
+  },
+  "change": "Copy installed pnpm root/mobile node_modules preserving relative symlinks into isolated git-archive stage; use default Expo Metro config within stage. No dependency install, lockfile/mobile/canonical config/output edits. No network fallback or production navigation.",
+  "validation": "bash -n PASS. Own full CI/Android/AAPT/native22 screenshots PENDING. render=false; merge/activation/acceptance=false."
+}
+
+
+### PR632 — URL local no bundle e autenticação nativa, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "ea1ab048d385e149a5c494d21ba6442d95625007",
+  "baselineRun": 40317850446,
+  "foundation": 121554842014,
+  "android": 121554998214,
+  "mergePolicy": 121563015586,
+  "conclusion": "failure",
+  "nativeBuild": true,
+  "nativeJourney": false,
+  "proof": "Original failure-unlinked-navigation PNG extracted from logs, SHA256 78c7a6fa75c08d7d4ed8556547b5d44f073348fe01670350956e794ae1c0cbdf verified, visually inspected: Ajuda renders session-changed/expired state. Native artifact12648936260 downloaded and ZIP SHA256 0feee44e14a18dc584453dd8c2c93585adbcfad4becb9b87d902accae08acf29 verified. Embedded Hermes bundle lacks expected local http://10.0.2.2:36627/v1 despite BUILD_INFO. No network configuration relaxation or successful production request claimed.",
+  "change": "Stage-only isolated Metro FileStore/cacheVersion keyed by local URL; Gradle --no-daemon. Probe and final APK assert exact local API bytes before UI installation. Fixture initializes sanitized traffic even at zero requests; driver waits actual observed signin201 plus departure from login instead of blindly navigating after2s. Failure traffic printed before logcat. No mobile business source/dependency/lockfile or canonical build edits.",
+  "sources": [
+    {
+      "path": "scripts/build-platform-support-native-fixture.sh",
+      "sha": "9c0d0cf79a0bae338b4056b5570bdebc2362e5da",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-api.cjs",
+      "sha": "825ce50682899a627195cc8ff72fc118baf92d96",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "661dc4153d0adf5bdf8895fef171dae77beabea2",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "primary": "https://docs.expo.dev/guides/environment-variables/ ; https://metrobundler.dev/docs/configuration/#cachestores",
+  "validation": "Bash/Node/Python syntax PASS; missing local URL reproduced against actual previous artifact. New own CI/full Android/native22 and visual review pending. Native failure screen only is NOT full render proof. Merge/acceptance/activation=false."
+}
+
+
+### PR632 — carregamento fechado do cache Metro, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "d13aa8128eb4cf885377f296ae9e8e0eb49bc641",
+  "baselineRun": 40321015512,
+  "foundation": 121565659042,
+  "android": 121565835568,
+  "mergePolicy": 121572144312,
+  "baselineConclusion": "failure",
+  "reproduction": "Foundation probe/localURL passed; Android actual dependency layout failed before UI loading stage Metro config: Cannot find module metro-cache. API cleanup PASS. No new native screenshots on d13; previous single failure screen only remains partial evidence.",
+  "source": {
+    "path": "scripts/build-platform-support-native-fixture.sh",
+    "old": "9c0d0cf79a0bae338b4056b5570bdebc2362e5da",
+    "new": "e5c65caa9d734f99d030248ce38b7558dcbea933"
+  },
+  "change": "Use documented cacheStores callback receiving FileStore from Metro instead of direct require of transitive pnpm dependency. Explicit config require + Expo bundle/localURL proof now run in BOTH probe and full mode before Gradle. Final APK localURL guard remains before install, no daemon/shared cache/network relaxation.",
+  "primary": "https://metrobundler.dev/docs/configuration/#cachestores",
+  "validation": "Bash syntax PASS; new own complete CI/Android/22-state native journey/visual review PENDING. No merge/postmerge/acceptance/activation."
+}
+
+
+### PR632 — reprodução nativa e correção de histórico/gestos, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baseline": {
+    "sha": "6a8bb0e7c82d9ac7baa42587ac10e84e2efbff10",
+    "run": 40323306531,
+    "foundation": 121573482426,
+    "android": 121573671865,
+    "mergePolicy": 121584383347,
+    "nativeArtifact": 12651331751,
+    "nativeArtifactZIP": "76185440cc39234841264d2ba02c812bd90341e93c295dedfde67c7be1758740",
+    "pngs": [
+      [
+        "01-disabled-empty",
+        "2d0766a821bc06ae210bcbada0e6aac71a5b505488dbae875835d00a85e8a0e8"
+      ],
+      [
+        "02-loading",
+        "72139c85dd5f1a3648ffe4d1669707205509b577767d72deb87a359a1e38cd04"
+      ],
+      [
+        "03-form",
+        "4300078f32bfebd366dfb9f4e04a3268935b1b16f98b1e933b922ec653b34852"
+      ],
+      [
+        "04-confirmed",
+        "c0acb39f98b9e466f28ee1692ad76502f0c2cbefba10a8bfdec666639f63c071"
+      ],
+      [
+        "failure-enabled-form",
+        "a37978cb4eccb9a844d6a61ac288f60aa1377b3655771b5fe7a03a8b706f4791"
+      ]
+    ],
+    "observed": "Four real state captures plus launcher failure verified/visually reviewed. Local signin201, me200, intent201, submit201, recovery200 and refreshed page200. No detail GET before driver failure. Logcat LAUNCHER_TASKBAR_HOME_BUTTON_TAP at12:56:09; UI hierarchy viewport0..2400 includes navigation bar2274..2400 and unbounded row geometry. Driver selected clipped/offscreen node instead of scrolling into app viewport. Original confirmed screenshot also shows stale empty history after successful creation and disabled button visually identical to enabled state.",
+    "fix": "UI invalidates previously loaded page on confirmed write instead of fabricating row; disabled button distinct neutral style preserving disabled/accessibility guard. Native driver parses signed bounds, intersects app viewport, requires package, actual XML system-bar exclusion and central92% center before tap, scrolls actual target into view; normal bounded gestures only. No insets library/dependency/lockfile change or bypass/automatic resend."
+  },
+  "sources": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "sha": "c4eede305ec3867b3482d1156f8514de49c87c1f",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "sha": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "55468212ea2ad4cc42ddc4cb10341944979cc479",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "pins": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "old": "bf452cd2185c306406311b340b61a928fb0d7609",
+      "new": "c4eede305ec3867b3482d1156f8514de49c87c1f"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "old": "e6d3596720b93b9b8fa30637f10a66b51350cc2c",
+      "new": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "661dc4153d0adf5bdf8895fef171dae77beabea2",
+      "new": "55468212ea2ad4cc42ddc4cb10341944979cc479"
+    }
+  ],
+  "validation": "Original UI history regression:7/8 PASS,1 FAIL; candidate8/8 PASS. Recorded XML navigation-bar/signed-coordinate regression PASS; Python syntax PASS. New JSX/typecheck/full own CI/Android/22state journey/visual review PENDING. Four state captures plus failure previously reviewed, not full render proof.",
+  "scope": "No package/dependency/lockfile/workflow/RLS/AuthService/pool/canonical build changes. System bars excluded using recorded XML resource bounds plus conservative viewport. Product change only stale-history invalidation and disabled visual state; no claim that physical/inset layouts or all Area1 are accepted. No merge/postmerge/activation/acceptance."
+}
+
+
+### PR632 — ANR do launcher e isolamento do AVD, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "994d02c6885463aba3af8f921d0b6e6377343225",
+  "baselineTree": "90cd2f66f97cb1697323f754af70249fda323d3f",
+  "baselineRun": 40329581916,
+  "foundation": 121595123156,
+  "android": 121595319439,
+  "mergePolicy": 121606058657,
+  "conclusion": "failure",
+  "proof": "Foundation/code regressions PASS; isolated build/embedded localURL/canonical smoke/APIcleanup PASS. Native attempt blocked BEFORE LOGIN by Android system modal Quickstep isn't responding; zero local HTTP traffic. Original system-dialog PNG772b738813abd17caa585c45d54c864448c95a55557f795cd39bfca869194268/XML57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0 and native artifact12654919766 ZIPb7fa9a45850cc000ad408afc62184bce279a3b5710298131d5838682b45075dc downloaded/hashverified/visually reviewed. This system image is not a positive Ajuda state; product UI fixes still lack runtime proof on994.",
+  "change": "Second native runner explicitly reuses canonical-initialized AVDtest (force-avd-creation=false, no wipe-data); require existing config path before runner. Fixture namespace must be absent before install, no uninstall/clear-data alternate path. Native driver fails closed on system ANR; diagnostic capture may read it but no dismissal, Wait/Close or input outside own package. First canonical emulator/action/KVM options remain unchanged.",
+  "primary": "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml ; https://github.com/ReactiveCircus/android-emulator-runner#caching-avd-snapshots",
+  "sources": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "sha": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "ac15d027462010e063003e076e8488cb85489ba4",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "pins": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+      "new": "98282c368e847aaf935ee869a1dcd7149de6e5c4"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "55468212ea2ad4cc42ddc4cb10341944979cc479",
+      "new": "ac15d027462010e063003e076e8488cb85489ba4"
+    }
+  ],
+  "sourcePinReconciliation": [
+    {
+      "at": "protectedInputs/1",
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+      "new": "98282c368e847aaf935ee869a1dcd7149de6e5c4"
+    }
+  ],
+  "validation": "Python syntax PASS; actual recorded ANR XML detection/normal frame negative PASS; YAML and first canonical runner unchanged assertions PASS. New own complete CI/Android/native22/visual review PENDING. No merge/postmerge/acceptance/operational activation or real credentials."
+}
+
+
+### PR632 — diagnóstico de bootstrap e ciclo de build, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "467c6863a498956a8ae8149e74dec471e8f54805",
+  "baselineRun": 40333674282,
+  "foundation": 121609394663,
+  "android": 121609625136,
+  "mergePolicy": 121617943095,
+  "baselineConclusion": "failure",
+  "reproduction": "Canonical smoke/native build/localURL/initialized-AVD guard/APIcleanup PASS, but Quickstep ANR repeated BEFORE LOGIN with zero HTTP despite reused data. PNG665831ed15a4406e196d36df81b0ee55c189e6db9ba808979f35485808f2d635/XML57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0 and artifact12655589178/29020354bytes/ZIPf5c851e571c5c6b0db1a06dead1287b314b1690a0648852315c56ed9003e32eb downloaded/hashverified/visually reviewed. Not a positive support state; no runtime approval for product994 fixes.",
+  "diagnosisLimit": "Previous driver cleared logcat before launch and lost the bootstrap ANR reason. Resource contention from build daemons is a hypothesis, NOT a proven root cause.",
+  "change": "Retain logcat without clearing; capture emulator-bootstrap-logcat.txt before package install and print bounded ANR/CPU-reason excerpts. Normal project Gradle wrapper --stop after each completed build, before emulator startup, with free-memory and aggregate Java RSS metadata before/after. No blanket process kill, root, permission grants, system-app input, ANR dismissal, alternate image, clock/storage injection or guard relaxation.",
+  "primary": "https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:stopping_an_existing_daemon",
+  "sources": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "sha": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "sha": "1c5570243fdbbbfdbdd7853c77259190b4600cec",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "pins": [
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+      "new": "2c5f2574b8f6815a5ca248272be437859d9c1260"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "ac15d027462010e063003e076e8488cb85489ba4",
+      "new": "1c5570243fdbbbfdbdd7853c77259190b4600cec"
+    }
+  ],
+  "sourcePinReconciliation": [
+    {
+      "at": "protectedInputs/1",
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+      "new": "2c5f2574b8f6815a5ca248272be437859d9c1260"
+    }
+  ],
+  "validation": "Python syntax and YAML/lifecycle ordering PASS. Original canonical build script/package/URL/artifact/first-runner/KVM controls preserved. Own full CI/Android/native22/visual review/ANR resource hypothesis PENDING. No merge/postmerge/acceptance/operational activation."
+}
+
+
+### PR632 — saturação gráfica reproduzida e renderer explícito, 26/10/2026
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "126340939acefbe53c847e056eea8e64a4ec42db",
+  "baselineRun": 40337832070,
+  "foundation": 121624072755,
+  "android": 121624293893,
+  "mergePolicy": 121636201651,
+  "baselineConclusion": "failure",
+  "proof": "Build/native localURL/canonical smoke/cleanup PASS; startup blocked before login, zero HTTP. Java RSS before second boot1548940KiB→0; guest memory pressureavg10=0 but CPU pressureavg10=56.67, SurfaceFlinger55% and composer45%, total98% with88%kernel. ANR com.android.systemui failed to complete startup. Emulator37.2.12.0/build16428233 still invoked deprecated swiftshader_indirect. This identifies graphics startup saturation; a renderer-flag causal fix is NOT proven yet.",
+  "artifact": {
+    "id": 12658594158,
+    "size": 30014664,
+    "zipSHA256": "403df9bb5c58235a6df8f53ad611775604ccd960a0e09c34bd3893429a79f3d6",
+    "pngSHA256": "5dbf173c0146f012c3afd9463caefcfb49f74a65ed370d7df7b4415848e25257",
+    "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+    "checked": "Downloaded ZIP/PNG/XML hashes verified and original SystemUI-ANR image visually reviewed; not an Ajuda positive state."
+  },
+  "change": "ONLY second isolated native runner changes explicit -gpu swiftshader_indirect to supported -gpu swiftshader. No automatic renderer sequence, image/API downgrade, Vulkan disable, root/grant/system-dialog input or security-guard relaxation. API35/x86_64/pixel_6, existing AVD/absent fixture namespace, first canonical runner/KVM/API URL/APK, Gradle cleanup and boot/ANR evidence guards unchanged.",
+  "primary": [
+    "https://developer.android.com/studio/run/emulator-acceleration",
+    "https://developer.android.com/studio/run/emulator-troubleshooting"
+  ],
+  "source": {
+    "path": ".github/workflows/standalone-pilot-apk.yml",
+    "old": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+    "new": "d2003f30a75530001ea1402bedee7cf75dc9c5d0"
+  },
+  "sourcePinReconciliation": [
+    {
+      "at": "protectedInputs/1",
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+      "new": "d2003f30a75530001ea1402bedee7cf75dc9c5d0"
+    }
+  ],
+  "validation": "YAML and first canonical/API35/arch/profile-preserved checks PASS. New own full CI/Android/renderer outcome/native22/visual review PENDING. No merge/postmerge/acceptance/activation/production."
+}
+
+
+### 2026-10-26 — PR632: contenção de CPU no bootstrap nativo; alocação candidata
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "58b4ba625f25327a14cea5ad51e45cb0fbe8365e",
+  "baselineRun": 40342157002,
+  "foundation": 121639439707,
+  "android": 121639673928,
+  "mergePolicy": 121652550365,
+  "baselineConclusion": "failure",
+  "proof": "Both swiftshader_indirect and swiftshader selected the SAME GLES/Vulkan SwiftShader backend. No causal renderer fix. SystemUI startup ANR before login/zeroHTTP recurred; CPU pressureavg10=59.67, SurfaceFlinger54%/composer45%, total98% (90%kernel); guest memory pressure0. Build/localURL/canonical smoke/API cleanup PASS.",
+  "artifact": {
+    "id": 12660414693,
+    "size": 29924724,
+    "zipSHA256": "d48879327c1340ddf87dbd627addded047932202b1870c8473383a9d0cbdbaa6",
+    "pngSHA256": "e717b99c261fe8f312828cb60565e3add51ee87bee64b3510d1460f4586a021f",
+    "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+    "checked": "ZIP downloaded/hash verified; PNG/XML actual hashes verified; original SystemUI ANR image visually reviewed, not a positive Ajuda state."
+  },
+  "change": "Second isolated emulator gets four guest CPUs instead of action default two, guarded by nproc>=4 on SAME existing host; no larger runner/new cost/service/fallback. Action source confirms hw.cpu.ncore applied even to reused AVD. First canonical runner remains byte-for-byte unchanged. Same API35/x86_64/pixel_6/resolution/image/software backend/AVD/data/namespace/ANR fail-closed, no system dialog inputs/root/grants/security changes.",
+  "hypothesis": "Two CPU-bound compositor processes contended with startup tasks in two-core guest. Additional guest scheduling capacity is a candidate, NOT a proven fix. Host count insufficient fails before boot; no fallback allocation.",
+  "primary": [
+    "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml",
+    "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/src/emulator-manager.ts",
+    "https://developer.android.com/studio/run/managing-avds"
+  ],
+  "source": {
+    "path": ".github/workflows/standalone-pilot-apk.yml",
+    "old": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
+    "new": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc"
+  },
+  "validation": "YAML_CPU_CANONICAL_AND_NATIVE_GUARDS_PRESERVED_PASS local; own new full CI/Android/native22/visual QA pending. No merge/postmerge/acceptance/activation/production."
+}
+```
+
+
+### 2026-10-26 — PR632: IDMAP no bootstrap e isolamento de dados do AVD candidato
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "51ca7ed2f14bc0f36437942668317088b92a51c4",
+  "baselineRun": 40372652856,
+  "foundation": 121747187052,
+  "android": 121747477851,
+  "mergePolicy": 121759145930,
+  "baselineConclusion": "failure",
+  "proof": "Host nproc4/action guestcores4 confirmed. CPU pressureavg10 fell59.67→21.95/total98%→67%, but SystemUI startup ANR before login/zeroHTTP recurred: allocation NOT sufficient fix. Canonical smoke/build/localURL/cleanup PASS; full Android/merge-policy FAIL.",
+  "newDiagnostic": "Full bootstrap has848 Idmap-too-small header-entry errors, including SystemUI/launcher overlays in /data/resource-cache. Inherited AVD-data contribution is a NEW hypothesis, not proven causality.",
+  "artifact": {
+    "id": 12674473452,
+    "size": 29972734,
+    "zipSHA256": "c8718b72c8d47d1c10e508f6548e8ed4b891468580f503934bf55485bdeadb8f",
+    "pngSHA256": "60f9104cc80710f2cd2a504d94c67f818ea2a6f7a66f854fe0f0959944cd72ce",
+    "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+    "bootLogSHA256": "2f1179f5ed298677141831b483cc00a2bcce0a6e8d935f3aecabd38c08941810",
+    "checked": "ZIP/PNG/XML/bootlog actual hashes verified; originalSystemUI-ANR screenshot visually reviewed, NOT positive Ajuda state."
+  },
+  "change": "Primary isolated fixture AVD named platform-support-fixture, force creation; both .avd/.ini required ABSENT first. No inherited canonical userdata/deletion/reset of existingAVD/retry/fallback/image/API downgrade/permission workaround. First canonical runner/upload unchanged; same system image/API35/x86_64/pixel_6/display/backend/cores4hostguard/NSC/namespaceabsence/ANRfailclosed. Syntheticfixture package only; mobile/business services untouched.",
+  "primary": [
+    "https://developer.android.com/studio/run/emulator-commandline",
+    "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml"
+  ],
+  "source": {
+    "path": ".github/workflows/standalone-pilot-apk.yml",
+    "old": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
+    "new": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e"
+  },
+  "validation": "FRESH_AVD_YAML_FIRST_RUNNER_AND_ALL_RUNTIME_GUARDS_PRESERVED_PASS local; ownnewfullCI/Android/native22/visualQA pending. No merge/postmerge/acceptance/activation/production."
+}
+```
+
+
+### 2026-10-26 — PR632: 21 capturas nativas parciais; retorno e fonte em correção candidata
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "d013be57ded448a526a415c67d5c0a6c54c4d88b",
+  "baselineRun": 40376495515,
+  "foundation": 121760849284,
+  "android": 121761113273,
+  "mergePolicy": 121776878185,
+  "baselineConclusion": "failure",
+  "proof": "Fresh own AVD had zero boot ANR/IDMAP-small errors; native session journey reached21 numbered screenshots, failed on returning to company legacy support. Full Android/mergepolicy FAIL; do not certify current candidate using prior positives.",
+  "artifact": {
+    "id": 12678702064,
+    "size": 33044338,
+    "zipSHA256": "1d6922b6cfd4eb1ff7f6f43100f8cc15316f7cca764626c3c0ca1a9c773f9ac8",
+    "checked": "Downloaded ZIP digest verified. Actual bytes of all22PNG+XML files (21 numbered plusfailure) SHA256 verified against logs; ALL original images visually reviewed."
+  },
+  "screenshots": [
+    {
+      "name": "01-disabled-empty",
+      "pngSHA256": "3a134c603bc0952e97f08d3cf52f8a47cf066e8bcbc60aadd607c6d0044471bb",
+      "xmlSHA256": "075e3c4d7bd21a128a4d0418b6de4414c1445e8c4789497f4917a525c43d38ca",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "02-loading",
+      "pngSHA256": "72139c85dd5f1a3648ffe4d1669707205509b577767d72deb87a359a1e38cd04",
+      "xmlSHA256": "f61280672223012e10649e64730d0d255b0b593fa6924f47ae7f184d7d6cdd7a",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "03-form",
+      "pngSHA256": "4300078f32bfebd366dfb9f4e04a3268935b1b16f98b1e933b922ec653b34852",
+      "xmlSHA256": "2ecc587cd88be2b5cad65d6669e97c1d8564afde44680d577b28198937260e97",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "04-confirmed",
+      "pngSHA256": "c6e8168e2c05ae7d5dee0d0018a22ba512f6a33d3b38756210c5b48b39699bb2",
+      "xmlSHA256": "626ef199d8f342d915ab9131e1b7410cc086d71545cf68fe57b543f75ab14316",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "05-detail-empty-response",
+      "pngSHA256": "c5e8c46a311a24f510e78e9cc68f998d1c7d46f4da7fe0eb7d083bb78ff0f550",
+      "xmlSHA256": "a1bfcb6080570cdbb982e833a593239a294c78205d8c92ac9cd1f338abcbd6c2",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "06-authorized-response",
+      "pngSHA256": "52c6cd0f8a0176f3e1635958c41f447bf1d75ef69e0a6c2a0ce5d971d3bc4ff8",
+      "xmlSHA256": "be1a2b6ea2480379044a9dfdaadb1b2086d81b7f7e70a9fd534e979611dcd75e",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "07-withdrawn",
+      "pngSHA256": "a4add831e413a629fbc0013d2c41ba0a1c80b73aef8e1acbdacb68cbf2fb556b",
+      "xmlSHA256": "9943569babfa19e9307ad5830aeec32ea1b288cd41aa5354b18e3365c848ab1c",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "08-timeout-preserved",
+      "pngSHA256": "4980b5a00663feb4595ad59ecbacc8868ef39eb75032e606d91db7103d16a0a2",
+      "xmlSHA256": "f858f2d179eb4c761b126d4a02ee18517c5b224d993b0b633f00ac2679ecf329",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "09-durable-recovery",
+      "pngSHA256": "48b65931933edaf8a01842fb685447c4f01d24c1d84b0d9e6b9f0c21e149208b",
+      "xmlSHA256": "5c0d33ec3b87e7f80b1d069fb8a8a11f5432bec5cb9c63d224c78b5731df9bf6",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "16-unavailable-pending",
+      "pngSHA256": "3542125e39a81f3408e50b40f237ea9def52756673d79dbce88389ea1e72fbcd",
+      "xmlSHA256": "eabf7b56b89452a52891216449c91e7b329b4bf3a1e9b685f201590bf8c4c4e9",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "17-prepared",
+      "pngSHA256": "78a32f128fef49160c2dadee69d8523bff8eaa954a770b5dd599b28940b169a7",
+      "xmlSHA256": "f1e861ab59c436eeaa3cd122067382a23eaf552a0da7f7a71c4c2162b2e53b73",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "18-conflict",
+      "pngSHA256": "4980b5a00663feb4595ad59ecbacc8868ef39eb75032e606d91db7103d16a0a2",
+      "xmlSHA256": "f858f2d179eb4c761b126d4a02ee18517c5b224d993b0b633f00ac2679ecf329",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "19-explicit-retry-same-key",
+      "pngSHA256": "8783f8fcc007b345637664c1570f4e29a1733b9cd1e6760aabf4bbd519ea3477",
+      "xmlSHA256": "562ca55acafb04ee35f2a1409436f0163a84fe56154f70048dcbbdc4ff3af051",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "20-cleared",
+      "pngSHA256": "1a5921a304c2e13df5977ec63fe3ad5c1ee4a9f841d09614ee373b7c014806c9",
+      "xmlSHA256": "b56952c7f12ee5017e1396a7979cd545338a7941c9a08cc46a5483433c12023a",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "21-expired",
+      "pngSHA256": "a4fa9ddce380045f515a181d204a4f82e9159db8580b635e9cc154b6f5d0abfc",
+      "xmlSHA256": "87d2cee2aefd1661eda750a048dfadf9dde5cedc7fa28f54d88142d074455935",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "22-resolved-minimized",
+      "pngSHA256": "53ddeb7acce71650593f9e1783f18937d8303e88d43e37e5fe74d42abb2eb97d",
+      "xmlSHA256": "e4d352dfa2385127b1e55cc58dcbd1b71139d41758059cafa71b464a8518db0e",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "10-error-private-hidden",
+      "pngSHA256": "fb9ce2ad93b79fbe65b5805e716389ce8457547803936d3ad1027ace15bb0efe",
+      "xmlSHA256": "a41f9e84ef996b12c6c042107aef71bb18b736a9413e17b8e4f870708a5dc942",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "11-history-pagination",
+      "pngSHA256": "e138d4f8cf02c773867ff1b585f6e536d244c5a6441b59d83ce52ea9f48961d3",
+      "xmlSHA256": "f0d27507211debf229f0d49da3a6a1fb0a215ce0f90b36c28c93e97b36819d7b",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "12-large-font",
+      "pngSHA256": "f60f5fd03dac1c8431386cb43ae499a904e8443a96f4cbe27b013deebc3c5174",
+      "xmlSHA256": "a39b27d461b193438ce63da30ab020711b2ad8e92aa452ca37143477bdbeee8e",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "13-session-expired",
+      "pngSHA256": "f04086e318622a54e8c692bcb16e1a04b2777e31e76efc02e4535b8e9e95bdcb",
+      "xmlSHA256": "7bed920e209ded077580edbd701751234352e9be78b117195cd1352baceac0d9",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "14-company-own-empty",
+      "pngSHA256": "441978397f2c0b3bca6af33f6d3a3826c82e6e99637f519ba1eebcc257f564c6",
+      "xmlSHA256": "7f0f02f06f6ab1eba9c232c55b5b2e0669067df04e9642c098620f6178e49e36",
+      "native": true,
+      "synthetic": true
+    },
+    {
+      "name": "failure-company-isolation",
+      "pngSHA256": "a04e29a8ab3d63e51cd17422702f2df6bdcf3dd0182ca9c998373dba3f4621e3",
+      "xmlSHA256": "7c5b82197aa11ad65a43877d5aec4cd034ec89425af84e9020d36277544996eb",
+      "native": true,
+      "synthetic": true
+    }
+  ],
+  "nativePartialProof": "Real HTTP93 requests/two native signins; detail/reply/withdraw, timeout18s realcommit/UI15s/singlePOST+GETdurablerecovery, prepared503/GET/noautoPOST/changed409/correct201samehash, release/expiry12slocalDB/resolve-minimization/errorhidden/pagination/session401/companyownempty observed. ReadOnly normalfont capture looked coherent; font130% capture showed clipped category labels, so not accepted accessible layout. Legacy-company route screenshot15 missing.",
+  "reproducedDefects": "Failure XML/PNG still Ajuda after generic router.back in deep-link/session/font sequence, not Perfil. 130% screenshot12 and company14 contain truncated categories; no claim of rootcause exact internal RN cache. These are real observed limitations.",
+  "change": "Explicit Voltar ao perfil handler router.replace('/perfil'); useWindowDimensions().fontScale keys ScrollView native subtree to remeasure on runtimefontchange, preserving screen-owned controlled state/flow; choice maxWidth100% plus shrinking/wrapping label, no font scaling cap. Native driver requires Perfil anchor then scrolls/taps existing company legacy entry. No fixture bypass/dependency/lockfile/backend/pool/RLS/workflow/canonical changes.",
+  "primary": [
+    "https://reactnative.dev/docs/0.81/usewindowdimensions"
+  ],
+  "sources": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "old": "c4eede305ec3867b3482d1156f8514de49c87c1f",
+      "new": "ef5319c23dd067a2e9b7bf04535d26c74cf50b77"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "old": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3",
+      "new": "41fe58948d8a4ef966cbfa3f881e712b7d25aad0"
+    },
+    {
+      "path": "scripts/platform-support-native-ui.py",
+      "old": "1c5570243fdbbbfdbdd7853c77259190b4600cec",
+      "new": "133f44fac889c3925769ffb2c03dd018b1260065"
+    }
+  ],
+  "validation": "Actual back handler regression original9/10PASS+1FAIL (history entry !=/perfil)→candidate10/10PASS. Font rerender test preserves descriptor/draft/boundidentity/noHTTP mutation (not native layout proof). Python syntax PASS. New own full CI/typecheck/Android22screens+visual QA PENDING. No merge/postmerge/acceptance/activation/production."
+}
+```
+
+
+### 2026-10-26 — PR632: bootstrap sem tecla automática na fixture; no-focus ANR reproduzido
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "07336b6eb8dbb499341d253d386f8e1d3d57515d",
+  "baselineRun": 40381977560,
+  "foundation": 121780319489,
+  "android": 121780564093,
+  "mergePolicy": 121792277765,
+  "baselineConclusion": "failure",
+  "proof": "Foundation217/1251/534/3/11 fail0/OpenAPI119positive698responses95schemas/owner80operator59role31dispatch40/AppModule real PASS; canonical smoke/build/localURL/APIcleanupPASS. Native beforelogin/zeroHTTP blocked by Quickstep no-focused-window ANR. UI/font fixes NOT natively exercised this attempt.",
+  "artifact": {
+    "id": 12680700988,
+    "size": 29908810,
+    "zipSHA256": "47e12a70bb7a4dd1bbf242d7d61484b6ea4edd250b081e2381470c16602bfc7f",
+    "pngSHA256": "a06f414bbd0e5ffd186dc394e857a1ee4465c948b2e53d24df8c79cd2525c03e",
+    "xmlSHA256": "57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0",
+    "bootLogSHA256": "751698f7c42b5d07289f848deef2119a928c118e443531b183f5e94b2d62a9c0",
+    "checked": "ActualZIP/PNG/XML/bootlog hashes verified; originalQuickstep-ANR image visually reviewed; not positiveAjuda."
+  },
+  "observedSequence": "Third-party runner source automatically injects adb shell input keyevent82 immediately after sys.boot_completed. Own log:19:17:09.6417183Z key82→19:17:14.538 Quickstep ANR Application does not have a focused window. Official InputDispatcher docs identify key events without focused window as no-focus-ANR trigger, timeout5sec. Causal attribution is an inference to validate; no universal fix claimed.",
+  "change": "ONLY isolated fixture startup replaces second runner invocation with repo-owned guarded shell lifecycle. Same already-installed SDK/API35/default/x86_64/pixel_6/freshAVD/cores4/SwiftShader/display/NSC; no SDK/image download/alternative, key82/unlock/HOME/system input, root/grants/QMP/fallback. Explicit accel on, KVMexisting read/write required, no attached device accepted, absentAVD required. No-touch boot polling; original driver capturesboot/failsclosedANR/opensfixture then targetsownvisiblecontrols. Own emulatorPID TERM cleanup/finalreadonlylogcat. First canonical runner/smoke/upload unchanged.",
+  "primary": [
+    "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/src/emulator-manager.ts",
+    "https://developer.android.com/topic/performance/anrs/diagnose-and-fix-anrs",
+    "https://android.googlesource.com/platform/frameworks/native/+/2d2150edc2/services/inputflinger/docs/anr.md"
+  ],
+  "sources": [
+    {
+      "path": "scripts/run-platform-support-native-fixture.sh",
+      "old": null,
+      "new": "1d42f3dbbacd914396b31548afa54372733bf073"
+    },
+    {
+      "path": ".github/workflows/standalone-pilot-apk.yml",
+      "old": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e",
+      "new": "f996d90b48a7deaa41a9cca0b117b013eaecbe69"
+    },
+    {
+      "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+      "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+      "new": "64710e24b80a8e2e5223739dfcca4e65b9754f05"
+    }
+  ],
+  "validation": "Bash/node syntax, YAML/firstcanonical byteequal/guards preserved local PASS. NonCI/otherrepo launcher denied beforeSDK with explicitrefusal marker; own new fullCI/Android/native22/visualQA pending. Keep073UI/font candidate and d013partial21 proofs; no merge/postmerge/acceptance/activation/production."
+}
+```
+
+
+### 2026-10-26 — PR632: metadados da revisão do SDK sem subprocesso de versão
+
+```json
+{
+  "at": "2026-10-26",
+  "baselineHead": "e336961be72ab6004013a95112938155d7f40c95",
+  "baselineRun": 40386672148,
+  "foundation": 121796662263,
+  "android": 121796891091,
+  "mergePolicy": 121807868203,
+  "baselineConclusion": "failure",
+  "proof": "Foundation/owner80/op59/role31/dispatch40/AppModule/OpenAPI119/698/95 PASS; canonical smoke/build/fixtureURL/APIcleanup PASS. New startup terminated127 BEFORE emulator boot at optional emulator -version probe. No new screenshots or nativeproof; no evidence yet against no-Launcher-key hypothesis.",
+  "artifact": {
+    "id": 12682700252,
+    "size": 28937947,
+    "zipSHA256": "828d86d74df32258d10a4c7985d0ab03d00801e08be4abaf3db98dc46d56418e",
+    "diagnosticSHA256": "3ff97565dc43f47ef8751d5e1f25224e7f12a6283ebd43cd574071a26064e6e1",
+    "error": "qemu-system-x86_64: error while loading shared libraries: libpulse.so.0: cannot open shared object file: No such file or directory",
+    "checked": "ZIP fully downloaded/actual hash verified; EMULATOR_VERSION.txt actualbytes/hash reviewed. prebootdevices empty/image source.properties SHA98d57aac1a56bdff21e948a44332774d7f2127dc28fa413a85ad96bfb81cb7cb confirms same already-installedAPI35 image."
+  },
+  "change": "Replace ONLY version-reporting subprocess with required/strict Pkg.Revision metadata copy and SHA256 from SAME installed emulator/source.properties. No binary version fallback attempt, library installation, LD path override, root/grant/image swap or ignoring runtime loader errors. Actual emulator launch/accelon/nokeyboot/guards/firstcanonical/workflow/UI/backend unchanged; runtime failure still fails closed and retains emulator-host.log.",
+  "primary": [
+    "https://android.googlesource.com/platform/external/qemu/+/emu-master-dev/source.properties",
+    "https://github.com/google/android-emulator-container-scripts/blob/master/emu/templates/launch-emulator.sh"
+  ],
+  "source": {
+    "path": "scripts/run-platform-support-native-fixture.sh",
+    "old": "1d42f3dbbacd914396b31548afa54372733bf073",
+    "new": "f3cd418bccb19bd6f14485e92879ce81c886ac7f"
+  },
+  "validation": "Recorded version-probe failure reproduced from hash-verified artifact; Bash syntax/metadata-only delta with startup/guards preserved local PASS. New own full CI/Android/bootstrap/native22/font130/navigation/visualQA PENDING. No merge/postmerge/acceptance/activation/production."
+}
+```
+
+
+### PR632 — isolated font fixture lifecycle / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "e205a5877f024df7226af141b170f75b490e0542",
+  "baselineRun": 40390756155,
+  "conclusion": "failure",
+  "foundation": 121810803161,
+  "android": 121811060286,
+  "mergePolicy": 121823203882,
+  "artifact": {
+    "id": 12684904333,
+    "size": 33570124,
+    "zipSHA256": "d18b5bba063f9390105d13f845ee06841f6803701694cc9ead43d4082fc25ab1",
+    "verification": "ZIP and all22 PNG/XML hashes checked against log metadata. Originals12-large-font,14-company-own-empty,failure-company-isolation visually reviewed;21 numbered captures, missing15legacy. No complete render acceptance."
+  },
+  "observed": "Repo-owned no-Launcher-key boot reached real native journey, no prelogin ANR blocker. Font130% glyphs clipped; after reset1.0 company screen still enlarged. Back action recorded bounds53,53,1028,159, but terminal XML remains scrolledAjuda identical14, notPerfil. Existing router.replace code remains unchanged. Hot adb font change lifecycle/stale native geometry is a hypothesis, not proven internal RN cause.",
+  "change": "Fixture only: after setting/reading130% force-stop OWN package and reopen normally; screenshot actual launch-time130%; after setting/reading100% force-stop OWN and reopen. Session/SecureStore retained, no clear/uninstall/injection or font cap. No claim of in-place hotfont accessibility. Existing ANR/NSC/package/coordinates/realHTTP guards unchanged.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "133f44fac889c3925769ffb2c03dd018b1260065",
+    "new": "0df050e6522a700c57037d45acff5ccb315fa698"
+  },
+  "validation": "COLD_FONT_LIFECYCLE_SYNTAX_ORDER_SCOPE_RESTORE_PASS locally. New ownCI/Android22/font130%visual/navigation pending. No merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12684607121,
+    "zipSHA256": "956c98c2b31bcb2e0a23eb34a0f769d348b43fa243a95c14309b954273e19182",
+    "apkSHA256": "7e9c7ccbd2c2187790317e228a5b2ca85f036de92c715bc656a403d0bee8dc16",
+    "verification": "Actual ZIP/APK hashes verified; canonical bundle productionURL present, localfixtureURL absent. No functional production navigation."
+  }
+}
+
+
+### PR632 — explicit session refresh in native fixture / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "22f5743866e8466fb5e841d93d8b76f7f7cb4fe7",
+  "baselineRun": 40422350952,
+  "baselineConclusion": "failure",
+  "foundation": 121919590987,
+  "android": 121919765022,
+  "mergePolicy": 121928668772,
+  "artifact": {
+    "id": 12698049958,
+    "size": 33494469,
+    "zipSHA256": "e1145da6e27d73b2322c78707753853c65ecd4569164ad36355c6d4e9833b2a9",
+    "checked": "ActualZIP and all20PNG/XML hashes verified against logs (19 numbered plusfailure). Originals12-large-font/failure-session-expired visually reviewed; other18 NOT visually reviewed this increment."
+  },
+  "fontResult": {
+    "pngSHA256": "efb20ae0a6ba376956685dfea376eb5f91af4906c55c80baa8307ae5a0a65ed1",
+    "xmlSHA256": "b658390563f22ad9747fb0c27a2b727135489f08ecb4830d8d73e9003767c32d",
+    "observed": "Launch-time130% original screenshot shows complete paragraphs/category labels, unlike preceding stale foreground-font capture. Limited to current viewport/launch lifecycle, not all scroll content or hot-font live behavior."
+  },
+  "failure": {
+    "pngSHA256": "a14ba7e527fceba1b597c383386b77054260ee8b7fd41882284c26694e2806c3",
+    "xmlSHA256": "c4fdeb6a5cba704d899d449cd53800cd4fa60c1eb9b32f65c9a1c33e2d0af422",
+    "observed": "Session-expired stage: last realAPI GET/me and history200 at00:13:11.014/11.551Z, expire command00:13:13.677Z, then same-route deep link produces NO newHTTP throughfailure00:13:49Z. This is not backend acceptance of expired token; no authenticated request was made. Screenshot stillready form. No currentcompany/legacy/back proof."
+  },
+  "change": "Fixture only: invoke visible Atualizar solicitações after synthetic expiration, require new GET/me401 since boundary and unchanged POSTsubmitcount. Existing API/AuthService/session guards unmodified. Reopening alreadyfocused deep link does not certify focus transition; no route/business fix invented.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "0df050e6522a700c57037d45acff5ccb315fa698",
+    "new": "738b0191c4d8b84f76dee71b0e8c518d836a83f1"
+  },
+  "validation": "BASELINE_NO_REQUEST_AFTER_EXPIRY_REPRODUCED / EXPLICIT_REFRESH_401_NO_POST_GUARDS_SYNTAX_PASS local; own newCI/Android22/alloriginalvisualQA/back/legacy pending. No merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12699261203,
+    "size": 28932888,
+    "zipSHA256": "d63ba099d54a808df21efb263b63b12fcc5fbdc102ef161e9dd343098ffb2caf",
+    "verification": "GitHub artifact metadata only this increment; no production functional navigation."
+  }
+}
+
+
+### PR632 — native return evidence/fresh hierarchy / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "69a9bd4f20a73378b7dbbcefc78bd9069a0cedd0",
+  "baselineRun": 40428248143,
+  "baselineConclusion": "failure",
+  "foundation": 121939316171,
+  "android": 121939390532,
+  "mergePolicy": 121949457621,
+  "artifact": {
+    "id": 12701274553,
+    "size": 33702507,
+    "zipSHA256": "2324664e59bbf173994bef9f15053499ac697a3e9efc5358e56021e6b4cc3ecd",
+    "checked": "ZIP plus all22PNG/XML actualhashes verified;21 numbered screenshots+1failure. Originals13-session-expired/14-company-own-empty visually reviewed this increment; not complete visualQA."
+  },
+  "sessionProof": "Real native refresh produced GET/me401 and session-expired UI, no automaticPOST (assertions executed). New companysignin/list ownempty reached. Total95HTTP. Font130% screenshothash efb20ae0a6ba376956685dfea376eb5f91af4906c55c80baa8307ae5a0a65ed1 equals hashverified preceding launch-time image; not hotfontproof.",
+  "failure": {
+    "stage": "company-isolation",
+    "pngSHA256": "31ebc539f8a1c871818ba217c9d3bd759baaf0bf5bb1dea71041cef2463ea03e",
+    "xmlSHA256": "a6cc69705ed3ffd509f9b213a5c75fdb171ef415904de4357868c44eebe32429",
+    "observed": "Top return control action reported[53,53,1028,159], center540,106. Following wait fails, terminalPNG+XML byteidentical14-ownempty scrolledAjuda. Current source router.replace unchanged. No currentPerfil/legacy15 proof. Exact cause unknown; not another speculative navigation/product fix."
+  },
+  "change": "Fixture diagnosis/stronger evidence only: each UI dump has unique monotonically numbered path and requires successful dumped-to matchingpath before reading. Reject stale-file/idleerror possibility; no claim it caused baseline. Capture originalPNG and SAME fresh XML immediatelybefore Voltar input, plus read-only dumpsys window displays geometry. No touch alternative/retry/systeminput/bypass/guard relaxation. Own control tap coordinates unchanged. Diagnostic image named separately, not counted as positive22state.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "738b0191c4d8b84f76dee71b0e8c518d836a83f1",
+    "new": "0054f74297fe580201fa41db06b98ac18b2bd283"
+  },
+  "validation": "RETURN_NO_EFFECT_BASELINE_REPRODUCED / UNIQUE_HIERARCHY_REJECTS_ERROR_AND_WRONG_PATH / PREINPUT_CAPTURE_SYNTAX_PASS local. New ownCI/Android/current22/visualQA pending. No merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12701725671,
+    "size": 28932881,
+    "zipSHA256": "735875d90d8221210a7413033a7d67157fda6a5e4647428071476abe808e92cd",
+    "verification": "GitHubmetadata/logs only this increment; canonical no functional production navigation."
+  }
+}
+
+
+### PR632 — retain failed initial native log read / 2026-10-26 (candidate)
+
+{
+  "at": "2026-10-26",
+  "baselineHead": "85ba9216e998af7d81bfee6afa10e3aad09022eb",
+  "baselineRun": 40434814076,
+  "conclusion": "failure",
+  "foundation": 121960852938,
+  "android": 121960922952,
+  "mergePolicy": 121967864428,
+  "artifact": {
+    "id": 12703534259,
+    "size": 29270638,
+    "zipSHA256": "2daed930559be7a8d24859296fc44a962a5aa3cc64a8b11e8aedc91d313b87b1",
+    "checked": "DownloadedZIP actualSHA256 verified. Elevenentries, zeroPNG/XMLjourneycaptures; read emulator-host.log/final-logcat. Not renderedAjuda proof."
+  },
+  "observed": "Read-only boot marker02:11:11.505Z then initial preinstall adb -s emulator-5554 logcat -d returned255 at02:11:11.777Z. CalledProcessError retained command/exit in traceback but exact stdout+stderr discarded by existing generic failure path; final cleanup logcat file exists. SDKhost bootcomplete31679ms. No cause asserted, no proof against return geometry diagnostic (never reached), no nativeUI/currentHTTP. APIcleanupPASS.",
+  "change": "Only wrap initial pre-install logcat read: on CalledProcessError retain exact combinedresponse in emulator-bootstrap-read-failure.txt, emit command/exit/outputSHA256/bytecount metadata, then bare raise preserving originalfailure. No retry/wait/fallback/alternative log source/ignore failure/library/root/grant/device or runner change. Normal successful read unchanged; freshXML/pre-returndiagnostics retained.",
+  "source": {
+    "path": "scripts/platform-support-native-ui.py",
+    "old": "0054f74297fe580201fa41db06b98ac18b2bd283",
+    "new": "5f76f609d610fb9255c0037d4b9a2df6f052cf91"
+  },
+  "validation": "Controlled failure255 fixture proves rawresponse retained and exception reraised; successfixture proves existingbootlog unchanged. BOOT_READ_ERROR_OUTPUT_RETAINED_AND_RERAISED_PASS / SUCCESS_LOG_UNCHANGED_PASS / syntaxPASS. These local tests are not actual emulator proof. New ownCI/Android/native22/visualQA pending; no merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12703962215,
+    "size": 28932868,
+    "zipSHA256": "0e4c92ce517efe2efa6426cd3c798175cc15c8c5ac414a20a2d38f0d0e5369ee",
+    "verification": "GitHubmetadata only, canonical smoke/build/fixtureURLpassed logs; no functional production navigation."
+  }
+}
+
+
+### PR632 — Android help top inset / 2026-10-27 (candidate)
+
+{
+  "at": "2026-10-27",
+  "baselineHead": "abe6fb3dcba7c74505a9e05b02731693fe887b35",
+  "baselineRun": 40440499698,
+  "conclusion": "failure",
+  "foundation": 121979436552,
+  "android": 121979516354,
+  "mergePolicy": 121987594400,
+  "artifact": {
+    "id": 12706364305,
+    "size": 33800427,
+    "zipSHA256": "37bbf9b97355d8286f73fe630d14359973570ae5b7579e6f9cf805e5f7a8d7ee",
+    "checked": "ZIP and all23PNG/XML actualhashes verified against metadata (21 numbered+preinput diagnostic+failure). Originalpreinput image visually reviewed this increment; not fullvisualQA."
+  },
+  "diagnostic": {
+    "pngSHA256": "9b37b6260eb4a44ab2fb4ef611bd47754694e7ca9715c157121cf112a23dc3c0",
+    "xmlSHA256": "687b8f5058d4cabf98b27d8a70205dd5819004ec7d7b3e6c36f17f9c4f5450d5",
+    "observed": "Fresh hierarchy passed, ownbutton[53,53,1028,159] center540,106. Immediatelybeforeinput windowdisplays mDisplayCutout boundingRect492,0,610,128, safeinsettop128, density2.625. Center is geometrically INSIDEactualcamera exclusion, not a speculative staleXML verdict. Preinput image shows top control, laterreturn stillfails. No UIrouter handler change inferred; physical causality to validate with candidate currentnativejourney."
+  },
+  "change": "Ajuda screen only: Android root paddingTop uses built-in StatusBar.currentHeight (includes notch perprimaryRN), iOSpadding0/nativeSafeAreaViewkept. No hardcoded128/devicegeometry/coordinatealternatives, fontcap, newdependency/lockfile/systemUI/root/permission. Candidate moves actualbuttonlayout below Android topinset; router.replace/session/flow unchanged. Driver/boot/freshXML/coordinates/NSC/canonicalworkflow untouched.",
+  "sources": [
+    {
+      "path": "apps/mobile/app/ajuda-plataforma.tsx",
+      "old": "ef5319c23dd067a2e9b7bf04535d26c74cf50b77",
+      "new": "72460b6ee428760fc9cf3c69663752716c283efb"
+    },
+    {
+      "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+      "old": "41fe58948d8a4ef966cbfa3f881e712b7d25aad0",
+      "new": "4971334ea1df6bf30d26c4ff718d2b41fbdd1bd2"
+    }
+  ],
+  "primary": [
+    "https://reactnative.dev/docs/statusbar#currentheight"
+  ],
+  "validation": "Actual-source style+recordedcutout geometry regression baseline10PASS1FAIL→candidate11PASS0FAIL. Tests modellayoutoffset from runtimeheight, NOT native touch/render proof. Current ownCI/typecheck/Android22/fullvisualQA/back/legacy PENDING. No genericall-device/insets/physicalphone claim, no merge/postmerge/acceptance/activation/production.",
+  "canonical": {
+    "artifact": 12706580681,
+    "size": 28932888,
+    "zipSHA256": "7a8ab6acefe0eb04a6b5fcf8bf961ab28e477df341f182b39406f98cc3db1205",
+    "verification": "GitHubmetadata only, no functionalproductionnavigation."
+  }
+}

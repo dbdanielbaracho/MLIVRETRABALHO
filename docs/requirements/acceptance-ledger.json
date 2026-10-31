@@ -232,7 +232,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -263,7 +263,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -828,7 +828,7 @@
       "implementation": [
         {
           "path": "apps/mobile/app/perfil.tsx",
-          "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b",
           "mode": "100644"
         },
         {
@@ -1013,7 +1013,7 @@
       "implementation": [
         {
           "path": "apps/mobile/app/perfil.tsx",
-          "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b",
           "mode": "100644"
         },
         {
@@ -1236,7 +1236,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha": "f05e734241be320aade188f19c3a7fa54f483e55",
+          "sha": "c38d89e91cd3c562be73b3f793115809cfb34e73",
           "mode": "100644"
         },
         {
@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
           "mode": "100644"
         }
       ],
@@ -1506,7 +1506,7 @@
         },
         {
           "path": "scripts/backend-contract-acceptance-e2e.cjs",
-          "sha": "9759ec6b5bde0c51a2d48eca968d64990b2b6939",
+          "sha": "0856912b5af34a56e0a509aa4f3c896c7065e499",
           "mode": "100644"
         }
       ],
@@ -1537,7 +1537,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -2719,7 +2719,7 @@
       "tests": [
         {
           "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
-          "sha": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
           "mode": "100644"
         }
       ],
@@ -3321,12 +3321,12 @@
   "protectedInputs": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha": "f05e734241be320aade188f19c3a7fa54f483e55",
+      "sha": "c38d89e91cd3c562be73b3f793115809cfb34e73",
       "mode": "100644"
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "528002354bcd760dd5998144608d0b2c6aaa2772",
+      "sha": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
       "mode": "100644"
     },
     {
@@ -3441,7 +3441,7 @@
     },
     {
       "path": "apps/mobile/app/perfil.tsx",
-      "sha": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+      "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "56d89b19623b5ad07adb4c31632d6019fabc5e9c",
+      "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
       "mode": "100644"
     },
     {
@@ -4599,5 +4599,3303 @@
     "literalPostCIAndApplicableAndroidRequired": true,
     "historicalAuditBaseRetained": "4f036f78cef5436ec47545d811f8bffa48c48070",
     "evidence": "Preparation: 3 actual input tests +10 actual client/parser/pre-JSX screen-hook tests pass on Node24.22.1; 108-operation source/OpenAPI inventory passes. PostgreSQL real HTTP, complete compilation/suite and canonical Android are PENDING own CI. No RN render/physical-device/production claim."
+  },
+  "platformSupportCandidate": {
+    "baseMain": "755a41e8defc574dcd5fbaa20024ce1a07630213",
+    "decision": "https://github.com/dbdanielbaracho/MLIVRETRABALHO/issues/624",
+    "scope": "DRAFT: intake foundation plus owned privacy export and guarded maintenance retention; platform intake/operator API, audited assignment/revocation, pagination and UI not implemented.",
+    "sourceChanges": [
+      {
+        "path": "apps/api/src/platform-support-input.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "970e0fc908e439b75b8da75fee97611122fdcdf7"
+      },
+      {
+        "path": "apps/api/src/platform-support-input.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f3714ee72a34ad502897d407bcb847609417cc14"
+      },
+      {
+        "path": "apps/api/src/platform-support-store.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "24ff01b82279d3a6908aa7274c1df3ba462999a4"
+      },
+      {
+        "path": "apps/api/src/platform-support-store.pg.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c541681b97c88d55ce77d399612eda9e33aba281"
+      },
+      {
+        "path": "packages/db/migrations/0074_platform_support_intake.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0a15457e5afe7f6bd60eac558f92bf167909a79"
+      },
+      {
+        "path": "scripts/backend-contract-acceptance-e2e.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4bed14ee494f95526e530d439263807147e93086"
+      },
+      {
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      },
+      {
+        "path": "apps/api/src/platform-support-privacy.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d9188b4a01bcc151318bed8da7e0e606103ac60"
+      },
+      {
+        "path": "apps/api/src/platform-support-privacy.pg.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f0bf262d22b7952d1620397d2682f2a72bf454d"
+      },
+      {
+        "path": "apps/api/src/privacy.controller.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1a35fbb520ae148ff451b3af1cf9a7fb9376bdd3"
+      },
+      {
+        "path": "apps/api/src/privacy-retention.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca3a6c876cb5d0bd10dcfc4873f76f75aa89a0cd"
+      },
+      {
+        "path": "docs/api/openapi.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0615f49ffe3e7ab5a9ebf10205e93a3cc5ce49c4"
+      }
+    ],
+    "sourcePinReconciliation": [
+      {
+        "at": "requirements/3/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+        "new": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      },
+      {
+        "at": "requirements/4/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+        "new": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      },
+      {
+        "at": "requirements/47/tests/1",
+        "path": "scripts/backend-contract-acceptance-e2e.cjs",
+        "old": "9759ec6b5bde0c51a2d48eca968d64990b2b6939",
+        "new": "bafe240bcc2bedddded9d219a86c3867a1bceea4"
+      },
+      {
+        "at": "requirements/48/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+        "new": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      },
+      {
+        "at": "proofs/5/tests/0",
+        "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+        "old": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
+        "new": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      }
+    ],
+    "ownFullCIAndApplicableAndroidRequired": true,
+    "literalPostCIAndApplicableAndroidRequired": true,
+    "evidence": "Prior intake head39beb own CI40209551127 success retained in PR receipt. New privacy increment needs its own full CI and applicable Android; no merge/post or new acceptance.",
+    "reproducedDefect": "Original normalizer accepted lone UTF-16 surrogate, while Node UTF-8 conversion changed content. Reject NUL/lone surrogates before digest; valid emoji4000 boundary preserved. Two input tests pass after correction; fixture asserts no intent for malformed text.",
+    "privacyIncrement": {
+      "baseHead": "39beb2f198a951ec22b050afb601c149cf3799ea",
+      "previousSourceChanges": [
+        {
+          "path": "apps/api/src/platform-support-input.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "970e0fc908e439b75b8da75fee97611122fdcdf7"
+        },
+        {
+          "path": "apps/api/src/platform-support-input.test.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f3714ee72a34ad502897d407bcb847609417cc14"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "24ff01b82279d3a6908aa7274c1df3ba462999a4"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e27bba514a30770531d7cc81ca0d70a769b75f7c"
+        },
+        {
+          "path": "packages/db/migrations/0074_platform_support_intake.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b0a15457e5afe7f6bd60eac558f92bf167909a79"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bafe240bcc2bedddded9d219a86c3867a1bceea4"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "bafe240bcc2bedddded9d219a86c3867a1bceea4",
+          "new": "4bed14ee494f95526e530d439263807147e93086"
+        }
+      ],
+      "metadataDecision": "Content-free case/assignment/response identifiers removed after closed365 days once no recent/held audit remains; held requester/response-author/actor evidence preserved. Delegated data minimization; no statutory-period claim.",
+      "localValidation": "Type stripping/syntax,108-operation source/OpenAPI consistency, readonly dry-run and inactive export smoke passed. Actual PostgreSQL/HTTP and complete CI/Android PENDING this new head."
+    },
+    "operatorIncrement": {
+      "baseHead": "6e92e54d5eb1d580c6def76be39b1f425ed1792a",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-operator-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3f3a0e5eb2585f0784e59aaafd3e20a9f6046606"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c8d23fff5854d154cb7e509a498136687faeaa04"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ede8af37c1e60f90b61ea54d260269df21e54d59"
+        },
+        {
+          "path": "packages/db/migrations/0075_platform_support_response_receipt.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "630bbe836f1e0ea43d8cb76efa62bbd3cd4fcd66"
+        }
+      ],
+      "typecheckCorrection": {
+        "failedHead": "ad604316744619fdd4c1718889c19bf373b8de18",
+        "failedRun": 40218466523,
+        "message": "TS2339 inferred spread of Record<string,any> erased description; use explicit AssignedCase in query and callback",
+        "old": "2bf858f9024e26146b14f24c6ecd708e5462d810",
+        "new": "1874833038a704e9f422358a8fa7e9ed6021ae5d"
+      },
+      "scope": "Internal assigned-operator service; HTTP/session binding, administrative assignment authority, pagination/UI and positive restricted-runtime RLS proof pending. No operational activation or new acceptance.",
+      "asyncCorrection": {
+        "failedHead": "03809993451d4f498fc821a7d869a38e09b093f8",
+        "failedRun": 40218608434,
+        "reproduction": "respond validation threw synchronously before assert.rejects; async detail/respond now consistently return rejecting Promises; local regression passed without DB",
+        "old": "1874833038a704e9f422358a8fa7e9ed6021ae5d",
+        "new": "3f3a0e5eb2585f0784e59aaafd3e20a9f6046606"
+      }
+    },
+    "ownerAPIIncrement": {
+      "baseHead": "41d7c89969fc823a8060c7de9d42303f59f3b291",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support.controller.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4455553a343b67cca100404d5b349de540a732ca"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "04b532545fe838e6376c256dac99a4b771c5a5de"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cde9f5193a838293fcc0aa0d9be4cd532e103ea6"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dccd3b65fc969c803c07dafb743a70b18b05ed12"
+        },
+        {
+          "path": "scripts/platform-support-owner-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "80bf7805c34dd6a04247ecacb2448bda5a584fd5"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3551435df6d93440aa8e3e92623af45715c32f59"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fccc48b61d19e5534c424284aa2686cabb8e85ef"
+        },
+        {
+          "path": "apps/api/src/privacy.controller.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e448d9bc22bdc9638c27f20ef4dc898749a53e5b"
+        },
+        {
+          "path": "docs/api/openapi.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f012bc90603efe7c076d6498721dab9a80a1d939"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2",
+          "new": "fccc48b61d19e5534c424284aa2686cabb8e85ef"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2",
+          "new": "fccc48b61d19e5534c424284aa2686cabb8e85ef"
+        },
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "4bed14ee494f95526e530d439263807147e93086",
+          "new": "c3ee965f6514bb538fc64d3fc4040574a004f5a2"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2",
+          "new": "fccc48b61d19e5534c424284aa2686cabb8e85ef"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2",
+          "new": "fccc48b61d19e5534c424284aa2686cabb8e85ef"
+        }
+      ],
+      "scope": "Six session-authenticated owner HTTP routes; 45 controllers/114 operations. Capability stays false outside guarded synthetic CI fixture. Operator API, administrative assignment authority, UI and positive restricted-runtime RLS proof remain pending; DRAFT, no merge/activation/acceptance.",
+      "validation": "Local JS syntax, source/OpenAPI schema consistency and owner input rejection smoke passed. Full real HTTP/PostgreSQL and own CI/Android PENDING.",
+      "catalogCorrection": {
+        "previousHead": "86befb7217eaa7fc001bd587659d1a12f84abd94",
+        "reason": "New actual session-revocation journey positively exercises auth/signout before the catalog check. Require zero missing positive routes there instead of deferring one; final pro signout/denial remains unchanged.",
+        "pins": [
+          {
+            "at": "requirements/47/tests/1",
+            "old": "c3ee965f6514bb538fc64d3fc4040574a004f5a2",
+            "new": "3551435df6d93440aa8e3e92623af45715c32f59"
+          }
+        ]
+      },
+      "noticeContractCorrection": {
+        "failedHead": "44b8f69dfd72e40f867ba93f0998185dbf109787",
+        "failedRun": 40223832340,
+        "observed": "OWNER_API_HTTP_PG_PASS and OpenAPI114/460 passed; later legacy export check expected old exact redaction notice. Preserve strict equality to the new canonical authorized-own-response exception; all data redaction assertions retained.",
+        "source": {
+          "path": "scripts/http-privacy-export-e2e.sh",
+          "sha": "52f27e27154e20bd5cc2fe988d8396b34381e181",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "pins": []
+      }
+    },
+    "operatorAPIIncrement": {
+      "baseHead": "2055b468b44a3a6ea04dc314ab0382da7b274228",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "sha": "84e87942ced186f0273a19c40ff7ac72155cf7c5",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "sha": "3afd2a9ef2327aaa4967389487b71b35fc4e1f2b",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/platform-support-operator-acceptance-e2e.cjs",
+          "sha": "99b61c9a644c8d5576ea5a3bfaaceb75963742f2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "sha": "e0077d30b443fdd4b2a4edbd6fb1da0f925199ea",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        },
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "3551435df6d93440aa8e3e92623af45715c32f59",
+          "new": "e0077d30b443fdd4b2a4edbd6fb1da0f925199ea"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "fccc48b61d19e5534c424284aa2686cabb8e85ef",
+          "new": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc"
+        }
+      ],
+      "scope": "Two session-bound assigned-operator HTTP routes; 46 controllers/116 operations. No role or assignment authority inferred from tenant membership. Synthetic CI role/assignment setup only; administrative authority, queue/UI and positive restricted-runtime RLS proof pending. DRAFT; no operational activation/merge/acceptance.",
+      "validation": "Local JS syntax and OpenAPI/source consistency preparation; full real HTTP/PostgreSQL and own CI/Android PENDING.",
+      "primarySource": "OWASP Authorization Cheat Sheet consulted 2026-10-25: deny by default, authorize every request/resource, least privilege. https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+    },
+    "dispatchIncrement": {
+      "baseHead": "e99b680044aa08c8c6aa34a208a76184b106e060",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d69aba807bf4827b362374956820f565e318489d"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b707800edfd1a2136bec75b4f6bb5918180c31c7"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4096837fff75fea6b4f7db3f07ff5aefea9bd0b"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d5d3ca39a2919a59b179db906cfa5a8094b3df12"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5683b8b0b5cc612fb095b9cd5ad4003b98eb1bb8"
+        },
+        {
+          "path": "packages/db/migrations/0076_platform_support_dispatch.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "974a6867d362acade284596f9109e6cd75a994b3"
+        }
+      ],
+      "scope": "Internal dedicated administrative assignment/revocation authority; CAS and actor/subject audit. No administrative HTTP/CLI or operator role provisioning; no real administrator, operator or activation. RLS positive/runtime/UI pending. DRAFT.",
+      "validation": "Local TypeScript transform passed; real PostgreSQL/own CI/Android pending.",
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "old": null,
+          "new": "9e81b18c4f4ef7ae49b182ee810be02857ccae45"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.pg.ts",
+          "old": null,
+          "new": "b707800edfd1a2136bec75b4f6bb5918180c31c7"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "ede8af37c1e60f90b61ea54d260269df21e54d59",
+          "new": "c4096837fff75fea6b4f7db3f07ff5aefea9bd0b"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.ts",
+          "old": "4d9188b4a01bcc151318bed8da7e0e606103ac60",
+          "new": "d5d3ca39a2919a59b179db906cfa5a8094b3df12"
+        },
+        {
+          "path": "apps/api/src/platform-support-privacy.pg.ts",
+          "old": "7f0bf262d22b7952d1620397d2682f2a72bf454d",
+          "new": "5683b8b0b5cc612fb095b9cd5ad4003b98eb1bb8"
+        },
+        {
+          "path": "packages/db/migrations/0076_platform_support_dispatch.sql",
+          "old": null,
+          "new": "974a6867d362acade284596f9109e6cd75a994b3"
+        }
+      ],
+      "scopeCorrection": {
+        "priorHead": "0ede52761f86b70b4a8cc07829285eefef5cf929",
+        "reason": "New dedicated administrator table explicitly classified PLATFORM and included in existing real runtime denial probes; unclassified-table gate remains strict.",
+        "pins": [
+          {
+            "at": "requirements/3/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          },
+          {
+            "at": "requirements/4/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          },
+          {
+            "at": "requirements/48/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          },
+          {
+            "at": "proofs/5/tests/0",
+            "old": "be7d153e940dda48a3dfe8ed9dab46f0b65decbc",
+            "new": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b"
+          }
+        ]
+      },
+      "typecheckCorrection": {
+        "failedHead": "541a46e2128b54c35474b20eac78173fc31463c0",
+        "failedRun": 40232773764,
+        "observed": "TS2345: RETURNING rows[0] may be undefined under strict indexed access. Explicitly fail the transaction when RETURNING has no row before constructing ACK.",
+        "old": "9e81b18c4f4ef7ae49b182ee810be02857ccae45",
+        "new": "d69aba807bf4827b362374956820f565e318489d"
+      }
+    },
+    "adminAPIIncrement": {
+      "baseHead": "5d642c973f1658f3e69494b873caa5cf938e5105",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a63d3cea18bc5055e36e5de2de0bc8d05272b2bc"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin.controller.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b4e1245f814aeb63ddfe41f825ca0ae123ed35fc"
+        },
+        {
+          "path": "scripts/platform-support-admin-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "44a5a364c4759bca11655b2199e95f766ff97f7e"
+        },
+        {
+          "path": "packages/db/migrations/0077_platform_support_operator_roles.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a897f57b213c3bc6e2c5d770c654c43b9678e42a"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b225214224b5b7b2906913c2d50f6f496ff88ed"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f1684e0326950477a4f6af63fb726a6164d872d"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "871be8bcb281ca06b22bf5f7229e8e6b5943371b"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d49dfbdb553609a835674fdc12e1a11e3e8e13cb"
+        }
+      ],
+      "pins": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
+          "new": "871be8bcb281ca06b22bf5f7229e8e6b5943371b"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
+          "new": "871be8bcb281ca06b22bf5f7229e8e6b5943371b"
+        },
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "e0077d30b443fdd4b2a4edbd6fb1da0f925199ea",
+          "new": "9f1684e0326950477a4f6af63fb726a6164d872d"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
+          "new": "871be8bcb281ca06b22bf5f7229e8e6b5943371b"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "7cc6de9635a8ed0b9ec9ab4c427737a8c072566b",
+          "new": "871be8bcb281ca06b22bf5f7229e8e6b5943371b"
+        }
+      ],
+      "scope": "Two session-bound dedicated administrator HTTP operations for audited CAS operator role and case assignment; revoke invalidates assignments and regrant never resurrects. Bootstrap fixture only, no real activation/provisioning, RLS positive/UI/queue pending.",
+      "validation": "Local syntax/TypeScript transform passed; full own HTTP/PostgreSQL/CI/Android pending.",
+      "multiCaseProof": {
+        "previousHead": "e815d714663845ae9e1dacd5b6a017ff015b1bdd",
+        "reason": "Strengthen actual HTTP witness from one case to two assigned cases: audit failure preserves both; revocation denies both; role regrant resurrects neither.",
+        "old": "e0fdf69a87566c3e6415fb4e5122b64e3ef1a7f8",
+        "new": "44a5a364c4759bca11655b2199e95f766ff97f7e"
+      }
+    },
+    "operatorQueueIncrement": {
+      "baseHead": "6b8fd58030a254355a7ad506d1040a70cff09d27",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-page.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6f0c8cfc1c54b48d3e237ec244ccab133ab7f2a5"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "201a342cc39c081b49464a0783c4c0e108900254"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-store.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bc14e4f7864508f946f10d22c69caedce3a44240"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dc0964cd76fc35891808eb899a7e1a8c86b60d40"
+        },
+        {
+          "path": "scripts/platform-support-queue-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "114a10b9a5519767ca36607427fd03a90d267d6b"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2"
+        }
+      ],
+      "pins": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "871be8bcb281ca06b22bf5f7229e8e6b5943371b",
+          "new": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "871be8bcb281ca06b22bf5f7229e8e6b5943371b",
+          "new": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2"
+        },
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "9f1684e0326950477a4f6af63fb726a6164d872d",
+          "new": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "871be8bcb281ca06b22bf5f7229e8e6b5943371b",
+          "new": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "871be8bcb281ca06b22bf5f7229e8e6b5943371b",
+          "new": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2"
+        }
+      ],
+      "scope": "Assigned active operator GET queue, active requester, stable microsecond/UUID cursor20/default100max, headers only, transactional audit. Shared unchanged owner parser. HTTP proof22rows/ties/isolation/revocation/rollback. No role, capability, production or area activation; UI/positive restricted-runtime RLS pending.",
+      "validation": "Local TypeScript transform/JS syntax preparation passed; full own HTTP/PostgreSQL/CI/Android pending."
+    },
+    "mobileUIIncrement": {
+      "baseHead": "224340d379aa4d142a68cf3a324be580a0579533",
+      "sources": [
+        {
+          "path": "apps/mobile/app/ajuda-plataforma.tsx",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bf452cd2185c306406311b340b61a928fb0d7609"
+        },
+        {
+          "path": "apps/mobile/lib/platform-support.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0edaa081e627efe1e8f7ee3028f325e81d07cb28"
+        },
+        {
+          "path": "apps/mobile/lib/platform-support-storage.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c2c4985c845d68c2f6b2e0639598d9ed359e3a7c"
+        },
+        {
+          "path": "apps/mobile/tests/platform-support.test.mjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb"
+        },
+        {
+          "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e6d3596720b93b9b8fa30637f10a66b51350cc2c"
+        },
+        {
+          "path": "apps/mobile/app/perfil.tsx",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        }
+      ],
+      "pins": [
+        {
+          "at": "requirements/25/implementation/0",
+          "path": "apps/mobile/app/perfil.tsx",
+          "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        },
+        {
+          "at": "requirements/30/implementation/0",
+          "path": "apps/mobile/app/perfil.tsx",
+          "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        },
+        {
+          "at": "protectedInputs/24",
+          "path": "apps/mobile/app/perfil.tsx",
+          "old": "7ac6f245895ecbae44d3b48adcf7023fde293ef6",
+          "new": "8a92c3bb8164a3d3ad00cf83519f2351d696803b"
+        },
+        {
+          "at": "platformSupportCandidate.mobileUIIncrement.sources/3",
+          "path": "apps/mobile/tests/platform-support.test.mjs",
+          "old": "300df77d2cb976d86f084173a378674cc8a32c5b",
+          "new": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb"
+        }
+      ],
+      "scope": "Standalone platform help screen and unconditional Profile entry, existing company support preserved. Identity-bound minimal encrypted descriptor, no message/token persistence, strict ACK/recoveryGET/no automatic POST; explicit same-key retry after prepared. 15s covers auth/storage/transport/JSON; stale/blur/cancel ignored. Queue/detail/withdraw states. No real activation or acceptance; rendered/runtimeRLS proof pending.",
+      "validation": "22 local parser/flow/real pre-JSX handler tests selected by the existing suite; own full CI/Android required on the resulting head.",
+      "typecheckCorrection": {
+        "failedHead": "a9b644d9a7a485a24fcd85e2cc86814a9944ed02",
+        "failedRun": 40246000154,
+        "reason": "TS2339 closure-mutated local narrowed to never in catch; typed mutable reference preserves actual pending descriptor. Normal handler test timeout50ms; intentionally stalled timeout test remains8ms.",
+        "pins": [
+          {
+            "path": "apps/mobile/lib/platform-support.ts",
+            "old": "115144d4306b45e20c588ef2615522a52d8749c4",
+            "new": "0edaa081e627efe1e8f7ee3028f325e81d07cb28"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+            "old": "1e43b3b6a579dfb9878b829c5bf557c24053ab5b",
+            "new": "e6d3596720b93b9b8fa30637f10a66b51350cc2c"
+          }
+        ]
+      },
+      "durableMetadataIsolation": {
+        "at": "2026-10-28",
+        "change": "Regression rejects malformed or cross-identity durable recovery metadata before any /me/platform-support request; the private slot is neither reassigned nor silently erased.",
+        "scope": "Mobile parser/flow test only; no React/RN source, dependency, lockfile, API, database, external service, operator, tenant, or production change.",
+        "validation": "Own CI required on the resulting ledger head; no Android UI claim."
+      }
+    },
+    "readRLSIncrement": {
+      "baseHead": "46032a2bd2df94098f7f8e23da0f3da70fa22fb7",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0078_platform_support_active_requester_rls.sql",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "30e2b69223e93956535cfa457e7a3ccdb746334e"
+        },
+        {
+          "path": "apps/api/src/platform-support-read-rls.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f5fd2f659d2b816376fa2015ab86de5988cedfa"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2b74b80cc0883a652bccec04723a44d10717e6f1"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "d49dfbdb553609a835674fdc12e1a11e3e8e13cb",
+          "new": "2b74b80cc0883a652bccec04723a44d10717e6f1"
+        }
+      ],
+      "scope": "0078 strengthens owner intent/case and assigned-operator case SELECT with active requester and explicit operator context. No ACL/role/grant/bootstrap/activation changes in migrations. Actual old0074 baseline then0078 fixed read-policy fixture in guarded schema.",
+      "validation": "TypeScript syntax checked locally; PostgreSQL baseline reproduction/fixed proof and own full CI/Android pending. Disposable nonowner NOLOGIN NOBYPASS role/read ACLs/rows rolled back, app_runtime remains denied. NOT positive API runtime proof or rendered journey; draft, no acceptance."
+    },
+    "ownerRuntimeIncrement": {
+      "baseHead": "691e39e6ccfe921ffcbc801e076d6d9f6a3ec7c0",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0079_platform_support_owner_locks.sql",
+          "sha": "24990a334c412a4ce07fbeafabe2101d16c130bf",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "sha": "7f2b24a160d713f9d5373cb1e0e72613e3be9364",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-store.ts",
+          "sha": "09f2a5cc0eda31a0d97bbd2d38377f93c69f1bda",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "sha": "94d50b2b761192db3c10d479d1c4368a4edcd29d",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "c260fe6ada4217339292e996b94d7eebbf1032fd",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-store.ts",
+          "old": "cde9f5193a838293fcc0aa0d9be4cd532e103ea6",
+          "new": "7f2b24a160d713f9d5373cb1e0e72613e3be9364"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-store.ts",
+          "old": "201a342cc39c081b49464a0783c4c0e108900254",
+          "new": "09f2a5cc0eda31a0d97bbd2d38377f93c69f1bda"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "2b74b80cc0883a652bccec04723a44d10717e6f1",
+          "new": "c260fe6ada4217339292e996b94d7eebbf1032fd"
+        }
+      ],
+      "decision": "Bounded SECURITY DEFINER owner-identity/intake lock functions, only boolean results, qualified relations and fixed pg_catalog search_path; PUBLIC/app_runtime execute revoked atomically. No persistent runtime role/grant/bootstrap/activation in migration. List uses nonlocking availability branch to preserve prior snapshot behavior; writes retain prior row locks.",
+      "references": [
+        "https://www.postgresql.org/docs/17/sql-createfunction.html",
+        "https://www.postgresql.org/docs/17/sql-select.html"
+      ],
+      "validation": "Own CI/Android/actual PostgreSQL reproduction and positive owner runtime proof PENDING. Fixture uses DatabaseService actual pool/transaction with disposable nonsuperuser NOBYPASS LOGIN and column ACLs only in guarded synthetic schema; no UPDATE identities/capability/operators. Lock contention, temp shadowing, RLS, replay, audit rollback and cleanup asserted. Not full restricted HTTP/operator/admin runtime proof or render.",
+      "guardInventoryCorrection": {
+        "failedHead": "7afdca04d5c10cb65240aede143821d97309fac8",
+        "failedRun": 40256875359,
+        "stage": "explicit-whole-schema-scope-and-role",
+        "reason": "Hard privileged-function inventory correctly rejected the two newly introduced closed lock helpers. Register only those exact signatures; keep unknown-function and PUBLIC/app_runtime checks, add fixed-path/no-write-qualified-definition checks and actual tenant execution denials. No ACL relaxation or skipped gate.",
+        "source": {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "pins": [
+          {
+            "at": "requirements/3/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          },
+          {
+            "at": "requirements/4/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          },
+          {
+            "at": "requirements/48/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          },
+          {
+            "at": "proofs/5/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "7d1506e5511eecf6f29c9b1e3cfe0b88bebd62a2",
+            "new": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb"
+          }
+        ]
+      },
+      "searchPathHardening": {
+        "previousHead": "81099d59c3c982b0ae51e721979f8e29564b497b",
+        "previousRun": 40257417700,
+        "reason": "PostgreSQL17 secure-definer guidance: explicitly put pg_temp last, qualify PLpgSQL internal types. Functions remain closed to PUBLIC/app_runtime. Exact inventory and actual fixture require normalized pg_catalog,pg_temp; no guard removed.",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0079_platform_support_owner_locks.sql",
+            "sha": "19ff304d3c4de4bc87f4f38b4654bba6e72f488d",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "sha": "a836dd145cca27eb33f2ae03a39d32671f00a86b",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "sha": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0079_platform_support_owner_locks.sql",
+            "old": "24990a334c412a4ce07fbeafabe2101d16c130bf",
+            "new": "19ff304d3c4de4bc87f4f38b4654bba6e72f488d"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "old": "94d50b2b761192db3c10d479d1c4368a4edcd29d",
+            "new": "a836dd145cca27eb33f2ae03a39d32671f00a86b"
+          },
+          {
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "requirements/3/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "requirements/4/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "requirements/48/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          },
+          {
+            "at": "proofs/5/tests/0",
+            "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+            "old": "97d091ffcc0390857c90dd61f49e5421cdfd4dcb",
+            "new": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f"
+          }
+        ],
+        "ownFullCIAndAndroidPending": true
+      }
+    },
+    "ownerHTTPRestrictedIncrement": {
+      "baseHead": "6734029c2c6734796313644b70a1f43092ebdee4",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "0b6cdae57d53a509109450c483013232009bcaea",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "sha": "a630e98e54b2deeae89e07dbe06760108fbccd23",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "97fd69522c8d3a40bf12f1e8c89e4e5eee90d028",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "old": "a836dd145cca27eb33f2ae03a39d32671f00a86b",
+          "new": "a630e98e54b2deeae89e07dbe06760108fbccd23"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "c260fe6ada4217339292e996b94d7eebbf1032fd",
+          "new": "97fd69522c8d3a40bf12f1e8c89e4e5eee90d028"
+        }
+      ],
+      "scope": "Actual loopback Nest/Fastify PlatformSupportController, actual AuthService with separate existing authentication authority, actual signup/signin session rows from current local API. Owner store DatabaseService uses the existing disposable restricted login and cannot read sessions. No production routing/pool/permissions, endpoint/schema/migration/mobile changes.",
+      "validation": "Three TypeScript sources syntax PASS locally. Own full CI/Android and actual HTTP/PostgreSQL proof PENDING. Assert all6routes, unlinked/no profile, two companies/foreign identity, forged owner/tenant, replay/recovery, replies, audit rollback, pagination, withdrawal, capability false, anonymous/signout/expiry/revocation matrix with no writes, store/auth deactivation. Close listener/pools, revoke sessions, remove private synthetic rows; global synthetic signup rows live only until CI database disposal. Operator/admin restricted runtime and visual proof remain pending.",
+      "typecheckCorrection": {
+        "failedHead": "36149a46a1cb9391248e30f56dec206a52604969",
+        "failedRun": 40261226540,
+        "reason": "TS2532 on possibly missing count-query row in DatabaseService typed results; optional row access keeps strict equal0 assertion, so absent data still fails.",
+        "source": {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "0324238ab9793ae6aaf8056769068d7520f3322b",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "pin": {
+          "old": "0b6cdae57d53a509109450c483013232009bcaea",
+          "new": "0324238ab9793ae6aaf8056769068d7520f3322b"
+        }
+      },
+      "sessionExpiryFixtureCorrection": {
+        "failedHead": "a6f45c6b308cbb7766f6828ab9521668d6c581cb",
+        "failedRun": 40261459639,
+        "observed": "PostgreSQL sessions_expiry_after_creation_check rejected a freshly-created session with expiry now-1second. Actual HTTP journey had reached synthetic audit fault and session-expiry phase; no HTTP_PASS emitted.",
+        "correction": "Use created_at now-2days and expires_at now-1day, so expired session obeys chronology constraint. Keep auth/constraint/guards unchanged; add stage+SQLSTATE-only fixture diagnostics without raw identities/tokens/error.",
+        "source": {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "9fa5eef7d64b5156fc7bb2680ef0e7ff03893cc4",
+          "mode": "100644",
+          "type": "blob"
+        }
+      }
+    },
+    "operatorRestrictedRuntimeIncrement": {
+      "baseHead": "f44ce553115e39b1ed7cf35b34b2c70714e8b1e5",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+          "sha": "da6c2b8bd1f7e7f1acee36027423a58c7cd06025",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-store.ts",
+          "sha": "2697a2197e619f6139fadae74f3f12a8a42c40af",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+          "sha": "cab017a9c51f0e509e84078c8bee75eee71fc1c2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "sha": "5fcf37c96f586c7746399f900d30f33a0dd672f4",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "1fad45bb26b7ccde06cb10169a24be9dbf17bfe2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "44915535899555918dfd532b9493821d886290ee",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+          "old": null,
+          "new": "da6c2b8bd1f7e7f1acee36027423a58c7cd06025"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-store.ts",
+          "old": "bc14e4f7864508f946f10d22c69caedce3a44240",
+          "new": "2697a2197e619f6139fadae74f3f12a8a42c40af"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+          "old": null,
+          "new": "cab017a9c51f0e509e84078c8bee75eee71fc1c2"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "old": null,
+          "new": "5fcf37c96f586c7746399f900d30f33a0dd672f4"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "97fd69522c8d3a40bf12f1e8c89e4e5eee90d028",
+          "new": "1fad45bb26b7ccde06cb10169a24be9dbf17bfe2"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        }
+      ],
+      "scope": "Operator SQL/store and actual HTTP restricted local fixture; closed boolean locks plus per-case state/response RLS policies. No identity/operator/assignment/capability UPDATE ACL; no app_runtime grants, no real provisioning or operational pool configuration.",
+      "validation": "Local syntax PASS. Actual baseline42501 and RLSzero reproduction before migration0080, positive SQL/HTTP/lock/audit/session/cleanup proofs and own full CI/Android PENDING. Admin restricted runtime and isolated full render remain pending.",
+      "primarySources": [
+        "https://www.postgresql.org/docs/17/sql-createfunction.html",
+        "https://www.postgresql.org/docs/17/sql-select.html",
+        "https://www.postgresql.org/docs/17/ddl-rowsecurity.html"
+      ],
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false,
+      "closedCaseWriteHardening": {
+        "supersededHead": "d84e7b72b5cb6aba7c76276ff6b0ec1d62152a94",
+        "reason": "Review before acceptance: UPDATE policy must also constrain old state to open/reviewing, so an assigned operator cannot reopen a closed case through direct SQL. Add actual direct-SQL UPDATEzero and INSERT42501 closed-case probes, while receipt replay remains allowed.",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+            "sha": "b170ba3f8ae824d16685a91f0491aeeeada5e069",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "sha": "25c21b86c188e265a13e2193f47e455b799ee5ef",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0080_platform_support_operator_runtime.sql",
+            "old": "da6c2b8bd1f7e7f1acee36027423a58c7cd06025",
+            "new": "b170ba3f8ae824d16685a91f0491aeeeada5e069"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "old": "cab017a9c51f0e509e84078c8bee75eee71fc1c2",
+            "new": "25c21b86c188e265a13e2193f47e455b799ee5ef"
+          }
+        ]
+      },
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "a73c05cfbe8450bd115f76ac90cf4571b4ab858f",
+          "new": "44915535899555918dfd532b9493821d886290ee"
+        }
+      ],
+      "fixtureQueryStringCorrection": {
+        "failedHead": "1ca29040584c8ee63d40fc4d5436a4cfad45b563",
+        "failedRun": 40266421756,
+        "observed": "Baseline lock/INSERT42501/UPDATEzero, 55P03 contention, foreign/forged author RLS probes reached real PostgreSQL. Fixture then called list(actor,1,undefined), but shared query parser requires string limit. Local reproduction confirms numeric1 rejected and string1 accepted. Keep production parser, policies, guards unchanged; fix fixture limit to string1; add finer stage diagnostics. HTTP denied-session snapshots now compare full ordered case/response/audit JSON rather than counts.",
+        "sources": [
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "sha": "1641cd0eb09f6889fc56e1ccb19ca967997f751c",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+            "sha": "0dc4623ae3740cd0872618df93a9d1e6aea3f298",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ]
+      }
+    },
+    "adminLockIncrement": {
+      "baseHead": "664ae489404b0c9b6dafa937cfc6407896e2c0d4",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0081_platform_support_admin_locks.sql",
+          "sha": "5275985365c3235723b7be4ea71c14c7125f2633",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin-locks.pg.ts",
+          "sha": "ea4e74f6710bb7d55ad8778e4f7b8eb9112db8b0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "sha": "d623146e09aee883ed6d6410d3159b7027a058bd",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "sha": "aba68666f28089b48235bda3eff1a18ec4b06140",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "669b5ee2dc2f166df9323e03879ed025477cfb45",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
+          "sha": "a737cd286fdb2a8f602aaacd04b6ed1b0fe7a14b",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
+          "sha": "2a2fb3b12ac7aaacd0ffc794be1d6f8f4e83f3f7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
+          "sha": "0f7b21d2075d627889346eec50aa3557f7cfaee8",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
+          "sha": "4426e9fe710c4f998570741c562f3fc8c7154be0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
+          "sha": "001ae84b7c5e425a118eb904caf7898f3437866c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
+          "sha": "3833a11f68766f817822ad45c6eaff8a65bb0bf0",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0081_platform_support_admin_locks.sql",
+          "old": null,
+          "new": "5275985365c3235723b7be4ea71c14c7125f2633"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin-locks.pg.ts",
+          "old": null,
+          "new": "ea4e74f6710bb7d55ad8778e4f7b8eb9112db8b0"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "old": "a63d3cea18bc5055e36e5de2de0bc8d05272b2bc",
+          "new": "d623146e09aee883ed6d6410d3159b7027a058bd"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "old": "d69aba807bf4827b362374956820f565e318489d",
+          "new": "aba68666f28089b48235bda3eff1a18ec4b06140"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "1fad45bb26b7ccde06cb10169a24be9dbf17bfe2",
+          "new": "669b5ee2dc2f166df9323e03879ed025477cfb45"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "44915535899555918dfd532b9493821d886290ee",
+          "new": "14eff57e15b0fc30ee51b792663cd767f523c5c7"
+        }
+      ],
+      "scope": "Two closed boolean admin/target lock helpers, integrated into existing role/dispatch stores. No UPDATE identities/admin ACL needed in actual restricted DatabaseService fixture. Does not certify admin business writes, RLS policies, admin restricted HTTP, operational pool configuration or rendering.",
+      "validation": "Local TS/CJS syntax PASS; baseline42501 before0081, restricted login authority/locks55P03/target serialization/temp-shadow/rollback/cleanup and own full CI/Android PENDING.",
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false
+    },
+    "roleRestrictedIncrement": {
+      "baseHead": "e9be0cf2a0471077d9cdc2f8755f7ec449ec635a",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0082_platform_support_role_runtime.sql",
+          "sha": "18f38ea3cbee306626b5697d356c81e9003d9f4f",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "sha": "e4bb248af6c6c0f401db7d75502559d180fac944",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "sha": "6d94137d7a1a461bb4386927bf18e78b81258ff9",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "bd3cc7c39773cdaa15f258d4ea6ba0799a6cd19e",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "sha": "f9ab832f8136c1cf30c91a8f70e587b627e770d7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+          "sha": "f4dff2a68d1f0dce154360ba7932a2bfcb4d6914",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
+          "sha": "c0e7e514c989cc7ee0cc458e21905916cfb0b31c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
+          "sha": "19cf632cd195c0763b8a89f6ceab40f2f3057cd7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
+          "sha": "ee4e294554266065793e3718592ff8944e2b454f",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
+          "sha": "2767c68d5a5b5899aa3ffeb27befdcee6e41df98",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
+          "sha": "dc17216ca7f983212ca853389960f614981717ce",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
+          "sha": "60eeb2c78fd7738a6690bda4b85673e0b8d4621b",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0082_platform_support_role_runtime.sql",
+          "old": null,
+          "new": "18f38ea3cbee306626b5697d356c81e9003d9f4f"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "old": null,
+          "new": "e4bb248af6c6c0f401db7d75502559d180fac944"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-store.ts",
+          "old": "d623146e09aee883ed6d6410d3159b7027a058bd",
+          "new": "6d94137d7a1a461bb4386927bf18e78b81258ff9"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "669b5ee2dc2f166df9323e03879ed025477cfb45",
+          "new": "bd3cc7c39773cdaa15f258d4ea6ba0799a6cd19e"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+          "old": "a630e98e54b2deeae89e07dbe06760108fbccd23",
+          "new": "f9ab832f8136c1cf30c91a8f70e587b627e770d7"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+          "old": "1641cd0eb09f6889fc56e1ccb19ca967997f751c",
+          "new": "f4dff2a68d1f0dce154360ba7932a2bfcb4d6914"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "new": "10168e23a9951dc32636e8fd6114da5876ea255e"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "new": "10168e23a9951dc32636e8fd6114da5876ea255e"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "new": "10168e23a9951dc32636e8fd6114da5876ea255e"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "new": "10168e23a9951dc32636e8fd6114da5876ea255e"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "14eff57e15b0fc30ee51b792663cd767f523c5c7",
+          "new": "10168e23a9951dc32636e8fd6114da5876ea255e"
+        }
+      ],
+      "scope": "Role grant/revoke SQL and actual HTTP session fixture in restricted DatabaseService, metadata-only case ACL and bounded target-assignment case locks; dispatch runtime not certified.",
+      "validation": "Local TS/CJS syntax PASS. Before0082 admin role INSERT42501; own full CI/Android, role CAS/atomic two-assignment revoke/audit rollback/regrant/no-writes session snapshots and cleanup PENDING.",
+      "policyDependency": "Owner/operator restricted CI logins receive only EXECUTE of closed boolean administrator check needed by final0082 policies; no admin table read/identity UPDATE/app_runtime grants. Run owner/operator proofs after0082.",
+      "primarySources": [
+        "https://www.postgresql.org/docs/17/ddl-rowsecurity.html",
+        "https://www.postgresql.org/docs/17/sql-createfunction.html"
+      ],
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false,
+      "operationScopeHardening": {
+        "supersededHead": "c70910fcf779aa498ca8ec992aa08db8c78580ee",
+        "scope": "0083 requires transaction-local server-selected role_management marker AND dedicated active administrator. Prevent administrative identity alone extending case metadata/role authority on another identity-scoped path. Marker alone never authorizes non-admin.",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0083_platform_support_role_context.sql",
+            "sha": "3b8c5cbf4d5832e62a6dded2cc0eda66a8d2c107",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-store.ts",
+            "sha": "d47a7c48f2bfa82fd5a2295be1374453d4f421b3",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "sha": "a9fdaf4bd713b9bcc3b112bae9776c366fe8f64f",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0083_platform_support_role_context.sql",
+            "old": null,
+            "new": "3b8c5cbf4d5832e62a6dded2cc0eda66a8d2c107"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-store.ts",
+            "old": "6d94137d7a1a461bb4386927bf18e78b81258ff9",
+            "new": "d47a7c48f2bfa82fd5a2295be1374453d4f421b3"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "old": "e4bb248af6c6c0f401db7d75502559d180fac944",
+            "new": "a9fdaf4bd713b9bcc3b112bae9776c366fe8f64f"
+          }
+        ],
+        "validation": "Fixture reproduces candidate0082 reading two foreign case IDs with admin identity but no operation context, then applies0083 and requires zero rows and denied role INSERT. Full role SQL/HTTP positives run only after0083; require actor and operation context cleared. Own full CI/Android pending."
+      }
+    },
+    "dispatchRestrictedIncrement": {
+      "baseHead": "f3d2142238f2a653c5532a154868c91f46780572",
+      "sources": [
+        {
+          "path": "packages/db/migrations/0084_platform_support_dispatch_runtime.sql",
+          "sha": "2b5c92f5943bbbe808e9884fd0e6a9642b5a11a0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "sha": "f8a81b87ff6e52fc1794c4795edabb3f44144365",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "sha": "00587e3408e291dd9685fb6e52ca389f3afe44ba",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "sha": "496a6397014abc18eb3cc842aaa36506ee0f3dd7",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "sha": "fb9d730340a85192332d2946ac0838fa1100f286",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "sha": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/CHECKPOINT_EXECUCAO_AUTONOMA.md",
+          "sha": "24242ff4e699013982cbca61a1ef532df4e0fe95",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/conversas/MEMORIA_CONSOLIDADA_CHATGPT_2026-10-05.md",
+          "sha": "0aa66c49f735fbf582e09b9ad825651ec0efe583",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/documento-da-verdade/DOCUMENTO_DA_VERDADE_v1.104.md",
+          "sha": "95591b89410dda6213bde52953cfa62448e1debf",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/13_AREAS_ACCEPTANCE_MATRIX_2026-10-13.md",
+          "sha": "4061f333eb62c20ec991a2d720d6873df4db2b69",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/evidencias/EVIDENCE_REGISTRY.md",
+          "sha": "487f983482b344434a9462d10ccf7bc24a1d3c3c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "docs/requirements/REQUIREMENTS_LEDGER_DELTA_v1.104.md",
+          "sha": "5f4465ac62c06c4cb313dadf24a7c0f260f183a6",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "packages/db/migrations/0084_platform_support_dispatch_runtime.sql",
+          "old": null,
+          "new": "2b5c92f5943bbbe808e9884fd0e6a9642b5a11a0"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "old": null,
+          "new": "f8a81b87ff6e52fc1794c4795edabb3f44144365"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-store.ts",
+          "old": "aba68666f28089b48235bda3eff1a18ec4b06140",
+          "new": "00587e3408e291dd9685fb6e52ca389f3afe44ba"
+        },
+        {
+          "path": "apps/api/src/platform-support-store.pg.ts",
+          "old": "bd3cc7c39773cdaa15f258d4ea6ba0799a6cd19e",
+          "new": "496a6397014abc18eb3cc842aaa36506ee0f3dd7"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "old": "a9fdaf4bd713b9bcc3b112bae9776c366fe8f64f",
+          "new": "fb9d730340a85192332d2946ac0838fa1100f286"
+        },
+        {
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/3/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        },
+        {
+          "at": "requirements/4/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        },
+        {
+          "at": "requirements/48/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        },
+        {
+          "at": "proofs/5/tests/0",
+          "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
+          "old": "10168e23a9951dc32636e8fd6114da5876ea255e",
+          "new": "97c3c571113e7c89eaf0cd133765e2185c6a8ed2"
+        }
+      ],
+      "scope": "Dedicated transaction-local server dispatch scope, closed operator/case lock booleans and write-authorization boolean, RLS assignment insert/update and metadata reads, real SQL and session HTTP fixture; no operational pool configuration or render proof.",
+      "validation": "Local TS/CJS syntax PASS; actual baseline42501 before0084, SQL/HTTP CAS/replay/audit rollback/closed-case revoke/locks55P03/session/cleanup and own full CI/Android PENDING.",
+      "policyDependency": "Role restricted fixture receives EXECUTE of closed dispatch write-check boolean, which returns false without dispatch operation scope. Run role/owner/operator restricted proofs after final0084 policies.",
+      "activation": false,
+      "merge": false,
+      "areaAcceptance": false,
+      "readBoundaryHardening": {
+        "supersededHead": "e6f2e6d73393af55e858e53d8f6f5320903dd180",
+        "sources": [
+          {
+            "path": "packages/db/migrations/0085_platform_support_dispatch_read_boundary.sql",
+            "sha": "e9a59b36977e456d148ad52c3bf34bdec872edc8",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "sha": "a97aca3cb0a990115c5aa2f75555a88c83241f82",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "sha": "f77356c6b7014d1db40d3a3cded4bfc7fd83a455",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "sha": "a4f9b3e7415fb34253f20a443bff8d17bba151fe",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "packages/db/migrations/0085_platform_support_dispatch_read_boundary.sql",
+            "old": null,
+            "new": "e9a59b36977e456d148ad52c3bf34bdec872edc8"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "old": "f8a81b87ff6e52fc1794c4795edabb3f44144365",
+            "new": "a97aca3cb0a990115c5aa2f75555a88c83241f82"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-runtime.pg.ts",
+            "old": "f9ab832f8136c1cf30c91a8f70e587b627e770d7",
+            "new": "f77356c6b7014d1db40d3a3cded4bfc7fd83a455"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-runtime.pg.ts",
+            "old": "f4dff2a68d1f0dce154360ba7932a2bfcb4d6914",
+            "new": "a4f9b3e7415fb34253f20a443bff8d17bba151fe"
+          }
+        ],
+        "scope": "0085 replaces same closed boolean to authorize metadata without recursive RLS, requiring server dispatch context/admin/foreign active requester even on assignment SELECT and UPDATE USING. Write target non-null is enforced by table constraints; insert/update checks validate persisted operator. Owner/operator fixtures receive only EXECUTE of this closed boolean needed by final policies, no real ACLs.",
+        "validation": "Actual fixture seeds separate synthetic assignment, observes candidate0084 SELECT with deactivated requester, applies0085 and requires zero rows, restores synthetic identity, then all SQL/HTTP positives run after0085. Role/owner/operator proofs run after final policies; own complete CI/Android pending."
+      }
+    },
+    "applicationPoolIncrement": {
+      "baseHead": "2388da143c24f205fbad9f38b56fb9f113d32801",
+      "sources": [
+        {
+          "path": "apps/api/src/platform-support-databases.ts",
+          "sha": "3db1882db7e8a7a4bf8ca7a1807d0b07f049732f",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-databases.test.ts",
+          "sha": "d564e41e9ed09182627b57579a9fe13a3f4613de",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-application.pg.ts",
+          "sha": "1dad12c6d3bf5216ed6023e34658ef5604b131ce",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "sha": "5414986734770892f897e7487d5e5c3c90f70cd0",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support.controller.ts",
+          "sha": "c8b221a1cb8171832806214ed55c9b990bacd69c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin.controller.ts",
+          "sha": "e7235c798234ab7247e89c9e7b00fa563995f38d",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "sha": "6aab342793359daf8d52e3b2fc330b9c2f4c29eb",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "sha": "b65761b6266067aebc19c4751c20686b97b093fa",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "sha": "28a31c2508c3ccb17edc7d4013a024fceb52d34a",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "sha": "825d5e4774a26218a06901d5256177e24716a27f",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "sha": "ee9fca9131fc7605eeddf5c85d2bc2a7844995d5",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "sha": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ],
+      "pins": [
+        {
+          "path": "apps/api/src/platform-support-databases.ts",
+          "old": null,
+          "new": "3db1882db7e8a7a4bf8ca7a1807d0b07f049732f"
+        },
+        {
+          "path": "apps/api/src/platform-support-databases.test.ts",
+          "old": null,
+          "new": "d564e41e9ed09182627b57579a9fe13a3f4613de"
+        },
+        {
+          "path": "apps/api/src/platform-support-application.pg.ts",
+          "old": null,
+          "new": "1dad12c6d3bf5216ed6023e34658ef5604b131ce"
+        },
+        {
+          "path": "apps/api/src/app.module.ts",
+          "old": "5b225214224b5b7b2906913c2d50f6f496ff88ed",
+          "new": "5414986734770892f897e7487d5e5c3c90f70cd0"
+        },
+        {
+          "path": "apps/api/src/platform-support.controller.ts",
+          "old": "4455553a343b67cca100404d5b349de540a732ca",
+          "new": "c8b221a1cb8171832806214ed55c9b990bacd69c"
+        },
+        {
+          "path": "apps/api/src/platform-support-admin.controller.ts",
+          "old": "b4e1245f814aeb63ddfe41f825ca0ae123ed35fc",
+          "new": "e7235c798234ab7247e89c9e7b00fa563995f38d"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator.controller.ts",
+          "old": "dc0964cd76fc35891808eb899a7e1a8c86b60d40",
+          "new": "6aab342793359daf8d52e3b2fc330b9c2f4c29eb"
+        },
+        {
+          "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+          "old": "9fa5eef7d64b5156fc7bb2680ef0e7ff03893cc4",
+          "new": "b65761b6266067aebc19c4751c20686b97b093fa"
+        },
+        {
+          "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+          "old": "0dc4623ae3740cd0872618df93a9d1e6aea3f298",
+          "new": "28a31c2508c3ccb17edc7d4013a024fceb52d34a"
+        },
+        {
+          "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+          "old": "fb9d730340a85192332d2946ac0838fa1100f286",
+          "new": "825d5e4774a26218a06901d5256177e24716a27f"
+        },
+        {
+          "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+          "old": "a97aca3cb0a990115c5aa2f75555a88c83241f82",
+          "new": "ee9fca9131fc7605eeddf5c85d2bc2a7844995d5"
+        },
+        {
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7",
+          "new": "af102c44e2dbda9b03025fd7dff5568902cb1494"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "requirements/47/tests/1",
+          "path": "scripts/backend-contract-acceptance-e2e.cjs",
+          "old": "f9a5d7b3490c8921e31e2d5a1d20a62a0d4535e7",
+          "new": "af102c44e2dbda9b03025fd7dff5568902cb1494"
+        }
+      ],
+      "scope": "Real AppModule composes PlatformSupportDatabases, with four explicit distinct logins for owner/operator/role/dispatch, separate unchanged AuthService authority. Missing/invalid configuration fails closed without DATABASE_URL fallback. Effective role flags, login equality, memberships, ownership, column/table ACLs, RLS and closed function privileges checked on each transaction. Fixed search_path and bounded Pool; transaction contexts reset locally, rollback/discard and shutdown.",
+      "fixture": "New guarded disposable public-schema fixture boots real AppModule without provider overrides using four synthetic LOGIN roles and real existing HTTP/auth/owner/operator/role/dispatch journeys. Excess UPDATE identity privilege must reject before callback, restore and verify contexts; default launched AppModule without credentials must return authenticated503/anonymous401. No migration/grant/provisioning outside fixture; privacy/retention authorities unchanged.",
+      "validation": "TS/CJS syntax PASS locally; actual AppModule PostgreSQL/HTTP proof and own full CI/Android PENDING. No rendered UI/real operational credential configuration certified.",
+      "primarySources": [
+        "https://www.postgresql.org/docs/17/ddl-rowsecurity.html",
+        "https://www.postgresql.org/docs/17/functions-info.html",
+        "https://node-postgres.com/apis/pool"
+      ],
+      "realCredentialProvisioning": false,
+      "render": false,
+      "merge": false,
+      "activation": false,
+      "areaAcceptance": false,
+      "contractReconciliation": {
+        "supersededHead": "3d2deb7896f450d58e1d9a062be1c8837a307f71",
+        "failedRun": 40297418833,
+        "reason": "Strict x-contract-source.controllerBlobs equality caught three changed controller blobs before any intake/composition HTTP fixture. Reconciled OpenAPI controller pins and reviewed all119 operations with same request/success/error schemas, strict guard unchanged. Added bounded configuration unavailable description, no new endpoints.",
+        "sources": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "sha": "d3e69c75053b75bd13f0c730a549f9e08ad5da30",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "sha": "659cab07bd864803b5db9ada2343ca0735ad67ee",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "docs/api/openapi.json",
+            "sha": "c9b69117585065ebb136d82e760e99997995f3f5",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-application.pg.ts",
+            "sha": "da7e8a96f2edc5843d6159434ae8afb303828ddb",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "old": "3db1882db7e8a7a4bf8ca7a1807d0b07f049732f",
+            "new": "d3e69c75053b75bd13f0c730a549f9e08ad5da30"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "old": "d564e41e9ed09182627b57579a9fe13a3f4613de",
+            "new": "659cab07bd864803b5db9ada2343ca0735ad67ee"
+          },
+          {
+            "path": "docs/api/openapi.json",
+            "old": "d397417b69d4c65ccad4106b9f971d5f8a89db5d",
+            "new": "c9b69117585065ebb136d82e760e99997995f3f5"
+          },
+          {
+            "path": "apps/api/src/platform-support-application.pg.ts",
+            "old": "1dad12c6d3bf5216ed6023e34658ef5604b131ce",
+            "new": "da7e8a96f2edc5843d6159434ae8afb303828ddb"
+          }
+        ],
+        "sourcePinReconciliation": [],
+        "hardening": "Require explicit auth username, accept only sslmode query option and remote verify-full; reject NOLOGIN/function ownership, excess view/materialized/foreign table or sequence authority too. Exact positive/negative configuration tests. No credentials deployed, no network database access outside fixtures.",
+        "validation": "Local syntax/OpenAPI119 static review PASS; own actual PG/HTTP/CI/Android still PENDING."
+      },
+      "ambiguousTLSRegression": {
+        "supersededHead": "2cebf8a5b936dd465a32af2158d1bdc6703105b0",
+        "failedRun": 40298317282,
+        "compileFailure": "TS18046 in new test Object.entries env value inferred unknown; explicit Record<string,string> fixes fixture typing, no production guard weakened.",
+        "reproduced": "Local pure configuration test accepted sslmode=verify-full&sslmode=disable before correction. Reject duplicate query parameters before Pool; local regression PASS. No remote connection or production incident.",
+        "sources": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "sha": "9eac8ede064f04f783326c6d2b97d281330aa0c2",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "sha": "70b6482c83423a984cfd2769a5b661ca0a64023a",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "apps/api/src/platform-support-databases.ts",
+            "old": "d3e69c75053b75bd13f0c730a549f9e08ad5da30",
+            "new": "9eac8ede064f04f783326c6d2b97d281330aa0c2"
+          },
+          {
+            "path": "apps/api/src/platform-support-databases.test.ts",
+            "old": "659cab07bd864803b5db9ada2343ca0735ad67ee",
+            "new": "70b6482c83423a984cfd2769a5b661ca0a64023a"
+          }
+        ],
+        "validation": "Own full CI/actual AppModule PG/HTTP/Android PENDING for new bytes."
+      },
+      "paginationFixtureCorrection": {
+        "supersededHead": "7e8a0057b8e21660ac882a0d2d67812bbbf0e10d",
+        "failedRun": 40298829212,
+        "reason": "Real AppModule attestations and initial HTTP operations ran; first owner paginated GET used original unconfigured listener because fixture route regex saw '?' instead of slash/end. Local baseline reproduced; route matching now strips query only for origin selection, preserves complete URL/parser and query tests. Historical restricted fixture containers no longer own DatabaseService token; explicitly close owned pools after app.close rather than relying on removed token hook.",
+        "sources": [
+          {
+            "path": "scripts/backend-contract-acceptance-e2e.cjs",
+            "sha": "0856912b5af34a56e0a509aa4f3c896c7065e499",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+            "sha": "06b706b9911f67e0f514b1255c3b41246ea3c9cc",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+            "sha": "ce466c602966ba0502bb12cf78dc4a2203f7aeef",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "sha": "d6c56bd52a3b995a600c1f745e6eba8d1fb3e7ae",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "sha": "82a25af143fc6643f979f640cb6a46fcb4b62e24",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/backend-contract-acceptance-e2e.cjs",
+            "old": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+            "new": "0856912b5af34a56e0a509aa4f3c896c7065e499"
+          },
+          {
+            "path": "apps/api/src/platform-support-owner-http-runtime.pg.ts",
+            "old": "b65761b6266067aebc19c4751c20686b97b093fa",
+            "new": "06b706b9911f67e0f514b1255c3b41246ea3c9cc"
+          },
+          {
+            "path": "apps/api/src/platform-support-operator-http-runtime.pg.ts",
+            "old": "28a31c2508c3ccb17edc7d4013a024fceb52d34a",
+            "new": "ce466c602966ba0502bb12cf78dc4a2203f7aeef"
+          },
+          {
+            "path": "apps/api/src/platform-support-role-runtime.pg.ts",
+            "old": "825d5e4774a26218a06901d5256177e24716a27f",
+            "new": "d6c56bd52a3b995a600c1f745e6eba8d1fb3e7ae"
+          },
+          {
+            "path": "apps/api/src/platform-support-dispatch-runtime.pg.ts",
+            "old": "ee9fca9131fc7605eeddf5c85d2bc2a7844995d5",
+            "new": "82a25af143fc6643f979f640cb6a46fcb4b62e24"
+          }
+        ],
+        "sourcePinReconciliation": [
+          {
+            "at": "requirements/47/tests/1",
+            "path": "scripts/backend-contract-acceptance-e2e.cjs",
+            "old": "af102c44e2dbda9b03025fd7dff5568902cb1494",
+            "new": "0856912b5af34a56e0a509aa4f3c896c7065e499"
+          }
+        ],
+        "validation": "Local routing reproduction/syntax PASS; own complete CI/AppModule whole journey/Android PENDING."
+      }
+    },
+    "nativeRenderIncrement": {
+      "baseHead": "6bcb45049b3d02d70892fdc13afb96b4696ad39b",
+      "sources": [
+        {
+          "path": "scripts/platform-support-native-api.cjs",
+          "sha": "b6903beeb352f45793429dfc6bfd184acaf78e6c",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "sha": "d03dc6bb030380c143b886035e79be660b1765ee",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/platform-support-native-ui.py",
+          "sha": "f76815658b77bb399c292718fb8b41ca775d6fcc",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "sha": "dfce805f973fd5f26fca629f26312f4c06892c66",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "sha": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
+          "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
+        }
+      ],
+      "pins": [
+        {
+          "path": "scripts/platform-support-native-api.cjs",
+          "old": null,
+          "new": "b6903beeb352f45793429dfc6bfd184acaf78e6c"
+        },
+        {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": null,
+          "new": "d03dc6bb030380c143b886035e79be660b1765ee"
+        },
+        {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": null,
+          "new": "f76815658b77bb399c292718fb8b41ca775d6fcc"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": null,
+          "new": "83448ccbeb01204f13dd891f070a434ea69c2f36"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "528002354bcd760dd5998144608d0b2c6aaa2772",
+          "new": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e"
+        }
+      ],
+      "sourcePinReconciliation": [
+        {
+          "at": "protectedInputs/1",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "528002354bcd760dd5998144608d0b2c6aaa2772",
+          "new": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
+          "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+          "new": "dfce805f973fd5f26fca629f26312f4c06892c66"
+        }
+      ],
+      "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
+      "plannedJourney": "Unlinked Profile entry; disabled/empty/loading/focus; enabled form/confirmed/detail/authorized response/withdraw; response-loss timeout with one POST and force-stop durable recovery by GET; error hides private state; history pagination; large font; session revocation; company isolation and legacy help retained. Fifteen planned snapshots; no rendered proof until actual run and image review.",
+      "networkBoundary": "Separate Android package com.predibeacon.mlivretrabalho.supportfixture; only emulator host-loopback 10.0.2.2 cleartext, base denies cleartext/trusts only ephemeral fixture CA so production HTTPS is not trusted. No CA installed on emulator, no OS permission grant/root, no production functional request.",
+      "validation": "Local Node/Bash/Python syntax PASS. Guard negatives, actual isolated native build/15 states/render screenshots/CI/Android own SHA PENDING. No merge/postmerge/area acceptance/activation or production proof.",
+      "primarySources": [
+        "https://developer.android.com/tools/adb",
+        "https://developer.android.com/studio/run/emulator-networking",
+        "https://developer.android.com/privacy-and-security/security-config"
+      ],
+      "render": false,
+      "activation": false,
+      "production": false,
+      "recoveryCoverage": {
+        "previousHead": "e028c220c3747ec57abb54f3c8e64a9fdb6d2b5e",
+        "sources": [
+          {
+            "path": "scripts/platform-support-native-api.cjs",
+            "sha": "6a017e82d48a20f942c5a18cb49782d0d39d4fd7",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "a915dcbe772174bfb05c14b2bd89a42d0b1cfd01",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/platform-support-native-api.cjs",
+            "old": "b6903beeb352f45793429dfc6bfd184acaf78e6c",
+            "new": "6a017e82d48a20f942c5a18cb49782d0d39d4fd7"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "f76815658b77bb399c292718fb8b41ca775d6fcc",
+            "new": "a915dcbe772174bfb05c14b2bd89a42d0b1cfd01"
+          }
+        ],
+        "scope": "Expand planned native coverage to prepared/unavailable/conflict/explicit retry same-key/cleared/expired/resolved minimized (22 snapshots). Proxy503 leaves actual DB intent prepared; retries use real API payload conflict and correct commit; traffic key hashes prove one explicit identity key. Expiry accelerated only by disposable database default12seconds, restored24hours on normal path and cleanup; no device clock/root/storage injection or fake ACK. Resolved case uses actual admin/operator API then synthetic minimization only for UI-null state. Native control lookup scrolls to history and reads disabled semantics without clicking.",
+        "visualEvidence": "Original PNG/XML per state; hashes plus base64 chunks bounded16k for later byte-verified image inspection, no generated images or JSX/hooks/render inference.",
+        "validation": "Local Node/Python syntax PASS; actual expanded native UI/CI own SHA PENDING. Prior e028c22 run still in progress and not evidence for new bytes."
+      },
+      "metroVisibilityFix": {
+        "failedHead": "e028c220c3747ec57abb54f3c8e64a9fdb6d2b5e",
+        "failedRun": 40304549892,
+        "actualFailure": "Fixture createBundleReleaseJsAndAssets could not resolve actual expo-router entry outside git-archive root through pnpm symlink; occurred before UI. Foundation/canonical smoke/localAPIcleanup passed but whole Android/merge-policy failed. No rendered proof.",
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "335ebd75b28071dfd1b25402a8589eefa79be7e5",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "old": "d03dc6bb030380c143b886035e79be660b1765ee",
+            "new": "335ebd75b28071dfd1b25402a8589eefa79be7e5"
+          }
+        ],
+        "scope": "Only staging metro.config.js watches actual dependency node_modules targets and uses staged+actual nodeModulesPaths. Original mobile/Metro/lockfile/canonical APK unchanged; no permission/network/root fallback.",
+        "primary": "https://metrobundler.dev/docs/configuration/#watchfolders",
+        "validation": "Shell syntax PASS; own build/native render/full CI+Android PENDING."
+      },
+      "nativeDriverIntegration": {
+        "sources": [
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "9b6f3d83b484bcfbf983892b6c2bff201b66c58b",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "sha": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "a915dcbe772174bfb05c14b2bd89a42d0b1cfd01",
+            "new": "9b6f3d83b484bcfbf983892b6c2bff201b66c58b"
+          },
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
+            "new": "38c0b3d193f9bf6bd9e6da27189a414c98289a84"
+          }
+        ],
+        "scope": "Wire native fixture guard negative test explicitly into mandatory Android fixture preparation (default workspace test umbrella does not discover scripts/tests). Native driver supports accessible grouped IDs, scroll-up Back button, conditional IME dismissal based on normal dumpsys input_method rather than blind Back, and retains sanitized traffic/logcat on failure. No product UI/business/permissions changed.",
+        "validation": "Python syntax PASS; actual native UI and own full CI/Android still PENDING."
+      },
+      "workspaceDependencyVisibility": {
+        "failedHead": "546c3897c5db9698922d1eae703a23d3f1758004",
+        "failedRun": 40307101335,
+        "actualFailure": "Absolute expo-router entry became visible, but bare import expo-router from staged app/_layout.tsx remained unresolved. Actual mobile/node_modules directory itself is also a symlink target outside archive; explicitly include it in watchFolders/nodeModulesPaths, still only dependency directories.",
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "b0338b114caaf185346a619ce22fd44e39ad2191",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "ad2d53d8adb6d7fda055b09be0ca17ac22ca452f",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "old": "335ebd75b28071dfd1b25402a8589eefa79be7e5",
+            "new": "b0338b114caaf185346a619ce22fd44e39ad2191"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "9b6f3d83b484bcfbf983892b6c2bff201b66c58b",
+            "new": "ad2d53d8adb6d7fda055b09be0ca17ac22ca452f"
+          }
+        ],
+        "scope": "Dependency visibility only within isolated Metro config; canonical/root app config and lock unchanged. Complete conditional keyboard dismissal in recovery field as well. No UI/product defect or native rendered proof yet.",
+        "validation": "Local Shell/Python syntax PASS; new own full CI/Android/native UI PENDING."
+      },
+      "bundleClosureGate": {
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "bbef78a6858e82f526d23c35406c498dff39a8b4",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": ".github/workflows/ci.yml",
+            "sha": "c38d89e91cd3c562be73b3f793115809cfb34e73",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "old": "b0338b114caaf185346a619ce22fd44e39ad2191",
+            "new": "bbef78a6858e82f526d23c35406c498dff39a8b4"
+          },
+          {
+            "path": ".github/workflows/ci.yml",
+            "old": "f05e734241be320aade188f19c3a7fa54f483e55",
+            "new": "c38d89e91cd3c562be73b3f793115809cfb34e73"
+          }
+        ],
+        "sourcePinReconciliation": [
+          {
+            "at": "requirements/39/implementation/1",
+            "path": ".github/workflows/ci.yml",
+            "old": "f05e734241be320aade188f19c3a7fa54f483e55",
+            "new": "c38d89e91cd3c562be73b3f793115809cfb34e73"
+          },
+          {
+            "at": "protectedInputs/0",
+            "path": ".github/workflows/ci.yml",
+            "old": "f05e734241be320aade188f19c3a7fa54f483e55",
+            "new": "c38d89e91cd3c562be73b3f793115809cfb34e73"
+          }
+        ],
+        "scope": "After actual Metro failures before UI, run the identical staged Metro setup as --bundle-probe in foundation immediately after existing Android export. Explicit compilation-only local URL port1, no network/API execution or canonical APK prerequisite; temporary bundle removed. Full native build/UI remains mandatory in Android job, unchanged ordering/permissions/applicability. No render claim from bundle probe.",
+        "validation": "Bash syntax PASS; module closure/own full CI/Android/native22 snapshots PENDING."
+      },
+      "stagedDependencyCopy": {
+        "at": "2026-10-26",
+        "baselineHead": "c79c1e42e8d7920eabfec9df31f7ac3283f5a03a",
+        "baselineRun": 40311198287,
+        "baselineFoundation": 121532522691,
+        "baselineAndroid": 121532669904,
+        "baselineMergePolicy": 121538095319,
+        "baselineConclusion": "failure",
+        "reproduction": "Module closure probe passed, canonical smoke/API cleanup passed, isolated assembleRelease failed at mergeReleaseResources for external pnpm assets. Zero native UI captures.",
+        "source": {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": "bbef78a6858e82f526d23c35406c498dff39a8b4",
+          "new": "56847414d8ae8986ef59bf7ec5382f0247b7caf8"
+        },
+        "change": "Copy installed pnpm root/mobile node_modules preserving relative symlinks into isolated git-archive stage; use default Expo Metro config within stage. No dependency install, lockfile/mobile/canonical config/output edits. No network fallback or production navigation.",
+        "validation": "bash -n PASS. Own full CI/Android/AAPT/native22 screenshots PENDING. render=false; merge/activation/acceptance=false."
+      },
+      "embeddedLocalAPIGate": {
+        "at": "2026-10-26",
+        "baselineHead": "ea1ab048d385e149a5c494d21ba6442d95625007",
+        "baselineRun": 40317850446,
+        "foundation": 121554842014,
+        "android": 121554998214,
+        "mergePolicy": 121563015586,
+        "conclusion": "failure",
+        "nativeBuild": true,
+        "nativeJourney": false,
+        "proof": "Original failure-unlinked-navigation PNG extracted from logs, SHA256 78c7a6fa75c08d7d4ed8556547b5d44f073348fe01670350956e794ae1c0cbdf verified, visually inspected: Ajuda renders session-changed/expired state. Native artifact12648936260 downloaded and ZIP SHA256 0feee44e14a18dc584453dd8c2c93585adbcfad4becb9b87d902accae08acf29 verified. Embedded Hermes bundle lacks expected local http://10.0.2.2:36627/v1 despite BUILD_INFO. No network configuration relaxation or successful production request claimed.",
+        "change": "Stage-only isolated Metro FileStore/cacheVersion keyed by local URL; Gradle --no-daemon. Probe and final APK assert exact local API bytes before UI installation. Fixture initializes sanitized traffic even at zero requests; driver waits actual observed signin201 plus departure from login instead of blindly navigating after2s. Failure traffic printed before logcat. No mobile business source/dependency/lockfile or canonical build edits.",
+        "sources": [
+          {
+            "path": "scripts/build-platform-support-native-fixture.sh",
+            "sha": "9c0d0cf79a0bae338b4056b5570bdebc2362e5da",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-api.cjs",
+            "sha": "825ce50682899a627195cc8ff72fc118baf92d96",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "661dc4153d0adf5bdf8895fef171dae77beabea2",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "primary": "https://docs.expo.dev/guides/environment-variables/ ; https://metrobundler.dev/docs/configuration/#cachestores",
+        "validation": "Bash/Node/Python syntax PASS; missing local URL reproduced against actual previous artifact. New own CI/full Android/native22 and visual review pending. Native failure screen only is NOT full render proof. Merge/acceptance/activation=false."
+      },
+      "metroCacheCallback": {
+        "at": "2026-10-26",
+        "baselineHead": "d13aa8128eb4cf885377f296ae9e8e0eb49bc641",
+        "baselineRun": 40321015512,
+        "foundation": 121565659042,
+        "android": 121565835568,
+        "mergePolicy": 121572144312,
+        "baselineConclusion": "failure",
+        "reproduction": "Foundation probe/localURL passed; Android actual dependency layout failed before UI loading stage Metro config: Cannot find module metro-cache. API cleanup PASS. No new native screenshots on d13; previous single failure screen only remains partial evidence.",
+        "source": {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": "9c0d0cf79a0bae338b4056b5570bdebc2362e5da",
+          "new": "e5c65caa9d734f99d030248ce38b7558dcbea933"
+        },
+        "change": "Use documented cacheStores callback receiving FileStore from Metro instead of direct require of transitive pnpm dependency. Explicit config require + Expo bundle/localURL proof now run in BOTH probe and full mode before Gradle. Final APK localURL guard remains before install, no daemon/shared cache/network relaxation.",
+        "primary": "https://metrobundler.dev/docs/configuration/#cachestores",
+        "validation": "Bash syntax PASS; new own complete CI/Android/22-state native journey/visual review PENDING. No merge/postmerge/acceptance/activation."
+      },
+      "nativeViewportAndHistory": {
+        "at": "2026-10-26",
+        "baseline": {
+          "sha": "6a8bb0e7c82d9ac7baa42587ac10e84e2efbff10",
+          "run": 40323306531,
+          "foundation": 121573482426,
+          "android": 121573671865,
+          "mergePolicy": 121584383347,
+          "nativeArtifact": 12651331751,
+          "nativeArtifactZIP": "76185440cc39234841264d2ba02c812bd90341e93c295dedfde67c7be1758740",
+          "pngs": [
+            [
+              "01-disabled-empty",
+              "2d0766a821bc06ae210bcbada0e6aac71a5b505488dbae875835d00a85e8a0e8"
+            ],
+            [
+              "02-loading",
+              "72139c85dd5f1a3648ffe4d1669707205509b577767d72deb87a359a1e38cd04"
+            ],
+            [
+              "03-form",
+              "4300078f32bfebd366dfb9f4e04a3268935b1b16f98b1e933b922ec653b34852"
+            ],
+            [
+              "04-confirmed",
+              "c0acb39f98b9e466f28ee1692ad76502f0c2cbefba10a8bfdec666639f63c071"
+            ],
+            [
+              "failure-enabled-form",
+              "a37978cb4eccb9a844d6a61ac288f60aa1377b3655771b5fe7a03a8b706f4791"
+            ]
+          ],
+          "observed": "Four real state captures plus launcher failure verified/visually reviewed. Local signin201, me200, intent201, submit201, recovery200 and refreshed page200. No detail GET before driver failure. Logcat LAUNCHER_TASKBAR_HOME_BUTTON_TAP at12:56:09; UI hierarchy viewport0..2400 includes navigation bar2274..2400 and unbounded row geometry. Driver selected clipped/offscreen node instead of scrolling into app viewport. Original confirmed screenshot also shows stale empty history after successful creation and disabled button visually identical to enabled state.",
+          "fix": "UI invalidates previously loaded page on confirmed write instead of fabricating row; disabled button distinct neutral style preserving disabled/accessibility guard. Native driver parses signed bounds, intersects app viewport, requires package, actual XML system-bar exclusion and central92% center before tap, scrolls actual target into view; normal bounded gestures only. No insets library/dependency/lockfile change or bypass/automatic resend."
+        },
+        "sources": [
+          {
+            "path": "apps/mobile/app/ajuda-plataforma.tsx",
+            "sha": "c4eede305ec3867b3482d1156f8514de49c87c1f",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+            "sha": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "55468212ea2ad4cc42ddc4cb10341944979cc479",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": "apps/mobile/app/ajuda-plataforma.tsx",
+            "old": "bf452cd2185c306406311b340b61a928fb0d7609",
+            "new": "c4eede305ec3867b3482d1156f8514de49c87c1f"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+            "old": "e6d3596720b93b9b8fa30637f10a66b51350cc2c",
+            "new": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "661dc4153d0adf5bdf8895fef171dae77beabea2",
+            "new": "55468212ea2ad4cc42ddc4cb10341944979cc479"
+          }
+        ],
+        "validation": "Original UI history regression:7/8 PASS,1 FAIL; candidate8/8 PASS. Recorded XML navigation-bar/signed-coordinate regression PASS; Python syntax PASS. New JSX/typecheck/full own CI/Android/22state journey/visual review PENDING. Four state captures plus failure previously reviewed, not full render proof.",
+        "scope": "No package/dependency/lockfile/workflow/RLS/AuthService/pool/canonical build changes. System bars excluded using recorded XML resource bounds plus conservative viewport. Product change only stale-history invalidation and disabled visual state; no claim that physical/inset layouts or all Area1 are accepted. No merge/postmerge/activation/acceptance."
+      },
+      "initializedAVD": {
+        "at": "2026-10-26",
+        "baselineHead": "994d02c6885463aba3af8f921d0b6e6377343225",
+        "baselineTree": "90cd2f66f97cb1697323f754af70249fda323d3f",
+        "baselineRun": 40329581916,
+        "foundation": 121595123156,
+        "android": 121595319439,
+        "mergePolicy": 121606058657,
+        "conclusion": "failure",
+        "proof": "Foundation/code regressions PASS; isolated build/embedded localURL/canonical smoke/APIcleanup PASS. Native attempt blocked BEFORE LOGIN by Android system modal Quickstep isn't responding; zero local HTTP traffic. Original system-dialog PNG772b738813abd17caa585c45d54c864448c95a55557f795cd39bfca869194268/XML57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0 and native artifact12654919766 ZIPb7fa9a45850cc000ad408afc62184bce279a3b5710298131d5838682b45075dc downloaded/hashverified/visually reviewed. This system image is not a positive Ajuda state; product UI fixes still lack runtime proof on994.",
+        "change": "Second native runner explicitly reuses canonical-initialized AVDtest (force-avd-creation=false, no wipe-data); require existing config path before runner. Fixture namespace must be absent before install, no uninstall/clear-data alternate path. Native driver fails closed on system ANR; diagnostic capture may read it but no dismissal, Wait/Close or input outside own package. First canonical emulator/action/KVM options remain unchanged.",
+        "primary": "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml ; https://github.com/ReactiveCircus/android-emulator-runner#caching-avd-snapshots",
+        "sources": [
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "sha": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "ac15d027462010e063003e076e8488cb85489ba4",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+            "new": "98282c368e847aaf935ee869a1dcd7149de6e5c4"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "55468212ea2ad4cc42ddc4cb10341944979cc479",
+            "new": "ac15d027462010e063003e076e8488cb85489ba4"
+          }
+        ],
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "38c0b3d193f9bf6bd9e6da27189a414c98289a84",
+            "new": "98282c368e847aaf935ee869a1dcd7149de6e5c4"
+          }
+        ],
+        "validation": "Python syntax PASS; actual recorded ANR XML detection/normal frame negative PASS; YAML and first canonical runner unchanged assertions PASS. New own complete CI/Android/native22/visual review PENDING. No merge/postmerge/acceptance/operational activation or real credentials."
+      },
+      "bootstrapDiagnosticsAndBuildLifecycle": {
+        "at": "2026-10-26",
+        "baselineHead": "467c6863a498956a8ae8149e74dec471e8f54805",
+        "baselineRun": 40333674282,
+        "foundation": 121609394663,
+        "android": 121609625136,
+        "mergePolicy": 121617943095,
+        "baselineConclusion": "failure",
+        "reproduction": "Canonical smoke/native build/localURL/initialized-AVD guard/APIcleanup PASS, but Quickstep ANR repeated BEFORE LOGIN with zero HTTP despite reused data. PNG665831ed15a4406e196d36df81b0ee55c189e6db9ba808979f35485808f2d635/XML57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0 and artifact12655589178/29020354bytes/ZIPf5c851e571c5c6b0db1a06dead1287b314b1690a0648852315c56ed9003e32eb downloaded/hashverified/visually reviewed. Not a positive support state; no runtime approval for product994 fixes.",
+        "diagnosisLimit": "Previous driver cleared logcat before launch and lost the bootstrap ANR reason. Resource contention from build daemons is a hypothesis, NOT a proven root cause.",
+        "change": "Retain logcat without clearing; capture emulator-bootstrap-logcat.txt before package install and print bounded ANR/CPU-reason excerpts. Normal project Gradle wrapper --stop after each completed build, before emulator startup, with free-memory and aggregate Java RSS metadata before/after. No blanket process kill, root, permission grants, system-app input, ANR dismissal, alternate image, clock/storage injection or guard relaxation.",
+        "primary": "https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:stopping_an_existing_daemon",
+        "sources": [
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "sha": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+            "mode": "100644",
+            "type": "blob"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "sha": "1c5570243fdbbbfdbdd7853c77259190b4600cec",
+            "mode": "100644",
+            "type": "blob"
+          }
+        ],
+        "pins": [
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+            "new": "2c5f2574b8f6815a5ca248272be437859d9c1260"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "ac15d027462010e063003e076e8488cb85489ba4",
+            "new": "1c5570243fdbbbfdbdd7853c77259190b4600cec"
+          }
+        ],
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "98282c368e847aaf935ee869a1dcd7149de6e5c4",
+            "new": "2c5f2574b8f6815a5ca248272be437859d9c1260"
+          }
+        ],
+        "validation": "Python syntax and YAML/lifecycle ordering PASS. Original canonical build script/package/URL/artifact/first-runner/KVM controls preserved. Own full CI/Android/native22/visual review/ANR resource hypothesis PENDING. No merge/postmerge/acceptance/operational activation."
+      },
+      "supportedSoftwareRenderer": {
+        "at": "2026-10-26",
+        "baselineHead": "126340939acefbe53c847e056eea8e64a4ec42db",
+        "baselineRun": 40337832070,
+        "foundation": 121624072755,
+        "android": 121624293893,
+        "mergePolicy": 121636201651,
+        "baselineConclusion": "failure",
+        "proof": "Build/native localURL/canonical smoke/cleanup PASS; startup blocked before login, zero HTTP. Java RSS before second boot1548940KiB→0; guest memory pressureavg10=0 but CPU pressureavg10=56.67, SurfaceFlinger55% and composer45%, total98% with88%kernel. ANR com.android.systemui failed to complete startup. Emulator37.2.12.0/build16428233 still invoked deprecated swiftshader_indirect. This identifies graphics startup saturation; a renderer-flag causal fix is NOT proven yet.",
+        "artifact": {
+          "id": 12658594158,
+          "size": 30014664,
+          "zipSHA256": "403df9bb5c58235a6df8f53ad611775604ccd960a0e09c34bd3893429a79f3d6",
+          "pngSHA256": "5dbf173c0146f012c3afd9463caefcfb49f74a65ed370d7df7b4415848e25257",
+          "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+          "checked": "Downloaded ZIP/PNG/XML hashes verified and original SystemUI-ANR image visually reviewed; not an Ajuda positive state."
+        },
+        "change": "ONLY second isolated native runner changes explicit -gpu swiftshader_indirect to supported -gpu swiftshader. No automatic renderer sequence, image/API downgrade, Vulkan disable, root/grant/system-dialog input or security-guard relaxation. API35/x86_64/pixel_6, existing AVD/absent fixture namespace, first canonical runner/KVM/API URL/APK, Gradle cleanup and boot/ANR evidence guards unchanged.",
+        "primary": [
+          "https://developer.android.com/studio/run/emulator-acceleration",
+          "https://developer.android.com/studio/run/emulator-troubleshooting"
+        ],
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+          "new": "d2003f30a75530001ea1402bedee7cf75dc9c5d0"
+        },
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "2c5f2574b8f6815a5ca248272be437859d9c1260",
+            "new": "d2003f30a75530001ea1402bedee7cf75dc9c5d0"
+          }
+        ],
+        "validation": "YAML and first canonical/API35/arch/profile-preserved checks PASS. New own full CI/Android/renderer outcome/native22/visual review PENDING. No merge/postmerge/acceptance/activation/production."
+      },
+      "guestCPUCapacity": {
+        "at": "2026-10-26",
+        "baselineHead": "58b4ba625f25327a14cea5ad51e45cb0fbe8365e",
+        "baselineRun": 40342157002,
+        "foundation": 121639439707,
+        "android": 121639673928,
+        "mergePolicy": 121652550365,
+        "baselineConclusion": "failure",
+        "proof": "Both swiftshader_indirect and swiftshader selected the SAME GLES/Vulkan SwiftShader backend. No causal renderer fix. SystemUI startup ANR before login/zeroHTTP recurred; CPU pressureavg10=59.67, SurfaceFlinger54%/composer45%, total98% (90%kernel); guest memory pressure0. Build/localURL/canonical smoke/API cleanup PASS.",
+        "artifact": {
+          "id": 12660414693,
+          "size": 29924724,
+          "zipSHA256": "d48879327c1340ddf87dbd627addded047932202b1870c8473383a9d0cbdbaa6",
+          "pngSHA256": "e717b99c261fe8f312828cb60565e3add51ee87bee64b3510d1460f4586a021f",
+          "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+          "checked": "ZIP downloaded/hash verified; PNG/XML actual hashes verified; original SystemUI ANR image visually reviewed, not a positive Ajuda state."
+        },
+        "change": "Second isolated emulator gets four guest CPUs instead of action default two, guarded by nproc>=4 on SAME existing host; no larger runner/new cost/service/fallback. Action source confirms hw.cpu.ncore applied even to reused AVD. First canonical runner remains byte-for-byte unchanged. Same API35/x86_64/pixel_6/resolution/image/software backend/AVD/data/namespace/ANR fail-closed, no system dialog inputs/root/grants/security changes.",
+        "hypothesis": "Two CPU-bound compositor processes contended with startup tasks in two-core guest. Additional guest scheduling capacity is a candidate, NOT a proven fix. Host count insufficient fails before boot; no fallback allocation.",
+        "primary": [
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml",
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/src/emulator-manager.ts",
+          "https://developer.android.com/studio/run/managing-avds"
+        ],
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
+          "new": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc"
+        },
+        "validation": "YAML_CPU_CANONICAL_AND_NATIVE_GUARDS_PRESERVED_PASS local; own new full CI/Android/native22/visual QA pending. No merge/postmerge/acceptance/activation/production.",
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1",
+            "key": "sha",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "d2003f30a75530001ea1402bedee7cf75dc9c5d0",
+            "new": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc"
+          }
+        ]
+      },
+      "freshAVDDataIsolation": {
+        "at": "2026-10-26",
+        "baselineHead": "51ca7ed2f14bc0f36437942668317088b92a51c4",
+        "baselineRun": 40372652856,
+        "foundation": 121747187052,
+        "android": 121747477851,
+        "mergePolicy": 121759145930,
+        "baselineConclusion": "failure",
+        "proof": "Host nproc4/action guestcores4 confirmed. CPU pressureavg10 fell59.67→21.95/total98%→67%, but SystemUI startup ANR before login/zeroHTTP recurred: allocation NOT sufficient fix. Canonical smoke/build/localURL/cleanup PASS; full Android/merge-policy FAIL.",
+        "newDiagnostic": "Full bootstrap has848 Idmap-too-small header-entry errors, including SystemUI/launcher overlays in /data/resource-cache. Inherited AVD-data contribution is a NEW hypothesis, not proven causality.",
+        "artifact": {
+          "id": 12674473452,
+          "size": 29972734,
+          "zipSHA256": "c8718b72c8d47d1c10e508f6548e8ed4b891468580f503934bf55485bdeadb8f",
+          "pngSHA256": "60f9104cc80710f2cd2a504d94c67f818ea2a6f7a66f854fe0f0959944cd72ce",
+          "xmlSHA256": "3b99d7e298b4929e34e32051f1a51f78b13c0aadd99e469bdccd642721aaec72",
+          "bootLogSHA256": "2f1179f5ed298677141831b483cc00a2bcce0a6e8d935f3aecabd38c08941810",
+          "checked": "ZIP/PNG/XML/bootlog actual hashes verified; originalSystemUI-ANR screenshot visually reviewed, NOT positive Ajuda state."
+        },
+        "change": "Primary isolated fixture AVD named platform-support-fixture, force creation; both .avd/.ini required ABSENT first. No inherited canonical userdata/deletion/reset of existingAVD/retry/fallback/image/API downgrade/permission workaround. First canonical runner/upload unchanged; same system image/API35/x86_64/pixel_6/display/backend/cores4hostguard/NSC/namespaceabsence/ANRfailclosed. Syntheticfixture package only; mobile/business services untouched.",
+        "primary": [
+          "https://developer.android.com/studio/run/emulator-commandline",
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/action.yml"
+        ],
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
+          "new": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e"
+        },
+        "validation": "FRESH_AVD_YAML_FIRST_RUNNER_AND_ALL_RUNTIME_GUARDS_PRESERVED_PASS local; ownnewfullCI/Android/native22/visualQA pending. No merge/postmerge/acceptance/activation/production.",
+        "sourcePinReconciliation": [
+          {
+            "at": "protectedInputs/1/sha",
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "78f4967b9e6c2e9af6999ef6d7c5380f9e4637cc",
+            "new": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e"
+          }
+        ]
+      },
+      "nativeNavigationAndFont": {
+        "at": "2026-10-26",
+        "baselineHead": "d013be57ded448a526a415c67d5c0a6c54c4d88b",
+        "baselineRun": 40376495515,
+        "foundation": 121760849284,
+        "android": 121761113273,
+        "mergePolicy": 121776878185,
+        "baselineConclusion": "failure",
+        "proof": "Fresh own AVD had zero boot ANR/IDMAP-small errors; native session journey reached21 numbered screenshots, failed on returning to company legacy support. Full Android/mergepolicy FAIL; do not certify current candidate using prior positives.",
+        "artifact": {
+          "id": 12678702064,
+          "size": 33044338,
+          "zipSHA256": "1d6922b6cfd4eb1ff7f6f43100f8cc15316f7cca764626c3c0ca1a9c773f9ac8",
+          "checked": "Downloaded ZIP digest verified. Actual bytes of all22PNG+XML files (21 numbered plusfailure) SHA256 verified against logs; ALL original images visually reviewed."
+        },
+        "screenshots": [
+          {
+            "name": "01-disabled-empty",
+            "pngSHA256": "3a134c603bc0952e97f08d3cf52f8a47cf066e8bcbc60aadd607c6d0044471bb",
+            "xmlSHA256": "075e3c4d7bd21a128a4d0418b6de4414c1445e8c4789497f4917a525c43d38ca",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "02-loading",
+            "pngSHA256": "72139c85dd5f1a3648ffe4d1669707205509b577767d72deb87a359a1e38cd04",
+            "xmlSHA256": "f61280672223012e10649e64730d0d255b0b593fa6924f47ae7f184d7d6cdd7a",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "03-form",
+            "pngSHA256": "4300078f32bfebd366dfb9f4e04a3268935b1b16f98b1e933b922ec653b34852",
+            "xmlSHA256": "2ecc587cd88be2b5cad65d6669e97c1d8564afde44680d577b28198937260e97",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "04-confirmed",
+            "pngSHA256": "c6e8168e2c05ae7d5dee0d0018a22ba512f6a33d3b38756210c5b48b39699bb2",
+            "xmlSHA256": "626ef199d8f342d915ab9131e1b7410cc086d71545cf68fe57b543f75ab14316",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "05-detail-empty-response",
+            "pngSHA256": "c5e8c46a311a24f510e78e9cc68f998d1c7d46f4da7fe0eb7d083bb78ff0f550",
+            "xmlSHA256": "a1bfcb6080570cdbb982e833a593239a294c78205d8c92ac9cd1f338abcbd6c2",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "06-authorized-response",
+            "pngSHA256": "52c6cd0f8a0176f3e1635958c41f447bf1d75ef69e0a6c2a0ce5d971d3bc4ff8",
+            "xmlSHA256": "be1a2b6ea2480379044a9dfdaadb1b2086d81b7f7e70a9fd534e979611dcd75e",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "07-withdrawn",
+            "pngSHA256": "a4add831e413a629fbc0013d2c41ba0a1c80b73aef8e1acbdacb68cbf2fb556b",
+            "xmlSHA256": "9943569babfa19e9307ad5830aeec32ea1b288cd41aa5354b18e3365c848ab1c",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "08-timeout-preserved",
+            "pngSHA256": "4980b5a00663feb4595ad59ecbacc8868ef39eb75032e606d91db7103d16a0a2",
+            "xmlSHA256": "f858f2d179eb4c761b126d4a02ee18517c5b224d993b0b633f00ac2679ecf329",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "09-durable-recovery",
+            "pngSHA256": "48b65931933edaf8a01842fb685447c4f01d24c1d84b0d9e6b9f0c21e149208b",
+            "xmlSHA256": "5c0d33ec3b87e7f80b1d069fb8a8a11f5432bec5cb9c63d224c78b5731df9bf6",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "16-unavailable-pending",
+            "pngSHA256": "3542125e39a81f3408e50b40f237ea9def52756673d79dbce88389ea1e72fbcd",
+            "xmlSHA256": "eabf7b56b89452a52891216449c91e7b329b4bf3a1e9b685f201590bf8c4c4e9",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "17-prepared",
+            "pngSHA256": "78a32f128fef49160c2dadee69d8523bff8eaa954a770b5dd599b28940b169a7",
+            "xmlSHA256": "f1e861ab59c436eeaa3cd122067382a23eaf552a0da7f7a71c4c2162b2e53b73",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "18-conflict",
+            "pngSHA256": "4980b5a00663feb4595ad59ecbacc8868ef39eb75032e606d91db7103d16a0a2",
+            "xmlSHA256": "f858f2d179eb4c761b126d4a02ee18517c5b224d993b0b633f00ac2679ecf329",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "19-explicit-retry-same-key",
+            "pngSHA256": "8783f8fcc007b345637664c1570f4e29a1733b9cd1e6760aabf4bbd519ea3477",
+            "xmlSHA256": "562ca55acafb04ee35f2a1409436f0163a84fe56154f70048dcbbdc4ff3af051",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "20-cleared",
+            "pngSHA256": "1a5921a304c2e13df5977ec63fe3ad5c1ee4a9f841d09614ee373b7c014806c9",
+            "xmlSHA256": "b56952c7f12ee5017e1396a7979cd545338a7941c9a08cc46a5483433c12023a",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "21-expired",
+            "pngSHA256": "a4fa9ddce380045f515a181d204a4f82e9159db8580b635e9cc154b6f5d0abfc",
+            "xmlSHA256": "87d2cee2aefd1661eda750a048dfadf9dde5cedc7fa28f54d88142d074455935",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "22-resolved-minimized",
+            "pngSHA256": "53ddeb7acce71650593f9e1783f18937d8303e88d43e37e5fe74d42abb2eb97d",
+            "xmlSHA256": "e4d352dfa2385127b1e55cc58dcbd1b71139d41758059cafa71b464a8518db0e",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "10-error-private-hidden",
+            "pngSHA256": "fb9ce2ad93b79fbe65b5805e716389ce8457547803936d3ad1027ace15bb0efe",
+            "xmlSHA256": "a41f9e84ef996b12c6c042107aef71bb18b736a9413e17b8e4f870708a5dc942",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "11-history-pagination",
+            "pngSHA256": "e138d4f8cf02c773867ff1b585f6e536d244c5a6441b59d83ce52ea9f48961d3",
+            "xmlSHA256": "f0d27507211debf229f0d49da3a6a1fb0a215ce0f90b36c28c93e97b36819d7b",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "12-large-font",
+            "pngSHA256": "f60f5fd03dac1c8431386cb43ae499a904e8443a96f4cbe27b013deebc3c5174",
+            "xmlSHA256": "a39b27d461b193438ce63da30ab020711b2ad8e92aa452ca37143477bdbeee8e",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "13-session-expired",
+            "pngSHA256": "f04086e318622a54e8c692bcb16e1a04b2777e31e76efc02e4535b8e9e95bdcb",
+            "xmlSHA256": "7bed920e209ded077580edbd701751234352e9be78b117195cd1352baceac0d9",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "14-company-own-empty",
+            "pngSHA256": "441978397f2c0b3bca6af33f6d3a3826c82e6e99637f519ba1eebcc257f564c6",
+            "xmlSHA256": "7f0f02f06f6ab1eba9c232c55b5b2e0669067df04e9642c098620f6178e49e36",
+            "native": true,
+            "synthetic": true
+          },
+          {
+            "name": "failure-company-isolation",
+            "pngSHA256": "a04e29a8ab3d63e51cd17422702f2df6bdcf3dd0182ca9c998373dba3f4621e3",
+            "xmlSHA256": "7c5b82197aa11ad65a43877d5aec4cd034ec89425af84e9020d36277544996eb",
+            "native": true,
+            "synthetic": true
+          }
+        ],
+        "nativePartialProof": "Real HTTP93 requests/two native signins; detail/reply/withdraw, timeout18s realcommit/UI15s/singlePOST+GETdurablerecovery, prepared503/GET/noautoPOST/changed409/correct201samehash, release/expiry12slocalDB/resolve-minimization/errorhidden/pagination/session401/companyownempty observed. ReadOnly normalfont capture looked coherent; font130% capture showed clipped category labels, so not accepted accessible layout. Legacy-company route screenshot15 missing.",
+        "reproducedDefects": "Failure XML/PNG still Ajuda after generic router.back in deep-link/session/font sequence, not Perfil. 130% screenshot12 and company14 contain truncated categories; no claim of rootcause exact internal RN cache. These are real observed limitations.",
+        "change": "Explicit Voltar ao perfil handler router.replace('/perfil'); useWindowDimensions().fontScale keys ScrollView native subtree to remeasure on runtimefontchange, preserving screen-owned controlled state/flow; choice maxWidth100% plus shrinking/wrapping label, no font scaling cap. Native driver requires Perfil anchor then scrolls/taps existing company legacy entry. No fixture bypass/dependency/lockfile/backend/pool/RLS/workflow/canonical changes.",
+        "primary": [
+          "https://reactnative.dev/docs/0.81/usewindowdimensions"
+        ],
+        "sources": [
+          {
+            "path": "apps/mobile/app/ajuda-plataforma.tsx",
+            "old": "c4eede305ec3867b3482d1156f8514de49c87c1f",
+            "new": "ef5319c23dd067a2e9b7bf04535d26c74cf50b77"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+            "old": "0adf8eb78ce9c13be72c9a06c63686f1b1d4d9d3",
+            "new": "41fe58948d8a4ef966cbfa3f881e712b7d25aad0"
+          },
+          {
+            "path": "scripts/platform-support-native-ui.py",
+            "old": "1c5570243fdbbbfdbdd7853c77259190b4600cec",
+            "new": "133f44fac889c3925769ffb2c03dd018b1260065"
+          }
+        ],
+        "validation": "Actual back handler regression original9/10PASS+1FAIL (history entry !=/perfil)→candidate10/10PASS. Font rerender test preserves descriptor/draft/boundidentity/noHTTP mutation (not native layout proof). Python syntax PASS. New own full CI/typecheck/Android22screens+visual QA PENDING. No merge/postmerge/acceptance/activation/production."
+      },
+      "noLauncherKeyInjection": {
+        "at": "2026-10-26",
+        "baselineHead": "07336b6eb8dbb499341d253d386f8e1d3d57515d",
+        "baselineRun": 40381977560,
+        "foundation": 121780319489,
+        "android": 121780564093,
+        "mergePolicy": 121792277765,
+        "baselineConclusion": "failure",
+        "proof": "Foundation217/1251/534/3/11 fail0/OpenAPI119positive698responses95schemas/owner80operator59role31dispatch40/AppModule real PASS; canonical smoke/build/localURL/APIcleanupPASS. Native beforelogin/zeroHTTP blocked by Quickstep no-focused-window ANR. UI/font fixes NOT natively exercised this attempt.",
+        "artifact": {
+          "id": 12680700988,
+          "size": 29908810,
+          "zipSHA256": "47e12a70bb7a4dd1bbf242d7d61484b6ea4edd250b081e2381470c16602bfc7f",
+          "pngSHA256": "a06f414bbd0e5ffd186dc394e857a1ee4465c948b2e53d24df8c79cd2525c03e",
+          "xmlSHA256": "57b316b5660ba703b8760bd0757040ce924db4e36d08a2ff2957996a706bb9a0",
+          "bootLogSHA256": "751698f7c42b5d07289f848deef2119a928c118e443531b183f5e94b2d62a9c0",
+          "checked": "ActualZIP/PNG/XML/bootlog hashes verified; originalQuickstep-ANR image visually reviewed; not positiveAjuda."
+        },
+        "observedSequence": "Third-party runner source automatically injects adb shell input keyevent82 immediately after sys.boot_completed. Own log:19:17:09.6417183Z key82→19:17:14.538 Quickstep ANR Application does not have a focused window. Official InputDispatcher docs identify key events without focused window as no-focus-ANR trigger, timeout5sec. Causal attribution is an inference to validate; no universal fix claimed.",
+        "change": "ONLY isolated fixture startup replaces second runner invocation with repo-owned guarded shell lifecycle. Same already-installed SDK/API35/default/x86_64/pixel_6/freshAVD/cores4/SwiftShader/display/NSC; no SDK/image download/alternative, key82/unlock/HOME/system input, root/grants/QMP/fallback. Explicit accel on, KVMexisting read/write required, no attached device accepted, absentAVD required. No-touch boot polling; original driver capturesboot/failsclosedANR/opensfixture then targetsownvisiblecontrols. Own emulatorPID TERM cleanup/finalreadonlylogcat. First canonical runner/smoke/upload unchanged.",
+        "primary": [
+          "https://github.com/ReactiveCircus/android-emulator-runner/blob/main/src/emulator-manager.ts",
+          "https://developer.android.com/topic/performance/anrs/diagnose-and-fix-anrs",
+          "https://android.googlesource.com/platform/frameworks/native/+/2d2150edc2/services/inputflinger/docs/anr.md"
+        ],
+        "sources": [
+          {
+            "path": "scripts/run-platform-support-native-fixture.sh",
+            "old": null,
+            "new": "1d42f3dbbacd914396b31548afa54372733bf073"
+          },
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e",
+            "new": "f996d90b48a7deaa41a9cca0b117b013eaecbe69"
+          },
+          {
+            "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+            "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+            "new": "64710e24b80a8e2e5223739dfcca4e65b9754f05"
+          }
+        ],
+        "validation": "Bash/node syntax, YAML/firstcanonical byteequal/guards preserved local PASS. NonCI/otherrepo launcher denied beforeSDK with explicitrefusal marker; own new fullCI/Android/native22/visualQA pending. Keep073UI/font candidate and d013partial21 proofs; no merge/postmerge/acceptance/activation/production.",
+        "sourcePinReconciliation": {
+          "old": "0fca7a5088f0ddf96758d0f9c1f460e0edbc0d0e",
+          "new": "f996d90b48a7deaa41a9cca0b117b013eaecbe69",
+          "changes": [
+            "protectedInputs/1/sha"
+          ]
+        }
+      },
+      "installedSDKRevisionMetadata": {
+        "at": "2026-10-26",
+        "baselineHead": "e336961be72ab6004013a95112938155d7f40c95",
+        "baselineRun": 40386672148,
+        "foundation": 121796662263,
+        "android": 121796891091,
+        "mergePolicy": 121807868203,
+        "baselineConclusion": "failure",
+        "proof": "Foundation/owner80/op59/role31/dispatch40/AppModule/OpenAPI119/698/95 PASS; canonical smoke/build/fixtureURL/APIcleanup PASS. New startup terminated127 BEFORE emulator boot at optional emulator -version probe. No new screenshots or nativeproof; no evidence yet against no-Launcher-key hypothesis.",
+        "artifact": {
+          "id": 12682700252,
+          "size": 28937947,
+          "zipSHA256": "828d86d74df32258d10a4c7985d0ab03d00801e08be4abaf3db98dc46d56418e",
+          "diagnosticSHA256": "3ff97565dc43f47ef8751d5e1f25224e7f12a6283ebd43cd574071a26064e6e1",
+          "error": "qemu-system-x86_64: error while loading shared libraries: libpulse.so.0: cannot open shared object file: No such file or directory",
+          "checked": "ZIP fully downloaded/actual hash verified; EMULATOR_VERSION.txt actualbytes/hash reviewed. prebootdevices empty/image source.properties SHA98d57aac1a56bdff21e948a44332774d7f2127dc28fa413a85ad96bfb81cb7cb confirms same already-installedAPI35 image."
+        },
+        "change": "Replace ONLY version-reporting subprocess with required/strict Pkg.Revision metadata copy and SHA256 from SAME installed emulator/source.properties. No binary version fallback attempt, library installation, LD path override, root/grant/image swap or ignoring runtime loader errors. Actual emulator launch/accelon/nokeyboot/guards/firstcanonical/workflow/UI/backend unchanged; runtime failure still fails closed and retains emulator-host.log.",
+        "primary": [
+          "https://android.googlesource.com/platform/external/qemu/+/emu-master-dev/source.properties",
+          "https://github.com/google/android-emulator-container-scripts/blob/master/emu/templates/launch-emulator.sh"
+        ],
+        "source": {
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "1d42f3dbbacd914396b31548afa54372733bf073",
+          "new": "f3cd418bccb19bd6f14485e92879ce81c886ac7f"
+        },
+        "validation": "Recorded version-probe failure reproduced from hash-verified artifact; Bash syntax/metadata-only delta with startup/guards preserved local PASS. New own full CI/Android/bootstrap/native22/font130/navigation/visualQA PENDING. No merge/postmerge/acceptance/activation/production."
+      },
+      "coldFontFixtureLifecycle": {
+        "at": "2026-10-26",
+        "baselineHead": "e205a5877f024df7226af141b170f75b490e0542",
+        "baselineRun": 40390756155,
+        "conclusion": "failure",
+        "foundation": 121810803161,
+        "android": 121811060286,
+        "mergePolicy": 121823203882,
+        "artifact": {
+          "id": 12684904333,
+          "size": 33570124,
+          "zipSHA256": "d18b5bba063f9390105d13f845ee06841f6803701694cc9ead43d4082fc25ab1",
+          "verification": "ZIP and all22 PNG/XML hashes checked against log metadata. Originals12-large-font,14-company-own-empty,failure-company-isolation visually reviewed;21 numbered captures, missing15legacy. No complete render acceptance."
+        },
+        "observed": "Repo-owned no-Launcher-key boot reached real native journey, no prelogin ANR blocker. Font130% glyphs clipped; after reset1.0 company screen still enlarged. Back action recorded bounds53,53,1028,159, but terminal XML remains scrolledAjuda identical14, notPerfil. Existing router.replace code remains unchanged. Hot adb font change lifecycle/stale native geometry is a hypothesis, not proven internal RN cause.",
+        "change": "Fixture only: after setting/reading130% force-stop OWN package and reopen normally; screenshot actual launch-time130%; after setting/reading100% force-stop OWN and reopen. Session/SecureStore retained, no clear/uninstall/injection or font cap. No claim of in-place hotfont accessibility. Existing ANR/NSC/package/coordinates/realHTTP guards unchanged.",
+        "source": {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": "133f44fac889c3925769ffb2c03dd018b1260065",
+          "new": "0df050e6522a700c57037d45acff5ccb315fa698"
+        },
+        "validation": "COLD_FONT_LIFECYCLE_SYNTAX_ORDER_SCOPE_RESTORE_PASS locally. New ownCI/Android22/font130%visual/navigation pending. No merge/postmerge/acceptance/activation/production.",
+        "canonical": {
+          "artifact": 12684607121,
+          "zipSHA256": "956c98c2b31bcb2e0a23eb34a0f769d348b43fa243a95c14309b954273e19182",
+          "apkSHA256": "7e9c7ccbd2c2187790317e228a5b2ca85f036de92c715bc656a403d0bee8dc16",
+          "verification": "Actual ZIP/APK hashes verified; canonical bundle productionURL present, localfixtureURL absent. No functional production navigation."
+        }
+      },
+      "explicitSessionRefresh": {
+        "at": "2026-10-26",
+        "baselineHead": "22f5743866e8466fb5e841d93d8b76f7f7cb4fe7",
+        "baselineRun": 40422350952,
+        "baselineConclusion": "failure",
+        "foundation": 121919590987,
+        "android": 121919765022,
+        "mergePolicy": 121928668772,
+        "artifact": {
+          "id": 12698049958,
+          "size": 33494469,
+          "zipSHA256": "e1145da6e27d73b2322c78707753853c65ecd4569164ad36355c6d4e9833b2a9",
+          "checked": "ActualZIP and all20PNG/XML hashes verified against logs (19 numbered plusfailure). Originals12-large-font/failure-session-expired visually reviewed; other18 NOT visually reviewed this increment."
+        },
+        "fontResult": {
+          "pngSHA256": "efb20ae0a6ba376956685dfea376eb5f91af4906c55c80baa8307ae5a0a65ed1",
+          "xmlSHA256": "b658390563f22ad9747fb0c27a2b727135489f08ecb4830d8d73e9003767c32d",
+          "observed": "Launch-time130% original screenshot shows complete paragraphs/category labels, unlike preceding stale foreground-font capture. Limited to current viewport/launch lifecycle, not all scroll content or hot-font live behavior."
+        },
+        "failure": {
+          "pngSHA256": "a14ba7e527fceba1b597c383386b77054260ee8b7fd41882284c26694e2806c3",
+          "xmlSHA256": "c4fdeb6a5cba704d899d449cd53800cd4fa60c1eb9b32f65c9a1c33e2d0af422",
+          "observed": "Session-expired stage: last realAPI GET/me and history200 at00:13:11.014/11.551Z, expire command00:13:13.677Z, then same-route deep link produces NO newHTTP throughfailure00:13:49Z. This is not backend acceptance of expired token; no authenticated request was made. Screenshot stillready form. No currentcompany/legacy/back proof."
+        },
+        "change": "Fixture only: invoke visible Atualizar solicitações after synthetic expiration, require new GET/me401 since boundary and unchanged POSTsubmitcount. Existing API/AuthService/session guards unmodified. Reopening alreadyfocused deep link does not certify focus transition; no route/business fix invented.",
+        "source": {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": "0df050e6522a700c57037d45acff5ccb315fa698",
+          "new": "738b0191c4d8b84f76dee71b0e8c518d836a83f1"
+        },
+        "validation": "BASELINE_NO_REQUEST_AFTER_EXPIRY_REPRODUCED / EXPLICIT_REFRESH_401_NO_POST_GUARDS_SYNTAX_PASS local; own newCI/Android22/alloriginalvisualQA/back/legacy pending. No merge/postmerge/acceptance/activation/production.",
+        "canonical": {
+          "artifact": 12699261203,
+          "size": 28932888,
+          "zipSHA256": "d63ba099d54a808df21efb263b63b12fcc5fbdc102ef161e9dd343098ffb2caf",
+          "verification": "GitHub artifact metadata only this increment; no production functional navigation."
+        }
+      },
+      "returnGeometryDiagnostics": {
+        "at": "2026-10-26",
+        "baselineHead": "69a9bd4f20a73378b7dbbcefc78bd9069a0cedd0",
+        "baselineRun": 40428248143,
+        "baselineConclusion": "failure",
+        "foundation": 121939316171,
+        "android": 121939390532,
+        "mergePolicy": 121949457621,
+        "artifact": {
+          "id": 12701274553,
+          "size": 33702507,
+          "zipSHA256": "2324664e59bbf173994bef9f15053499ac697a3e9efc5358e56021e6b4cc3ecd",
+          "checked": "ZIP plus all22PNG/XML actualhashes verified;21 numbered screenshots+1failure. Originals13-session-expired/14-company-own-empty visually reviewed this increment; not complete visualQA."
+        },
+        "sessionProof": "Real native refresh produced GET/me401 and session-expired UI, no automaticPOST (assertions executed). New companysignin/list ownempty reached. Total95HTTP. Font130% screenshothash efb20ae0a6ba376956685dfea376eb5f91af4906c55c80baa8307ae5a0a65ed1 equals hashverified preceding launch-time image; not hotfontproof.",
+        "failure": {
+          "stage": "company-isolation",
+          "pngSHA256": "31ebc539f8a1c871818ba217c9d3bd759baaf0bf5bb1dea71041cef2463ea03e",
+          "xmlSHA256": "a6cc69705ed3ffd509f9b213a5c75fdb171ef415904de4357868c44eebe32429",
+          "observed": "Top return control action reported[53,53,1028,159], center540,106. Following wait fails, terminalPNG+XML byteidentical14-ownempty scrolledAjuda. Current source router.replace unchanged. No currentPerfil/legacy15 proof. Exact cause unknown; not another speculative navigation/product fix."
+        },
+        "change": "Fixture diagnosis/stronger evidence only: each UI dump has unique monotonically numbered path and requires successful dumped-to matchingpath before reading. Reject stale-file/idleerror possibility; no claim it caused baseline. Capture originalPNG and SAME fresh XML immediatelybefore Voltar input, plus read-only dumpsys window displays geometry. No touch alternative/retry/systeminput/bypass/guard relaxation. Own control tap coordinates unchanged. Diagnostic image named separately, not counted as positive22state.",
+        "source": {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": "738b0191c4d8b84f76dee71b0e8c518d836a83f1",
+          "new": "0054f74297fe580201fa41db06b98ac18b2bd283"
+        },
+        "validation": "RETURN_NO_EFFECT_BASELINE_REPRODUCED / UNIQUE_HIERARCHY_REJECTS_ERROR_AND_WRONG_PATH / PREINPUT_CAPTURE_SYNTAX_PASS local. New ownCI/Android/current22/visualQA pending. No merge/postmerge/acceptance/activation/production.",
+        "canonical": {
+          "artifact": 12701725671,
+          "size": 28932881,
+          "zipSHA256": "735875d90d8221210a7413033a7d67157fda6a5e4647428071476abe808e92cd",
+          "verification": "GitHubmetadata/logs only this increment; canonical no functional production navigation."
+        }
+      },
+      "bootstrapReadFailureEvidence": {
+        "at": "2026-10-26",
+        "baselineHead": "85ba9216e998af7d81bfee6afa10e3aad09022eb",
+        "baselineRun": 40434814076,
+        "conclusion": "failure",
+        "foundation": 121960852938,
+        "android": 121960922952,
+        "mergePolicy": 121967864428,
+        "artifact": {
+          "id": 12703534259,
+          "size": 29270638,
+          "zipSHA256": "2daed930559be7a8d24859296fc44a962a5aa3cc64a8b11e8aedc91d313b87b1",
+          "checked": "DownloadedZIP actualSHA256 verified. Elevenentries, zeroPNG/XMLjourneycaptures; read emulator-host.log/final-logcat. Not renderedAjuda proof."
+        },
+        "observed": "Read-only boot marker02:11:11.505Z then initial preinstall adb -s emulator-5554 logcat -d returned255 at02:11:11.777Z. CalledProcessError retained command/exit in traceback but exact stdout+stderr discarded by existing generic failure path; final cleanup logcat file exists. SDKhost bootcomplete31679ms. No cause asserted, no proof against return geometry diagnostic (never reached), no nativeUI/currentHTTP. APIcleanupPASS.",
+        "change": "Only wrap initial pre-install logcat read: on CalledProcessError retain exact combinedresponse in emulator-bootstrap-read-failure.txt, emit command/exit/outputSHA256/bytecount metadata, then bare raise preserving originalfailure. No retry/wait/fallback/alternative log source/ignore failure/library/root/grant/device or runner change. Normal successful read unchanged; freshXML/pre-returndiagnostics retained.",
+        "source": {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": "0054f74297fe580201fa41db06b98ac18b2bd283",
+          "new": "5f76f609d610fb9255c0037d4b9a2df6f052cf91"
+        },
+        "validation": "Controlled failure255 fixture proves rawresponse retained and exception reraised; successfixture proves existingbootlog unchanged. BOOT_READ_ERROR_OUTPUT_RETAINED_AND_RERAISED_PASS / SUCCESS_LOG_UNCHANGED_PASS / syntaxPASS. These local tests are not actual emulator proof. New ownCI/Android/native22/visualQA pending; no merge/postmerge/acceptance/activation/production.",
+        "canonical": {
+          "artifact": 12703962215,
+          "size": 28932868,
+          "zipSHA256": "0e4c92ce517efe2efa6426cd3c798175cc15c8c5ac414a20a2d38f0d0e5369ee",
+          "verification": "GitHubmetadata only, canonical smoke/build/fixtureURLpassed logs; no functional production navigation."
+        }
+      },
+      "androidHelpTopInset": {
+        "at": "2026-10-27",
+        "baselineHead": "abe6fb3dcba7c74505a9e05b02731693fe887b35",
+        "baselineRun": 40440499698,
+        "conclusion": "failure",
+        "foundation": 121979436552,
+        "android": 121979516354,
+        "mergePolicy": 121987594400,
+        "artifact": {
+          "id": 12706364305,
+          "size": 33800427,
+          "zipSHA256": "37bbf9b97355d8286f73fe630d14359973570ae5b7579e6f9cf805e5f7a8d7ee",
+          "checked": "ZIP and all23PNG/XML actualhashes verified against metadata (21 numbered+preinput diagnostic+failure). Originalpreinput image visually reviewed this increment; not fullvisualQA."
+        },
+        "diagnostic": {
+          "pngSHA256": "9b37b6260eb4a44ab2fb4ef611bd47754694e7ca9715c157121cf112a23dc3c0",
+          "xmlSHA256": "687b8f5058d4cabf98b27d8a70205dd5819004ec7d7b3e6c36f17f9c4f5450d5",
+          "observed": "Fresh hierarchy passed, ownbutton[53,53,1028,159] center540,106. Immediatelybeforeinput windowdisplays mDisplayCutout boundingRect492,0,610,128, safeinsettop128, density2.625. Center is geometrically INSIDEactualcamera exclusion, not a speculative staleXML verdict. Preinput image shows top control, laterreturn stillfails. No UIrouter handler change inferred; physical causality to validate with candidate currentnativejourney."
+        },
+        "change": "Ajuda screen only: Android root paddingTop uses built-in StatusBar.currentHeight (includes notch perprimaryRN), iOSpadding0/nativeSafeAreaViewkept. No hardcoded128/devicegeometry/coordinatealternatives, fontcap, newdependency/lockfile/systemUI/root/permission. Candidate moves actualbuttonlayout below Android topinset; router.replace/session/flow unchanged. Driver/boot/freshXML/coordinates/NSC/canonicalworkflow untouched.",
+        "sources": [
+          {
+            "path": "apps/mobile/app/ajuda-plataforma.tsx",
+            "old": "ef5319c23dd067a2e9b7bf04535d26c74cf50b77",
+            "new": "72460b6ee428760fc9cf3c69663752716c283efb"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support-screen.test.mjs",
+            "old": "41fe58948d8a4ef966cbfa3f881e712b7d25aad0",
+            "new": "4971334ea1df6bf30d26c4ff718d2b41fbdd1bd2"
+          }
+        ],
+        "primary": [
+          "https://reactnative.dev/docs/statusbar#currentheight"
+        ],
+        "validation": "Actual-source style+recordedcutout geometry regression baseline10PASS1FAIL→candidate11PASS0FAIL. Tests modellayoutoffset from runtimeheight, NOT native touch/render proof. Current ownCI/typecheck/Android22/fullvisualQA/back/legacy PENDING. No genericall-device/insets/physicalphone claim, no merge/postmerge/acceptance/activation/production.",
+        "canonical": {
+          "artifact": 12706580681,
+          "size": 28932888,
+          "zipSHA256": "7a8ab6acefe0eb04a6b5fcf8bf961ab28e477df341f182b39406f98cc3db1205",
+          "verification": "GitHubmetadata only, no functionalproductionnavigation."
+        }
+      },
+      "nativeFixtureSilentPreflight": {
+        "at": "2026-10-28",
+        "baselineHead": "698e6180b8426c14d5ae409d2b000bc5d497dfd7",
+        "baselineRun": 40749311170,
+        "conclusion": "failure",
+        "foundationJob": 123031406921,
+        "androidScopeJob": 123031406497,
+        "canonicalAndroidJob": 123031592779,
+        "nativeFixtureJob": 123037000518,
+        "artifact": {
+          "id": 12845605102,
+          "size": 28937058,
+          "zipSHA256": "d10dfe97afef08ba8623be41229814151cb6326df819e38aed58feaa8df1db62",
+          "checked": "Complete ZIP downloaded; byte size and SHA-256 match GitHub metadata; six entries and ZIP integrity pass. Fixture APK/build metadata and API log only; no preboot device list, emulator image record/host log/final logcat, hierarchy, or PNG captures. Local API cleanup pass."
+        },
+        "observed": "Foundation, android_scope, canonical APK/device smoke, API preparation, separate fixture APK build, ANDROID_AVD_HOME creation/guards all passed. Native launcher process exited 1 immediately, before its first output or artifacts/platform-support-native directory. The artifact therefore cannot identify which silent preflight predicate failed; no AVD, emulator boot, ADB, or UI command ran.",
+        "change": "Make each existing launcher preflight predicate emit a named NATIVE_PREFLIGHT_FAIL and tee output into artifacts/platform-support-native/native-preflight.log; also emit explicit SDK/AVD/KVM/CPU/device-empty pass markers. Preserve all prior fail-closed checks and the same SDK/image, empty-device policy, ADB behavior and UI driver. No chmod/sudo/root, alternate SDK discovery, retry, stale hierarchy or guard relaxation.",
+        "sources": [
+          {
+            "path": "scripts/run-platform-support-native-fixture.sh",
+            "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
+            "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
+          }
+        ],
+        "validation": "Complete artifact and logs verified; named preflight diagnostics committed. New own full CI pending; no same-SHA rerun or borrowed checks, no ADB/UI result, no merge/post-merge/acceptance/activation."
+      },
+      "namedPreflightExpectationRegression": {
+        "at": "2026-10-28",
+        "baselineHead": "550b7bf6e951e3cf77f6a899ffb402c7a195fe56",
+        "baselineRun": 40758448438,
+        "conclusion": "failure",
+        "observed": "Foundation, android_scope, and canonical Android passed. Native job failed in Prepare local API because its test still expected the old generic refusal string; the launcher now returns the new named ci_environment refusal. No AVD/ADB/UI step ran.",
+        "change": "Update only the existing launcher scope regression to assert the two named refusal labels; all fail-closed behavior and guards remain unchanged.",
+        "sources": [
+          {
+            "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+            "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
+            "new": "dfce805f973fd5f26fca629f26312f4c06892c66"
+          }
+        ],
+        "validation": "New own CI required after this source-pin reconciliation; no same-SHA rerun or borrowed checks; no AVD/ADB/UI result."
+      }
+    },
+    "runnerIsolationGradleCleanup": {
+      "at": "2026-10-28",
+      "baselineHead": "4125822b61c7f24402345521282bbb5f6b7ea96b",
+      "baselineRun": 40728669477,
+      "conclusion": "failure",
+      "actualFailure": "Foundation, android_scope, canonical APK/device smoke, local API, and isolated fixture APK build passed. Fresh native runner failed immediately in the separate Gradle-stop workflow step because apps/mobile/android did not exist in that clean checkout; the fixture prebuild and Gradle daemon ran in a temporary git-archive stage that the build script removed before the workflow stop step.",
+      "change": "Fixture build now stops its own Gradle daemon in the temporary Android project during EXIT cleanup, preserving the original exit code and failing closed if daemon stop fails; workflow removes the invalid root-project Gradle-stop step. No ADB retry/image/SDK/grant/guard changes.",
+      "sources": [
+        {
+          "path": "scripts/build-platform-support-native-fixture.sh",
+          "old": "e5c65caa9d734f99d030248ce38b7558dcbea933",
+          "new": "0034d2b1c73b6e7e9c2d294e5b322e22f301458f"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "56b7e43e37e1e270dd35d81456c58b852fb31e93",
+          "new": "fa381f872d4e792e2494351e78b983ec740a4b06"
+        }
+      ],
+      "validation": "New own CI pending; no native emulator boot or UI occurred in the failed run.",
+      "avdHomePreflight": {
+        "at": "2026-10-28",
+        "baselineHead": "380ceb0596015f72a8d756388ae4e601151ad3eb",
+        "baselineRun": 40738644262,
+        "conclusion": "failure",
+        "actualFailure": "Foundation and android_scope passed; canonical APK/device smoke passed; local API and fixture APK build passed. Native preflight stopped before AVD creation/boot because ANDROID_AVD_HOME was unset in the separate workflow step (/home/runner/...sh: line 1: ANDROID_AVD_HOME: parameter null or not set). No emulator, ADB, or UI command ran.",
+        "artifact": {
+          "id": 12840021850,
+          "size": 28937010,
+          "zipSHA256": "0d9b7256a62c5bee990b3bf69fae30f4a05c981c7ec5003f35b01cebf4c41de8",
+          "checked": "Complete ZIP downloaded; bytes/hash match GitHub metadata; ZIP integrity passes; six entries and no PNG/UI hierarchy/logcat/emulator-host evidence. XMLs are fixture manifest/network config. API cleanup passed."
+        },
+        "change": "Set job-wide ANDROID_AVD_HOME to a dedicated runner.temp path shared by preflight and repo-owned launcher. Preflight requires the directory absent before creating it, then retains absent fixture .avd/.ini checks and nproc>=4. SDK/image, device-empty guard, KVM, ADB fail-closed behavior and canonical runner unchanged.",
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "fa381f872d4e792e2494351e78b983ec740a4b06",
+          "new": "c531f633e25e777d7f1c041644319a2eca4244c8"
+        },
+        "validation": "New own full CI pending; no emulator/UI result, same-SHA rerun, merge, post-merge, acceptance, or activation."
+      },
+      "avdHomePreflightPlanningFailure": {
+        "at": "2026-10-28",
+        "baselineHead": "4e9321fd2ad0520a4e0ded8a86d2f805317e9e52",
+        "baselineRun": 40749203033,
+        "conclusion": "failure",
+        "observed": "GitHub Actions reports a completed failure immediately after push and exposes zero workflow jobs. No runner steps or emulator/ADB/UI command executed. The run offers no job log/explicit validation message; attributing this to runner.temp in job-level env is an inference.",
+        "change": "Remove the job-level runner.temp expression. A dedicated step now verifies RUNNER_TEMP/mlivre-support-avd is absent, creates it, and exports ANDROID_AVD_HOME through GITHUB_ENV for all subsequent steps. The next guard verifies the exact path, existing empty directory, absent fixture AVD/INI, and nproc>=4.",
+        "source": {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "c531f633e25e777d7f1c041644319a2eca4244c8",
+          "new": "61a7f1ff9c23afbbef1d86b38f3b18ece946795e"
+        },
+        "validation": "Workflow expression removed; own full CI pending. No same-SHA rerun, no AVD/UI conclusion, no merge/post-merge/acceptance/activation."
+      }
+    },
+    "kvmHostedImagePin": {
+      "at": "2026-10-30",
+      "baselineHead": "488e55fbdcc80a1e329b9e5fc135abf7f5916d4d",
+      "baselineRun": 40934624117,
+      "conclusion": "failure",
+      "observed": "Own Android job on ubuntu-latest resolved to Ubuntu 26.04. /dev/kvm existed with KVM_PERMISSIONS 660 root kvm; test -r failed KVM_NOT_READABLE before ADB/UI. Foundation and android_scope passed; canonical APK built; merge-policy failed by dependency; no native fixture/artifact.",
+      "change": "Pin both build-standalone-pilot-apk and native-support-fixture to ubuntu-24.04. This GitHub-hosted image was observed in a distinct historical run to expose KVM_PERMISSIONS 666 root kvm and pass the unchanged read/write guard; that run is diagnostic evidence only, not validation for this candidate. Keep test -r/test -w fail-closed; make no permission changes, no sudo/chmod/grants, no external runner.",
+      "sources": [
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
+          "new": "65102ba434cdf3b400a7859f174adb0cd01e17a3"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "fb24b38098ec03357372b7c87516deea91458e3a",
+          "new": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5"
+        }
+      ],
+      "evidence": {
+        "failingRun": 40934624117,
+        "failingRunnerImage": "ubuntu-26.04",
+        "failingDevice": "KVM_PERMISSIONS 660 root kvm; KVM_NOT_READABLE",
+        "diagnosticRun": 40266760847,
+        "diagnosticHead": "664ae489404b0c9b6dafa937cfc6407896e2c0d4",
+        "diagnosticRunnerImage": "ubuntu-24.04",
+        "diagnosticDevice": "KVM_PERMISSIONS 666 root kvm; KVM_READY device=/dev/kvm"
+      },
+      "validation": "Local candidate text assertions pass: both jobs pinned ubuntu-24.04, strict KVM read/write guards remain, and no sudo/chmod/usermod permission mutation is present. Full own CI on new SHA pending; no same-SHA rerun, no borrowed green, no merge/post-merge/acceptance/activation/production."
+    },
+    "kvmEphemeralPermissionPrep": {
+      "at": "2026-10-30",
+      "baselineHead": "bb3893532d9fdb80b9f5e705dde991a6fe9cc3d0",
+      "baselineRun": 40980456684,
+      "conclusion": "failure",
+      "observed": "Pinned ubuntu-24.04 hosted runner exposed /dev/kvm as mode 660 root kvm; the unchanged test -r guard returned KVM_NOT_READABLE before ADB. Foundation/android_scope passed; Android and dependent merge-policy failed; no emulator/UI/artifact.",
+      "change": "Both Android jobs make /dev/kvm readable/writable for the duration of their ephemeral GitHub-hosted job before running the same mandatory test -r and test -w guard. No external runner required; no production/device access. Hosted VM is discarded after the job.",
+      "permissionsEffect": "sudo chmod o+rw /dev/kvm adds other-user read/write only on the isolated hosted VM for this job.",
+      "sources": [
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "65102ba434cdf3b400a7859f174adb0cd01e17a3",
+          "new": "aaf32bed05093056651945b7235674345d241ce6"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "4f4b09169b0ba97211421cc05cc0ffbc6cf02de5",
+          "new": "d0e5fef424c04afa529f1964da611b194d7898cc"
+        }
+      ],
+      "validation": "Static regression checks pass for prep-before-guard in both Android jobs and unchanged fail-closed read/write checks. Own full CI on the new SHA pending; no same-SHA rerun or borrowed green. PR remains draft; no merge/acceptance/activation.",
+      "testCorrection": {
+        "baselineHead": "f85c231607236e634b70789736361225ef152fb7",
+        "baselineRun": 40981492891,
+        "conclusion": "failure",
+        "observed": "The added regression test retained the prior commit's assertion forbidding sudo chmod. Android stopped at the test step before APK build/KVM/ADB/UI; this was a test expectation failure, not evidence about KVM preparation.",
+        "change": "Replace the obsolete prohibition assertion with a literal count requiring exactly two `sudo chmod o+rw /dev/kvm` commands; the second assertion still checks both jobs' strict read/write guards.",
+        "source": {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "d0e5fef424c04afa529f1964da611b194d7898cc",
+          "new": "01669da976a773082f1862baea01c46e525501e3"
+        },
+        "validation": "Next own SHA CI pending; failed SHA not rerun; no borrowed green."
+      }
+    },
+    "kvmPermissionChangeReverted": {
+      "at": "2026-10-30",
+      "baselineHead": "8727a762ef901e1f08884f0299b2848f46ccb2c6",
+      "currentRun": 40981660402,
+      "currentRunStatus": "in_progress",
+      "reason": "The current task explicitly prohibits sudo/chmod/grants/bypass. The ephemeral chmod step is therefore removed from the branch; no permission alteration is part of the candidate.",
+      "change": "Restore the pre-change fail-closed Android workflow and regression test. No runner permission change, retry, or alternate runner. The currently active run was created from the prior workflow snapshot; the available GitHub connector has no cancel action and the browser is signed out, so it may require cancellation in GitHub before its preparation step.",
+      "sources": [
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "aaf32bed05093056651945b7235674345d241ce6",
+          "new": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "01669da976a773082f1862baea01c46e525501e3",
+          "new": "fb24b38098ec03357372b7c87516deea91458e3a"
+        }
+      ],
+      "validation": "New SHA CI required. Based on run40934624117, the retained read/write guard on ubuntu-latest fails KVM_NOT_READABLE before ADB when device is 660 root:kvm. If reproduced, stop and request runner authorization; no same-SHA rerun, merge, acceptance, or activation."
+    }
   }
 }

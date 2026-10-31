@@ -10,7 +10,7 @@ permissions:
 jobs:
   build-standalone-pilot-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 65
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,12 +39,18 @@ jobs:
       # Do not publish an APK merely because Gradle compiled it. Boot a clean
       # Android emulator, install the exact artifact, launch it with Metro absent,
       # and fail on native/React Native fatal crashes.
-      - name: Enable and verify KVM for the Android emulator
+      - name: Release canonical build-only Gradle daemons before emulator boot
+        run: |
+          free -m
+          ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "CANONICAL_JAVA_RSS_KIB_BEFORE", sum+0}'
+          (cd apps/mobile/android && ./gradlew --stop)
+          free -m
+          ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "CANONICAL_JAVA_RSS_KIB_AFTER", sum+0}'
+
+      - name: Verify KVM for the Android emulator
+        id: verify_kvm
         run: |
           test -c /dev/kvm
-          # Apply the same access mode directly to the existing ephemeral device;
-          # don't depend on asynchronous udev events or a daemon reload.
-          sudo chmod a+rw /dev/kvm
           stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
           test -r /dev/kvm || { echo 'KVM_NOT_READABLE'; exit 1; }
           test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
@@ -62,10 +68,10 @@ jobs:
           script: bash scripts/android-standalone-smoke.sh
 
       - name: Collect early smoke failure diagnostics
-        if: failure()
+        if: ${{ failure() && steps.verify_kvm.outcome == 'success' }}
         run: bash scripts/android-standalone-smoke.sh --diagnostics-only
       - name: Upload crash log on failure
-        if: failure()
+        if: ${{ failure() && steps.verify_kvm.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: MLivreTrabalho-device-smoke-logs
@@ -82,3 +88,120 @@ jobs:
           path: artifacts/android-pilot/
           if-no-files-found: error
           retention-days: 14
+
+  native-support-fixture:
+    needs: build-standalone-pilot-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    services:
+      support-postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mlivretrabalho_http
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d mlivretrabalho_http"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.15.1 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download the validated canonical APK from the preceding job
+        uses: actions/download-artifact@v4
+        with:
+          name: MLivreTrabalho-standalone-apk
+          path: artifacts/android-pilot
+      - name: Prepare local API for isolated native support journey
+        env:
+          PAYMENT_WEBHOOK_SECRET: ci-payment-webhook-secret
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
+        run: |
+          node --test scripts/tests/platform-support-native-fixture.test.mjs
+          pnpm --filter @mlivretrabalho/api build
+          pnpm --filter @mlivretrabalho/api migrate
+          node scripts/platform-support-native-api.cjs > /tmp/mlivre-support-native-api.log 2>&1 &
+          echo $! > /tmp/mlivre-support-native-api.pid
+          for i in $(seq 1 60); do
+            if test -f /tmp/mlivre-support-native/public.json; then break; fi
+            sleep 1
+          done
+          test -f /tmp/mlivre-support-native/public.json || { cat /tmp/mlivre-support-native-api.log; exit 1; }
+
+      - name: Build separate local-only support fixture APK
+        run: bash scripts/build-platform-support-native-fixture.sh
+
+      - name: Create dedicated empty AVD namespace
+        run: |
+          avd_root="$RUNNER_TEMP/mlivre-support-avd"
+          test ! -e "$avd_root"
+          mkdir -p "$avd_root"
+          printf 'ANDROID_AVD_HOME=%s\n' "$avd_root" >> "$GITHUB_ENV"
+          echo "NATIVE_AVD_HOME_READY $avd_root"
+
+      - name: Require a fresh isolated AVD namespace and four host CPUs
+        run: |
+          avd_root="${ANDROID_AVD_HOME:?ANDROID_AVD_HOME must be set}"
+          test "$avd_root" = "$RUNNER_TEMP/mlivre-support-avd"
+          test -d "$avd_root"
+          test -z "$(find "$avd_root" -mindepth 1 -maxdepth 1 -print -quit)"
+          test ! -e "$avd_root/platform-support-fixture.avd"
+          test ! -e "$avd_root/platform-support-fixture.ini"
+          available_cpus="$(nproc)"
+          echo "NATIVE_HOST_CPUS $available_cpus"
+          test "$available_cpus" -ge 4
+
+      - name: Verify KVM for isolated native support fixture
+        run: |
+          test -c /dev/kvm
+          stat -c 'KVM_PERMISSIONS %a %U %G' /dev/kvm
+          test -r /dev/kvm || { echo 'KVM_NOT_READABLE'; exit 1; }
+          test -w /dev/kvm || { echo 'KVM_NOT_WRITABLE'; exit 1; }
+          echo "KVM_READY device=/dev/kvm"
+
+      - name: Render native support states and recovery with real local sessions
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
+        run: bash scripts/run-platform-support-native-fixture.sh
+
+      - name: Close local fixture and verify cleanup
+        if: always()
+        run: |
+          if test -f /tmp/mlivre-support-native-api.pid; then
+            kill -TERM "$(cat /tmp/mlivre-support-native-api.pid)"
+            for i in $(seq 1 30); do
+              if grep -Fq NATIVE_API_CLEANUP_PASS /tmp/mlivre-support-native-api.log; then break; fi
+              sleep 1
+            done
+            grep -F NATIVE_API_CLEANUP_PASS /tmp/mlivre-support-native-api.log
+          fi
+
+      - name: Upload isolated native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MLivreTrabalho-support-native-fixture
+          path: |
+            artifacts/platform-support-native/
+            /tmp/mlivre-support-native-api.log
+          if-no-files-found: warn
+          retention-days: 14
+
