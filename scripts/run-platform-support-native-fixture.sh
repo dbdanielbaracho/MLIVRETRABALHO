@@ -26,10 +26,6 @@ avd_root="${ANDROID_AVD_HOME:-}"
 if test -z "$avd_root"; then fail "ANDROID_AVD_HOME_unset"; fi
 if test "$avd_root" = /; then fail "ANDROID_AVD_HOME_root"; fi
 
-if ! test -c /dev/kvm; then fail "kvm_device_missing"; fi
-if ! test -r /dev/kvm; then fail "kvm_device_not_readable"; fi
-if ! test -w /dev/kvm; then fail "kvm_device_not_writable"; fi
-
 available_cpus="$(nproc)"
 printf 'NATIVE_HOST_CPUS %s\n' "$available_cpus"
 if test "$available_cpus" -lt 4; then fail "host_cpu_count_below_4"; fi
@@ -43,7 +39,7 @@ if ! test -x "$sdk_root/platform-tools/adb"; then fail "adb_binary_missing_or_no
 if ! test -x "$sdk_root/cmdline-tools/latest/bin/avdmanager"; then fail "avdmanager_missing_or_not_executable"; fi
 if ! test -f "$sdk_root/system-images/android-35/default/x86_64/source.properties"; then fail "required_api35_image_missing"; fi
 
-printf 'NATIVE_PREFLIGHT_PASS sdk_root=%s avd_root=%s cpus=%s kvm=read-write\n' "$sdk_root" "$avd_root" "$available_cpus"
+printf 'NATIVE_PREFLIGHT_PASS sdk_root=%s avd_root=%s cpus=%s acceleration=software\n' "$sdk_root" "$avd_root" "$available_cpus"
 "$sdk_root/platform-tools/adb" devices > artifacts/platform-support-native/preboot-devices.txt
 # Never attach to an existing emulator or physical device.
 device_count="$(awk 'NR>1 && NF>=2 {n++} END {print n+0}' artifacts/platform-support-native/preboot-devices.txt)"
@@ -64,7 +60,7 @@ if ! grep -Eq '^Pkg[.]Revision[[:space:]]*=[[:space:]]*[0-9]+([.][0-9]+)+[[:spac
 cp "$sdk_root/emulator/source.properties" artifacts/platform-support-native/EMULATOR_VERSION.txt
 sha256sum "$sdk_root/emulator/source.properties" >> artifacts/platform-support-native/EMULATOR_IMAGE_SHA256.txt
 
-"$sdk_root/emulator/emulator" -port 5554 -avd "$fixture_avd" -accel on -no-window -gpu swiftshader -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save > artifacts/platform-support-native/emulator-host.log 2>&1 &
+"$sdk_root/emulator/emulator" -port 5554 -avd "$fixture_avd" -accel off -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save > artifacts/platform-support-native/emulator-host.log 2>&1 &
 fixture_emulator_pid=$!
 close_fixture_emulator() {
   "$sdk_root/platform-tools/adb" -s emulator-5554 logcat -d > artifacts/platform-support-native/emulator-final-logcat.txt 2>&1 || true

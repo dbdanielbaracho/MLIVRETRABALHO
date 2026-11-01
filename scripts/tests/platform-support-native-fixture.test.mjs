@@ -56,3 +56,15 @@ test('pre-install native failure preserves the first cause without a second UI/d
  assert.match(handler,/NATIVE_PRE_UI_FAILURE_NO_FOLLOWUP_PROBE/);
  assert.match(handler,/primaryFailurePreserved':True/);
 });
+
+\ntest('isolated native fixture uses software acceleration without requiring KVM',()=>{
+ const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
+ const runner=readFileSync('scripts/run-platform-support-native-fixture.sh','utf8');
+ assert.equal(workflow.includes('/dev/kvm'),false);
+ assert.match(workflow,/sdkmanager.*--install emulator/);
+ assert.match(workflow,/emulator.*-accel off -version/);
+ assert.equal(runner.includes('/dev/kvm'),false);
+ assert.equal(runner.includes('-accel on'),false);
+ assert.match(runner,/-accel off -no-window -gpu swiftshader_indirect/);
+ assert.match(runner,/acceleration=software/);
+});\n
