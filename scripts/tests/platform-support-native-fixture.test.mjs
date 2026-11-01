@@ -57,7 +57,7 @@ test('pre-install native failure preserves the first cause without a second UI/d
  assert.match(handler,/primaryFailurePreserved':True/);
 });
 
-\ntest('isolated native fixture uses software acceleration without requiring KVM',()=>{
+test('isolated native fixture uses software acceleration without requiring KVM',()=>{
  const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
  const runner=readFileSync('scripts/run-platform-support-native-fixture.sh','utf8');
  assert.equal(workflow.includes('/dev/kvm'),false);

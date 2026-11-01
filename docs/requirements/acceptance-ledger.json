@@ -6669,7 +6669,7 @@
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
-          "sha": "dfce805f973fd5f26fca629f26312f4c06892c66",
+          "sha": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
           "mode": "100644",
           "type": "blob"
         },
@@ -6704,7 +6704,7 @@
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": null,
-          "new": "83448ccbeb01204f13dd891f070a434ea69c2f36"
+          "new": "01d8bf2f5a4091279cd845c5fef03a75c505334a"
         },
         {
           "path": ".github/workflows/standalone-pilot-apk.yml",
@@ -6730,6 +6730,12 @@
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "83448ccbeb01204f13dd891f070a434ea69c2f36",
           "new": "dfce805f973fd5f26fca629f26312f4c06892c66"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "dfce805f973fd5f26fca629f26312f4c06892c66",
+          "new": "01d8bf2f5a4091279cd845c5fef03a75c505334a"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7917,7 +7923,8 @@
         ],
         "scripts/tests/platform-support-native-fixture.test.mjs": [
           "dfce805f973fd5f26fca629f26312f4c06892c66",
-          "3cbd7b175283fc18288087a843a80acaedf95e03"
+          "3cbd7b175283fc18288087a843a80acaedf95e03",
+          "01d8bf2f5a4091279cd845c5fef03a75c505334a"
         ]
       },
       "ownRun": {
@@ -7933,7 +7940,15 @@
         "artifacts": 0,
         "readbackAt": "2026-11-01T00:45:15Z"
       },
-      "claim": "real emulator smoke remains mandatory; no KVM dependency, runner permission mutation, mock, skip, APK-only result, merge, area acceptance, or activation"
+      "claim": "real emulator smoke remains mandatory; no KVM dependency, runner permission mutation, mock, skip, APK-only result, merge, area acceptance, or activation",
+      "nativeFixtureSyntaxRegression": {
+        "failedRun": 41256628910,
+        "failedJob": 124706494441,
+        "sourceBlob": "3cbd7b175283fc18288087a843a80acaedf95e03",
+        "diagnosis": "literal backslash-n before test declaration caused Node SyntaxError at line 60; fixture stopped before local API/build/emulator/ADB/UI",
+        "correctedBlob": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
+        "scope": "remove only the stray literal characters; no skips/mocks or changes to real emulator smoke"
+      }
     }
   }
 }
