@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
+          "sha": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
+          "sha": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
+      "sha": "f63160750df279550d6c07c0730068b517c55a4d",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "fb24b38098ec03357372b7c87516deea91458e3a",
+      "sha": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
       "mode": "100644"
     },
     {
@@ -7896,6 +7896,44 @@
         }
       ],
       "validation": "New SHA CI required. Based on run40934624117, the retained read/write guard on ubuntu-latest fails KVM_NOT_READABLE before ADB when device is 660 root:kvm. If reproduced, stop and request runner authorization; no same-SHA rerun, merge, acceptance, or activation."
+    },
+    "softwareAccelerationTransition": {
+      "at": "2026-11-01",
+      "fromHead": "42db2f66abff5c967a5d862c102614b4244df464",
+      "softwareCommit": "da0da38068905a3a74307b5d6b82f4937226278e",
+      "testCorrectionCommit": "ae8935520e842faf225c3493ce2fc91917239761",
+      "sourcePins": {
+        ".github/workflows/standalone-pilot-apk.yml": [
+          "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
+          "f63160750df279550d6c07c0730068b517c55a4d"
+        ],
+        "scripts/run-platform-support-native-fixture.sh": [
+          "9c7af738fec4fe42c3230252bde29092f1108ae9",
+          "ff807583de4e5d7ca9a644fa9d229b70b52ddef8"
+        ],
+        "scripts/tests/android-standalone-smoke.test.mjs": [
+          "fb24b38098ec03357372b7c87516deea91458e3a",
+          "54b621a7069e2ec800b38d6755750d1fa0f7d5f7"
+        ],
+        "scripts/tests/platform-support-native-fixture.test.mjs": [
+          "dfce805f973fd5f26fca629f26312f4c06892c66",
+          "3cbd7b175283fc18288087a843a80acaedf95e03"
+        ]
+      },
+      "ownRun": {
+        "id": 41256628910,
+        "attempt": 1,
+        "head": "ae8935520e842faf225c3493ce2fc91917239761",
+        "base": "755a41e8defc574dcd5fbaa20024ce1a07630213",
+        "androidScope": "success",
+        "foundation": "failure",
+        "foundationFailure": "DOCUMENT_TRUTH_RECONCILIATION_FAIL: stale active pin for scripts/tests/android-standalone-smoke.test.mjs",
+        "androidBuild": "success",
+        "smoke": "in_progress",
+        "artifacts": 0,
+        "readbackAt": "2026-11-01T00:45:15Z"
+      },
+      "claim": "real emulator smoke remains mandatory; no KVM dependency, runner permission mutation, mock, skip, APK-only result, merge, area acceptance, or activation"
     }
   }
 }

@@ -22761,3 +22761,14 @@ Após falhas reaisMetroantesUI, mesmo setupSTAGE passa a executar--bundle-probe 
     "verification": "GitHubmetadata only, no functionalproductionnavigation."
   }
 }
+
+
+## PR632 — Android com aceleração por software / readback 2026-11-01
+
+A mudança preserva o smoke Android real no runner atual e usa aceleração explícita por software. O workflow canônico não consulta `/dev/kvm`, define `disable-linux-hw-accel: true` e conserva instalação/lançamento do APK sem Metro, captura de falhas e gates fail-closed. O fixture nativo instala/verifica o componente SDK `emulator` e executa `-accel off`; não há mock, skip, APK-only, sucesso sintético, mudança de permissões, root/sudo/grants ou runner alternativo.
+
+Pins do software-emulator/fixture (old → new): workflow `e0eb6a54b35cbdf5e16c4092efc3a73640db9b38 → f63160750df279550d6c07c0730068b517c55a4d`; fixture `9c7af738fec4fe42c3230252bde29092f1108ae9 → ff807583de4e5d7ca9a644fa9d229b70b52ddef8`; teste smoke `fb24b38098ec03357372b7c87516deea91458e3a → 54b621a7069e2ec800b38d6755750d1fa0f7d5f7`; teste fixture `dfce805f973fd5f26fca629f26312f4c06892c66 → 3cbd7b175283fc18288087a843a80acaedf95e03`.
+
+O CI próprio `41256628910`, tentativa 1, pertence a HEAD `ae8935520e842faf225c3493ce2fc91917239761`, árvore `8c6bca6f0f336417a6d7dd0f758da210dcb5310e`, base/main `755a41e8defc574dcd5fbaa20024ce1a07630213`. Readback em 2026-11-01 00:45 UTC: `android_scope` SUCCESS; foundation falhou no step HTTP/Production Truth porque o ledger ainda esperava o pin antigo do teste smoke (esperado `fb24b38098ec03357372b7c87516deea91458e3a`, atual `54b621a7069e2ec800b38d6755750d1fa0f7d5f7`). O APK standalone foi construído e a limpeza de daemons passou; o step de smoke real do emulador por software permanecia em execução. Sem artefatos no readback; não há conclusão de smoke, percurso visual ou Área 1.
+
+Esta reconciliação atualiza somente os pins ativos do ledger e acrescenta este recibo, preservando integralmente os prefixos/histórico dos seis documentos canônicos e os pins antigos acima. Nenhum aceite, merge ou ativação decorre deste estado.
