@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "f63160750df279550d6c07c0730068b517c55a4d",
+      "sha": "848250c26cdc94543deeee4ea34372ed5f5e2792",
       "mode": "100644"
     },
     {
@@ -6754,6 +6754,12 @@
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "6f3835c65442a47d4d42db702a1ff2900df6b353",
           "new": "3438f991284d85fc63aced56e1756ec1900a68d6"
+        },
+        {
+          "at": "protectedInputs/1",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "f63160750df279550d6c07c0730068b517c55a4d",
+          "new": "848250c26cdc94543deeee4ea34372ed5f5e2792"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7930,6 +7936,7 @@
         ".github/workflows/standalone-pilot-apk.yml": [
           "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
           "f63160750df279550d6c07c0730068b517c55a4d",
+          "848250c26cdc94543deeee4ea34372ed5f5e2792",
           "848250c26cdc94543deeee4ea34372ed5f5e2792"
         ],
         "scripts/run-platform-support-native-fixture.sh": [
@@ -8003,6 +8010,16 @@
         "diagnosis": "sdkmanager --install emulator replaced/installed QEMU that could not load libpulse.so.0 on ubuntu-latest; canonical software emulator in same run succeeded",
         "change": "stop installing/overwriting SDK package; require runner-provided executable and verify emulator -accel off -version; explicit fail if absent",
         "noPrivilegeInstall": true
+      },
+      "syntaxAndPinCorrection": {
+        "failedRun": 41266478867,
+        "foundationJob": 124730228591,
+        "nativeJob": 124736175461,
+        "testBlob": "3438f991284d85fc63aced56e1756ec1900a68d6",
+        "testDiagnosis": "literal backslash-n inserted between assertions caused SyntaxError in fixture test",
+        "workflowPinOld": "f63160750df279550d6c07c0730068b517c55a4d",
+        "workflowPinNew": "848250c26cdc94543deeee4ea34372ed5f5e2792",
+        "activePinCorrection": true
       }
     }
   }
