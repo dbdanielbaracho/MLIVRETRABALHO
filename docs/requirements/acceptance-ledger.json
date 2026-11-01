@@ -6669,7 +6669,7 @@
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
-          "sha": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
+          "sha": "6f3835c65442a47d4d42db702a1ff2900df6b353",
           "mode": "100644",
           "type": "blob"
         },
@@ -6704,7 +6704,7 @@
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": null,
-          "new": "01d8bf2f5a4091279cd845c5fef03a75c505334a"
+          "new": "6f3835c65442a47d4d42db702a1ff2900df6b353"
         },
         {
           "path": ".github/workflows/standalone-pilot-apk.yml",
@@ -6736,6 +6736,12 @@
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "dfce805f973fd5f26fca629f26312f4c06892c66",
           "new": "01d8bf2f5a4091279cd845c5fef03a75c505334a"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
+          "new": "6f3835c65442a47d4d42db702a1ff2900df6b353"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7924,7 +7930,8 @@
         "scripts/tests/platform-support-native-fixture.test.mjs": [
           "dfce805f973fd5f26fca629f26312f4c06892c66",
           "3cbd7b175283fc18288087a843a80acaedf95e03",
-          "01d8bf2f5a4091279cd845c5fef03a75c505334a"
+          "01d8bf2f5a4091279cd845c5fef03a75c505334a",
+          "6f3835c65442a47d4d42db702a1ff2900df6b353"
         ]
       },
       "ownRun": {
@@ -7966,6 +7973,14 @@
           "notUsedAsCorrectionRun": true
         },
         "scope": "remove only stray literal characters; no skips/mocks or changes to real emulator smoke"
+      },
+      "nativeFixtureTrailingSyntaxCorrection": {
+        "failedRun": 41258792416,
+        "failedJob": 124712718272,
+        "sourceBlob": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
+        "diagnosis": "Node SyntaxError at line 70: literal backslash-n remained after final test declaration; stopped before API/build/emulator/ADB/UI",
+        "correctedBlob": "6f3835c65442a47d4d42db702a1ff2900df6b353",
+        "scope": "remove only trailing literal backslash-n"
       }
     }
   }

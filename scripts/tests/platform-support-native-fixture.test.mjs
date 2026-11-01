@@ -67,4 +67,4 @@ test('isolated native fixture uses software acceleration without requiring KVM',
  assert.equal(runner.includes('-accel on'),false);
  assert.match(runner,/-accel off -no-window -gpu swiftshader_indirect/);
  assert.match(runner,/acceleration=software/);
-});\n
+});
