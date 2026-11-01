@@ -7947,7 +7947,25 @@
         "sourceBlob": "3cbd7b175283fc18288087a843a80acaedf95e03",
         "diagnosis": "literal backslash-n before test declaration caused Node SyntaxError at line 60; fixture stopped before local API/build/emulator/ADB/UI",
         "correctedBlob": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
-        "scope": "remove only the stray literal characters; no skips/mocks or changes to real emulator smoke"
+        "workingCommit": "8fd03253bba04c1f75df0b4808699ae406bd85fb",
+        "ownRun": {
+          "id": 41258712705,
+          "attempt": 1,
+          "head": "8fd03253bba04c1f75df0b4808699ae406bd85fb",
+          "base": "755a41e8defc574dcd5fbaa20024ce1a07630213",
+          "status": "queued",
+          "readbackAt": "2026-11-01T00:53:33Z"
+        },
+        "previousRun412582": {
+          "id": 41258290107,
+          "head": "7fd2ee4ddcfa61a249cf85e43b26f84914d1c3db",
+          "status": "in_progress",
+          "foundationStep": "HTTP journey, readiness and Production Truth contract",
+          "androidStep": "Build standalone APK",
+          "readbackAt": "2026-11-01T00:53:33Z",
+          "notUsedAsCorrectionRun": true
+        },
+        "scope": "remove only stray literal characters; no skips/mocks or changes to real emulator smoke"
       }
     }
   }
