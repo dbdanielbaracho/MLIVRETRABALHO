@@ -45,5 +45,5 @@ test('canonical Android smoke uses software acceleration while keeping install a
  assert.match(source,/disable-linux-hw-accel: true/);
  assert.match(source,/emulator-boot-timeout: 1200/);
  assert.match(source,/Device smoke test — install and launch without Metro/);
- assert.match(source,/steps\\.device_smoke\\.outcome == 'failure'/);
+ assert.ok(source.includes("steps.device_smoke.outcome == 'failure'"));
 });
