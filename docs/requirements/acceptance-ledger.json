@@ -6669,13 +6669,13 @@
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
-          "sha": "6f3835c65442a47d4d42db702a1ff2900df6b353",
+          "sha": "3438f991284d85fc63aced56e1756ec1900a68d6",
           "mode": "100644",
           "type": "blob"
         },
         {
           "path": ".github/workflows/standalone-pilot-apk.yml",
-          "sha": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e",
+          "sha": "848250c26cdc94543deeee4ea34372ed5f5e2792",
           "mode": "100644",
           "type": "blob"
         },
@@ -6704,12 +6704,12 @@
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": null,
-          "new": "6f3835c65442a47d4d42db702a1ff2900df6b353"
+          "new": "3438f991284d85fc63aced56e1756ec1900a68d6"
         },
         {
           "path": ".github/workflows/standalone-pilot-apk.yml",
           "old": "528002354bcd760dd5998144608d0b2c6aaa2772",
-          "new": "635f7eb6484ab9d585ca47f39eadf8cbdd94396e"
+          "new": "848250c26cdc94543deeee4ea34372ed5f5e2792"
         }
       ],
       "sourcePinReconciliation": [
@@ -6742,6 +6742,18 @@
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "01d8bf2f5a4091279cd845c5fef03a75c505334a",
           "new": "6f3835c65442a47d4d42db702a1ff2900df6b353"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "f63160750df279550d6c07c0730068b517c55a4d",
+          "new": "848250c26cdc94543deeee4ea34372ed5f5e2792"
+        },
+        {
+          "at": "nativeRenderIncrement.sources",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "6f3835c65442a47d4d42db702a1ff2900df6b353",
+          "new": "3438f991284d85fc63aced56e1756ec1900a68d6"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7917,7 +7929,8 @@
       "sourcePins": {
         ".github/workflows/standalone-pilot-apk.yml": [
           "e0eb6a54b35cbdf5e16c4092efc3a73640db9b38",
-          "f63160750df279550d6c07c0730068b517c55a4d"
+          "f63160750df279550d6c07c0730068b517c55a4d",
+          "848250c26cdc94543deeee4ea34372ed5f5e2792"
         ],
         "scripts/run-platform-support-native-fixture.sh": [
           "9c7af738fec4fe42c3230252bde29092f1108ae9",
@@ -7931,7 +7944,8 @@
           "dfce805f973fd5f26fca629f26312f4c06892c66",
           "3cbd7b175283fc18288087a843a80acaedf95e03",
           "01d8bf2f5a4091279cd845c5fef03a75c505334a",
-          "6f3835c65442a47d4d42db702a1ff2900df6b353"
+          "6f3835c65442a47d4d42db702a1ff2900df6b353",
+          "3438f991284d85fc63aced56e1756ec1900a68d6"
         ]
       },
       "ownRun": {
@@ -7981,6 +7995,14 @@
         "diagnosis": "Node SyntaxError at line 70: literal backslash-n remained after final test declaration; stopped before API/build/emulator/ADB/UI",
         "correctedBlob": "6f3835c65442a47d4d42db702a1ff2900df6b353",
         "scope": "remove only trailing literal backslash-n"
+      },
+      "runnerSoftwareEmulator": {
+        "failedRun": 41262695328,
+        "failedJob": 124723957188,
+        "missingSharedLibrary": "libpulse.so.0",
+        "diagnosis": "sdkmanager --install emulator replaced/installed QEMU that could not load libpulse.so.0 on ubuntu-latest; canonical software emulator in same run succeeded",
+        "change": "stop installing/overwriting SDK package; require runner-provided executable and verify emulator -accel off -version; explicit fail if absent",
+        "noPrivilegeInstall": true
       }
     }
   }

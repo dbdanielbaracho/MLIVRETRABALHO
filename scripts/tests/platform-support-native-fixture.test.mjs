@@ -61,7 +61,7 @@ test('isolated native fixture uses software acceleration without requiring KVM',
  const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
  const runner=readFileSync('scripts/run-platform-support-native-fixture.sh','utf8');
  assert.equal(workflow.includes('/dev/kvm'),false);
- assert.match(workflow,/sdkmanager.*--install emulator/);
+ assert.match(workflow,/NATIVE_SOFTWARE_EMULATOR_MISSING package=emulator runner=ubuntu-latest/);\n  assert.doesNotMatch(workflow,/sdkmanager.*--install emulator/);
  assert.match(workflow,/emulator.*-accel off -version/);
  assert.equal(runner.includes('/dev/kvm'),false);
  assert.equal(runner.includes('-accel on'),false);

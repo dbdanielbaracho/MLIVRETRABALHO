@@ -162,10 +162,12 @@ jobs:
           echo "NATIVE_HOST_CPUS $available_cpus"
           test "$available_cpus" -ge 4
 
-      - name: Install software emulator package
+      - name: Require runner-provided software emulator
         run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install emulator
-          test -x "$ANDROID_HOME/emulator/emulator"
+          if ! test -x "$ANDROID_HOME/emulator/emulator"; then
+            echo "::error::NATIVE_SOFTWARE_EMULATOR_MISSING package=emulator runner=ubuntu-latest"
+            exit 1
+          fi
           "$ANDROID_HOME/emulator/emulator" -accel off -version
           echo "NATIVE_SOFTWARE_EMULATOR_READY"
 
