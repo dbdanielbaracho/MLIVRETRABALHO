@@ -3272,7 +3272,7 @@
         },
         {
           "path": "scripts/android-standalone-smoke.sh",
-          "sha": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+          "sha": "2102de8d521fed098d7ff945244e5966c34ee43b",
           "mode": "100644"
         }
       ],
@@ -4226,7 +4226,7 @@
     },
     {
       "path": "scripts/android-standalone-smoke.sh",
-      "sha": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+      "sha": "2102de8d521fed098d7ff945244e5966c34ee43b",
       "mode": "100644"
     },
     {
@@ -6847,6 +6847,18 @@
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
           "old": "pending",
           "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
+        },
+        {
+          "at": "proofs[8].implementation",
+          "path": "scripts/android-standalone-smoke.sh",
+          "old": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+          "new": "2102de8d521fed098d7ff945244e5966c34ee43b"
+        },
+        {
+          "at": "protectedInputs[181]",
+          "path": "scripts/android-standalone-smoke.sh",
+          "old": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
+          "new": "2102de8d521fed098d7ff945244e5966c34ee43b"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7960,7 +7972,28 @@
             "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
           }
         ],
-        "validation": "android-standalone-smoke.test.mjs 10/10 PASS against exact workflow and modified script; bash -n and node --check PASS. New own CI required; no retry of baseline SHA."
+        "validation": "android-standalone-smoke.test.mjs 10/10 PASS against exact workflow and modified script; bash -n and node --check PASS. New own CI required; no retry of baseline SHA.",
+        "followupOwnCI": {
+          "at": "2026-11-02",
+          "head": "c4fee63ef2379e488fba71d1ddcca56b5336eee3",
+          "run": 41396478871,
+          "attempt": 1,
+          "result": "completed/failure",
+          "jobs": {
+            "android_scope": "success",
+            "foundation": "failure: DOCUMENT_TRUTH_RECONCILIATION_FAIL source drift scripts/android-standalone-smoke.sh",
+            "canonicalAndroid": "success: standalone APK smoke completed without Metro",
+            "nativeFixture": "failure before UI interaction: ADB settings/input Broken pipe, exit 224",
+            "mergePolicy": "failure because required jobs failed"
+          },
+          "artifact": {
+            "id": 13121610751,
+            "sizeBytes": 28937174,
+            "zipSha256": "2c86f4f56341341ed50f632bccc247e241c78950b357916e6a7d833a35691247",
+            "contents": "fixture APK/config/API log and diagnostics; no UI screenshot or UI hierarchy"
+          },
+          "interpretation": "Foundation directly identifies active ledger pin drift and it is reconciled above. The native fixture reached the software-emulator path but ADB failed before UI; this is not evidence of a product/render defect. No Area 1 or complete-render claim."
+        }
       }
     },
     "runnerIsolationGradleCleanup": {
