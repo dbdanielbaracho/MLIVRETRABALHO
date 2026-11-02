@@ -20,7 +20,7 @@ if test "$sdk_root" = /; then fail "ANDROID_HOME_root"; fi
 avd_root="${ANDROID_AVD_HOME:-}"
 if test -z "$avd_root"; then fail "ANDROID_AVD_HOME_unset"; fi
 if test "$avd_root" = /; then fail "ANDROID_AVD_HOME_root"; fi
-if test "$avd_root" != "${RUNNER_TEMP:?RUNNER_TEMP must be set}/mlivre-support-avd"; then fail "avd_namespace_not_isolated"; fi
+if test "$avd_root" != "${HOME:?HOME must be set}/.android/avd"; then fail "avd_namespace_not_isolated"; fi
 
 available_cpus="$(nproc)"
 printf 'NATIVE_HOST_CPUS %s\n' "$available_cpus"

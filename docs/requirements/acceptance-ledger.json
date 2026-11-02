@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "f8a61b51e376718f686ca5e3db91c89042a0d018",
+      "sha": "ad877bfea75f6df2464430d02a09c5671340ee66",
       "mode": "100644"
     },
     {
@@ -6713,6 +6713,21 @@
           "path": "scripts/run-platform-support-native-fixture.sh",
           "old": "f3cd418bccb19bd6f14485e92879ce81c886ac7f",
           "new": "9c7af738fec4fe42c3230252bde29092f1108ae9"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "f8a61b51e376718f686ca5e3db91c89042a0d018",
+          "new": "ad877bfea75f6df2464430d02a09c5671340ee66"
+        },
+        {
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "0dacd1883467814153e9d9aba0b492880b187d69",
+          "new": "cb599118491a9d5e348be4bbcd9f92eb2a1f74d6"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "2f77d3500d67c9c8f5a002ce0a81c5e83e3d9a20",
+          "new": "bf73bf2a26d4f2962cca4ba852232e70eead993d"
         }
       ],
       "pins": [
@@ -6790,6 +6805,24 @@
           "path": ".github/workflows/standalone-pilot-apk.yml",
           "old": "f63160750df279550d6c07c0730068b517c55a4d",
           "new": "848250c26cdc94543deeee4ea34372ed5f5e2792"
+        },
+        {
+          "at": "nativeRenderIncrement.avdNamespaceCorrection.sources/0",
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "f8a61b51e376718f686ca5e3db91c89042a0d018",
+          "new": "ad877bfea75f6df2464430d02a09c5671340ee66"
+        },
+        {
+          "at": "nativeRenderIncrement.avdNamespaceCorrection.sources/1",
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "0dacd1883467814153e9d9aba0b492880b187d69",
+          "new": "cb599118491a9d5e348be4bbcd9f92eb2a1f74d6"
+        },
+        {
+          "at": "nativeRenderIncrement.avdNamespaceCorrection.sources/2",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "2f77d3500d67c9c8f5a002ce0a81c5e83e3d9a20",
+          "new": "bf73bf2a26d4f2962cca4ba852232e70eead993d"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7814,6 +7847,34 @@
           }
         ],
         "validation": "New own CI required after this source-pin reconciliation; no same-SHA rerun or borrowed checks; no AVD/ADB/UI result."
+      },
+      "avdNamespaceCorrection": {
+        "at": "2026-11-02",
+        "run": 41379607119,
+        "attempt": 1,
+        "head": "83dbfe842dfce89c5f26ac5d4010d2d6c9a0c581",
+        "job": 125073591684,
+        "firstFailure": "NATIVE_PREFLIGHT_FAIL check=avd_namespace_not_isolated after the action booted the fresh test AVD",
+        "reproducedCause": "The workflow prepared RUNNER_TEMP/mlivre-support-avd, but the pinned reactivecircus/android-emulator-runner SDK installer resets ANDROID_AVD_HOME to $HOME/.android/avd before AVD creation. The fixture then correctly failed its exact-path guard.",
+        "change": "Prepare and verify the empty job-local $HOME/.android/avd directory before invoking the existing software-emulator action. The fixture validates that same action-owned path and its single test.avd/test.ini after boot. No additional emulator is launched.",
+        "sources": [
+          {
+            "path": ".github/workflows/standalone-pilot-apk.yml",
+            "old": "f8a61b51e376718f686ca5e3db91c89042a0d018",
+            "new": "ad877bfea75f6df2464430d02a09c5671340ee66"
+          },
+          {
+            "path": "scripts/run-platform-support-native-fixture.sh",
+            "old": "0dacd1883467814153e9d9aba0b492880b187d69",
+            "new": "cb599118491a9d5e348be4bbcd9f92eb2a1f74d6"
+          },
+          {
+            "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+            "old": "2f77d3500d67c9c8f5a002ce0a81c5e83e3d9a20",
+            "new": "bf73bf2a26d4f2962cca4ba852232e70eead993d"
+          }
+        ],
+        "validation": "Local targeted native-fixture suite passed 6/6; Bash syntax and YAML parse passed. Own CI required on the new SHA; software emulator, install/launch, fail-closed diagnostics and native visual journey remain mandatory. No same-SHA rerun, KVM, runner change, skip or mock."
       }
     },
     "runnerIsolationGradleCleanup": {

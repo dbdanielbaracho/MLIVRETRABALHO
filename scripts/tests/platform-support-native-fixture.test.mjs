@@ -61,6 +61,13 @@ test('native fixture uses the same real software-emulator action without a KVM p
  const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
  const runner=readFileSync('scripts/run-platform-support-native-fixture.sh','utf8');
  const nativeJob=workflow.slice(workflow.indexOf('  native-support-fixture:'),workflow.indexOf('      - name: Close local fixture and verify cleanup'));
+ const namespacePrep=nativeJob.slice(nativeJob.indexOf('- name: Prepare action-owned empty AVD namespace'),nativeJob.indexOf('- name: Require a fresh isolated AVD namespace and four host CPUs'));
+ const namespaceCheck=nativeJob.slice(nativeJob.indexOf('- name: Require a fresh isolated AVD namespace and four host CPUs'),nativeJob.indexOf('- name: Render native support states and recovery with real local sessions'));
+ assert.ok(namespacePrep.includes('avd_root="$HOME/.android/avd"'));
+ assert.ok(namespacePrep.includes('test -z "$(find "$avd_root" -mindepth 1 -maxdepth 1 -print -quit)"'));
+ assert.ok(namespaceCheck.includes('test "$avd_root" = "$HOME/.android/avd"'));
+ assert.equal(nativeJob.includes('RUNNER_TEMP/mlivre-support-avd'),false);
+ assert.ok(runner.includes('${HOME:?HOME must be set}/.android/avd'));
  assert.equal(workflow.includes('/dev/kvm'),false);
  assert.ok(nativeJob.includes('uses: reactivecircus/android-emulator-runner@v2'));
  assert.match(nativeJob,/disable-linux-hw-accel: true/);
