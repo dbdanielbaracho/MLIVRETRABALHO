@@ -5347,6 +5347,18 @@
           "path": "apps/mobile/tests/platform-support.test.mjs",
           "old": "300df77d2cb976d86f084173a378674cc8a32c5b",
           "new": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb"
+        },
+        {
+          "at": "platformSupportCandidate.mobileUIIncrement.responseBoundaryValidation.sources/0",
+          "path": "apps/mobile/lib/platform-support.ts",
+          "old": "0edaa081e627efe1e8f7ee3028f325e81d07cb28",
+          "new": "63b2c1246561142d8f7ee32bdc101bf80e4a04e5"
+        },
+        {
+          "at": "platformSupportCandidate.mobileUIIncrement.responseBoundaryValidation.sources/1",
+          "path": "apps/mobile/tests/platform-support.test.mjs",
+          "old": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb",
+          "new": "521fac3dd16b2995f3d7d35ed83cc1505dc32489"
         }
       ],
       "scope": "Standalone platform help screen and unconditional Profile entry, existing company support preserved. Identity-bound minimal encrypted descriptor, no message/token persistence, strict ACK/recoveryGET/no automatic POST; explicit same-key retry after prepared. 15s covers auth/storage/transport/JSON; stale/blur/cancel ignored. Queue/detail/withdraw states. No real activation or acceptance; rendered/runtimeRLS proof pending.",
@@ -5373,6 +5385,24 @@
         "change": "Regression rejects malformed or cross-identity durable recovery metadata before any /me/platform-support request; the private slot is neither reassigned nor silently erased.",
         "scope": "Mobile parser/flow test only; no React/RN source, dependency, lockfile, API, database, external service, operator, tenant, or production change.",
         "validation": "Own CI required on the resulting ledger head; no Android UI claim."
+      },
+      "responseBoundaryValidation": {
+        "at": "2026-11-02",
+        "observed": "The API validates submitted descriptions and operator response bodies as non-empty text of at most 4000 Unicode code points, rejecting NUL and unpaired surrogates. The mobile detail parser previously accepted unbounded response strings.",
+        "change": "A shared bounded-text validator now applies the same contract to mobile input and server-returned case descriptions/replies; malformed or oversized server detail fails closed.",
+        "sources": [
+          {
+            "path": "apps/mobile/lib/platform-support.ts",
+            "old": "0edaa081e627efe1e8f7ee3028f325e81d07cb28",
+            "new": "63b2c1246561142d8f7ee32bdc101bf80e4a04e5"
+          },
+          {
+            "path": "apps/mobile/tests/platform-support.test.mjs",
+            "old": "1d99d3ed212a6adf1fe851dfbb326cf34e1d9eeb",
+            "new": "521fac3dd16b2995f3d7d35ed83cc1505dc32489"
+          }
+        ],
+        "validation": "Mobile support flow tests exercise exact 4000-codepoint acceptance and reject 4001/NUL/unpaired-surrogate values in descriptions and replies; no endpoint, database, tenant, dependency, lockfile, or operational identity changed."
       }
     },
     "readRLSIncrement": {

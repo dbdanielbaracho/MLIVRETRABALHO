@@ -7,10 +7,14 @@ const object=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&
 const uuid=(x:unknown):x is string=>typeof x==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(x);
 const category=(x:unknown):x is string=>typeof x==='string'&&platformCategories.some(c=>c[0]===x);
 const date=(x:unknown):x is string=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(x)&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString().slice(0,19)===x.slice(0,19);
+const supportText=(x:unknown):x is string=>{
+ if(typeof x!=='string')return false;let count=0;
+ for(const c of x){const n=c.codePointAt(0)!;if(++count>4000||n===0||n>=0xd800&&n<=0xdfff)return false;}
+ return count>0;
+};
 export function platformInput(categoryValue:unknown,description:unknown):PlatformInput|null{
- if(!category(categoryValue)||typeof description!=='string'||description.includes('\0'))return null;
- const text=description.trim();if(!text||Array.from(text).length>4000)return null;
- for(const c of text){const n=c.codePointAt(0)!;if(n>=0xd800&&n<=0xdfff)return null;}
+ if(!category(categoryValue)||typeof description!=='string')return null;
+ const text=description.trim();if(!supportText(text))return null;
  return {category:categoryValue,description:text};
 }
 export function platformCase(x:unknown):PlatformCase|null{
@@ -18,8 +22,8 @@ export function platformCase(x:unknown):PlatformCase|null{
  return {id:x.id.toLowerCase(),category:x.category,status:x.status as string,createdAt:x.createdAt};
 }
 export function platformDetail(x:unknown):PlatformCase|null{
- const header=platformCase(x);if(!header||!object(x)||!date(x.updatedAt)||!(x.closedAt===null||date(x.closedAt))||!(x.description===null||typeof x.description==='string')||!Array.isArray(x.responses))return null;
- if(!x.responses.every(r=>object(r)&&uuid(r.id)&&(r.body===null||typeof r.body==='string')&&date(r.createdAt)&&typeof r.resolvesCase==='boolean'))return null;
+ const header=platformCase(x);if(!header||!object(x)||!date(x.updatedAt)||!(x.closedAt===null||date(x.closedAt))||!(x.description===null||supportText(x.description))||!Array.isArray(x.responses))return null;
+ if(!x.responses.every(r=>object(r)&&uuid(r.id)&&(r.body===null||supportText(r.body))&&date(r.createdAt)&&typeof r.resolvesCase==='boolean'))return null;
  return {...header,updatedAt:x.updatedAt,closedAt:x.closedAt as string|null,description:x.description as string|null,responses:x.responses.map(r=>({id:r.id as string,body:r.body as string|null,createdAt:r.createdAt as string,resolvesCase:r.resolvesCase as boolean}))};
 }
 export function platformPage(x:unknown):PlatformPage|null{

@@ -18,6 +18,12 @@ test('strict Unicode input and server parsers reject malformed data, discard pri
  assert.deepEqual(platformPage({items:[{...ack,description:'secret'}],nextCursor:null,acceptingRequests:false}).items,[ack]);assert.equal(platformPage({items:[ack,ack],nextCursor:null,acceptingRequests:true}),null);
  assert.equal(platformDetail({...ack,updatedAt:ack.createdAt,description:null,closedAt:null,responses:[{}]}),null);
 });
+test('detail parser enforces the server text contract on case descriptions and operator replies',()=>{
+ const valid={...ack,updatedAt:ack.createdAt,description:'😀'.repeat(4000),closedAt:null,responses:[{id:b,body:'reply',createdAt:ack.createdAt,resolvesCase:false}]};
+ assert.ok(platformDetail(valid));assert.equal(platformDetail({...valid,description:'😀'.repeat(4001)}),null);assert.equal(platformDetail({...valid,description:'\0'}),null);assert.equal(platformDetail({...valid,description:'\ud800'}),null);
+ assert.equal(platformDetail({...valid,responses:[{...valid.responses[0],body:'😀'.repeat(4001)}]}),null);assert.equal(platformDetail({...valid,responses:[{...valid.responses[0],body:'\0'}]}),null);assert.equal(platformDetail({...valid,responses:[{...valid.responses[0],body:'\udfff'}]}),null);
+ assert.equal(platformDetail({...valid,description:null,responses:[{...valid.responses[0],body:null}]}).description,null);
+});
 test('send stages only metadata with verified readback before a single POST; exact key binds ACK',async()=>{
  const h=harness();await ready(h);h.handler((p,i)=>{if(p==='/me/platform-support'&&i.method==='POST'){const stored=JSON.parse(h.map.get(a));assert.equal(stored.requestKey,key);assert.equal(Object.hasOwn(stored,'description'),false);assert.equal(Object.hasOwn(stored,'token'),false);assert.ok(!h.map.get(a).includes(input.description));}return responses(p,i);});
  const r=await h.flow.send('other',input.description);assert.equal(r.status,'confirmed');assert.equal(r.data.id,key);assert.equal(h.calls.filter(x=>x.path==='/me/platform-support'&&x.init.method==='POST').length,1);assert.ok(h.calls.every(x=>!('x-tenant-id' in x.init.headers)));
