@@ -72,6 +72,7 @@ test('native fixture uses the same real software-emulator action without a KVM p
  assert.equal(runner.includes('-accel on'),false);
  assert.doesNotMatch(runner,/avdmanager.*create avd/);
  assert.doesNotMatch(runner,/emulator" -port 5554/);
- assert.match(runner,/device_rows.*emulator-5554/);
+ assert.ok(runner.includes('device_rows="$(awk'));
+ assert.ok(runner.includes('if test "$device_rows" != emulator-5554'));
  assert.match(runner,/acceleration=software/);
 });
