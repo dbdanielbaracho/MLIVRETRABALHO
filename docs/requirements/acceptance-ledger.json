@@ -6835,6 +6835,18 @@
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "bf73bf2a26d4f2962cca4ba852232e70eead993d",
           "new": "5655f7ab65e0bb5febb6b52a7b68ba3e33186fed"
+        },
+        {
+          "at": "nativeRenderIncrement.androidSmokeLaunchWaitCorrection.sources",
+          "path": "scripts/android-standalone-smoke.sh",
+          "old": "pending",
+          "new": "2102de8d521fed098d7ff945244e5966c34ee43b"
+        },
+        {
+          "at": "nativeRenderIncrement.androidSmokeLaunchWaitCorrection.sources",
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "pending",
+          "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7913,6 +7925,42 @@
           }
         ],
         "validation": "bash -n and node --check pass; native fixture regression suite 6/6 pass on source files from the exact base commit, with current script/test overlaid. ZIP artifact verified size and digest; contains no UI PNG/XML. Own CI on new SHA required."
+      },
+      "androidSmokeLaunchWaitCorrection": {
+        "at": "2026-11-02",
+        "baselineHead": "911461c8400b750403db50fa8c94b2add85f85fa",
+        "run": 41390802209,
+        "failedJob": 125101605489,
+        "diagnosis": "Canonical smoke installed the standalone APK successfully; after monkey launch, 12 seconds later pidof returned no application PID and dumpsys showed QuickstepLauncher still resumed. Captured load showed CPU pressure near 90% and ANRs in com.android.phone and com.android.messaging during software-only boot/install. No app fatal exception or Metro error was captured. This establishes launch not observed in the fixed window; CPU pressure is supporting context, not asserted as sole root cause.",
+        "change": "Replace fixed 12-second post-monkey delay with a bounded 120-second PID poll. Keep the mandatory nonempty app PID, foreground activity check, fatal-log scan and fail-closed outcome; a never-starting app still fails.",
+        "evidence": {
+          "artifact": 13117938080,
+          "sizeBytes": 297246,
+          "zipSha256": "b3e4219cba1538f7efeebef85447de04378bf841df7d1b2ecb6a5ad5874aa415",
+          "contents": "diagnostic logs/manifest only; no screenshots or UI hierarchy",
+          "adbDevice": "emulator-5554 device",
+          "apkInstall": "Success",
+          "appPid": "empty",
+          "resumedActivity": "com.android.launcher3/.uioverrides.QuickstepLauncher",
+          "observedSystemAnrs": [
+            "com.android.phone",
+            "com.android.messaging"
+          ],
+          "capturedCpuPressure": "some avg10=90.05 avg60=90.58 avg300=79.59"
+        },
+        "sources": [
+          {
+            "path": "scripts/android-standalone-smoke.sh",
+            "old": "pending",
+            "new": "2102de8d521fed098d7ff945244e5966c34ee43b"
+          },
+          {
+            "path": "scripts/tests/android-standalone-smoke.test.mjs",
+            "old": "pending",
+            "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
+          }
+        ],
+        "validation": "android-standalone-smoke.test.mjs 10/10 PASS against exact workflow and modified script; bash -n and node --check PASS. New own CI required; no retry of baseline SHA."
       }
     },
     "runnerIsolationGradleCleanup": {
