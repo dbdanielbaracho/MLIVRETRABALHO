@@ -6823,6 +6823,18 @@
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "2f77d3500d67c9c8f5a002ce0a81c5e83e3d9a20",
           "new": "bf73bf2a26d4f2962cca4ba852232e70eead993d"
+        },
+        {
+          "at": "nativeRenderIncrement.emulatorVersionProbeCorrection.sources",
+          "path": "scripts/run-platform-support-native-fixture.sh",
+          "old": "cb599118491a9d5e348be4bbcd9f92eb2a1f74d6",
+          "new": "accda3f4b816686c6218df8f9b6fc39e3aaa29fc"
+        },
+        {
+          "at": "nativeRenderIncrement.emulatorVersionProbeCorrection.sources",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "bf73bf2a26d4f2962cca4ba852232e70eead993d",
+          "new": "5655f7ab65e0bb5febb6b52a7b68ba3e33186fed"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7875,6 +7887,32 @@
           }
         ],
         "validation": "Local targeted native-fixture suite passed 6/6; Bash syntax and YAML parse passed. Own CI required on the new SHA; software emulator, install/launch, fail-closed diagnostics and native visual journey remain mandatory. No same-SHA rerun, KVM, runner change, skip or mock."
+      },
+      "emulatorVersionProbeCorrection": {
+        "at": "2026-11-02",
+        "baselineHead": "8041ea96dfef198ad63e50428f432ef1cba8104d",
+        "failingRun": 41384906612,
+        "failedJob": 125087933359,
+        "diagnosis": "The action-owned emulator had booted and created the exact AVD, but the fixture's second emulator -accel off -version process failed to load libpulse.so.0 outside the action's launched-process environment. This is an ancillary version probe, not absence of the SDK emulator or a boot result.",
+        "change": "Remove only the second emulator process/version invocation. Keep executable checks, strict emulator source.properties revision validation, same action-owned AVD, real ADB device-set/boot checks, installation/UI path, artifact capture and fail-closed behavior. No system package, SDK replacement, runner or permission changes.",
+        "evidence": {
+          "runnerImage": "ubuntu-26.04",
+          "firstFailure": "NATIVE_PREFLIGHT_FAIL check=software_emulator_version_probe_failed",
+          "stderr": "qemu-system-x86_64: error while loading shared libraries: libpulse.so.0: cannot open shared object file"
+        },
+        "sources": [
+          {
+            "path": "scripts/run-platform-support-native-fixture.sh",
+            "old": "cb599118491a9d5e348be4bbcd9f92eb2a1f74d6",
+            "new": "accda3f4b816686c6218df8f9b6fc39e3aaa29fc"
+          },
+          {
+            "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+            "old": "bf73bf2a26d4f2962cca4ba852232e70eead993d",
+            "new": "5655f7ab65e0bb5febb6b52a7b68ba3e33186fed"
+          }
+        ],
+        "validation": "bash -n and node --check pass; native fixture regression suite 6/6 pass on source files from the exact base commit, with current script/test overlaid. ZIP artifact verified size and digest; contains no UI PNG/XML. Own CI on new SHA required."
       }
     },
     "runnerIsolationGradleCleanup": {

@@ -74,7 +74,8 @@ test('native fixture uses the same real software-emulator action without a KVM p
  assert.match(nativeJob,/emulator-options: .*swiftshader_indirect/);
  assert.ok(nativeJob.includes('script: bash scripts/run-platform-support-native-fixture.sh'));
  assert.doesNotMatch(nativeJob,/NATIVE_SOFTWARE_EMULATOR_MISSING/);
- assert.match(runner,/-accel off -version/);
+ assert.doesNotMatch(runner,/-accel off -version/);
+ assert.match(runner,/Pkg\[.]Revision/);
  assert.equal(runner.includes('/dev/kvm'),false);
  assert.equal(runner.includes('-accel on'),false);
  assert.doesNotMatch(runner,/avdmanager.*create avd/);

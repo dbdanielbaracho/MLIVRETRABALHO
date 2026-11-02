@@ -36,7 +36,6 @@ ini_count="$(find "$avd_root" -mindepth 1 -maxdepth 1 -type f -name '*.ini' | wc
 if test "$avd_count" -ne 1 || test "$ini_count" -ne 1 || ! test -d "$avd_root/test.avd" || ! test -f "$avd_root/test.ini"; then
   fail "software_action_avd_namespace_invalid"
 fi
-if ! "$sdk_root/emulator/emulator" -accel off -version; then fail "software_emulator_version_probe_failed"; fi
 if ! grep -Eq '^Pkg[.]Revision[[:space:]]*=[[:space:]]*[0-9]+([.][0-9]+)+[[:space:]]*$' "$sdk_root/emulator/source.properties"; then fail "emulator_revision_metadata_invalid"; fi
 
 sha256sum "$sdk_root/system-images/android-35/default/x86_64/source.properties" > artifacts/platform-support-native/EMULATOR_IMAGE_SHA256.txt
