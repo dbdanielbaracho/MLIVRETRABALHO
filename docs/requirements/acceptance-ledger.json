@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
+          "sha": "9c275a22f65d24baf12673bfdcd641071802f9d7",
           "mode": "100644"
         }
       ],
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
+      "sha": "9c275a22f65d24baf12673bfdcd641071802f9d7",
       "mode": "100644"
     },
     {
@@ -6859,6 +6859,18 @@
           "path": "scripts/android-standalone-smoke.sh",
           "old": "7d7dac1cdd906cd40515c23bab54cdf59376553c",
           "new": "2102de8d521fed098d7ff945244e5966c34ee43b"
+        },
+        {
+          "at": "proofs[8].tests",
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
+          "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
+        },
+        {
+          "at": "protectedInputs/android-standalone-smoke.test.mjs",
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
+          "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -7993,6 +8005,27 @@
             "contents": "fixture APK/config/API log and diagnostics; no UI screenshot or UI hierarchy"
           },
           "interpretation": "Foundation directly identifies active ledger pin drift and it is reconciled above. The native fixture reached the software-emulator path but ADB failed before UI; this is not evidence of a product/render defect. No Area 1 or complete-render claim."
+        },
+        "secondFollowupOwnCI": {
+          "at": "2026-11-02",
+          "head": "d82a60fdae741f205e6a3a3623a9a36e495eb0e0",
+          "run": 41402263336,
+          "attempt": 1,
+          "result": "completed/failure",
+          "jobs": {
+            "android_scope": "success",
+            "foundation": "failure: DOCUMENT_TRUTH_RECONCILIATION_FAIL source drift scripts/tests/android-standalone-smoke.test.mjs",
+            "canonicalAndroid": "success: standalone APK job completed",
+            "nativeFixture": "failure: PLATFORM_SUPPORT_NATIVE_RENDER_FAIL stage=device kind=TimeoutExpired; NATIVE_PRE_UI_FAILURE_NO_FOLLOWUP_PROBE confirms no retry",
+            "mergePolicy": "failure because required jobs failed"
+          },
+          "nativeArtifact": {
+            "id": 13123703349,
+            "sizeBytes": 30042212,
+            "zipSha256": "0d4d180bb21c660b70ccbd2e2b18e9ad80577c90da67c8eeffdf34808f43ea67",
+            "visualCapture": "none; timeout occurred before UI"
+          },
+          "interpretation": "Reconcile the second stale active source pin. Native timeout occurred before UI on the software-emulator device path; no product/render conclusion or Area 1 claim."
         }
       }
     },
