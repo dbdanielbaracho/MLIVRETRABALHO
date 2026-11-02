@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
+          "sha": "9c275a22f65d24baf12673bfdcd641071802f9d7",
           "mode": "100644"
         }
       ],
@@ -6871,6 +6871,12 @@
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
           "old": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
           "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
+        },
+        {
+          "at": "requirements[39].tests[0]",
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "54b621a7069e2ec800b38d6755750d1fa0f7d5f7",
+          "new": "9c275a22f65d24baf12673bfdcd641071802f9d7"
         }
       ],
       "scope": "Native isolated package and staged git archive, actual local AppModule/four restricted pools/auth sessions/synthetic identities, local proxy for deterministic response loss only, UI via stock adb/uiautomator, original screenshots/XML. Canonical package/API/build script/output untouched; new mandatory steps inside same canonical reusable job after canonical upload, with own fixture artifact. Existing KVM setup reused, no new root/grants/565 imports.",
@@ -8026,6 +8032,23 @@
             "visualCapture": "none; timeout occurred before UI"
           },
           "interpretation": "Reconcile the second stale active source pin. Native timeout occurred before UI on the software-emulator device path; no product/render conclusion or Area 1 claim."
+        },
+        "thirdFollowupOwnCI": {
+          "at": "2026-11-02",
+          "head": "5f351238cc95150407b3aa5fde2bdc891f4b3439",
+          "run": 41409721143,
+          "attempt": 1,
+          "result": "completed/failure",
+          "foundation": "DOCUMENT_TRUTH_RECONCILIATION_FAIL source drift scripts/tests/android-standalone-smoke.test.mjs; expected stale blob 54b621a7069e2ec800b38d6755750d1fa0f7d5f7, actual 9c275a22f65d24baf12673bfdcd641071802f9d7",
+          "canonicalAndroid": "success",
+          "nativeFixture": "failure before UI: ADB device offline/Broken pipe, action exit 224; no retry",
+          "artifact": {
+            "id": 13127452513,
+            "sizeBytes": 28937222,
+            "zipSha256": "d8226d7c3ec05722f47a38775abda6b563c90a1d1a04144f3ad7be523fc1c0f9",
+            "visualCapture": "none"
+          },
+          "interpretation": "Third active reference to the smoke test blob reconciled. ADB failure preceded UI; no product-render conclusion."
         }
       }
     },
