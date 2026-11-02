@@ -57,15 +57,21 @@ test('pre-install native failure preserves the first cause without a second UI/d
  assert.match(handler,/primaryFailurePreserved':True/);
 });
 
-test('isolated native fixture uses software acceleration without requiring KVM',()=>{
+test('native fixture uses the same real software-emulator action without a KVM precondition',()=>{
  const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
  const runner=readFileSync('scripts/run-platform-support-native-fixture.sh','utf8');
+ const nativeJob=workflow.slice(workflow.indexOf('  native-support-fixture:'),workflow.indexOf('      - name: Close local fixture and verify cleanup'));
  assert.equal(workflow.includes('/dev/kvm'),false);
- assert.match(workflow,/NATIVE_SOFTWARE_EMULATOR_MISSING package=emulator runner=ubuntu-latest/);
-  assert.doesNotMatch(workflow,/sdkmanager.*--install emulator/);
- assert.match(workflow,/emulator.*-accel off -version/);
+ assert.match(nativeJob,/uses: reactivecircus\\/android-emulator-runner@v2/);
+ assert.match(nativeJob,/disable-linux-hw-accel: true/);
+ assert.match(nativeJob,/emulator-options: .*swiftshader_indirect/);
+ assert.match(nativeJob,/script: bash scripts\\/run-platform-support-native-fixture[.]sh/);
+ assert.doesNotMatch(nativeJob,/NATIVE_SOFTWARE_EMULATOR_MISSING/);
+ assert.match(runner,/-accel off -version/);
  assert.equal(runner.includes('/dev/kvm'),false);
  assert.equal(runner.includes('-accel on'),false);
- assert.match(runner,/-accel off -no-window -gpu swiftshader_indirect/);
+ assert.doesNotMatch(runner,/avdmanager.*create avd/);
+ assert.doesNotMatch(runner,/emulator" -port 5554/);
+ assert.match(runner,/device_rows.*emulator-5554/);
  assert.match(runner,/acceleration=software/);
 });

@@ -162,19 +162,20 @@ jobs:
           echo "NATIVE_HOST_CPUS $available_cpus"
           test "$available_cpus" -ge 4
 
-      - name: Require runner-provided software emulator
-        run: |
-          if ! test -x "$ANDROID_HOME/emulator/emulator"; then
-            echo "::error::NATIVE_SOFTWARE_EMULATOR_MISSING package=emulator runner=ubuntu-latest"
-            exit 1
-          fi
-          "$ANDROID_HOME/emulator/emulator" -accel off -version
-          echo "NATIVE_SOFTWARE_EMULATOR_READY"
-
       - name: Render native support states and recovery with real local sessions
+        id: native_support_fixture
+        uses: reactivecircus/android-emulator-runner@v2
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
-        run: bash scripts/run-platform-support-native-fixture.sh
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: false
+          disable-linux-hw-accel: true
+          emulator-boot-timeout: 1200
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
+          script: bash scripts/run-platform-support-native-fixture.sh
 
       - name: Close local fixture and verify cleanup
         if: always()
