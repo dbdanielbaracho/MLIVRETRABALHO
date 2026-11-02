@@ -62,10 +62,10 @@ test('native fixture uses the same real software-emulator action without a KVM p
  const runner=readFileSync('scripts/run-platform-support-native-fixture.sh','utf8');
  const nativeJob=workflow.slice(workflow.indexOf('  native-support-fixture:'),workflow.indexOf('      - name: Close local fixture and verify cleanup'));
  assert.equal(workflow.includes('/dev/kvm'),false);
- assert.match(nativeJob,/uses: reactivecircus\\/android-emulator-runner@v2/);
+ assert.ok(nativeJob.includes('uses: reactivecircus/android-emulator-runner@v2'));
  assert.match(nativeJob,/disable-linux-hw-accel: true/);
  assert.match(nativeJob,/emulator-options: .*swiftshader_indirect/);
- assert.match(nativeJob,/script: bash scripts\\/run-platform-support-native-fixture[.]sh/);
+ assert.ok(nativeJob.includes('script: bash scripts/run-platform-support-native-fixture.sh'));
  assert.doesNotMatch(nativeJob,/NATIVE_SOFTWARE_EMULATOR_MISSING/);
  assert.match(runner,/-accel off -version/);
  assert.equal(runner.includes('/dev/kvm'),false);
