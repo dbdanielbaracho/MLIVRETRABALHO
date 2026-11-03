@@ -4720,6 +4720,12 @@
         "path": ".github/workflows/standalone-pilot-apk.yml",
         "old": "ad877bfea75f6df2464430d02a09c5671340ee66",
         "new": "002c326ce83d5972999716ff67d6083f7ca22e2b"
+      },
+      {
+        "at": "platformSupportCandidate.bootUnlockReadinessCorrection.sources[0]",
+        "path": "scripts/android-emulator-adb-readiness.cjs",
+        "old": "3246605a2a1b9d14f28835137d947462a62db784",
+        "new": "3f628cbdac66becdd08e16de2d0a47b31527d15a"
       }
     ],
     "ownFullCIAndApplicableAndroidRequired": true,
@@ -8312,7 +8318,7 @@
         {
           "path": "scripts/android-emulator-adb-readiness.cjs",
           "old": null,
-          "new": "3246605a2a1b9d14f28835137d947462a62db784"
+          "new": "3f628cbdac66becdd08e16de2d0a47b31527d15a"
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
