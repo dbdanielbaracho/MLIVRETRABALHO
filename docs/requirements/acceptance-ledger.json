@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+          "sha": "65ef2fe460925368596d513e14ecc6355d8f5c92",
           "mode": "100644"
         }
       ],
@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+          "sha": "65ef2fe460925368596d513e14ecc6355d8f5c92",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "002c326ce83d5972999716ff67d6083f7ca22e2b",
+      "sha": "436acd7974cd76e279c9f3b4721ee3986f265ee2",
       "mode": "100644"
     },
     {
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+      "sha": "65ef2fe460925368596d513e14ecc6355d8f5c92",
       "mode": "100644"
     },
     {
@@ -4738,6 +4738,30 @@
         "path": "scripts/tests/android-standalone-smoke.test.mjs",
         "old": "9c275a22f65d24baf12673bfdcd641071802f9d7",
         "new": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4"
+      },
+      {
+        "at": "requirements/39/tests/0",
+        "path": "scripts/tests/android-standalone-smoke.test.mjs",
+        "old": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+        "new": "65ef2fe460925368596d513e14ecc6355d8f5c92"
+      },
+      {
+        "at": "proofs/8/tests/0",
+        "path": "scripts/tests/android-standalone-smoke.test.mjs",
+        "old": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+        "new": "65ef2fe460925368596d513e14ecc6355d8f5c92"
+      },
+      {
+        "at": "protectedInputs/1",
+        "path": ".github/workflows/standalone-pilot-apk.yml",
+        "old": "002c326ce83d5972999716ff67d6083f7ca22e2b",
+        "new": "436acd7974cd76e279c9f3b4721ee3986f265ee2"
+      },
+      {
+        "at": "protectedInputs/183",
+        "path": "scripts/tests/android-standalone-smoke.test.mjs",
+        "old": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+        "new": "65ef2fe460925368596d513e14ecc6355d8f5c92"
       }
     ],
     "ownFullCIAndApplicableAndroidRequired": true,
@@ -8329,28 +8353,37 @@
       "sources": [
         {
           "path": "scripts/android-emulator-adb-readiness.cjs",
-          "old": null,
-          "new": "3f628cbdac66becdd08e16de2d0a47b31527d15a"
+          "old": "3f628cbdac66becdd08e16de2d0a47b31527d15a",
+          "new": "48f2e8b3628ff682ce3f6f14dc07dad4354c5973"
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
-          "old": "5655f7ab65e0bb5febb6b52a7b68ba3e33186fed",
-          "new": "28877aaf8cf30c867dd094f5da77f1ed59385f7c"
+          "old": "28877aaf8cf30c867dd094f5da77f1ed59385f7c",
+          "new": "90c6f9d88dd9a4fecf20047f70bd257d0d756328"
         },
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "old": "9c275a22f65d24baf12673bfdcd641071802f9d7",
-          "new": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4"
+          "old": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
+          "new": "65ef2fe460925368596d513e14ecc6355d8f5c92"
         },
         {
           "path": ".github/workflows/standalone-pilot-apk.yml",
-          "old": "ad877bfea75f6df2464430d02a09c5671340ee66",
-          "new": "002c326ce83d5972999716ff67d6083f7ca22e2b"
+          "old": "002c326ce83d5972999716ff67d6083f7ca22e2b",
+          "new": "436acd7974cd76e279c9f3b4721ee3986f265ee2"
         }
       ],
       "localValidation": "Node syntax passes; 7 targeted native fixture/bootstrap tests pass; all 10 canonical smoke gate tests pass. One unrelated native API preflight test was not runnable in this scratch checkout because the pg dependency is not installed; the full CI foundation job must run with repository dependencies.",
       "ownValidation": "pending on the new PR head; do not infer UI or Area 1 until the real smoke and fixture complete.",
-      "scope": "no KVM dependency, permission mutation, alternate runner, mock, skip, APK-only success, or SDK version change; real emulator, install/launch, captures, and fail-closed checks remain required."
+      "scope": "no KVM dependency, permission mutation, alternate runner, mock, skip, APK-only success, or SDK version change; real emulator, install/launch, captures, and fail-closed checks remain required.",
+      "inputNameMappingFailure": {
+        "run": 41675425787,
+        "head": "4b79550e7274bc6e00f0ec30c1bcc6d09edc4e19",
+        "attempt": 1,
+        "primaryFailure": "The pinned runner received INPUT_API_LEVEL, but @actions/core getInput('api-level') reads the literal INPUT_API-LEVEL name. The runner rejected the required api-level input before the real smoke script; no APK install/launch or UI occurred. Follow-up diagnostics reported adb unavailable because the action never completed its SDK/environment setup.",
+        "correction": "Map underscores in internal input keys to literal hyphens when reading INPUT_* and emit exact action input identifiers in both workflow jobs. Add a behavioral regression test proving INPUT_API-LEVEL succeeds and INPUT_API_LEVEL alone fails closed.",
+        "localValidation": "8 targeted native/bootstrap tests, 10 canonical smoke-gate tests, and 4 retry unit tests pass; full own CI on the corrected new PR SHA is pending.",
+        "scope": "No change to Android SDK version, runner, acceleration, permissions, product API, or fixture failure policy."
+      }
     }
   }
 }
