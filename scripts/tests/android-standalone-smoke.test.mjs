@@ -43,8 +43,10 @@ test('canonical Android smoke uses software acceleration while keeping install a
  const source=readFileSync(resolve('.github/workflows/standalone-pilot-apk.yml'),'utf8');
  assert.equal(source.includes('/dev/kvm'),false);
  assert.equal(source.includes('Verify KVM'),false);
- assert.match(source,/disable-linux-hw-accel: true/);
- assert.match(source,/emulator-boot-timeout: 1200/);
+ assert.match(source,/INPUT_DISABLE_LINUX_HW_ACCEL: 'true'/);
+ assert.match(source,/INPUT_EMULATOR_BOOT_TIMEOUT: '1200'/);
+ assert.match(source,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
+ assert.ok(source.includes('run: node scripts/android-emulator-adb-readiness.cjs canonical'));
  assert.match(source,/Device smoke test — install and launch without Metro/);
  assert.ok(source.includes("steps.device_smoke.outcome == 'failure'"));
 });
