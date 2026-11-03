@@ -47,18 +47,46 @@ jobs:
           free -m
           ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "CANONICAL_JAVA_RSS_KIB_AFTER", sum+0}'
 
+      - name: Checkout the pinned Android emulator runner source
+        uses: actions/checkout@v4
+        with:
+          repository: ReactiveCircus/android-emulator-runner
+          ref: a421e43855164a8197daf9d8d40fe71c6996bb0d
+          path: .github/tools/android-emulator-runner
+          persist-credentials: false
+      - name: Use the pinned runner Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Device smoke test — install and launch without Metro
         id: device_smoke
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          arch: x86_64
-          profile: pixel_6
-          disable-animations: false
-          disable-linux-hw-accel: true
-          emulator-boot-timeout: 1200
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
-          script: bash scripts/android-standalone-smoke.sh
+        env:
+          INPUT_API_LEVEL: '35'
+          INPUT_SYSTEM_IMAGE_API_LEVEL: '35'
+          INPUT_TARGET: default
+          INPUT_ARCH: x86_64
+          INPUT_PROFILE: pixel_6
+          INPUT_CORES: '2'
+          INPUT_RAM_SIZE: ''
+          INPUT_HEAP_SIZE: ''
+          INPUT_SDCARD_PATH_OR_SIZE: ''
+          INPUT_DISK_SIZE: ''
+          INPUT_AVD_NAME: test
+          INPUT_FORCE_AVD_CREATION: 'true'
+          INPUT_EMULATOR_BOOT_TIMEOUT: '1200'
+          INPUT_EMULATOR_PORT: '5554'
+          INPUT_EMULATOR_OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save'
+          INPUT_DISABLE_ANIMATIONS: 'false'
+          INPUT_DISABLE_SPELLCHECKER: 'false'
+          INPUT_DISABLE_LINUX_HW_ACCEL: 'true'
+          INPUT_ENABLE_HW_KEYBOARD: 'false'
+          INPUT_EMULATOR_BUILD: ''
+          INPUT_WORKING_DIRECTORY: ''
+          INPUT_NDK: ''
+          INPUT_CMAKE: ''
+          INPUT_CHANNEL: stable
+          INPUT_SCRIPT: 'bash scripts/android-standalone-smoke.sh'
+        run: node scripts/android-emulator-adb-readiness.cjs canonical
 
       - name: Collect early smoke failure diagnostics
         if: ${{ failure() && steps.device_smoke.outcome == 'failure' }}
@@ -166,20 +194,47 @@ jobs:
           echo "NATIVE_HOST_CPUS $available_cpus"
           test "$available_cpus" -ge 4
 
+      - name: Checkout the pinned Android emulator runner source
+        uses: actions/checkout@v4
+        with:
+          repository: ReactiveCircus/android-emulator-runner
+          ref: a421e43855164a8197daf9d8d40fe71c6996bb0d
+          path: .github/tools/android-emulator-runner
+          persist-credentials: false
+      - name: Use the pinned runner Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Render native support states and recovery with real local sessions
         id: native_support_fixture
-        uses: reactivecircus/android-emulator-runner@v2
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
-        with:
-          api-level: 35
-          arch: x86_64
-          profile: pixel_6
-          disable-animations: false
-          disable-linux-hw-accel: true
-          emulator-boot-timeout: 1200
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save
-          script: bash scripts/run-platform-support-native-fixture.sh
+          INPUT_API_LEVEL: '35'
+          INPUT_SYSTEM_IMAGE_API_LEVEL: '35'
+          INPUT_TARGET: default
+          INPUT_ARCH: x86_64
+          INPUT_PROFILE: pixel_6
+          INPUT_CORES: '2'
+          INPUT_RAM_SIZE: ''
+          INPUT_HEAP_SIZE: ''
+          INPUT_SDCARD_PATH_OR_SIZE: ''
+          INPUT_DISK_SIZE: ''
+          INPUT_AVD_NAME: test
+          INPUT_FORCE_AVD_CREATION: 'true'
+          INPUT_EMULATOR_BOOT_TIMEOUT: '1200'
+          INPUT_EMULATOR_PORT: '5554'
+          INPUT_EMULATOR_OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save'
+          INPUT_DISABLE_ANIMATIONS: 'false'
+          INPUT_DISABLE_SPELLCHECKER: 'false'
+          INPUT_DISABLE_LINUX_HW_ACCEL: 'true'
+          INPUT_ENABLE_HW_KEYBOARD: 'false'
+          INPUT_EMULATOR_BUILD: ''
+          INPUT_WORKING_DIRECTORY: ''
+          INPUT_NDK: ''
+          INPUT_CMAKE: ''
+          INPUT_CHANNEL: stable
+          INPUT_SCRIPT: 'bash scripts/run-platform-support-native-fixture.sh'
+        run: node scripts/android-emulator-adb-readiness.cjs native
 
       - name: Close local fixture and verify cleanup
         if: always()
