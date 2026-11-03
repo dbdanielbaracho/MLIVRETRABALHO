@@ -5,6 +5,9 @@ import {readFileSync, mkdtempSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
+import {createRequire} from 'node:module';
+const require = createRequire(import.meta.url);
+const {BOOT_UNLOCK_COMMAND,MAX_ATTEMPTS,UPSTREAM_RUNNER_SHA,installBoundedBootUnlockRetry} = require('../android-emulator-adb-readiness.cjs');
 test('native fixture refuses non-CI, other repository, remote and non-disposable databases before connecting',()=>{
  const base={...process.env,CI:'true',GITHUB_REPOSITORY:'dbdanielbaracho/MLIVRETRABALHO',DATABASE_URL:'postgresql://fixture:DO_NOT_LOG_THIS_SECRET@127.0.0.1:1/mlivretrabalho_http'};
  for(const patch of [{CI:'false'},{GITHUB_REPOSITORY:'other/repository'},{DATABASE_URL:'postgresql://fixture:DO_NOT_LOG_THIS_SECRET@remote.example:1/mlivretrabalho_http'},{DATABASE_URL:'postgresql://fixture:DO_NOT_LOG_THIS_SECRET@127.0.0.1:1/production'}]){
@@ -69,10 +72,27 @@ test('native fixture uses the same real software-emulator action without a KVM p
  assert.equal(nativeJob.includes('RUNNER_TEMP/mlivre-support-avd'),false);
  assert.ok(runner.includes('${HOME:?HOME must be set}/.android/avd'));
  assert.equal(workflow.includes('/dev/kvm'),false);
- assert.ok(nativeJob.includes('uses: reactivecircus/android-emulator-runner@v2'));
- assert.match(nativeJob,/disable-linux-hw-accel: true/);
- assert.match(nativeJob,/emulator-options: .*swiftshader_indirect/);
- assert.ok(nativeJob.includes('script: bash scripts/run-platform-support-native-fixture.sh'));
+ const canonicalJob=workflow.slice(workflow.indexOf('  build-standalone-pilot-apk:'),workflow.indexOf('  native-support-fixture:'));
+ const adapter=readFileSync('scripts/android-emulator-adb-readiness.cjs','utf8');
+ assert.equal(workflow.includes('uses: reactivecircus/android-emulator-runner@v2'),false);
+ assert.equal(workflow.includes('/dev/kvm'),false);
+ assert.ok(canonicalJob.includes('ref: a421e43855164a8197daf9d8d40fe71c6996bb0d'));
+ assert.ok(nativeJob.includes('ref: a421e43855164a8197daf9d8d40fe71c6996bb0d'));
+ assert.ok(canonicalJob.includes('run: node scripts/android-emulator-adb-readiness.cjs canonical'));
+ assert.ok(nativeJob.includes('run: node scripts/android-emulator-adb-readiness.cjs native'));
+ assert.ok(canonicalJob.includes("INPUT_DISABLE_LINUX_HW_ACCEL: 'true'"));
+ assert.ok(nativeJob.includes("INPUT_DISABLE_LINUX_HW_ACCEL: 'true'"));
+ assert.match(canonicalJob,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
+ assert.match(nativeJob,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
+ assert.match(adapter,/const UPSTREAM_RUNNER_SHA = 'a421e43855164a8197daf9d8d40fe71c6996bb0d'/);
+ assert.match(adapter,/MAX_ATTEMPTS = 6/);
+ assert.match(adapter,/Failure calling service input: Broken pipe/);
+ assert.ok(adapter.includes("path.join(runnerRoot, 'lib', 'main.js')"));
+ assert.ok(adapter.includes('installBoundedBootUnlockRetry(execModule)'));
+ assert.ok(nativeJob.includes("INPUT_SCRIPT: 'bash scripts/run-platform-support-native-fixture.sh'"));
+ assert.match(nativeJob,/INPUT_DISABLE_LINUX_HW_ACCEL: 'true'/);
+ assert.match(nativeJob,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
+
  assert.doesNotMatch(nativeJob,/NATIVE_SOFTWARE_EMULATOR_MISSING/);
  assert.doesNotMatch(runner,/-accel off -version/);
  assert.match(runner,/Pkg\[.]Revision/);
@@ -83,4 +103,27 @@ test('native fixture uses the same real software-emulator action without a KVM p
  assert.ok(runner.includes('device_rows="$(awk'));
  assert.ok(runner.includes('if test "$device_rows" != emulator-5554'));
  assert.match(runner,/acceleration=software/);
+});
+
+test('boot unlock readiness retries only the observed transient Broken pipe and then resumes the real runner',async()=>{
+ let calls=0;const sleeps=[],messages=[];
+ const module={exec:async(command,args,options)=>{
+  calls++;assert.equal(command,'timeout');assert.deepEqual(args,['15s','adb','-s','emulator-5554','shell','input','keyevent','82']);
+  if(calls<3){options.listeners.stderr(Buffer.from('cmd: Failure calling service input: Broken pipe (32)\\n'));return 224;}
+  return 0;
+ }};
+ installBoundedBootUnlockRetry(module,{sleep:async ms=>sleeps.push(ms),log:line=>messages.push(line)});
+ assert.equal(await module.exec(BOOT_UNLOCK_COMMAND),0);
+ assert.equal(calls,3);assert.deepEqual(sleeps,[2000,2000]);assert.equal(messages.length,2);
+});
+test('boot unlock permanent failures and exhausted retries stay fail-closed',async()=>{
+ let calls=0;
+ const permanent={exec:async(_command,_args,options)=>{calls++;options.listeners.stderr(Buffer.from('Failure calling service input: SecurityException\\n'));return 224;}};
+ installBoundedBootUnlockRetry(permanent,{sleep:async()=>assert.fail('permanent error must not retry')});
+ await assert.rejects(permanent.exec(BOOT_UNLOCK_COMMAND),/readiness retry does not apply/);assert.equal(calls,1);
+ calls=0;let sleeps=0;
+ const broken={exec:async(_command,_args,options)=>{calls++;options.listeners.stderr(Buffer.from('Failure calling service input: Broken pipe (32)\\n'));return 224;}};
+ installBoundedBootUnlockRetry(broken,{sleep:async()=>{sleeps++;},log:()=>{}});
+ await assert.rejects(broken.exec(BOOT_UNLOCK_COMMAND),new RegExp('stayed unavailable after '+MAX_ATTEMPTS+' bounded attempts'));
+ assert.equal(calls,MAX_ATTEMPTS);assert.equal(sleeps,MAX_ATTEMPTS-1);
 });
