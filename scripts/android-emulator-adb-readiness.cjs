@@ -86,7 +86,6 @@ function configureRunnerInputs(script) {
     NDK: '',
     CMAKE: '',
     CHANNEL: 'stable',
-    PRE_EMULATOR_LAUNCH_SCRIPT: '',
     SCRIPT: script,
   };
   for (const [name, value] of Object.entries(values)) {
