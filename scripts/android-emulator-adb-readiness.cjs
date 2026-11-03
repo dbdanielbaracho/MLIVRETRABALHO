@@ -60,36 +60,38 @@ function installBoundedBootUnlockRetry(execModule, {sleep = wait, log = message 
   return () => { execModule.exec = originalExec; };
 }
 
+const RUNNER_INPUTS = Object.freeze({
+  API_LEVEL: '35',
+  SYSTEM_IMAGE_API_LEVEL: '35',
+  TARGET: 'default',
+  ARCH: 'x86_64',
+  PROFILE: 'pixel_6',
+  CORES: '2',
+  RAM_SIZE: '',
+  HEAP_SIZE: '',
+  SDCARD_PATH_OR_SIZE: '',
+  DISK_SIZE: '',
+  AVD_NAME: 'test',
+  FORCE_AVD_CREATION: 'true',
+  EMULATOR_BOOT_TIMEOUT: '1200',
+  EMULATOR_PORT: '5554',
+  EMULATOR_OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save',
+  DISABLE_ANIMATIONS: 'false',
+  DISABLE_SPELLCHECKER: 'false',
+  DISABLE_LINUX_HW_ACCEL: 'true',
+  ENABLE_HW_KEYBOARD: 'false',
+  EMULATOR_BUILD: '',
+  WORKING_DIRECTORY: '',
+  NDK: '',
+  CMAKE: '',
+  CHANNEL: 'stable',
+});
+
 function configureRunnerInputs(script) {
-  const values = {
-    API_LEVEL: '35',
-    SYSTEM_IMAGE_API_LEVEL: '35',
-    TARGET: 'default',
-    ARCH: 'x86_64',
-    PROFILE: 'pixel_6',
-    CORES: '2',
-    RAM_SIZE: '',
-    HEAP_SIZE: '',
-    SDCARD_PATH_OR_SIZE: '',
-    DISK_SIZE: '',
-    AVD_NAME: 'test',
-    FORCE_AVD_CREATION: 'true',
-    EMULATOR_BOOT_TIMEOUT: '1200',
-    EMULATOR_PORT: '5554',
-    EMULATOR_OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save',
-    DISABLE_ANIMATIONS: 'false',
-    DISABLE_SPELLCHECKER: 'false',
-    DISABLE_LINUX_HW_ACCEL: 'true',
-    ENABLE_HW_KEYBOARD: 'false',
-    EMULATOR_BUILD: '',
-    WORKING_DIRECTORY: '',
-    NDK: '',
-    CMAKE: '',
-    CHANNEL: 'stable',
-    SCRIPT: script,
-  };
+  const values = {...RUNNER_INPUTS, SCRIPT: script};
   for (const [name, value] of Object.entries(values)) {
-    if (process.env[`INPUT_${name}`] !== value) {
+    const environmentName = `INPUT_${name.replaceAll('_', '-')}`;
+    if (process.env[environmentName] !== value) {
       throw new Error(`Pinned Android emulator runner input mismatch: ${name}`);
     }
   }
@@ -115,6 +117,7 @@ function runPinnedRunner(mode) {
 }
 
 module.exports = {
+  RUNNER_INPUTS,
   BOOT_UNLOCK_COMMAND,
   MAX_ATTEMPTS,
   UPSTREAM_RUNNER_SHA,
