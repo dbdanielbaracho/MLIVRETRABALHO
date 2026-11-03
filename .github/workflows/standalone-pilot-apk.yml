@@ -61,27 +61,27 @@ jobs:
       - name: Device smoke test — install and launch without Metro
         id: device_smoke
         env:
-          INPUT_API_LEVEL: '35'
-          INPUT_SYSTEM_IMAGE_API_LEVEL: '35'
+          INPUT_API-LEVEL: '35'
+          INPUT_SYSTEM-IMAGE-API-LEVEL: '35'
           INPUT_TARGET: default
           INPUT_ARCH: x86_64
           INPUT_PROFILE: pixel_6
           INPUT_CORES: '2'
-          INPUT_RAM_SIZE: ''
-          INPUT_HEAP_SIZE: ''
-          INPUT_SDCARD_PATH_OR_SIZE: ''
-          INPUT_DISK_SIZE: ''
-          INPUT_AVD_NAME: test
-          INPUT_FORCE_AVD_CREATION: 'true'
-          INPUT_EMULATOR_BOOT_TIMEOUT: '1200'
-          INPUT_EMULATOR_PORT: '5554'
-          INPUT_EMULATOR_OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save'
-          INPUT_DISABLE_ANIMATIONS: 'false'
-          INPUT_DISABLE_SPELLCHECKER: 'false'
-          INPUT_DISABLE_LINUX_HW_ACCEL: 'true'
-          INPUT_ENABLE_HW_KEYBOARD: 'false'
-          INPUT_EMULATOR_BUILD: ''
-          INPUT_WORKING_DIRECTORY: ''
+          INPUT_RAM-SIZE: ''
+          INPUT_HEAP-SIZE: ''
+          INPUT_SDCARD-PATH-OR-SIZE: ''
+          INPUT_DISK-SIZE: ''
+          INPUT_AVD-NAME: test
+          INPUT_FORCE-AVD-CREATION: 'true'
+          INPUT_EMULATOR-BOOT-TIMEOUT: '1200'
+          INPUT_EMULATOR-PORT: '5554'
+          INPUT_EMULATOR-OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save'
+          INPUT_DISABLE-ANIMATIONS: 'false'
+          INPUT_DISABLE-SPELLCHECKER: 'false'
+          INPUT_DISABLE-LINUX-HW-ACCEL: 'true'
+          INPUT_ENABLE-HW-KEYBOARD: 'false'
+          INPUT_EMULATOR-BUILD: ''
+          INPUT_WORKING-DIRECTORY: ''
           INPUT_NDK: ''
           INPUT_CMAKE: ''
           INPUT_CHANNEL: stable
@@ -209,27 +209,27 @@ jobs:
         id: native_support_fixture
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
-          INPUT_API_LEVEL: '35'
-          INPUT_SYSTEM_IMAGE_API_LEVEL: '35'
+          INPUT_API-LEVEL: '35'
+          INPUT_SYSTEM-IMAGE-API-LEVEL: '35'
           INPUT_TARGET: default
           INPUT_ARCH: x86_64
           INPUT_PROFILE: pixel_6
           INPUT_CORES: '2'
-          INPUT_RAM_SIZE: ''
-          INPUT_HEAP_SIZE: ''
-          INPUT_SDCARD_PATH_OR_SIZE: ''
-          INPUT_DISK_SIZE: ''
-          INPUT_AVD_NAME: test
-          INPUT_FORCE_AVD_CREATION: 'true'
-          INPUT_EMULATOR_BOOT_TIMEOUT: '1200'
-          INPUT_EMULATOR_PORT: '5554'
-          INPUT_EMULATOR_OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save'
-          INPUT_DISABLE_ANIMATIONS: 'false'
-          INPUT_DISABLE_SPELLCHECKER: 'false'
-          INPUT_DISABLE_LINUX_HW_ACCEL: 'true'
-          INPUT_ENABLE_HW_KEYBOARD: 'false'
-          INPUT_EMULATOR_BUILD: ''
-          INPUT_WORKING_DIRECTORY: ''
+          INPUT_RAM-SIZE: ''
+          INPUT_HEAP-SIZE: ''
+          INPUT_SDCARD-PATH-OR-SIZE: ''
+          INPUT_DISK-SIZE: ''
+          INPUT_AVD-NAME: test
+          INPUT_FORCE-AVD-CREATION: 'true'
+          INPUT_EMULATOR-BOOT-TIMEOUT: '1200'
+          INPUT_EMULATOR-PORT: '5554'
+          INPUT_EMULATOR-OPTIONS: '-no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot -no-snapshot-save'
+          INPUT_DISABLE-ANIMATIONS: 'false'
+          INPUT_DISABLE-SPELLCHECKER: 'false'
+          INPUT_DISABLE-LINUX-HW-ACCEL: 'true'
+          INPUT_ENABLE-HW-KEYBOARD: 'false'
+          INPUT_EMULATOR-BUILD: ''
+          INPUT_WORKING-DIRECTORY: ''
           INPUT_NDK: ''
           INPUT_CMAKE: ''
           INPUT_CHANNEL: stable
