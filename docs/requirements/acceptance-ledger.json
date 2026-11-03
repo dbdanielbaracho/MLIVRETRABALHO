@@ -1248,7 +1248,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+          "sha": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
           "mode": "100644"
         }
       ],
@@ -3326,7 +3326,7 @@
     },
     {
       "path": ".github/workflows/standalone-pilot-apk.yml",
-      "sha": "ad877bfea75f6df2464430d02a09c5671340ee66",
+      "sha": "002c326ce83d5972999716ff67d6083f7ca22e2b",
       "mode": "100644"
     },
     {
@@ -4708,6 +4708,18 @@
         "path": "scripts/tenant-boundary-acceptance-e2e.cjs",
         "old": "5109eeed54d2fc2cb581f51a90b3b3ce9e4e98ea",
         "new": "4e79866e157c72d88e8b7a4c0f2e6a30dc361fb2"
+      },
+      {
+        "at": "requirements/39/tests/0",
+        "path": "scripts/tests/android-standalone-smoke.test.mjs",
+        "old": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+        "new": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4"
+      },
+      {
+        "at": "protectedInputs/1",
+        "path": ".github/workflows/standalone-pilot-apk.yml",
+        "old": "ad877bfea75f6df2464430d02a09c5671340ee66",
+        "new": "002c326ce83d5972999716ff67d6083f7ca22e2b"
       }
     ],
     "ownFullCIAndApplicableAndroidRequired": true,
@@ -8287,6 +8299,40 @@
         "workflowPinNew": "848250c26cdc94543deeee4ea34372ed5f5e2792",
         "activePinCorrection": true
       }
+    },
+    "bootUnlockReadinessCorrection": {
+      "at": "2026-11-03",
+      "baselineHead": "825558f8d93462deb5b4b52aebf601a52948bbd7",
+      "baselineRun": 41417390996,
+      "attempt": 1,
+      "baselineResult": "completed/failure",
+      "reproducedFailure": "The canonical APK build succeeded and the software emulator reported sys.boot_completed=1. The pinned runner then issued adb -s emulator-5554 shell input keyevent 82 and received Failure calling service input: Broken pipe (32), exit 224. APK installation/launch did not begin; native UI fixture was skipped; artifact 13128024888 had no UI captures.",
+      "correction": "Keep ubuntu-latest, API 35/x86_64 pixel_6, SwiftShader and the exact upstream runner commit a421e43855164a8197daf9d8d40fe71c6996bb0d. Replace only action startup with that commit's lib/main.js after patching @actions/exec for the exact boot-unlock command. Retry only the observed input-service Broken pipe, six attempts maximum, each command capped at 15s and 2s between attempts; every other command/error fails without retry. The original canonical APK smoke and native fixture scripts remain the action's actual post-boot scripts, and upstream kill/failure handling remains in use.",
+      "sources": [
+        {
+          "path": "scripts/android-emulator-adb-readiness.cjs",
+          "old": null,
+          "new": "3246605a2a1b9d14f28835137d947462a62db784"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "5655f7ab65e0bb5febb6b52a7b68ba3e33186fed",
+          "new": "28877aaf8cf30c867dd094f5da77f1ed59385f7c"
+        },
+        {
+          "path": "scripts/tests/android-standalone-smoke.test.mjs",
+          "old": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+          "new": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4"
+        },
+        {
+          "path": ".github/workflows/standalone-pilot-apk.yml",
+          "old": "ad877bfea75f6df2464430d02a09c5671340ee66",
+          "new": "002c326ce83d5972999716ff67d6083f7ca22e2b"
+        }
+      ],
+      "localValidation": "Node syntax passes; 7 targeted native fixture/bootstrap tests pass; all 10 canonical smoke gate tests pass. One unrelated native API preflight test was not runnable in this scratch checkout because the pg dependency is not installed; the full CI foundation job must run with repository dependencies.",
+      "ownValidation": "pending on the new PR head; do not infer UI or Area 1 until the real smoke and fixture complete.",
+      "scope": "no KVM dependency, permission mutation, alternate runner, mock, skip, APK-only success, or SDK version change; real emulator, install/launch, captures, and fail-closed checks remain required."
     }
   }
 }
