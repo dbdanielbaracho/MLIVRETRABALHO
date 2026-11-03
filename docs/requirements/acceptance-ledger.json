@@ -3279,7 +3279,7 @@
       "tests": [
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
-          "sha": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+          "sha": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
           "mode": "100644"
         }
       ],
@@ -4236,7 +4236,7 @@
     },
     {
       "path": "scripts/tests/android-standalone-smoke.test.mjs",
-      "sha": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+      "sha": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4",
       "mode": "100644"
     },
     {
@@ -4726,6 +4726,18 @@
         "path": "scripts/android-emulator-adb-readiness.cjs",
         "old": "3246605a2a1b9d14f28835137d947462a62db784",
         "new": "3f628cbdac66becdd08e16de2d0a47b31527d15a"
+      },
+      {
+        "at": "proofs/8/tests/0",
+        "path": "scripts/tests/android-standalone-smoke.test.mjs",
+        "old": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+        "new": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4"
+      },
+      {
+        "at": "protectedInputs/183",
+        "path": "scripts/tests/android-standalone-smoke.test.mjs",
+        "old": "9c275a22f65d24baf12673bfdcd641071802f9d7",
+        "new": "08bea767e50b8a3d5059bae9ffb0cbb4cbab75b4"
       }
     ],
     "ownFullCIAndApplicableAndroidRequired": true,
