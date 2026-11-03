@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const require = createRequire(import.meta.url);
-const {BOOT_UNLOCK_COMMAND,MAX_ATTEMPTS,UPSTREAM_RUNNER_SHA,installBoundedBootUnlockRetry} = require('../android-emulator-adb-readiness.cjs');
+const {BOOT_UNLOCK_COMMAND,MAX_ATTEMPTS,UPSTREAM_RUNNER_SHA,installBoundedBootUnlockRetry,configureRunnerInputs,RUNNER_INPUTS} = require('../android-emulator-adb-readiness.cjs');
 test('native fixture refuses non-CI, other repository, remote and non-disposable databases before connecting',()=>{
  const base={...process.env,CI:'true',GITHUB_REPOSITORY:'dbdanielbaracho/MLIVRETRABALHO',DATABASE_URL:'postgresql://fixture:DO_NOT_LOG_THIS_SECRET@127.0.0.1:1/mlivretrabalho_http'};
  for(const patch of [{CI:'false'},{GITHUB_REPOSITORY:'other/repository'},{DATABASE_URL:'postgresql://fixture:DO_NOT_LOG_THIS_SECRET@remote.example:1/mlivretrabalho_http'},{DATABASE_URL:'postgresql://fixture:DO_NOT_LOG_THIS_SECRET@127.0.0.1:1/production'}]){
@@ -80,18 +80,18 @@ test('native fixture uses the same real software-emulator action without a KVM p
  assert.ok(nativeJob.includes('ref: a421e43855164a8197daf9d8d40fe71c6996bb0d'));
  assert.ok(canonicalJob.includes('run: node scripts/android-emulator-adb-readiness.cjs canonical'));
  assert.ok(nativeJob.includes('run: node scripts/android-emulator-adb-readiness.cjs native'));
- assert.ok(canonicalJob.includes("INPUT_DISABLE_LINUX_HW_ACCEL: 'true'"));
- assert.ok(nativeJob.includes("INPUT_DISABLE_LINUX_HW_ACCEL: 'true'"));
- assert.match(canonicalJob,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
- assert.match(nativeJob,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
+ assert.ok(canonicalJob.includes("INPUT_DISABLE-LINUX-HW-ACCEL: 'true'"));
+ assert.ok(nativeJob.includes("INPUT_DISABLE-LINUX-HW-ACCEL: 'true'"));
+ assert.match(canonicalJob,/INPUT_EMULATOR-OPTIONS: .*swiftshader_indirect/);
+ assert.match(nativeJob,/INPUT_EMULATOR-OPTIONS: .*swiftshader_indirect/);
  assert.match(adapter,/const UPSTREAM_RUNNER_SHA = 'a421e43855164a8197daf9d8d40fe71c6996bb0d'/);
  assert.match(adapter,/MAX_ATTEMPTS = 6/);
  assert.match(adapter,/Failure calling service input: Broken pipe/);
  assert.ok(adapter.includes("path.join(runnerRoot, 'lib', 'main.js')"));
  assert.ok(adapter.includes('installBoundedBootUnlockRetry(execModule)'));
  assert.ok(nativeJob.includes("INPUT_SCRIPT: 'bash scripts/run-platform-support-native-fixture.sh'"));
- assert.match(nativeJob,/INPUT_DISABLE_LINUX_HW_ACCEL: 'true'/);
- assert.match(nativeJob,/INPUT_EMULATOR_OPTIONS: .*swiftshader_indirect/);
+ assert.match(nativeJob,/INPUT_DISABLE-LINUX-HW-ACCEL: 'true'/);
+ assert.match(nativeJob,/INPUT_EMULATOR-OPTIONS: .*swiftshader_indirect/);
 
  assert.doesNotMatch(nativeJob,/NATIVE_SOFTWARE_EMULATOR_MISSING/);
  assert.doesNotMatch(runner,/-accel off -version/);
@@ -103,6 +103,25 @@ test('native fixture uses the same real software-emulator action without a KVM p
  assert.ok(runner.includes('device_rows="$(awk'));
  assert.ok(runner.includes('if test "$device_rows" != emulator-5554'));
  assert.match(runner,/acceleration=software/);
+});
+
+
+test('pinned runner receives literal hyphenated action input names',()=>{
+ const keys=[...Object.keys(RUNNER_INPUTS),'SCRIPT'].map(name=>`INPUT_${name.replaceAll('_','-')}`);
+ const previous=new Map(keys.map(key=>[key,process.env[key]]));
+ const underscoreApi=process.env.INPUT_API_LEVEL;
+ try{
+  for(const [name,value] of Object.entries({...RUNNER_INPUTS,SCRIPT:'bash scripts/run-platform-support-native-fixture.sh'})){
+   process.env[`INPUT_${name.replaceAll('_','-')}`]=value;
+  }
+  assert.doesNotThrow(()=>configureRunnerInputs('bash scripts/run-platform-support-native-fixture.sh'));
+  delete process.env['INPUT_API-LEVEL'];
+  process.env.INPUT_API_LEVEL='35';
+  assert.throws(()=>configureRunnerInputs('bash scripts/run-platform-support-native-fixture.sh'),/API_LEVEL/);
+ }finally{
+  for(const [key,value] of previous){if(value===undefined)delete process.env[key];else process.env[key]=value;}
+  if(underscoreApi===undefined)delete process.env.INPUT_API_LEVEL;else process.env.INPUT_API_LEVEL=underscoreApi;
+ }
 });
 
 test('boot unlock readiness retries only the observed transient Broken pipe and then resumes the real runner',async()=>{
