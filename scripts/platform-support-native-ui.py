@@ -14,7 +14,8 @@ serials=re.findall(r'^(emulator-\d+)\s+device$',devices,re.M);assert len(serials
 ADB=['adb','-s',serials[0]];stage='device';states=[]
 def adb(*args,binary=False,timeout=20):
     return subprocess.check_output(ADB+list(args),timeout=timeout,text=not binary,stderr=subprocess.STDOUT)
-SCREEN_W,SCREEN_H=map(int,re.search(r'(\d+)x(\d+)',adb('shell','wm','size')).groups())
+from platform_support_native_window_readiness import read_window_size
+SCREEN_W,SCREEN_H=read_window_size(adb)
 APP_TOP,APP_BOTTOM=SCREEN_H*.04,SCREEN_H*.96
 from platform_support_native_dump import record_dump_failure
 

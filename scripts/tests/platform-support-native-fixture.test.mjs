@@ -37,6 +37,49 @@ test('UIAutomator dump failure retains exact output and fails closed',()=>{
  assert.equal(meta.outputSHA256,createHash('sha256').update(raw).digest('hex'));
 });
 
+test('native preflight retries only the observed dead window-service response and remains bounded',()=>{
+ const py=String.raw`
+import json,subprocess,sys
+sys.path.insert(0,'scripts')
+from platform_support_native_window_readiness import read_window_size,MAX_WINDOW_READINESS_ATTEMPTS
+case=sys.argv[1];calls=[];sleeps=[];logs=[]
+def adb(*args):
+ calls.append(args)
+ assert args==('shell','wm','size')
+ if case=='recover' and len(calls)<3:
+  raise subprocess.CalledProcessError(224,['adb',*args],output='cmd: Failure calling service window: Broken pipe (32)')
+ if case=='unrelated':
+  raise subprocess.CalledProcessError(224,['adb',*args],output='cmd: Failure calling service settings: Broken pipe (32)')
+ if case=='never':
+  raise subprocess.CalledProcessError(224,['adb',*args],output='cmd: Failure calling service window: Broken pipe (32)')
+ return 'Physical size: 1080x2400'
+try:
+ result=read_window_size(adb,sleep=lambda seconds:sleeps.append(seconds),log=logs.append)
+ print(json.dumps({'result':result,'calls':len(calls),'sleeps':sleeps,'logs':logs}))
+except subprocess.CalledProcessError as error:
+ print(json.dumps({'failed':True,'exit':error.returncode,'output':error.output,'calls':len(calls),'sleeps':sleeps,'logs':logs}))
+`;
+ const recovered=spawnSync('python3',['-c',py,'recover'],{encoding:'utf8'});
+ assert.equal(recovered.status,0,recovered.stderr);
+ const recoveredResult=JSON.parse(recovered.stdout);
+ assert.deepEqual(recoveredResult.result,[1080,2400]);assert.equal(recoveredResult.calls,3);assert.deepEqual(recoveredResult.sleeps,[2,2]);assert.equal(recoveredResult.logs.length,3);
+ const unrelated=spawnSync('python3',['-c',py,'unrelated'],{encoding:'utf8'});
+ assert.equal(unrelated.status,0,unrelated.stderr);
+ const unrelatedResult=JSON.parse(unrelated.stdout);
+ assert.equal(unrelatedResult.failed,true);assert.equal(unrelatedResult.calls,1);assert.deepEqual(unrelatedResult.sleeps,[]);assert.match(unrelatedResult.output,/service settings/);
+ const never=spawnSync('python3',['-c',py,'never'],{encoding:'utf8'});
+ assert.equal(never.status,0,never.stderr);
+ const neverResult=JSON.parse(never.stdout);
+ assert.equal(neverResult.failed,true);assert.equal(neverResult.calls,24);assert.equal(neverResult.sleeps.length,23);assert.match(neverResult.logs.at(-1),/NATIVE_WINDOW_SERVICE_FAIL.*exhausted=true/);
+});
+
+test('native UI waits for real window service readiness before measuring the screen',()=>{
+ const ui=readFileSync(new URL('../platform-support-native-ui.py',import.meta.url),'utf8');
+ assert.match(ui,/from platform_support_native_window_readiness import read_window_size/);
+ assert.match(ui,/SCREEN_W,SCREEN_H=read_window_size\(adb\)/);
+ const initialization=ui.slice(ui.indexOf('SCREEN_W,SCREEN_H='),ui.indexOf('APP_TOP,APP_BOTTOM='));assert.match(initialization,/read_window_size\(adb\)/);assert.doesNotMatch(initialization,/adb\('shell','wm','size'\)/);
+});
+
 test('font 130 native fixture records a second screen only after scrolling the submit control above Android navigation',()=>{
  const ui=readFileSync(new URL('../platform-support-native-ui.py',import.meta.url),'utf8');
  const helper=ui.slice(ui.indexOf('def scroll_fully_into_view('),ui.indexOf('def input_text('));

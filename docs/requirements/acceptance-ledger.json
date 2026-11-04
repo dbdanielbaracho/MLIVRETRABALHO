@@ -8421,6 +8421,34 @@
         "ownCI": "Pending on this new commit; no same-SHA rerun or borrowed green.",
         "scope": "PR632 remains draft. Real software emulator, APK install/launch, journey and evidence capture remain mandatory."
       }
+    },
+    "nativeWindowServiceRecovery": {
+      "at": "2026-11-04",
+      "baselineHead": "0c7d70542ba35b940caa3a87e0e711a04d909081",
+      "baselineRun": 41746096967,
+      "baselineJob": 126308265657,
+      "observedFailure": "The first read-only `adb shell wm size` failed with exit 224 while the Android framework window service was unavailable. The artifact logcat records `Watchdog: KILLING SYSTEM PROCESS: Blocked in handler on main thread for 61s`, followed by `Failure calling service window: Broken pipe (32)`, system_server termination and zygote restart. The failure occurred before APK install or UI capture; cleanup remained successful.",
+      "change": "Add a bounded read-only readiness poll for only `adb shell wm size` failures containing the observed window-service Broken pipe signature. It allows at most 24 attempts, waits 2 seconds between matching failures, logs attempt/exit only, and returns only a parsed positive physical size. Every other error, timeout, malformed response, or exhausted retry re-raises/fails closed. No app/network/UI action occurs until the framework service returns a real size.",
+      "sources": [
+        {
+          "path": "scripts/platform-support-native-window-readiness.py",
+          "old": null,
+          "new": "5139d3688a2d02c16f6e4dbc7b3dd6c9ad1417ac"
+        },
+        {
+          "path": "scripts/platform-support-native-ui.py",
+          "old": "ad240b5bf8b173b3f5c54b0897134b075e490d5d",
+          "new": "e08786d1aaa2df2513739783d87033b866ab1f31"
+        },
+        {
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "86f55ff8468df48b1871ba661a1ad9086a9ba6c0",
+          "new": "c60af0bffe62e6bfdf8c9e989426e083e98d1c1f"
+        }
+      ],
+      "localValidation": "Two focused Node regressions passed locally: transient window Broken pipe then real 1080x2400 response; unrelated settings-service error fails without retry; 24 matching failures exhaust and fail closed with an explicit diagnostic. Node syntax check and Python bytecode compilation passed.",
+      "ownCI": "pending on the new PR head; no same-SHA rerun or borrowed result.",
+      "scope": "Real software-emulator journey, fixture APK install/launch, captures, existing fail-closed behavior and all RLS/tenant/product controls remain required; no runner/SDK/permissions/workflow changes."
     }
   }
 }
