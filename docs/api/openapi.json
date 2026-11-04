@@ -3,7 +3,7 @@
   "info": {
     "title": "MLivreTrabalho REST API",
     "version": "0.1.0",
-    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support without membership remains pending. No production server is advertised."
+    "description": "Contract of the currently implemented modular NestJS REST API. Opaque authenticated sessions, explicit tenant membership and transactional RLS remain the runtime authority. Schemas describe stable JSON cores and permit additional response fields; business rules and normalization are documented separately where JSON Schema cannot express them. Finance is simulated; verification providers, production operation, physical-device validation and independent pentest are not asserted. Identity-owned professional preferences are implemented without company membership and do not affect matching. Platform support owner and assigned-operator HTTP operations are implemented; dedicated administrative operator-role and assignment operations are implemented; assigned operator queue is implemented; mobile UI and final restricted-runtime proof remain pending. Intake is disabled by default. No production server is advertised."
   },
   "servers": [
     {
@@ -2677,6 +2677,12 @@
                           "type": "null"
                         }
                       ]
+                    },
+                    "platformSupport": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PlatformSupportExportCase"
+                      }
                     }
                   },
                   "required": [
@@ -2685,7 +2691,8 @@
                     "identity",
                     "memberships",
                     "notice",
-                    "preferences"
+                    "preferences",
+                    "platformSupport"
                   ],
                   "additionalProperties": true
                 }
@@ -2703,7 +2710,7 @@
             }
           }
         },
-        "description": "Export includes only the authenticated identity’s owned/authored data and redacts third-party free text. This GET also records the privacy access request."
+        "description": "Export includes only the authenticated identity’s owned/authored data and redacts unrelated third-party free text. This GET also records the privacy access request. Includes owned platform support cases and responses, with operator identity and internal assignment/audit metadata omitted; intake remains separately disabled by default."
       }
     },
     "/v1/privacy/deactivate": {
@@ -5902,6 +5909,544 @@
         },
         "description": "Requires active identity and professional profile, without company membership. 400 professional_profile_required when absent. Responses never borrow another identity's preferences."
       }
+    },
+    "/v1/me/platform-support": {
+      "get": {
+        "operationId": "get__v1_me_platform_support",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/me/platform-support",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9][0-9]?|100)$"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      },
+      "post": {
+        "operationId": "post__v1_me_platform_support",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "POST /v1/me/platform-support",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportInput"
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/me/platform-support/intent": {
+      "post": {
+        "operationId": "post__v1_me_platform_support_intent",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "POST /v1/me/platform-support/intent",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportIntent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportInput"
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/me/platform-support/recovery/{key}": {
+      "get": {
+        "operationId": "get__v1_me_platform_support_recovery__key_",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/me/platform-support/recovery/{key}",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportRecovery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/me/platform-support/{id}": {
+      "get": {
+        "operationId": "get__v1_me_platform_support__id_",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/me/platform-support/{id}",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/me/platform-support/{id}/withdraw": {
+      "post": {
+        "operationId": "post__v1_me_platform_support__id__withdraw",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "POST /v1/me/platform-support/{id}/withdraw",
+        "x-nest-controller": "PlatformSupportController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Owned-session JSON result; intake can be unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportWithdrawal"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid input, expired intent, denied session/owner, closed case, conflict or unavailable intake.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/platform-support/cases/{id}": {
+      "get": {
+        "operationId": "get__v1_platform_support_cases__id_",
+        "tags": [
+          "Platform support operator"
+        ],
+        "summary": "GET /v1/platform-support/cases/{id}",
+        "x-nest-controller": "PlatformSupportOperatorController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active session and active platform operator assigned to this case; requester remains active; reads and replies audited atomically.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportOperatorDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error; unauthenticated/inactive session401, unavailable assignment404, invalid body400, conflicting receipt or closed case409.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/platform-support/cases/{id}/responses": {
+      "post": {
+        "operationId": "post__v1_platform_support_cases__id__responses",
+        "tags": [
+          "Platform support operator"
+        ],
+        "summary": "POST /v1/platform-support/cases/{id}/responses",
+        "x-nest-controller": "PlatformSupportOperatorController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Active session and active platform operator assigned to this case; requester remains active; reads and replies audited atomically.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error; unauthenticated/inactive session401, unavailable assignment404, invalid body400, conflicting receipt or closed case409.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportResponseInput"
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/platform-support/admin/operators/{id}": {
+      "post": {
+        "operationId": "post__v1_platform_support_admin_operators__id_",
+        "tags": [
+          "Platform support administration"
+        ],
+        "summary": "POST /v1/platform-support/admin/operators/{id}",
+        "x-nest-controller": "PlatformSupportAdminController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportRoleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Dedicated active administrator, active session; revision-bound atomic operation and audit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportRoleAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error401session,403authority,404missing target/case,400invalid input,409revision/state conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/platform-support/admin/cases/{id}/assignment": {
+      "post": {
+        "operationId": "post__v1_platform_support_admin_cases__id__assignment",
+        "tags": [
+          "Platform support administration"
+        ],
+        "summary": "POST /v1/platform-support/admin/cases/{id}/assignment",
+        "x-nest-controller": "PlatformSupportAdminController",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportAssignmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Dedicated active administrator, active session; revision-bound atomic operation and audit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportAssignmentAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error401session,403authority,404missing target/case,400invalid input,409revision/state conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
+    },
+    "/v1/platform-support/cases": {
+      "get": {
+        "operationId": "get__v1_platform_support_cases",
+        "tags": [
+          "Platform support"
+        ],
+        "summary": "GET /v1/platform-support/cases",
+        "x-nest-controller": "PlatformSupportOperatorController",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9][0-9]?|100)$"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assigned case headers only; reads audited atomically.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSupportOperatorPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "JSON error for invalid page400, denied session401, unavailable operator authority404 or atomic read audit failure500.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Assigned cases for the active session-bound operator; active requester and current unrevoked assignment required on every page. All case statuses, including closed history, remain visible while assigned. Default20/max100, descending PostgreSQL microseconds/UUID cursor. No descriptions, responses or identity metadata in page. No snapshot guarantee across assignment changes; every page reauthorizes. Intake capability does not block authorized historical reads. Restricted platform support scope requires all four explicit database credentials; unavailable or unsafe configuration returns 503 after session authentication. No shared credential fallback or operational provisioning."
+      }
     }
   },
   "components": {
@@ -8292,11 +8837,744 @@
         ],
         "additionalProperties": true,
         "description": "Runtime rejects unknown fields and limits above. Both lists replace previous content. Atomic comparison of expectedRevision; 409 preferences_revision_conflict on divergence. Authentication binds owner; no tenant header. No matching/ranking effect."
+      },
+      "PlatformSupportExportCase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "body": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "body",
+                "createdAt"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "closedAt",
+          "responses"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportInput": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "category",
+          "description"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportIntent": {
+        "type": "object",
+        "properties": {
+          "requestKey": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "requestKey",
+          "expiresAt"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportAck": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "status",
+          "createdAt"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportRecovery": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PlatformSupportAck"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "prepared"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": true
+          }
+        ]
+      },
+      "PlatformSupportPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "app_access",
+                    "profile",
+                    "preferences",
+                    "notifications",
+                    "privacy",
+                    "other"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "reviewing",
+                    "resolved",
+                    "withdrawn",
+                    "expired"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "category",
+                "status",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "acceptingRequests": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor",
+          "acceptingRequests"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "body": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "resolvesCase": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "body",
+                "createdAt",
+                "resolvesCase"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "closedAt",
+          "responses"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportWithdrawal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "status": {
+            "const": "withdrawn"
+          },
+          "closedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "closedAt"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportOperatorDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "app_access",
+              "profile",
+              "preferences",
+              "notifications",
+              "privacy",
+              "other"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reviewing",
+              "resolved",
+              "withdrawn",
+              "expired"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "body": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "resolvesCase": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "body",
+                "createdAt",
+                "resolvesCase"
+              ],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "description",
+          "status",
+          "createdAt",
+          "closedAt",
+          "responses"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resolvesCase": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "body",
+          "createdAt",
+          "resolvesCase"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportResponseInput": {
+        "type": "object",
+        "properties": {
+          "responseKey": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resolve": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "responseKey",
+          "body",
+          "resolve"
+        ],
+        "additionalProperties": true,
+        "description": "Strict server validation rejects unknown fields; plain text 1..4000 Unicode code points after trim; responseKey identifies a receipt only within this assigned case."
+      },
+      "PlatformSupportRoleInput": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        },
+        "required": [
+          "active",
+          "expectedRevision"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportRoleAck": {
+        "type": "object",
+        "properties": {
+          "identityId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "identityId",
+          "active",
+          "revision"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportAssignmentInput": {
+        "type": "object",
+        "properties": {
+          "targetOperatorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        },
+        "required": [
+          "targetOperatorId",
+          "expectedRevision"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportAssignmentAck": {
+        "type": "object",
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "operatorId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "caseId",
+          "operatorId",
+          "revision",
+          "revokedAt"
+        ],
+        "additionalProperties": true
+      },
+      "PlatformSupportOperatorPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "app_access",
+                    "profile",
+                    "preferences",
+                    "notifications",
+                    "privacy",
+                    "other"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "reviewing",
+                    "resolved",
+                    "withdrawn",
+                    "expired"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "category",
+                "status",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": true
       }
     }
   },
   "x-contract-source": {
-    "commit": "8b09570b94dad64d9be07efcabfb9e7997c44616",
+    "commit": "6b8fd58030a254355a7ad506d1040a70cff09d27",
     "controllerBlobs": {
       "auth.controller.ts": "c432aa1e28e02c8064144e913168cc64e8a38e97",
       "availability.controller.ts": "fc225952e5063d65b344046d77dc1f8062026b3c",
@@ -8320,7 +9598,7 @@
       "payment-webhook.controller.ts": "81d39a81a9a93d556a8651d3492abc937f65a0f9",
       "planner.controller.ts": "ceae97178b4f9b7fe9cf819e47d328bfcd09c790",
       "preferences.controller.ts": "0301f78aa55d54632243ae0fbf980cc8d01c0aa6",
-      "privacy.controller.ts": "2015ca92e4ae19bb4e20926f8fc41f9382f27744",
+      "privacy.controller.ts": "e448d9bc22bdc9638c27f20ef4dc898749a53e5b",
       "professional-capabilities.controller.ts": "6325906dea732851d6ed8f75be11c7baecbc7c5e",
       "professional-planner.controller.ts": "5220558e1f5610607134b497bf95e16cecf39edb",
       "professional-profile.controller.ts": "c7333a3d6b8b63d074885c5df9cc707482cc3949",
@@ -8340,7 +9618,10 @@
       "vertical-packs.controller.ts": "98a2b07f18f277c19220d588d1e44c945b11c8f4",
       "work-assignments.controller.ts": "3c4c1c7023fb9fcbdfd84a4e594a67bbb491a6a8",
       "work-graph.controller.ts": "5bed24a5999a66290a3eb058b09d70948e8c17f6",
-      "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7"
+      "work-passport.controller.ts": "af621fe5009ff08f37d51ef49257b16293ceb5b7",
+      "platform-support.controller.ts": "c8b221a1cb8171832806214ed55c9b990bacd69c",
+      "platform-support-operator.controller.ts": "6aab342793359daf8d52e3b2fc330b9c2f4c29eb",
+      "platform-support-admin.controller.ts": "e7235c798234ab7247e89c9e7b00fa563995f38d"
     }
   }
 }

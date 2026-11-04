@@ -65,9 +65,18 @@ test -f "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
 install_log="$smoke_install_log"; install_ok=false; for i in $(seq 1 6); do if adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk" >"$install_log" 2>&1; then install_ok=true; break; fi; cat "$install_log"; sleep 10; done; cat "$install_log"; test "$install_ok" = true
 adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
 adb shell monkey -p "com.predibeacon.mlivretrabalho.pilot" -c android.intent.category.LAUNCHER 1
-sleep 12
-adb shell pidof "com.predibeacon.mlivretrabalho.pilot" | tee /tmp/app.pid
-test -s /tmp/app.pid
+# Software-only hosted emulators can take longer to start the app after dexopt.
+# Keep a bounded wait, and still require both a live process and foreground activity.
+launch_ready=false
+for i in $(seq 1 60); do
+  if app_pid="$(adb shell pidof "com.predibeacon.mlivretrabalho.pilot" 2>/dev/null)" && test -n "$app_pid"; then
+    printf '%s\n' "$app_pid" | tee /tmp/app.pid
+    launch_ready=true
+    break
+  fi
+  sleep 2
+done
+test "$launch_ready" = true
 adb shell dumpsys activity activities | grep -F "com.predibeacon.mlivretrabalho.pilot"
 adb logcat -d > "$smoke_logcat_path"
 if grep -E "FATAL EXCEPTION|AndroidRuntime.*FATAL|ReactNativeJS:.*(Error|TypeError|ReferenceError)|Unable to load script" "$smoke_logcat_path"; then

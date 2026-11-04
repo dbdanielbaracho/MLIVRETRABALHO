@@ -85,6 +85,7 @@ export default function Perfil(){
  const canEdit=profile.status==='ready'&&!saving&&!signingOut;
  return <SafeAreaView style={s.screen}><ScrollView contentContainerStyle={s.content}>
  <View style={s.top}><Text style={s.title}>Perfil</Text><Text style={s.gear}>⚙</Text></View>
+ <Pressable accessibilityRole="button" onPress={()=>router.push('/ajuda-plataforma')}><Text style={s.close}>Ajuda à plataforma — sem vínculo com empresa</Text></Pressable>
  <View style={s.identity}><View style={s.avatar}><Text style={s.avatarText}>{(profile.status==='ready'&&displayName?displayName:'?').charAt(0).toUpperCase()}</Text></View>
  <Text style={s.profileName}>{profile.status==='loading'?'Carregando perfil…':profile.status==='error'?'Perfil indisponível':displayName||'Nome não informado'}</Text>
  <Text style={s.profileRating}>{passport.status==='loading'?'Carregando avaliações…':passport.status==='error'?'Avaliações indisponíveis':!p?'Complete seus dados para criar seu passaporte.':p.ratingCount===0?'Sem avaliações registradas':p.averageRating?.toFixed(1)+' ★ ('+p.ratingCount+' avaliações)'}</Text>
