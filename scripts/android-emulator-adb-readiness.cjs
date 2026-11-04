@@ -6,6 +6,7 @@ const path = require('node:path');
 const BOOT_UNLOCK_COMMAND = 'adb -s emulator-5554 shell input keyevent 82';
 const INPUT_BROKEN_PIPE = /Failure calling service input: Broken pipe \(32\)/;
 const MAX_ATTEMPTS = 6;
+const MAX_TIMEOUT_ATTEMPTS = 2;
 const ATTEMPT_TIMEOUT = '15s';
 const RETRY_DELAY_MS = 2000;
 const UPSTREAM_RUNNER_SHA = 'a421e43855164a8197daf9d8d40fe71c6996bb0d';
@@ -22,6 +23,7 @@ function installBoundedBootUnlockRetry(execModule, {sleep = wait, log = message 
       return originalExec.apply(this, arguments);
     }
 
+    let timeoutAttempts = 0;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
       let output = '';
       const prior = options?.listeners || {};
@@ -46,13 +48,18 @@ function installBoundedBootUnlockRetry(execModule, {sleep = wait, log = message 
         listeners,
       });
       if (code === 0) return 0;
-      if (!INPUT_BROKEN_PIPE.test(output)) {
+      const timedOut = code === 124;
+      const brokenPipe = INPUT_BROKEN_PIPE.test(output);
+      if (!timedOut && !brokenPipe) {
         throw new Error(`Android boot unlock failed (exit ${code}); readiness retry does not apply`);
       }
-      if (attempt === MAX_ATTEMPTS) {
-        throw new Error(`Android input service stayed unavailable after ${MAX_ATTEMPTS} bounded attempts`);
+      if (timedOut) timeoutAttempts += 1;
+      if (attempt === MAX_ATTEMPTS || (timedOut && timeoutAttempts >= MAX_TIMEOUT_ATTEMPTS)) {
+        throw new Error(timedOut
+          ? `Android boot unlock timed out ${timeoutAttempts} times; bounded readiness retry exhausted`
+          : `Android input service stayed unavailable after ${MAX_ATTEMPTS} bounded attempts`);
       }
-      log(`ANDROID_BOOT_UNLOCK_RETRY attempt=${attempt + 1}/${MAX_ATTEMPTS} delayMs=${RETRY_DELAY_MS} cause=input_service_broken_pipe`);
+      log(`ANDROID_BOOT_UNLOCK_RETRY attempt=${attempt + 1}/${MAX_ATTEMPTS} delayMs=${RETRY_DELAY_MS} cause=${timedOut ? 'command_timeout' : 'input_service_broken_pipe'}`);
       await sleep(RETRY_DELAY_MS);
     }
     throw new Error('Unreachable Android boot unlock retry state');
@@ -120,6 +127,7 @@ module.exports = {
   RUNNER_INPUTS,
   BOOT_UNLOCK_COMMAND,
   MAX_ATTEMPTS,
+  MAX_TIMEOUT_ATTEMPTS,
   UPSTREAM_RUNNER_SHA,
   configureRunnerInputs,
   installBoundedBootUnlockRetry,

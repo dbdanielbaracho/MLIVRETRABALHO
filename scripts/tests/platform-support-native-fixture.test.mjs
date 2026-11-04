@@ -135,6 +135,32 @@ test('boot unlock readiness retries only the observed transient Broken pipe and 
  assert.equal(await module.exec(BOOT_UNLOCK_COMMAND),0);
  assert.equal(calls,3);assert.deepEqual(sleeps,[2000,2000]);assert.equal(messages.length,2);
 });
+test('boot unlock retries one exact-command timeout and resumes the real runner when the second attempt succeeds',async()=>{
+ let calls=0;const sleeps=[],messages=[];
+ const module={exec:async(command,args)=>{
+  calls++;assert.equal(command,'timeout');assert.deepEqual(args,['15s','adb','-s','emulator-5554','shell','input','keyevent','82']);
+  if(calls===1)return 124;
+  return 0;
+ }};
+ installBoundedBootUnlockRetry(module,{sleep:async ms=>sleeps.push(ms),log:line=>messages.push(line)});
+ assert.equal(await module.exec(BOOT_UNLOCK_COMMAND),0);
+ assert.equal(calls,2);assert.deepEqual(sleeps,[2000]);assert.match(messages[0],/cause=command_timeout/);
+});
+test('repeated boot unlock timeouts fail closed after one bounded retry',async()=>{
+ let calls=0;const sleeps=[];
+ const module={exec:async()=>{calls++;return 124;}};
+ installBoundedBootUnlockRetry(module,{sleep:async ms=>sleeps.push(ms),log:()=>{}});
+ await assert.rejects(module.exec(BOOT_UNLOCK_COMMAND),/timed out 2 times; bounded readiness retry exhausted/);
+ assert.equal(calls,2);assert.deepEqual(sleeps,[2000]);
+});
+test('timeout readiness retry never wraps unrelated adb commands',async()=>{
+ let calls=0;
+ const module={exec:async()=>{calls++;return 124;}};
+ installBoundedBootUnlockRetry(module,{sleep:async()=>assert.fail('unrelated command must not retry')});
+ assert.equal(await module.exec('adb -s emulator-5554 shell getprop sys.boot_completed'),124);
+ assert.equal(calls,1);
+});
+
 test('boot unlock permanent failures and exhausted retries stay fail-closed',async()=>{
  let calls=0;
  const permanent={exec:async(_command,_args,options)=>{calls++;options.listeners.stderr(Buffer.from('Failure calling service input: SecurityException\\n'));return 224;}};

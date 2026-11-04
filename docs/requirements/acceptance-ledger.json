@@ -8354,12 +8354,12 @@
         {
           "path": "scripts/android-emulator-adb-readiness.cjs",
           "old": "3f628cbdac66becdd08e16de2d0a47b31527d15a",
-          "new": "48f2e8b3628ff682ce3f6f14dc07dad4354c5973"
+          "new": "245822efc54ca3366572a9f3c7c3c069d5944a2e"
         },
         {
           "path": "scripts/tests/platform-support-native-fixture.test.mjs",
           "old": "28877aaf8cf30c867dd094f5da77f1ed59385f7c",
-          "new": "90c6f9d88dd9a4fecf20047f70bd257d0d756328"
+          "new": "86f55ff8468df48b1871ba661a1ad9086a9ba6c0"
         },
         {
           "path": "scripts/tests/android-standalone-smoke.test.mjs",
@@ -8383,6 +8383,43 @@
         "correction": "Map underscores in internal input keys to literal hyphens when reading INPUT_* and emit exact action input identifiers in both workflow jobs. Add a behavioral regression test proving INPUT_API-LEVEL succeeds and INPUT_API_LEVEL alone fails closed.",
         "localValidation": "8 targeted native/bootstrap tests, 10 canonical smoke-gate tests, and 4 retry unit tests pass; full own CI on the corrected new PR SHA is pending.",
         "scope": "No change to Android SDK version, runner, acceleration, permissions, product API, or fixture failure policy."
+      },
+      "sourcePinReconciliation": [
+        {
+          "at": "platformSupportCandidate.bootUnlockReadinessCorrection.sources[0]",
+          "path": "scripts/android-emulator-adb-readiness.cjs",
+          "old": "48f2e8b3628ff682ce3f6f14dc07dad4354c5973",
+          "new": "245822efc54ca3366572a9f3c7c3c069d5944a2e"
+        },
+        {
+          "at": "platformSupportCandidate.bootUnlockReadinessCorrection.sources[1]",
+          "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+          "old": "90c6f9d88dd9a4fecf20047f70bd257d0d756328",
+          "new": "86f55ff8468df48b1871ba661a1ad9086a9ba6c0"
+        }
+      ],
+      "timeoutExitCorrection": {
+        "at": "2026-11-04",
+        "baselineHead": "0f8f5e037b101ba8ab150ebbecfbf35341ddd9f6",
+        "baselineRun": 41677856223,
+        "baselineJob": 126082201408,
+        "observedFailure": "After Emulator booted, the exact boot-unlock command `adb -s emulator-5554 shell input keyevent 82` returned GNU timeout exit 124 at 15 seconds. The native UI script had not run; no screen captures were produced.",
+        "change": "Retry exit 124 only while wrapping the exact boot-unlock command, allowing at most two timeout results total with one 2-second delay. Existing Broken pipe handling remains bounded to six attempts. All other commands and errors remain fail-closed; no workflow, SDK, runner, permission, product or install/launch/capture policy changes.",
+        "sources": [
+          {
+            "path": "scripts/android-emulator-adb-readiness.cjs",
+            "old": "48f2e8b3628ff682ce3f6f14dc07dad4354c5973",
+            "new": "245822efc54ca3366572a9f3c7c3c069d5944a2e"
+          },
+          {
+            "path": "scripts/tests/platform-support-native-fixture.test.mjs",
+            "old": "90c6f9d88dd9a4fecf20047f70bd257d0d756328",
+            "new": "86f55ff8468df48b1871ba661a1ad9086a9ba6c0"
+          }
+        ],
+        "localValidation": "Five focused boot-unlock tests pass, including timeout-then-success, timeout exhaustion, exact-command scope, Broken pipe retry and permanent-error rejection. Full file invocation attempted: its unrelated API preflight test requires the `pg` dependency absent from this isolated scratch checkout; 11 other tests passed. Repository Foundation CI must validate the complete suite with frozen dependencies.",
+        "ownCI": "Pending on this new commit; no same-SHA rerun or borrowed green.",
+        "scope": "PR632 remains draft. Real software emulator, APK install/launch, journey and evidence capture remain mandatory."
       }
     }
   }
