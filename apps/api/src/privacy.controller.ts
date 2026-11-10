@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Get, Headers, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
+import {exportPlatformSupport} from './platform-support-privacy';
 
 type ManualPrivacyRequestType='correction'|'erasure'|'restriction'|'objection'|'consent_withdrawal'|'automated_decision_review'|'sharing_information'|'portability';
 const MANUAL_REQUEST_TYPES=new Set<ManualPrivacyRequestType>(['correction','erasure','restriction','objection','consent_withdrawal','automated_decision_review','sharing_information','portability']);
@@ -55,6 +56,7 @@ export class PrivacyController {
     )).rows:[];
     const preferences=(await this.db.query('SELECT preferred_role_ids AS "preferredRoleIds",preferred_cities AS "preferredCities",revision::float8 AS revision,updated_at AS "updatedAt" FROM professional_preferences WHERE identity_id=$1',[identity.id])).rows[0]??null;
 
+    const platformSupport=await this.db.transaction(db=>exportPlatformSupport(db,identity.id));
     const assignments:any[]=[],earnings:any[]=[],verifications:any[]=[],notifications:any[]=[],authoredMessages:any[]=[],ratingsReceived:any[]=[],ratingsAuthored:any[]=[],trustEvents:any[]=[],safetyReports:any[]=[],safetyRelated:any[]=[],appeals:any[]=[];
     for(const membership of memberships){
       const tenantId=membership.tenant_id;
@@ -93,8 +95,8 @@ export class PrivacyController {
     return {
       requestId,generatedAt:new Date().toISOString(),identity:identityRow,
       memberships:memberships.map(m=>({tenantId:m.tenant_id,role:m.role})),professionalProfile:profile,availability,preferences,
-      assignments,earnings,verifications,notifications,authoredMessages,ratingsReceived,ratingsAuthored,trustEvents,safetyReports,safetyRelated,appeals,privacyRequests,
-      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator evidence/notes']}
+      assignments,earnings,verifications,notifications,authoredMessages,ratingsReceived,ratingsAuthored,trustEvents,safetyReports,safetyRelated,appeals,privacyRequests,platformSupport,
+      notice:{scope:'data directly associated with or authored by the authenticated identity in the current MLIVRETRABALHO runtime baseline',redaction:'third-party free-text is omitted unless authored by the authenticated identity or an authorized platform response to their own request',excludes:['password hashes','session tokens','provider secrets','third-party rating comments','third-party safety descriptions','third-party trust notes','operator evidence/notes']}
     };
   }
 

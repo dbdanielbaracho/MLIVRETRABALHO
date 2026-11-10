@@ -33,7 +33,20 @@ test('healthy fixture emits gate success only after installation, PID, activity 
 test('native fatal log fails and captures diagnostics instead of emitting success',t=>{const f=fixture(t,'native'),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(readFileSync(join(f.diagnostics,'logcat.txt'),'utf8'),/FATAL EXCEPTION/);assert.match(f.manifest(),/sha=unit-fixture-sha/);});
 test('React Native error and missing Metro bundle both fail the gate',t=>{for(const mode of ['react','metro']){const f=fixture(t,mode),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.equal(existsSync(join(f.diagnostics,'logcat.txt')),true);}});
 test('failed launch retains original exit and captures logcat before emulator teardown',t=>{const f=fixture(t,'monkey'),r=f.run();assert.equal(r.status,7);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(readFileSync(join(f.diagnostics,'logcat.txt'),'utf8'),/ANR com.android.phone/);assert.match(f.manifest(),/app-pid_exit=0/);});
-test('missing app PID fails even though the pipe also contains tee',t=>{const f=fixture(t,'missingpid'),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(f.manifest(),/app-pid_exit=1/);});
+test('bounded app launch wait accepts a late PID only after confirming the activity',t=>{const f=fixture(t,'latepid'),r=f.run();assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/DEVICE_SMOKE_OK .*metro_required=false/);assert.match(readFileSync(join(f.dir,'logcat.txt'),'utf8'),/fixture Activity displayed/);});
+test('missing app PID fails after bounded polling and never emits smoke success',t=>{const f=fixture(t,'missingpid'),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(f.manifest(),/app-pid_exit=1/);});
 test('diagnostics-only after upstream boot failure records unavailable ADB and never proves smoke',t=>{const f=fixture(t,'unavailable'),r=f.run(['--diagnostics-only']);assert.equal(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(f.manifest(),/adb-devices_exit=1/);assert.match(f.manifest(),/logcat_exit=1/);});
 test('later diagnostics fallback preserves evidence already captured before teardown',t=>{const f=fixture(t,'monkey');assert.equal(f.run().status,7);const first=f.manifest(),log=readFileSync(join(f.diagnostics,'logcat.txt'),'utf8');assert.equal(f.run(['--diagnostics-only']).status,0);assert.equal(f.manifest(),first);assert.equal(readFileSync(join(f.diagnostics,'logcat.txt'),'utf8'),log);});
 test('hung diagnostic command is bounded and its timeout is recorded without success claim',t=>{const f=fixture(t,'hung'),start=Date.now(),r=f.run(['--diagnostics-only']);assert.equal(r.status,0);assert.match(f.manifest(),/adb-devices_exit=124/);assert.ok(Date.now()-start<12000);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);});
+
+test('canonical Android smoke uses software acceleration while keeping install and launch gates',()=>{
+ const source=readFileSync(resolve('.github/workflows/standalone-pilot-apk.yml'),'utf8');
+ assert.equal(source.includes('/dev/kvm'),false);
+ assert.equal(source.includes('Verify KVM'),false);
+ assert.match(source,/INPUT_DISABLE-LINUX-HW-ACCEL: 'true'/);
+ assert.match(source,/INPUT_EMULATOR-BOOT-TIMEOUT: '1200'/);
+ assert.match(source,/INPUT_EMULATOR-OPTIONS: .*swiftshader_indirect/);
+ assert.ok(source.includes('run: node scripts/android-emulator-adb-readiness.cjs canonical'));
+ assert.match(source,/Device smoke test — install and launch without Metro/);
+ assert.ok(source.includes("steps.device_smoke.outcome == 'failure'"));
+});
