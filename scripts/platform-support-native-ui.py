@@ -172,7 +172,8 @@ try:
         if re.search(r'ANR in |am_anr|Input dispatching timed out',line):
             for row in boot_rows[max(0,i-2):i+35]:print('NATIVE_BOOTSTRAP_DIAGNOSTIC '+row,flush=True)
     assert adb('shell','pm','list','packages',PACKAGE).strip()=='','fixture_package_must_be_absent'
-    adb('install',str(OUT/'SupportFixture.apk'),timeout=120)
+    from platform_support_native_install import install_fixture
+    install_fixture(adb, OUT/'SupportFixture.apk', OUT, timeout=120)
     stage='unlinked-navigation';signin('pro')
     wait('Atendimento da plataforma indisponível');screenshot('01-disabled-empty',True)
     n=None
