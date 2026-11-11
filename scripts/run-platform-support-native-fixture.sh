@@ -65,6 +65,31 @@ if ! grep -q '^package:' artifacts/platform-support-native/package-manager-readi
   fail "package_manager_empty_or_invalid_response"
 fi
 echo "NATIVE_PACKAGE_MANAGER_READ_ONLY_PASS deadlineSeconds=20"
+# The canonical APK smoke also checks the package binder and provisioning
+# service. Check both once, read-only, before a potentially blocking install.
+# This is a diagnostic gate, not a retry or a replacement for native UI proof.
+if ! timeout 10s "$sdk_root/platform-tools/adb" -s emulator-5554 shell service check package > artifacts/platform-support-native/package-binder-readiness.txt 2>&1; then
+  fail "package_binder_unresponsive"
+fi
+if ! grep -Fq 'found' artifacts/platform-support-native/package-binder-readiness.txt; then
+  fail "package_binder_missing"
+fi
+if ! timeout 10s "$sdk_root/platform-tools/adb" -s emulator-5554 shell settings get global device_provisioned > artifacts/platform-support-native/device-provisioning-readiness.txt 2>&1; then
+  fail "device_provisioning_unresponsive"
+fi
+if ! grep -Eq '^[01]
+
+capture_final_logcat() {
+  "$sdk_root/platform-tools/adb" -s emulator-5554 logcat -d > artifacts/platform-support-native/emulator-final-logcat.txt 2>&1 || true
+}
+trap capture_final_logcat EXIT
+# android-emulator-runner owns emulator startup/teardown; the UI driver preserves
+# the fail-closed journey, installs the fixture, and captures original PNG/XML.
+python3 scripts/platform-support-native-ui.py
+ artifacts/platform-support-native/device-provisioning-readiness.txt; then
+  fail "device_provisioning_invalid_response"
+fi
+echo "NATIVE_PREINSTALL_SERVICES_READ_ONLY_PASS"
 
 
 capture_final_logcat() {
