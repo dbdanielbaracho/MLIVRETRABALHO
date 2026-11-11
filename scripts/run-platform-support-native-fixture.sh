@@ -55,6 +55,17 @@ done
 if test "$booted" != true; then fail "action_emulator_boot_not_confirmed"; fi
 "$sdk_root/platform-tools/adb" -s emulator-5554 logcat -d > artifacts/platform-support-native/emulator-initial-logcat.txt
 echo "NATIVE_EMULATOR_BOOT_READ_ONLY_PASS acceleration=software actionManaged=true noLauncherKeyInjection=true"
+# A completed boot property does not establish that Android's package service is
+# responsive. Probe it once, read-only, with a hard deadline; never retry an
+# unresponsive emulator or attempt fixture installation after a failed probe.
+if ! timeout 20s "$sdk_root/platform-tools/adb" -s emulator-5554 shell cmd package list packages --user 0 > artifacts/platform-support-native/package-manager-readiness.txt 2>&1; then
+  fail "package_manager_unresponsive"
+fi
+if ! grep -q '^package:' artifacts/platform-support-native/package-manager-readiness.txt; then
+  fail "package_manager_empty_or_invalid_response"
+fi
+echo "NATIVE_PACKAGE_MANAGER_READ_ONLY_PASS deadlineSeconds=20"
+
 
 capture_final_logcat() {
   "$sdk_root/platform-tools/adb" -s emulator-5554 logcat -d > artifacts/platform-support-native/emulator-final-logcat.txt 2>&1 || true
