@@ -77,20 +77,10 @@ fi
 if ! timeout 10s "$sdk_root/platform-tools/adb" -s emulator-5554 shell settings get global device_provisioned > artifacts/platform-support-native/device-provisioning-readiness.txt 2>&1; then
   fail "device_provisioning_unresponsive"
 fi
-if ! grep -Eq '^[01]
-
-capture_final_logcat() {
-  "$sdk_root/platform-tools/adb" -s emulator-5554 logcat -d > artifacts/platform-support-native/emulator-final-logcat.txt 2>&1 || true
-}
-trap capture_final_logcat EXIT
-# android-emulator-runner owns emulator startup/teardown; the UI driver preserves
-# the fail-closed journey, installs the fixture, and captures original PNG/XML.
-python3 scripts/platform-support-native-ui.py
- artifacts/platform-support-native/device-provisioning-readiness.txt; then
+if ! grep -Eq '^[01]$' artifacts/platform-support-native/device-provisioning-readiness.txt; then
   fail "device_provisioning_invalid_response"
 fi
 echo "NATIVE_PREINSTALL_SERVICES_READ_ONLY_PASS"
-
 
 capture_final_logcat() {
   "$sdk_root/platform-tools/adb" -s emulator-5554 logcat -d > artifacts/platform-support-native/emulator-final-logcat.txt 2>&1 || true
