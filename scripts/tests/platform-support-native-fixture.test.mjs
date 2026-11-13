@@ -215,3 +215,21 @@ test('boot unlock permanent failures and exhausted retries stay fail-closed',asy
  await assert.rejects(broken.exec(BOOT_UNLOCK_COMMAND),new RegExp('stayed unavailable after '+MAX_ATTEMPTS+' bounded attempts'));
  assert.equal(calls,MAX_ATTEMPTS);assert.equal(sleeps,MAX_ATTEMPTS-1);
 });
+
+
+test('native fixture releases Gradle daemons after building APK and before software emulator boot',()=>{
+ const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
+ const native=workflow.slice(workflow.indexOf('  native-support-fixture:'));
+ const build=native.indexOf('      - name: Build separate local-only support fixture APK');
+ const release=native.indexOf('      - name: Release native fixture build-only Gradle daemons before emulator boot');
+ const namespace=native.indexOf('      - name: Prepare action-owned empty AVD namespace');
+ const launch=native.indexOf('      - name: Render native support states and recovery with real local sessions');
+ assert.ok(build>=0 && release>build && namespace>release && launch>namespace);
+ const step=native.slice(release,namespace);
+ assert.match(step,/\(cd apps\/mobile\/android && \.\/gradlew --stop\)/);
+ assert.match(step,/NATIVE_JAVA_RSS_KIB_BEFORE/);
+ assert.match(step,/NATIVE_JAVA_RSS_KIB_AFTER/);
+ assert.doesNotMatch(step,/adb|emulator-5554|--offline|--no-daemon/);
+ assert.match(native,/INPUT_DISABLE-LINUX-HW-ACCEL: 'true'/);
+ assert.match(native,/run: node scripts\/android-emulator-adb-readiness\.cjs native/);
+});
