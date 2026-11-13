@@ -171,6 +171,17 @@ jobs:
       - name: Build separate local-only support fixture APK
         run: bash scripts/build-platform-support-native-fixture.sh
 
+      # The native fixture builds a separate APK with Gradle. Release build-only
+      # daemons before starting the software emulator, matching the canonical job.
+      # This does not reset the AVD, change isolation, or weaken install checks.
+      - name: Release native fixture build-only Gradle daemons before emulator boot
+        run: |
+          free -m
+          ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "NATIVE_JAVA_RSS_KIB_BEFORE", sum+0}'
+          (cd apps/mobile/android && ./gradlew --stop)
+          free -m
+          ps -eo comm,rss | awk '$1 == "java" {sum += $2} END {print "NATIVE_JAVA_RSS_KIB_AFTER", sum+0}'
+
       - name: Prepare action-owned empty AVD namespace
         run: |
           avd_root="$HOME/.android/avd"
