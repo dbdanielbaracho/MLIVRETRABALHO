@@ -217,21 +217,23 @@ test('boot unlock permanent failures and exhausted retries stay fail-closed',asy
 });
 
 
-test('native fixture cleans its temporary Gradle checkout before emulator boot',()=>{
+
+test('native fixture cleanup is scoped to its disposable checkout and preserves original failures',()=>{
  const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
  const builder=readFileSync('scripts/build-platform-support-native-fixture.sh','utf8');
  const native=workflow.slice(workflow.indexOf('  native-support-fixture:'));
- const build=native.indexOf('      - name: Build separate local-only support fixture APK');
- const metrics=native.indexOf('      - name: Record host resources after isolated fixture build');
- const namespace=native.indexOf('      - name: Prepare action-owned empty AVD namespace');
- const launch=native.indexOf('      - name: Render native support states and recovery with real local sessions');
- assert.ok(build>=0 && metrics>build && namespace>metrics && launch>namespace);
+ assert.ok(native.indexOf('      - name: Build separate local-only support fixture APK') < native.indexOf('      - name: Prepare action-owned empty AVD namespace'));
+ assert.match(builder,/STAGE="\\$\\(mktemp -d \\/tmp\\/mlivre-support-build\\.XXXXXX\\)"/);
  assert.match(builder,/trap cleanup_stage EXIT/);
- assert.match(builder,/cd "\$STAGE\/apps\/mobile\/android" && \.\/gradlew --stop/);
- assert.match(builder,/rm -rf "\$STAGE"/);
- const step=native.slice(metrics,namespace);
- assert.match(step,/NATIVE_JAVA_RSS_KIB_AFTER_FIXTURE/);
- assert.doesNotMatch(step,/gradlew|adb|emulator-5554/);
+ const cleanup=builder.slice(builder.indexOf('cleanup_stage() {'),builder.indexOf('trap cleanup_stage EXIT'));
+ assert.match(cleanup,/local exit_status=\\$\\?/);
+ assert.match(cleanup,/cd "\\$STAGE\\/apps\\/mobile\\/android" && \\.\\/gradlew --stop/);
+ assert.match(cleanup,/NATIVE_FIXTURE_GRADLE_STOP_FAIL/);
+ assert.match(cleanup,/exit_status=1/);
+ assert.match(cleanup,/rm -rf "\\$STAGE"/);
+ assert.match(cleanup,/exit "\\$exit_status"/);
+ assert.ok(cleanup.indexOf('./gradlew --stop') < cleanup.indexOf('rm -rf'));
+ assert.doesNotMatch(cleanup,/adb|emulator-5554|sudo|\\/dev\\/kvm/);
  assert.match(native,/INPUT_DISABLE-LINUX-HW-ACCEL: 'true'/);
- assert.match(native,/run: node scripts\/android-emulator-adb-readiness\.cjs native/);
+ assert.match(native,/run: node scripts\\/android-emulator-adb-readiness\\.cjs native/);
 });
