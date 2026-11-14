@@ -215,3 +215,21 @@ test('boot unlock permanent failures and exhausted retries stay fail-closed',asy
  await assert.rejects(broken.exec(BOOT_UNLOCK_COMMAND),new RegExp('stayed unavailable after '+MAX_ATTEMPTS+' bounded attempts'));
  assert.equal(calls,MAX_ATTEMPTS);assert.equal(sleeps,MAX_ATTEMPTS-1);
 });
+
+
+
+test('native fixture cleanup stays in disposable checkout and preserves failure',()=>{
+ const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
+ const builder=readFileSync('scripts/build-platform-support-native-fixture.sh','utf8');
+ const native=workflow.slice(workflow.indexOf('  native-support-fixture:'));
+ assert.ok(native.indexOf('Build separate local-only support fixture APK')>=0);
+ assert.ok(native.indexOf('Build separate local-only support fixture APK')<native.indexOf('Prepare action-owned empty AVD namespace'));
+ assert.ok(builder.includes('STAGE="$(mktemp -d /tmp/mlivre-support-build.XXXXXX)"'));
+ assert.ok(builder.includes('trap cleanup_stage EXIT'));
+ const cleanup=builder.slice(builder.indexOf('cleanup_stage() {'),builder.indexOf('trap cleanup_stage EXIT'));
+ for(const fragment of ['local exit_status=$?', 'cd "$STAGE/apps/mobile/android" && ./gradlew --stop', 'NATIVE_FIXTURE_GRADLE_STOP_FAIL', 'exit_status=1', 'rm -rf "$STAGE"', 'exit "$exit_status"'])assert.ok(cleanup.includes(fragment),fragment);
+ assert.ok(cleanup.indexOf('./gradlew --stop')<cleanup.indexOf('rm -rf'));
+ assert.doesNotMatch(cleanup,/adb|emulator-5554|sudo/);
+ assert.ok(native.includes("INPUT_DISABLE-LINUX-HW-ACCEL: 'true'"));
+ assert.ok(native.includes('run: node scripts/android-emulator-adb-readiness.cjs native'));
+});
