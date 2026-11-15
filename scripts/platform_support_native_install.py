@@ -7,7 +7,9 @@ from pathlib import Path
 def install_fixture(adb, apk_path, output_dir, timeout=120):
     """Install exactly once; retain the first timeout without retry or UI input."""
     try:
-        return adb('install', str(apk_path), timeout=timeout)
+        # The software AVD may stall during streamed APK transfer; use ADB's
+        # non-streaming installer for this synthetic-only fixture, once.
+        return adb('install', '--no-streaming', str(apk_path), timeout=timeout)
     except subprocess.TimeoutExpired:
         artifact_dir = Path(output_dir)
         artifact_dir.mkdir(parents=True, exist_ok=True)

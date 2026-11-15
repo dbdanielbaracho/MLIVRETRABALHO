@@ -18,7 +18,7 @@ with tempfile.TemporaryDirectory() as folder:
     except subprocess.TimeoutExpired:
         pass
     evidence=json.loads((pathlib.Path(folder)/'native-install-timeout.json').read_text())
-    assert len(calls)==1 and calls[0]==[['install','fixture.apk'],120]
+    assert len(calls)==1 and calls[0]==[['install','--no-streaming','fixture.apk'],120]
     assert evidence['retry'] is False
     assert evidence['primaryFailurePreserved'] is True
     assert evidence['uiInputAttempted'] is False
@@ -42,7 +42,7 @@ with tempfile.TemporaryDirectory() as folder:
         calls.append((args,timeout))
         return 'Success'
     assert install_fixture(healthy,'fixture.apk',folder)=='Success'
-    assert calls==[(('install','fixture.apk'),120)]
+    assert calls==[(('install','--no-streaming','fixture.apk'),120)]
     assert not (pathlib.Path(folder)/'native-install-timeout.json').exists()
     print('NATIVE_INSTALL_SUCCESS_TEST_PASS')
 `;
