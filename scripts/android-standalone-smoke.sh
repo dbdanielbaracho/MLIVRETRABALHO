@@ -70,7 +70,7 @@ adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
 # Resolve the installed APK's actual exported launcher component. A package-only
 # MAIN intent is not guaranteed to resolve on Android 35.
 launcher_output="$(timeout 20s adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER com.predibeacon.mlivretrabalho.pilot)"
-launcher_component="$(printf '%s\n' "$launcher_output" | tr -d '\r' | grep -E '^com[.]predibeacon[.]mlivretrabalho[.]pilot/[A-Za-z0-9_.$]+$' | tail -n 1)"
+launcher_component="$(printf '%s\n' "$launcher_output" | tr -d '\r' | awk '/^com[.]predibeacon[.]mlivretrabalho[.]pilot\/[A-Za-z0-9_.$]+$/ {component=$0} END {if (component != "") print component}')"
 if test -z "$launcher_component"; then
   echo "DEVICE_SMOKE_FAILED launcher_component_not_resolved" >&2
   exit 1
