@@ -61,3 +61,13 @@ test('smoke launches via bounded ActivityManager and never uses Monkey',()=>{
  assert.match(source,/test "\$launch_ready" = true/);
  assert.match(source,/adb shell dumpsys activity activities/);
 });
+
+test('launcher resolution script parses and has exactly one complete launch gate',()=>{
+ const syntax=spawnSync('bash',['-n',script],{encoding:'utf8'});
+ assert.equal(syntax.status,0,syntax.stderr);
+ const source=readFileSync(script,'utf8');
+ assert.equal((source.match(/launcher_component="/g)||[]).length,1);
+ assert.equal((source.match(/DEVICE_SMOKE_OK package=/g)||[]).length,1);
+ assert.equal((source.match(/timeout 90s adb shell am start -W -n/g)||[]).length,1);
+ assert.match(source,/launcher_component="\$\(printf[\s\S]*?tail -n 1\)"/);
+});

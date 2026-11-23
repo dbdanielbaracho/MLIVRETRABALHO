@@ -70,27 +70,7 @@ adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
 # Resolve the installed APK's actual exported launcher component. A package-only
 # MAIN intent is not guaranteed to resolve on Android 35.
 launcher_output="$(timeout 20s adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER com.predibeacon.mlivretrabalho.pilot)"
-launcher_component="$(printf '%s\n' "$launcher_output" | tr -d '\r' | grep -E '^com[.]predibeacon[.]mlivretrabalho[.]pilot/[A-Za-z0-9_.$]+
-# Software-only hosted emulators can take longer to start the app after dexopt.
-# Keep a bounded wait, and still require both a live process and foreground activity.
-launch_ready=false
-for i in $(seq 1 60); do
-  if app_pid="$(adb shell pidof "com.predibeacon.mlivretrabalho.pilot" 2>/dev/null)" && test -n "$app_pid"; then
-    printf '%s\n' "$app_pid" | tee /tmp/app.pid
-    launch_ready=true
-    break
-  fi
-  sleep 2
-done
-test "$launch_ready" = true
-adb shell dumpsys activity activities | grep -F "com.predibeacon.mlivretrabalho.pilot"
-adb logcat -d > "$smoke_logcat_path"
-if grep -E "FATAL EXCEPTION|AndroidRuntime.*FATAL|ReactNativeJS:.*(Error|TypeError|ReferenceError)|Unable to load script" "$smoke_logcat_path"; then
-  echo "DEVICE_SMOKE_FAILED fatal runtime output" >&2
-  exit 1
-fi
-echo "DEVICE_SMOKE_OK package=com.predibeacon.mlivretrabalho.pilot metro_required=false"
- | tail -n 1)"
+launcher_component="$(printf '%s\n' "$launcher_output" | tr -d '\r' | grep -E '^com[.]predibeacon[.]mlivretrabalho[.]pilot/[A-Za-z0-9_.$]+$' | tail -n 1)"
 if test -z "$launcher_component"; then
   echo "DEVICE_SMOKE_FAILED launcher_component_not_resolved" >&2
   exit 1
