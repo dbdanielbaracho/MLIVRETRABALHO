@@ -246,3 +246,35 @@ test('software-only Android emulator jobs explicitly opt in to TCG without weake
  assert.equal((workflow.match(/ANDROID_I_WANT_MY_TCG: 'yes'/g)||[]).length,2);
  assert.equal(workflow.includes('/dev/kvm'),false);
 });
+
+test('boot unlock retries observed exit 20 only for exact missing input service and then succeeds',async()=>{
+ let calls=0;const sleeps=[],messages=[];
+ const module={exec:async(_command,_args,options)=>{
+  calls++;
+  if(calls===1){options.listeners.stderr(Buffer.from("cmd: Can't find service: input\\n"));return 20;}
+  return 0;
+ }};
+ installBoundedBootUnlockRetry(module,{sleep:async ms=>sleeps.push(ms),log:line=>messages.push(line)});
+ assert.equal(await module.exec(BOOT_UNLOCK_COMMAND),0);
+ assert.equal(calls,2);assert.deepEqual(sleeps,[2000]);
+ assert.match(messages[0],/cause=input_service_not_registered/);
+});
+
+test('missing input service retries are bounded; unrelated exit 20 is not retried',async()=>{
+ let calls=0;const sleeps=[];
+ const missing={exec:async(_command,_args,options)=>{
+  calls++;options.listeners.stderr(Buffer.from("cmd: Can't find service: input\\n"));return 20;
+ }};
+ installBoundedBootUnlockRetry(missing,{sleep:async ms=>sleeps.push(ms),log:()=>{}});
+ await assert.rejects(missing.exec(BOOT_UNLOCK_COMMAND),new RegExp('stayed unavailable after '+MAX_ATTEMPTS+' bounded attempts'));
+ assert.equal(calls,MAX_ATTEMPTS);assert.equal(sleeps.length,MAX_ATTEMPTS-1);
+ for(const message of ["cmd: Can't find service: package\\n","cmd: Can't find service: input\\n"]){
+  calls=0;
+  const unrelated={exec:async(_command,_args,options)=>{
+   calls++;options.listeners.stderr(Buffer.from(message));return message.includes('package')?20:21;
+  }};
+  installBoundedBootUnlockRetry(unrelated,{sleep:async()=>assert.fail('unrelated failure must not retry')});
+  await assert.rejects(unrelated.exec(BOOT_UNLOCK_COMMAND),/readiness retry does not apply/);
+  assert.equal(calls,1);
+ }
+});
