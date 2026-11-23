@@ -5,6 +5,7 @@ const path = require('node:path');
 
 const BOOT_UNLOCK_COMMAND = 'adb -s emulator-5554 shell input keyevent 82';
 const INPUT_BROKEN_PIPE = /Failure calling service input: Broken pipe \(32\)/;
+const INPUT_SERVICE_MISSING = /(?:^|\n)cmd: Can't find service: input(?:\r?\n|$)/;
 const MAX_ATTEMPTS = 6;
 const MAX_TIMEOUT_ATTEMPTS = 2;
 const ATTEMPT_TIMEOUT = '15s';
@@ -50,7 +51,10 @@ function installBoundedBootUnlockRetry(execModule, {sleep = wait, log = message 
       if (code === 0) return 0;
       const timedOut = code === 124;
       const brokenPipe = INPUT_BROKEN_PIPE.test(output);
-      if (!timedOut && !brokenPipe) {
+      // Android may report sys.boot_completed=1 before the input service is registered.
+      // Only this exact exit/output pair is a transient readiness failure.
+      const inputServiceMissing = code === 20 && INPUT_SERVICE_MISSING.test(output);
+      if (!timedOut && !brokenPipe && !inputServiceMissing) {
         throw new Error(`Android boot unlock failed (exit ${code}); readiness retry does not apply`);
       }
       if (timedOut) timeoutAttempts += 1;
@@ -59,7 +63,7 @@ function installBoundedBootUnlockRetry(execModule, {sleep = wait, log = message 
           ? `Android boot unlock timed out ${timeoutAttempts} times; bounded readiness retry exhausted`
           : `Android input service stayed unavailable after ${MAX_ATTEMPTS} bounded attempts`);
       }
-      log(`ANDROID_BOOT_UNLOCK_RETRY attempt=${attempt + 1}/${MAX_ATTEMPTS} delayMs=${RETRY_DELAY_MS} cause=${timedOut ? 'command_timeout' : 'input_service_broken_pipe'}`);
+      log(`ANDROID_BOOT_UNLOCK_RETRY attempt=${attempt + 1}/${MAX_ATTEMPTS} delayMs=${RETRY_DELAY_MS} cause=${timedOut ? 'command_timeout' : inputServiceMissing ? 'input_service_not_registered' : 'input_service_broken_pipe'}`);
       await sleep(RETRY_DELAY_MS);
     }
     throw new Error('Unreachable Android boot unlock retry state');
