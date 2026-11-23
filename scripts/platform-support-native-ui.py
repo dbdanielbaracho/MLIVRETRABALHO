@@ -173,7 +173,9 @@ try:
             for row in boot_rows[max(0,i-2):i+35]:print('NATIVE_BOOTSTRAP_DIAGNOSTIC '+row,flush=True)
     assert adb('shell','pm','list','packages',PACKAGE).strip()=='','fixture_package_must_be_absent'
     from platform_support_native_install import install_fixture
-    install_fixture(adb, OUT/'SupportFixture.apk', OUT, timeout=120)
+    # Software-only API 35 emulators can need longer for first package dexopt.
+    # One installation attempt only; timeout remains bounded and fail-closed.
+    install_fixture(adb, OUT/'SupportFixture.apk', OUT, timeout=300)
     stage='unlinked-navigation';signin('pro')
     wait('Atendimento da plataforma indisponível');screenshot('01-disabled-empty',True)
     n=None
