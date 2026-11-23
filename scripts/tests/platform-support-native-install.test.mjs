@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
+import {readFileSync} from 'node:fs';
 
 test('synthetic fixture install timeout is single-attempt, evidenced, and rethrown', () => {
   const code = String.raw`
@@ -85,4 +86,13 @@ with tempfile.TemporaryDirectory() as folder:
   assert.equal(result.status,0,result.stderr||result.stdout);
   assert.doesNotMatch(result.stdout,/PRIVATE_SESSION_TOKEN_DO_NOT_LOG/);
   assert.match(result.stdout,/NATIVE_INSTALL_SANITIZED_EVIDENCE_PASS/);
+});
+
+
+test('software-only native journey permits one bounded 300-second fixture install without retries', () => {
+  const ui=readFileSync(new URL('../platform-support-native-ui.py',import.meta.url),'utf8');
+  assert.match(ui,/install_fixture\(adb, OUT\/'SupportFixture\.apk', OUT, timeout=300\)/);
+  const installer=readFileSync(new URL('../platform_support_native_install.py',import.meta.url),'utf8');
+  assert.match(installer,/return adb\('install', str\(apk_path\), timeout=timeout\)/);
+  assert.doesNotMatch(installer,/while\s+True|for\s+attempt/);
 });
