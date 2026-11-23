@@ -17,7 +17,8 @@ case "$*" in
   'shell cmd package list packages') echo 'package:com.predibeacon.mlivretrabalho.pilot' ;;
   'shell settings get global device_provisioned') echo 1 ;;
   install*) echo Success ;;
-  'shell am start -W -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p com.predibeacon.mlivretrabalho.pilot') if [ "$SMOKE_CASE" = launchfail ]; then echo 'Error: Activity not started' >&2; exit 7; fi; echo 'Status: ok' ;;
+  'shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER com.predibeacon.mlivretrabalho.pilot') if [ "$SMOKE_CASE" = noactivity ]; then echo 'No activity found'; else echo 'com.predibeacon.mlivretrabalho.pilot/.MainActivity'; fi ;;
+  'shell am start -W -n com.predibeacon.mlivretrabalho.pilot/.MainActivity') if [ "$SMOKE_CASE" = launchfail ]; then echo 'Error: Activity not started' >&2; exit 7; fi; echo 'Status: ok' ;;
   'shell pidof '*) if [ "$SMOKE_CASE" = missingpid ]; then exit 1; fi; echo 1234 ;;
   'shell dumpsys activity activities') echo 'com.predibeacon.mlivretrabalho.pilot' ;;
   'shell dumpsys activity lastanr') echo 'fixture last ANR context' ;;
@@ -33,6 +34,7 @@ test('healthy fixture emits gate success only after installation, PID, activity 
 test('native fatal log fails and captures diagnostics instead of emitting success',t=>{const f=fixture(t,'native'),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(readFileSync(join(f.diagnostics,'logcat.txt'),'utf8'),/FATAL EXCEPTION/);assert.match(f.manifest(),/sha=unit-fixture-sha/);});
 test('React Native error and missing Metro bundle both fail the gate',t=>{for(const mode of ['react','metro']){const f=fixture(t,mode),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.equal(existsSync(join(f.diagnostics,'logcat.txt')),true);}});
 test('failed ActivityManager launch retains original exit and captures logcat before emulator teardown',t=>{const f=fixture(t,'launchfail'),r=f.run();assert.equal(r.status,7);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(readFileSync(join(f.diagnostics,'logcat.txt'),'utf8'),/ANR com.android.phone/);assert.match(f.manifest(),/app-pid_exit=0/);});
+test('missing exported launcher fails closed before any launch',t=>{const f=fixture(t,'noactivity'),r=f.run();assert.notEqual(r.status,0);assert.match(r.stderr,/launcher_component_not_resolved/);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);});
 test('bounded app launch wait accepts a late PID only after confirming the activity',t=>{const f=fixture(t,'latepid'),r=f.run();assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/DEVICE_SMOKE_OK .*metro_required=false/);assert.match(readFileSync(join(f.dir,'logcat.txt'),'utf8'),/fixture Activity displayed/);});
 test('missing app PID fails after bounded polling and never emits smoke success',t=>{const f=fixture(t,'missingpid'),r=f.run();assert.notEqual(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(f.manifest(),/app-pid_exit=1/);});
 test('diagnostics-only after upstream boot failure records unavailable ADB and never proves smoke',t=>{const f=fixture(t,'unavailable'),r=f.run(['--diagnostics-only']);assert.equal(r.status,0);assert.doesNotMatch(r.stdout,/DEVICE_SMOKE_OK/);assert.match(f.manifest(),/adb-devices_exit=1/);assert.match(f.manifest(),/logcat_exit=1/);});
@@ -53,7 +55,8 @@ test('canonical Android smoke uses software acceleration while keeping install a
 
 test('smoke launches via bounded ActivityManager and never uses Monkey',()=>{
  const source=readFileSync(script,'utf8');
- assert.match(source,/timeout 90s adb shell am start -W -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p/);
+ assert.match(source,/cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER/);
+ assert.match(source,/timeout 90s adb shell am start -W -n/);
  assert.doesNotMatch(source,/adb shell monkey/);
  assert.match(source,/test "\$launch_ready" = true/);
  assert.match(source,/adb shell dumpsys activity activities/);
