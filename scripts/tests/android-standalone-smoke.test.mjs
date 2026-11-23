@@ -69,5 +69,6 @@ test('launcher resolution script parses and has exactly one complete launch gate
  assert.equal((source.match(/launcher_component="/g)||[]).length,1);
  assert.equal((source.match(/DEVICE_SMOKE_OK package=/g)||[]).length,1);
  assert.equal((source.match(/timeout 90s adb shell am start -W -n/g)||[]).length,1);
- assert.match(source,/launcher_component="\$\(printf[\s\S]*?awk [\s\S]*?END \{if \(component != ""\) print component\}\)"/);
+ assert.match(source,/launcher_component="\$\(printf[\s\S]*?\| awk /);
+ assert.match(source,/END \{if \(component != ""\) print component\}'\)"/);
 });
