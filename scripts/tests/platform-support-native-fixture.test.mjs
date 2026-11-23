@@ -233,3 +233,16 @@ test('native fixture cleanup stays in disposable checkout and preserves failure'
  assert.ok(native.includes("INPUT_DISABLE-LINUX-HW-ACCEL: 'true'"));
  assert.ok(native.includes('run: node scripts/android-emulator-adb-readiness.cjs native'));
 });
+
+test('software-only Android emulator jobs explicitly opt in to TCG without weakening isolation', () => {
+ const workflow=readFileSync('.github/workflows/standalone-pilot-apk.yml','utf8');
+ const canonical=workflow.slice(workflow.indexOf('  build-standalone-pilot-apk:'),workflow.indexOf('  native-support-fixture:'));
+ const native=workflow.slice(workflow.indexOf('  native-support-fixture:'));
+ for(const job of [canonical,native]){
+  assert.match(job,/ANDROID_I_WANT_MY_TCG: 'yes'/);
+  assert.match(job,/INPUT_DISABLE-LINUX-HW-ACCEL: 'true'/);
+  assert.match(job,/INPUT_EMULATOR-OPTIONS: .*swiftshader_indirect/);
+ }
+ assert.equal((workflow.match(/ANDROID_I_WANT_MY_TCG: 'yes'/g)||[]).length,2);
+ assert.equal(workflow.includes('/dev/kvm'),false);
+});

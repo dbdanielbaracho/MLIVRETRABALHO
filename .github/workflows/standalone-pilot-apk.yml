@@ -61,6 +61,9 @@ jobs:
       - name: Device smoke test — install and launch without Metro
         id: device_smoke
         env:
+          # Emulator 37.3.10+ refuses -accel off without explicit TCG opt-in.
+          # Scope to this isolated CI emulator step; no production/runtime change.
+          ANDROID_I_WANT_MY_TCG: 'yes'
           INPUT_API-LEVEL: '35'
           INPUT_SYSTEM-IMAGE-API-LEVEL: '35'
           INPUT_TARGET: default
@@ -210,6 +213,9 @@ jobs:
         id: native_support_fixture
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlivretrabalho_http
+          # Emulator 37.3.10+ refuses -accel off without explicit TCG opt-in.
+          # Scope to this isolated CI emulator step; no production/runtime change.
+          ANDROID_I_WANT_MY_TCG: 'yes'
           INPUT_API-LEVEL: '35'
           INPUT_SYSTEM-IMAGE-API-LEVEL: '35'
           INPUT_TARGET: default
