@@ -64,7 +64,10 @@ test -f "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk"
 # minute; persistent app/package failures still fail with full output.
 install_log="$smoke_install_log"; install_ok=false; for i in $(seq 1 6); do if adb install -r "$GITHUB_WORKSPACE/artifacts/android-pilot/MLivreTrabalho.apk" >"$install_log" 2>&1; then install_ok=true; break; fi; cat "$install_log"; sleep 10; done; cat "$install_log"; test "$install_ok" = true
 adb shell am force-stop "com.predibeacon.mlivretrabalho.pilot"
-adb shell monkey -p "com.predibeacon.mlivretrabalho.pilot" -c android.intent.category.LAUNCHER 1
+# Launch through ActivityManager directly: Monkey can abort with zero injected events
+# when unrelated Android system processes are ANR on software-only emulators.
+# Still fail closed on a failed launch and require the real app PID/activity below.
+timeout 90s adb shell am start -W -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p "com.predibeacon.mlivretrabalho.pilot"
 # Software-only hosted emulators can take longer to start the app after dexopt.
 # Keep a bounded wait, and still require both a live process and foreground activity.
 launch_ready=false
